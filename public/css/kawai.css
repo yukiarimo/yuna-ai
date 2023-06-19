@@ -1,0 +1,879 @@
+/*
+    COPYRIGHT BY YUKI ARIMO
+    KAWAI FRAMEWORK
+*/
+
+/* CONFIGURATION */
+/*  NAVIGATION  */
+.topbar-o {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2%;
+    border-bottom: 1px solid rgb(229, 229, 229);
+}
+
+.bottombar-o {
+    display: flex;
+    position: fixed;
+    text-decoration: none;
+    justify-content: space-between;
+    bottom: 0;
+    width: 100%;
+    height: fit-content;
+    margin-bottom: 0;
+    padding: 0%;
+    flex-direction: column;
+}
+
+.block-bottom-tabs {
+    width: 100%;
+    justify-content: space-around;
+    display: flex;
+    background: #212529;
+    padding: 1%;
+    text-align: center;
+    color: white;
+}
+
+.block-bottom-tabs-e {
+    width: fit-content;
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    padding: 1%;
+    border-radius: 6px;
+    justify-content: space-around;
+}
+
+.sidebar-o {
+    width: 15%;
+    float: left;
+    background: rgb(231, 233, 233);
+    height: 100%;
+    min-height: 10hv;
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.block-o {
+    background: none;
+}
+
+.tab-o {
+    flex-direction: column;
+}
+
+/*  BLOCKS  */
+.coll-lo {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 2%;
+    width: auto;
+    height: auto;
+}
+
+.block-l {
+    display: flex;
+    width: 90%;
+    display: inline-block;
+    height: auto;
+    text-decoration: none;
+    border-radius: 6px;
+    padding: 1%;
+    word-wrap: break-word;
+    align-content: stretch;
+    background: white;
+}
+
+.block-card {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    width: 30%;
+    background: white;
+    padding: 1%;
+    border-radius: 6px;
+    justify-content: space-between;
+}
+
+.block-form {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    width: 30%;
+    border: 1px solid #DDE1E5;
+    padding: 1%;
+    border-radius: 6px;
+}
+
+.block-input {
+    display: flex;
+    width: auto;
+    border-radius: 6px;
+    border: 1px solid #d6d6d8;
+    padding: 1%;
+    margin-bottom: 2%;
+}
+
+.block-form>.block-button {
+    width: fit-content;
+}
+
+.block-button {
+    width: auto;
+    height: fit-content;
+    padding: 2%;
+    background: rgb(53, 120, 246);
+    border-radius: 6px;
+    color: white;
+    display: flex;
+    border: 0;
+}
+
+.block-list {
+    display: flex;
+    flex-direction: column;
+    border-radius: 6px;
+    width: 100%;
+}
+
+.block-list>.block-list-e {
+    display: flex;
+    width: 90%;
+    color: black;
+    border: 1px solid #DDE1E5;
+    padding: 1%;
+    align-items: center;
+}
+
+.block-list>.block-list-e:first-child {
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+}
+
+.block-list>.block-list-e:last-child {
+    border-bottom-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+}
+
+.block-scroll {
+    display: flex;
+    overflow-y: scroll;
+    width: 100%;
+    height: 200px;
+    flex-direction: column;
+}
+
+/*  TEXT  */
+.text-block {
+    display: block;
+    text-decoration: none;
+    color: black;
+    width: auto;
+    font-size: 14px;
+    height: auto;
+    font-family: kawai-font;
+    padding: 1%;
+    line-height: 1.5;
+    align-content: stretch;
+}
+
+/*  ADDITIONAL ELEMENTS */
+.block-button-close-e {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    background: whitesmoke;
+}
+
+/*  POPUS  */
+.block-popup {
+    width: 100%;
+    height: auto;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    position: fixed;
+    background: white;
+    padding: 1%;
+    display: none;
+    flex-direction: column;
+    display: none;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-content: center;
+}
+
+.modal-content {
+    background-color: #fff;
+    border-radius: 6px;
+    width: 90%;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: center;
+    padding: 1%;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.modal-body {
+    padding: 1%;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: center;
+    padding: 1%;
+    border-top: 1px solid #dee2e6;
+}
+
+.block-popup>.div {
+    text-align: center;
+}
+
+/*  TABS    */
+.top-tab-block>.top-tab-block-e:hover {
+    background-color: rgb(207, 210, 209);
+    padding: 1%;
+    border-radius: 6px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.topbar-o>.text-block {
+    line-height: normal;
+}
+
+.top-tab-block {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 1%;
+    width: fit-content;
+}
+
+.top-tab-block-e {
+    display: flex;
+    margin-right: 5%;
+    padding: 1%;
+}
+
+/*  OTHER   */
+.toggle-menu-block {
+    position: absolute;
+    flex-direction: column;
+    justify-content: space-between;
+    display: none;
+    top: .75rem;
+    right: 1rem;
+    width: 30px;
+    height: 21px;
+}
+
+.toggle-menu-block .bar {
+    height: 3px;
+    width: 100%;
+    background-color: white;
+    border-radius: 6px;
+}
+
+/*  STYLISHING  */
+.center {
+    text-align: center;
+}
+
+.tab-o {
+    display: none;
+}
+
+.side-tab-block {
+    width: 80%;
+}
+
+.side-tab-block-e {
+    justify-content: center;
+    display: flex;
+    background: rgb(207, 210, 209);
+    border-radius: 6px;
+    padding: 5%;
+    margin-bottom: 5%;
+    text-align: center;
+    color: black;
+}
+
+.uside {
+    width: 85%;
+    float: right;
+}
+
+.tab-o-default {
+    display: flex;
+}
+
+.block-button-close {
+    padding: 2%;
+    color: white;
+    background: red;
+    width: fit-content;
+    font-size: 20px;
+    height: fit-content;
+    border-radius: 6px;
+    position: absolute;
+    right: 0;
+}
+
+.block-dropdown {
+    display: flex;
+    width: fit-content;
+    background: blanchedalmond;
+    padding: 1%;
+}
+
+.block-dropdown>.block-dropdown-tab {
+    background: gray;
+    height: auto;
+    padding: 1%;
+    margin-right: 5%;
+    display: flex;
+    flex-direction: row;
+}
+
+.block-dropdown-tab-lo {
+    display: none;
+    flex-direction: column;
+}
+
+.block-dropdown-tab-e {
+    display: flex;
+    justify-content: center;
+    width: min-content !important;
+    padding: 1% !important;
+}
+
+/* STYLISHING */
+.block-o {
+    background: none;
+}
+
+.tab-o {
+    flex-direction: column;
+}
+
+.block-form>.block-button {
+    width: fit-content;
+}
+
+.block-list>.block-list-e:first-child {
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+}
+
+.block-list>.block-list-e:last-child {
+    border-bottom-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+}
+
+.la {
+    font-size: 32px !important;
+}
+
+.lb {
+    font-size: 24px !important;
+}
+
+.lc {
+    font-size: 18px !important;
+}
+
+.ld {
+    font-size: 14px !important;
+}
+
+.block-popup>.div {
+    text-align: center;
+}
+
+.row-line {
+    display: flex;
+    flex-direction: row !important;
+}
+
+.container {
+    display: flex;
+}
+
+/*  TABS    */
+.top-tab-block>.top-tab-block-e:hover {
+    background-color: rgb(207, 210, 209);
+    padding: 2%;
+    border-radius: 6px;
+}
+
+.toggle-menu-block .bar {
+    height: 3px;
+    width: 100%;
+    background-color: white;
+    border-radius: 6px;
+}
+
+/*  STYLISHING  */
+.sidebar-o>.text-block {
+    text-align: center;
+    font-size: 27px;
+    display: flex;
+    justify-content: center;
+}
+
+.tab-o {
+    display: none;
+}
+
+.uside {
+    width: 85%;
+}
+
+.double-uside {
+    width: 70%;
+    margin-left: 15%;
+}
+
+.side-left {
+    left: 0;
+}
+
+.side-right {
+    right: 0;
+}
+
+.tab-o-default {
+    display: flex;
+}
+
+.txt-lock {
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    user-select: none;
+}
+
+.txt-1 {
+    text-align: left;
+}
+
+.txt-2 {
+    text-align: center;
+}
+
+.txt-3 {
+    text-align: right;
+}
+
+/* POSITION */
+.el-0 {
+    width: 95%;
+}
+
+.el-9 {
+    width: 90%;
+}
+
+.el-8 {
+    width: 80%;
+}
+
+.el-7 {
+    width: 70%;
+}
+
+.el-6 {
+    width: 60%;
+}
+
+.el-5 {
+    width: 50%;
+}
+
+.el-4 {
+    width: 40%;
+}
+
+.el-3 {
+    width: 30%;
+}
+
+.el-2 {
+    width: 20%;
+}
+
+.el-1 {
+    width: 10%;
+}
+
+/*  COLORS  */
+.mudiny {
+    background: #7466F9;
+}
+
+.craily {
+    background: #BD5B49;
+}
+
+.rosely {
+    background: #F7B6A0;
+}
+
+.oxely {
+    background: #74A08F;
+}
+
+.finy {
+    background: #662C5C;
+}
+
+.selty {
+    background: #F8F9FA;
+}
+
+.darkly {
+    background: #212529;
+}
+
+.lovely-blue {
+    background: rgb(53, 120, 246);
+}
+
+.selected {
+    background: rgb(53, 120, 246);
+    color: white;
+}
+
+.mobile-only {
+    display: none;
+}
+
+.cancel {
+    background: rgb(237, 241, 247);
+    color: black;
+}
+
+.shadow {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.v-coll {
+    flex-direction: column;
+}
+
+.h-coll {
+    flex-direction: row;
+}
+
+/* MOBILE CSS */
+@media (max-width : 428px) {
+    .sidebar-o {
+        width: 100%;
+    }
+
+    .mobile-only {
+        display: flex;
+    }
+
+    .topbar-o {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .toggle-menu-block {
+        display: flex;
+    }
+
+    .top-tab-block {
+        display: none;
+        width: 100%;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .top-tab-block>.top-tab-block-e {
+        flex-direction: column;
+        width: 100%;
+        text-align: center;
+    }
+
+    .top-tab-block.active {
+        display: flex;
+    }
+
+    .uside {
+        width: 100%;
+        float: none;
+        margin-top: 0%;
+    }
+
+    .desktop-only {
+        display: none;
+    }
+}
+
+/* OPTIMIZER */
+/*  BASIC  */
+img {
+    border-radius: 6px;
+    width: 20%;
+}
+
+div {
+    font-family: kawai-font;
+}
+
+body {
+    overflow-x: hidden;
+}
+
+/*  FONT IMPORT  */
+@font-face {
+    font-family: "kawai-font";
+    src: url("../../fonts/kawai-font.woff") format("truetype"),
+        url("webfont.woff") format("woff"),
+        /* Modern Browsers */
+        url("webfont.ttf") format("truetype");
+    font-style: normal;
+    font-weight: normal;
+}
+
+/*  SLIDER MODE  */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+input:checked+.slider {
+    background-color: #2196F3;
+}
+
+input:focus+.slider {
+    box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked+.slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+/*  BEAUTIFY STYLES - ROUNDSTEP PRO  */
+html {
+    line-height: 1.15;
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    margin: 0;
+}
+
+main {
+    display: flex;
+}
+
+
+h1 {
+    font-size: 2em;
+    margin: 0.67em 0;
+}
+
+hr {
+    box-sizing: content-box;
+    height: 0;
+    overflow: visible;
+}
+
+pre {
+    font-family: monospace, monospace;
+    font-size: 1em;
+}
+
+
+a {
+    background-color: transparent;
+}
+
+abbr[title] {
+    border-bottom: none;
+    text-decoration: underline;
+    text-decoration: underline dotted;
+}
+
+b,
+strong {
+    font-weight: bolder;
+}
+
+code,
+kbd,
+samp {
+    font-family: monospace, monospace;
+    font-size: 1em;
+}
+
+small {
+    font-size: 80%;
+}
+
+sub,
+sup {
+    font-size: 75%;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
+}
+
+sub {
+    bottom: -0.25em;
+}
+
+sup {
+    top: -0.5em;
+}
+
+
+img {
+    border-style: none;
+}
+
+
+button,
+input,
+optgroup,
+select,
+textarea {
+    font-family: inherit;
+    font-size: 100%;
+    line-height: 1.15;
+    margin: 0;
+}
+
+button,
+input {
+    overflow: visible;
+}
+
+button,
+select {
+    text-transform: none;
+}
+
+button::-moz-focus-inner,
+[type="button"]::-moz-focus-inner,
+[type="reset"]::-moz-focus-inner,
+[type="submit"]::-moz-focus-inner {
+    border-style: none;
+    padding: 0;
+}
+
+button:-moz-focusring,
+[type="button"]:-moz-focusring,
+[type="reset"]:-moz-focusring,
+[type="submit"]:-moz-focusring {
+    outline: 1px dotted ButtonText;
+}
+
+fieldset {
+    padding: 0.35em 0.75em 0.625em;
+}
+
+
+legend {
+    box-sizing: border-box;
+    color: inherit;
+    display: table;
+    max-width: 100%;
+    padding: 0;
+    white-space: normal;
+}
+
+progress {
+    vertical-align: baseline;
+}
+
+textarea {
+    overflow: auto;
+}
+
+[type="checkbox"],
+[type="radio"] {
+    box-sizing: border-box;
+    padding: 0;
+}
+
+[type="number"]::-webkit-inner-spin-button,
+[type="number"]::-webkit-outer-spin-button {
+    height: auto;
+}
+
+details {
+    display: flex;
+}
+
+summary {
+    display: list-item;
+}
+
+template {
+    display: none;
+}
+
+[hidden] {
+    display: none;
+}
+
+/*
+    COPYRIGHT BY YUKI ARIMO
+    KAWAI FRAMEWORK
+*/

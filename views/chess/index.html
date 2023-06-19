@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>JSChess</title>	
+		<link href="styles.css" rel="stylesheet" type="text/css">	
+		<script type="text/javascript"> if (!window.console) console = {log: function() {}}; </script>
+	</head>
+	<body>
+		<header>
+			<h3>JS Chess</h3>			
+		</header>	
+		<div id="FenInDiv">
+			Fen:<br/>
+			<input type="text" id="fenIn"/>		
+			<button type="button" id="SetFen">Set Position</button>			
+		</div>		
+		<div id="Board">
+		</div>
+		<div id="EngineOutput">Thinking Time: <br/>
+			<select id="ThinkTimeChoice">
+			<option value="1">1s</option>
+			  <option value="2">2s</option>
+			  <option value="4">4s</option>
+			  <option value="6">6s</option>
+			  <option value="8">8s</option>
+			  <option value="10">10s</option>
+			</select><br/><br/><br/>
+			<span id="BestOut">BestMove:</span><br/>
+			<span id="DepthOut">Depth:</span><br/>
+			<span id="ScoreOut">Score:</span><br/>
+			<span id="NodesOut">Nodes:</span><br/>
+			<span id="OrderingOut">Ordering:</span><br/>
+			<span id="TimeOut">Time:</span><br/><br/>
+			<button type="button" id="SearchButton">Move Now</button><br/>
+			<button type="button" id="NewGameButton">New Game</button><br/>
+			<button type="button" id="FlipButton">Flip Board</button><br/><br/>
+			<button type="button" id="TakeButton">Take Back</button><br/><br/><br/>
+			<span id="GameStatus"></span>
+		</div>
+		
+		<script src="js/jquery-1.10.1.min.js"></script>		
+		<script src="js/defs.js"></script>	
+		<script src="js/io.js"></script>	
+		<script src="js/board.js"></script>	
+		<script src="js/movegen.js"></script>	
+		<script src="js/makemove.js"></script>		
+		<script src="js/evaluate.js"></script>	
+		<script src="js/pvtable.js"></script>
+		<script src="js/search.js"></script>
+		<script src="js/perft.js"></script>
+		<script src="js/gui.js"></script>
+		<script src="js/main.js"></script>
+	</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

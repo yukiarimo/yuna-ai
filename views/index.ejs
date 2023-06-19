@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yuna</title>
+    <link rel="stylesheet" href="/css/kawai.css">
+    <link rel="stylesheet" href="/css/index.css">
+    <script src="/js/index.js" defer></script>
+    <script src="/js/kawai.js" defer></script>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="/yuna512.png">
+    <meta name="apple-mobile-web-app-status-bar" content="#aa7700">
+    <meta name="theme-color" content="#317EFB" />
+    <meta name="description" content="Yuna AI girlfriend">
+</head>
+
+<body class="txt-lock">
+    <div class="sidebar-o" id="sidebar">
+        <div class="chat-header" style="background: none;">
+            <div class="spacer"></div>
+            <button onclick="dismiss()">
+                <img src="/img/Yuna.png" class="profile-picture">
+            </button>
+            <h1 class="chat-title">Yuna</h1>
+            <div class="spacer"></div>
+        </div>
+        <div class="side-tab-block">
+            <div class="side-tab-block-e" onclick="OpenTab('1')">Chats</div>
+            <div class="side-tab-block-e" onclick="OpenTab('2')">Tools</div>
+            <div class="side-tab-block-e" onclick="OpenTab('3')">Settings</div>
+        </div>
+    </div>
+
+    <div class="block-o uside" id="sidebar-o">
+        <div class="tab-o tab-o-default" id="1">
+            <div class="chat">
+                <div class="chat-header">
+                    <button class="circle-button">
+                        <img src="/icons/tools.svg" class="icon">
+                    </button>
+                    <div class="spacer"></div>
+                    <button>
+                        <img src="/img/Yuna.png" class="profile-picture">
+                    </button>
+                    <h1 class="chat-title">Yuna</h1>
+                    <div class="spacer"></div>
+                    <button onclick="toggleButtons()" class="camera-button">
+                        <img src="/icons/phone.svg" class="icon">
+                    </button>
+                </div>
+                <div class="popover" id="buttonsPopover">
+                    <iframe src="VideoCallView.html"></iframe>
+                </div>
+                <div class="chat-messages">
+                    <div class="message-container">
+
+                    </div>
+                </div>
+            </div>
+            <div class="uside-bottom bottombar-o el-9" id="bottombar-o">
+                <form class="block-card" id="form">
+                    <div class="chat-input">
+                        <div class="input-container">
+                            <textarea id="text" type="text" placeholder="Say to Yuna" class="input-field"></textarea>
+                            <button class="send-button">
+                                <i class="fa fa-paperplane-circle" id="send" type="button" onClick="sendMSG();"><img img
+                                        class="icon" src="/icons/send-fill.svg"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="block-bottom-tabs">
+                    <div class="block-bottom-tabs-e">Yuna</div>
+                    <div class="block-bottom-tabs-e">Write</div>
+                    <div class="block-bottom-tabs-e">GPT</div>
+                    <div class="block-bottom-tabs-e">Search</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-o" id="2">
+            <div class="chat">
+                <div class="chat-header">
+                    <div class="spacer"></div>
+                    <button onclick="dismiss()">
+                        <img src="/img/Yuna.png" class="profile-picture">
+                    </button>
+                    <h1 class="chat-title">Yuna</h1>
+                    <div class="spacer"></div>
+                </div>
+
+                <div class="collector-lo">
+                    <div class="block-card">
+                        <div class="block-text la">Tools</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-o" id="3">
+            <div class="chat">
+                <div class="chat-header">
+                    <div class="spacer"></div>
+                    <button onclick="dismiss()">
+                        <img src="/img/Yuna.png" class="profile-picture">
+                    </button>
+                    <h1 class="chat-title">Yuna</h1>
+                    <div class="spacer"></div>
+                </div>
+
+                <div class="collector-lo">
+                    <div class="block-card">
+                        <div class="block-text la">Seetings</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        window.addEventListener('load', e => {
+            if (!('serviceWorker' in navigator)) {
+                console.log('Service worker not supported');
+                return;
+            }
+            navigator.serviceWorker.register('service-worker.js')
+                .then(function () {
+                    //console.log('Service worker registered');
+                })
+                .catch(function (error) {
+                    console.log('Service worker registration failed:',
+                        error);
+                });
+        });
+    </script>
+
+    <div class="block-popup" id="games">
+        <div class="block-list">
+            <div class="block-text la">Choose game <img alt="close" src="/icons/x-circle-fill.svg" class="icon"
+                    onclick="PopupClose('games')">
+            </div>
+
+            <div class="block-list-e" onclick="startGame(1)">Chess</div>
+            <div class="block-list-e" onclick="startGame(2)">Checkers</div>
+            <div class="block-list-e" onclick="startGame(3)">Tic tac toy</div>
+        </div>
+    </div>
+
+    <div class="block-popup" id="vision">
+        <div class="block-text la">Take photo <img alt="close" src="/icons/x-circle-fill.svg" class="icon"
+                onclick="PopupClose('vision')">
+        </div>
+
+        <form id="image-form">
+            <video id="video" width="200" height="200" autoplay></video>
+            <canvas id="canvas" width="320" height="240"></canvas>
+            <button type="submit">Upload</button>
+        </form>
+
+    </div>
+</body>
+
+</html>

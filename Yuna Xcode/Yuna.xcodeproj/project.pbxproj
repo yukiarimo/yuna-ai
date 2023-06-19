@@ -1,0 +1,591 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		B60543802A11EE2B002100FE /* AudioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B605437F2A11EE2B002100FE /* AudioView.swift */; };
+		B6595CDD2A15992C0054CDD5 /* SpeechRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6595CDC2A15992C0054CDD5 /* SpeechRecognizer.swift */; };
+		B672127929DE60B300FCF7BA /* YunaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B672127829DE60B300FCF7BA /* YunaApp.swift */; };
+		B672127B29DE60B300FCF7BA /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B672127A29DE60B300FCF7BA /* ContentView.swift */; };
+		B672127D29DE60B400FCF7BA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B672127C29DE60B400FCF7BA /* Assets.xcassets */; };
+		B672128129DE60B400FCF7BA /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B672128029DE60B400FCF7BA /* Preview Assets.xcassets */; };
+		B672128D29DE60F600FCF7BA /* YunaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B672128729DE60F600FCF7BA /* YunaView.swift */; };
+		B672128E29DE60F600FCF7BA /* SwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B672128829DE60F600FCF7BA /* SwiftUIView.swift */; };
+		B672128F29DE60F600FCF7BA /* ToolsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B672128929DE60F600FCF7BA /* ToolsView.swift */; };
+		B672129029DE60F600FCF7BA /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B672128A29DE60F600FCF7BA /* SettingsView.swift */; };
+		B672129129DE60F600FCF7BA /* VideoCallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B672128B29DE60F600FCF7BA /* VideoCallView.swift */; };
+		B672129229DE60F600FCF7BA /* WhatsNewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B672128C29DE60F600FCF7BA /* WhatsNewView.swift */; };
+		B672129A29DE616F00FCF7BA /* Yuna_WatchOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B672129929DE616F00FCF7BA /* Yuna_WatchOSApp.swift */; };
+		B672129C29DE616F00FCF7BA /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B672129B29DE616F00FCF7BA /* ContentView.swift */; };
+		B672129E29DE617000FCF7BA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B672129D29DE617000FCF7BA /* Assets.xcassets */; };
+		B67212A129DE617000FCF7BA /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B67212A029DE617000FCF7BA /* Preview Assets.xcassets */; };
+		B67212A429DE617000FCF7BA /* Yuna WatchOS Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = B672129729DE616F00FCF7BA /* Yuna WatchOS Watch App.app */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		B67212A229DE617000FCF7BA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B672126D29DE60B300FCF7BA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B672129629DE616F00FCF7BA;
+			remoteInfo = "Yuna WatchOS Watch App";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		B67212A829DE617000FCF7BA /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				B67212A429DE617000FCF7BA /* Yuna WatchOS Watch App.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		B605437F2A11EE2B002100FE /* AudioView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioView.swift; sourceTree = "<group>"; };
+		B6595CDC2A15992C0054CDD5 /* SpeechRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechRecognizer.swift; sourceTree = "<group>"; };
+		B672127529DE60B300FCF7BA /* Yuna.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Yuna.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B672127829DE60B300FCF7BA /* YunaApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YunaApp.swift; sourceTree = "<group>"; };
+		B672127A29DE60B300FCF7BA /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		B672127C29DE60B400FCF7BA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B672127E29DE60B400FCF7BA /* Yuna.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Yuna.entitlements; sourceTree = "<group>"; };
+		B672128029DE60B400FCF7BA /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		B672128729DE60F600FCF7BA /* YunaView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YunaView.swift; sourceTree = "<group>"; };
+		B672128829DE60F600FCF7BA /* SwiftUIView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftUIView.swift; sourceTree = "<group>"; };
+		B672128929DE60F600FCF7BA /* ToolsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolsView.swift; sourceTree = "<group>"; };
+		B672128A29DE60F600FCF7BA /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		B672128B29DE60F600FCF7BA /* VideoCallView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoCallView.swift; sourceTree = "<group>"; };
+		B672128C29DE60F600FCF7BA /* WhatsNewView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WhatsNewView.swift; sourceTree = "<group>"; };
+		B672129729DE616F00FCF7BA /* Yuna WatchOS Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Yuna WatchOS Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B672129929DE616F00FCF7BA /* Yuna_WatchOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Yuna_WatchOSApp.swift; sourceTree = "<group>"; };
+		B672129B29DE616F00FCF7BA /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		B672129D29DE617000FCF7BA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B67212A029DE617000FCF7BA /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		B672127229DE60B300FCF7BA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B672129429DE616F00FCF7BA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		B672126C29DE60B300FCF7BA = {
+			isa = PBXGroup;
+			children = (
+				B672127729DE60B300FCF7BA /* Yuna */,
+				B672129829DE616F00FCF7BA /* Yuna WatchOS Watch App */,
+				B672127629DE60B300FCF7BA /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		B672127629DE60B300FCF7BA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B672127529DE60B300FCF7BA /* Yuna.app */,
+				B672129729DE616F00FCF7BA /* Yuna WatchOS Watch App.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B672127729DE60B300FCF7BA /* Yuna */ = {
+			isa = PBXGroup;
+			children = (
+				B672127829DE60B300FCF7BA /* YunaApp.swift */,
+				B672127A29DE60B300FCF7BA /* ContentView.swift */,
+				B672128A29DE60F600FCF7BA /* SettingsView.swift */,
+				B672128829DE60F600FCF7BA /* SwiftUIView.swift */,
+				B672128929DE60F600FCF7BA /* ToolsView.swift */,
+				B672128B29DE60F600FCF7BA /* VideoCallView.swift */,
+				B672128C29DE60F600FCF7BA /* WhatsNewView.swift */,
+				B672128729DE60F600FCF7BA /* YunaView.swift */,
+				B605437F2A11EE2B002100FE /* AudioView.swift */,
+				B6595CDC2A15992C0054CDD5 /* SpeechRecognizer.swift */,
+				B672127C29DE60B400FCF7BA /* Assets.xcassets */,
+				B672127E29DE60B400FCF7BA /* Yuna.entitlements */,
+				B672127F29DE60B400FCF7BA /* Preview Content */,
+			);
+			path = Yuna;
+			sourceTree = "<group>";
+		};
+		B672127F29DE60B400FCF7BA /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				B672128029DE60B400FCF7BA /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		B672129829DE616F00FCF7BA /* Yuna WatchOS Watch App */ = {
+			isa = PBXGroup;
+			children = (
+				B672129929DE616F00FCF7BA /* Yuna_WatchOSApp.swift */,
+				B672129B29DE616F00FCF7BA /* ContentView.swift */,
+				B672129D29DE617000FCF7BA /* Assets.xcassets */,
+				B672129F29DE617000FCF7BA /* Preview Content */,
+			);
+			path = "Yuna WatchOS Watch App";
+			sourceTree = "<group>";
+		};
+		B672129F29DE617000FCF7BA /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				B67212A029DE617000FCF7BA /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		B672127429DE60B300FCF7BA /* Yuna */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B672128429DE60B400FCF7BA /* Build configuration list for PBXNativeTarget "Yuna" */;
+			buildPhases = (
+				B672127129DE60B300FCF7BA /* Sources */,
+				B672127229DE60B300FCF7BA /* Frameworks */,
+				B672127329DE60B300FCF7BA /* Resources */,
+				B67212A829DE617000FCF7BA /* Embed Watch Content */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B67212A329DE617000FCF7BA /* PBXTargetDependency */,
+			);
+			name = Yuna;
+			productName = Yuna;
+			productReference = B672127529DE60B300FCF7BA /* Yuna.app */;
+			productType = "com.apple.product-type.application";
+		};
+		B672129629DE616F00FCF7BA /* Yuna WatchOS Watch App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B67212A529DE617000FCF7BA /* Build configuration list for PBXNativeTarget "Yuna WatchOS Watch App" */;
+			buildPhases = (
+				B672129329DE616F00FCF7BA /* Sources */,
+				B672129429DE616F00FCF7BA /* Frameworks */,
+				B672129529DE616F00FCF7BA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Yuna WatchOS Watch App";
+			productName = "Yuna WatchOS Watch App";
+			productReference = B672129729DE616F00FCF7BA /* Yuna WatchOS Watch App.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B672126D29DE60B300FCF7BA /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1430;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					B672127429DE60B300FCF7BA = {
+						CreatedOnToolsVersion = 14.3;
+					};
+					B672129629DE616F00FCF7BA = {
+						CreatedOnToolsVersion = 14.3;
+					};
+				};
+			};
+			buildConfigurationList = B672127029DE60B300FCF7BA /* Build configuration list for PBXProject "Yuna" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = B672126C29DE60B300FCF7BA;
+			productRefGroup = B672127629DE60B300FCF7BA /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B672127429DE60B300FCF7BA /* Yuna */,
+				B672129629DE616F00FCF7BA /* Yuna WatchOS Watch App */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		B672127329DE60B300FCF7BA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B672128129DE60B400FCF7BA /* Preview Assets.xcassets in Resources */,
+				B672127D29DE60B400FCF7BA /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B672129529DE616F00FCF7BA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B67212A129DE617000FCF7BA /* Preview Assets.xcassets in Resources */,
+				B672129E29DE617000FCF7BA /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B672127129DE60B300FCF7BA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B672129129DE60F600FCF7BA /* VideoCallView.swift in Sources */,
+				B672129229DE60F600FCF7BA /* WhatsNewView.swift in Sources */,
+				B672127B29DE60B300FCF7BA /* ContentView.swift in Sources */,
+				B672127929DE60B300FCF7BA /* YunaApp.swift in Sources */,
+				B60543802A11EE2B002100FE /* AudioView.swift in Sources */,
+				B6595CDD2A15992C0054CDD5 /* SpeechRecognizer.swift in Sources */,
+				B672128E29DE60F600FCF7BA /* SwiftUIView.swift in Sources */,
+				B672129029DE60F600FCF7BA /* SettingsView.swift in Sources */,
+				B672128D29DE60F600FCF7BA /* YunaView.swift in Sources */,
+				B672128F29DE60F600FCF7BA /* ToolsView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B672129329DE616F00FCF7BA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B672129C29DE616F00FCF7BA /* ContentView.swift in Sources */,
+				B672129A29DE616F00FCF7BA /* Yuna_WatchOSApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		B67212A329DE617000FCF7BA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			platformFilter = ios;
+			target = B672129629DE616F00FCF7BA /* Yuna WatchOS Watch App */;
+			targetProxy = B67212A229DE617000FCF7BA /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		B672128229DE60B400FCF7BA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Speech recognition is used to transcribe spoken words into text";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				MACOSX_DEPLOYMENT_TARGET = 13.3;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				WATCHOS_DEPLOYMENT_TARGET = 9.4;
+			};
+			name = Debug;
+		};
+		B672128329DE60B400FCF7BA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Speech recognition is used to transcribe spoken words into text";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				MACOSX_DEPLOYMENT_TARGET = 13.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				WATCHOS_DEPLOYMENT_TARGET = 9.4;
+			};
+			name = Release;
+		};
+		B672128529DE60B400FCF7BA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Yuna/Yuna.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Yuna/Preview Content\"";
+				DEVELOPMENT_TEAM = UVJTV7293J;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Yuna;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Audio is recorded to transcribe the meeting. Audio recordings are discarded after transcription";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Audio is recorded to transcribe the meeting. Audio recordings are discarded after transcription";
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 13.3;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = ai.Yuna.Yuna;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		B672128629DE60B400FCF7BA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Yuna/Yuna.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Yuna/Preview Content\"";
+				DEVELOPMENT_TEAM = UVJTV7293J;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Yuna;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Audio is recorded to transcribe the meeting. Audio recordings are discarded after transcription";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Audio is recorded to transcribe the meeting. Audio recordings are discarded after transcription";
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 13.3;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = ai.Yuna.Yuna;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		B67212A629DE617000FCF7BA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Yuna WatchOS Watch App/Preview Content\"";
+				DEVELOPMENT_TEAM = UVJTV7293J;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Yuna WatchOS";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = ai.Yuna.Yuna;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = ai.Yuna.Yuna.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 9.4;
+			};
+			name = Debug;
+		};
+		B67212A729DE617000FCF7BA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Yuna WatchOS Watch App/Preview Content\"";
+				DEVELOPMENT_TEAM = UVJTV7293J;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Yuna WatchOS";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = ai.Yuna.Yuna;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = ai.Yuna.Yuna.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				VALIDATE_PRODUCT = YES;
+				WATCHOS_DEPLOYMENT_TARGET = 9.4;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B672127029DE60B300FCF7BA /* Build configuration list for PBXProject "Yuna" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B672128229DE60B400FCF7BA /* Debug */,
+				B672128329DE60B400FCF7BA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B672128429DE60B400FCF7BA /* Build configuration list for PBXNativeTarget "Yuna" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B672128529DE60B400FCF7BA /* Debug */,
+				B672128629DE60B400FCF7BA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B67212A529DE617000FCF7BA /* Build configuration list for PBXNativeTarget "Yuna WatchOS Watch App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B67212A629DE617000FCF7BA /* Debug */,
+				B67212A729DE617000FCF7BA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = B672126D29DE60B300FCF7BA /* Project object */;
+}

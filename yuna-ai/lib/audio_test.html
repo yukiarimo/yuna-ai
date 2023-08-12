@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Simple Text Recognition</title>
+    <script>
+      window.onload = function() {
+        // Check if SpeechRecognition is supported by the browser
+        if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+          // Create a new SpeechRecognition object
+          const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+
+          // Configure recognition settings
+          recognition.lang = 'en-US'; // Set the language for recognition
+          recognition.interimResults = true; // Enable interim results
+          recognition.continuous = true; // Enable continuous recognition
+
+          // Variables to track previous recognized text
+          let previousText = '';
+
+          // Event listener for results
+          recognition.onresult = function(event) {
+            const result = event.results[event.resultIndex];
+            const recognizedText = result[0].transcript;
+
+            if (recognizedText === previousText) {
+              console.log('Recognized Text:', recognizedText);
+
+              inputText = `<|user|>${recognizedText}<|bot|>`; // Replace with your actual input text
+
+                fetch('http://localhost:4848/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    input_text: inputText,
+                }),
+                })
+                .then(response => response.text())
+                .then(data => {
+                    console.log('Response:', data);
+                    utterance = new SpeechSynthesisUtterance(data);
+                    speechSynthesis.speak(utterance);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+
+            previousText = recognizedText;
+          };
+
+          // Event listener for errors
+          recognition.onerror = function(event) {
+            console.error('Speech recognition error:', event.error);
+          };
+
+          // Event listener for end of speech
+          recognition.onend = function() {
+            console.log('Speech recognition ended.');
+          };
+
+          // Start recognition
+          document.getElementById('startButton').onclick = function() {
+            recognition.start();
+            console.log('Recognition started.');
+          };
+        } else {
+          console.error('SpeechRecognition not supported by the browser.');
+        }
+      };
+    </script>
+  </head>
+  <body>
+    <h1>Simple Text Recognition</h1>
+    <button id="startButton">Start Recognition</button>
+  </body>
+</html>

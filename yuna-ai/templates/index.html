@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yuna AI Model</title>
+    <link rel="stylesheet"
+        href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet"
+        href="{{ url_for('static', filename='/kawai/kawai.css') }}">
+    <link href="{{ url_for('static', filename='/kawai/kawai-font.otf') }}"
+        rel="stylesheet">
+    <script src="{{ url_for('static', filename='index.js') }}" defer>
+    </script>
+</head>
+
+<body>
+    <div class="topbar-o">
+        <div class="top-tab-block"></div>
+        <h1 class="text-block la">Yuna</h1>
+        <div class="top-tab-block"></div>
+    </div>
+
+    <div class="block-o">
+        <div class="coll-lo h-coll">
+            <div class="block-l el-2">
+                <h1>Hello there!</h1>
+                <h2>Thanks for using the Yuna AI model</h2>
+                <h2>For more information, look for the official Mirai LabX documentation!</h2>
+                <img src="/static/yuna.png" alt="">
+            </div>
+
+            <div class="block-l el-8">
+                <div class="messages-container block-l block-scroll">
+                    <h1>History</h1>
+                </div>
+
+                <form class="form-container" onsubmit="handleSubmit(event)">
+                    <textarea id="input_text" placeholder="Enter your message"></textarea>
+                    <div class="button-container">
+                        <button type="submit" class="send-button">Send with History</button>
+                        <button type="button" class="send-simple-button" onclick="handleSimpleSubmit()">Send</button>
+                        <button type="button" class="clear-history-button" onclick="clearHistory()">Clear
+                            History</button>
+                        <button type="button" class="load-history-button" onclick="loadHistory()">Load History</button>
+                        <button type="button" class="download-history-button" onclick="downloadHistory()">Download
+                            History</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="block-l el-2">
+                <h1>Train AI Model</h1>
+                <div class="train-options">
+                    <label for="num_epochs">Number of Epochs:</label>
+                    <input type="number" id="num_epochs" name="num_epochs" min="1" value="1">
+        
+                    <label for="learning_rate">Learning Rate:</label>
+                    <input type="number" id="learning_rate" name="learning_rate" step="0.001" value="0.001">
+        
+                    <!-- Add more training options here based on your tokenizer.json file -->
+        
+                    <button type="button" class="train-button" onclick="startTraining()">Start Training</button>
+                    <div id="training-status"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

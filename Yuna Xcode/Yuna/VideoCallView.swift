@@ -7,34 +7,26 @@ struct VideoCallView: View {
     @State private var isShowingAudioCall = false
     
     var body: some View {
-        VStack {
+        VStack(spacing: 10) {
             Image("Yuna")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .frame(width: 300, height: 300)
+                .frame(maxWidth: .infinity)
                 .clipShape(RoundedRectangle(cornerRadius: 16))
                 .shadow(radius: 3)
             
             if showWebView {
-                WebView(urlString: webViewURL)
-                    .frame(width: 300, height: 300)
-                    .cornerRadius(16)
-                    .shadow(radius: 3)
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 10)
+                CameraView()
             } else {
-                Image(systemName: "person.fill")
-                    .font(.system(size: 300))
-                    .frame(width: 300, height: 300)
-                    .cornerRadius(16)
+                Image("Yuki")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(maxWidth: .infinity)
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
                     .shadow(radius: 3)
-                    .background(.white)
-                    .shadow(color: Color.gray.opacity(0.5), radius: 10, x: 0, y: 5)
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 10)
             }
             
-            HStack {
+            HStack(spacing: 20) {
                 Button(action: {
                     isShowingAudioCall.toggle()
                 }) {
@@ -47,7 +39,7 @@ struct VideoCallView: View {
                 }
                 .buttonStyle(PlainButtonStyle())
                 .sheet(isPresented: $isShowingAudioCall, content: {
-                    AudioView()
+                    YunaView()
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 })
                 
@@ -79,7 +71,7 @@ struct VideoCallView: View {
             .cornerRadius(16)
             .shadow(color: Color.gray.opacity(0.5), radius: 10, x: 0, y: 5)
         }
-        .padding(.bottom, -10)
+        .padding(.bottom, 0)
     }
 }
 

@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B60543802A11EE2B002100FE /* AudioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B605437F2A11EE2B002100FE /* AudioView.swift */; };
+		B60F73A62A66DB210079DB62 /* TestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B60F73A52A66DB210079DB62 /* TestView.swift */; };
 		B6595CDD2A15992C0054CDD5 /* SpeechRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6595CDC2A15992C0054CDD5 /* SpeechRecognizer.swift */; };
 		B672127929DE60B300FCF7BA /* YunaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B672127829DE60B300FCF7BA /* YunaApp.swift */; };
 		B672127B29DE60B300FCF7BA /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B672127A29DE60B300FCF7BA /* ContentView.swift */; };
@@ -24,6 +24,7 @@
 		B672129E29DE617000FCF7BA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B672129D29DE617000FCF7BA /* Assets.xcassets */; };
 		B67212A129DE617000FCF7BA /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B67212A029DE617000FCF7BA /* Preview Assets.xcassets */; };
 		B67212A429DE617000FCF7BA /* Yuna WatchOS Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = B672129729DE616F00FCF7BA /* Yuna WatchOS Watch App.app */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		B69D673E2A427F000042F1FB /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B69D673D2A427F000042F1FB /* CameraView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,7 +52,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		B605437F2A11EE2B002100FE /* AudioView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioView.swift; sourceTree = "<group>"; };
+		B60F73A52A66DB210079DB62 /* TestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestView.swift; sourceTree = "<group>"; };
+		B60F73A72A66E0470079DB62 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		B6595CDC2A15992C0054CDD5 /* SpeechRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechRecognizer.swift; sourceTree = "<group>"; };
 		B672127529DE60B300FCF7BA /* Yuna.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Yuna.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B672127829DE60B300FCF7BA /* YunaApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YunaApp.swift; sourceTree = "<group>"; };
@@ -70,6 +72,7 @@
 		B672129B29DE616F00FCF7BA /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		B672129D29DE617000FCF7BA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B67212A029DE617000FCF7BA /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		B69D673D2A427F000042F1FB /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -111,15 +114,17 @@
 		B672127729DE60B300FCF7BA /* Yuna */ = {
 			isa = PBXGroup;
 			children = (
+				B60F73A72A66E0470079DB62 /* Info.plist */,
 				B672127829DE60B300FCF7BA /* YunaApp.swift */,
 				B672127A29DE60B300FCF7BA /* ContentView.swift */,
 				B672128A29DE60F600FCF7BA /* SettingsView.swift */,
 				B672128829DE60F600FCF7BA /* SwiftUIView.swift */,
 				B672128929DE60F600FCF7BA /* ToolsView.swift */,
 				B672128B29DE60F600FCF7BA /* VideoCallView.swift */,
+				B69D673D2A427F000042F1FB /* CameraView.swift */,
 				B672128C29DE60F600FCF7BA /* WhatsNewView.swift */,
 				B672128729DE60F600FCF7BA /* YunaView.swift */,
-				B605437F2A11EE2B002100FE /* AudioView.swift */,
+				B60F73A52A66DB210079DB62 /* TestView.swift */,
 				B6595CDC2A15992C0054CDD5 /* SpeechRecognizer.swift */,
 				B672127C29DE60B400FCF7BA /* Assets.xcassets */,
 				B672127E29DE60B400FCF7BA /* Yuna.entitlements */,
@@ -259,9 +264,10 @@
 			files = (
 				B672129129DE60F600FCF7BA /* VideoCallView.swift in Sources */,
 				B672129229DE60F600FCF7BA /* WhatsNewView.swift in Sources */,
+				B60F73A62A66DB210079DB62 /* TestView.swift in Sources */,
 				B672127B29DE60B300FCF7BA /* ContentView.swift in Sources */,
+				B69D673E2A427F000042F1FB /* CameraView.swift in Sources */,
 				B672127929DE60B300FCF7BA /* YunaApp.swift in Sources */,
-				B60543802A11EE2B002100FE /* AudioView.swift in Sources */,
 				B6595CDD2A15992C0054CDD5 /* SpeechRecognizer.swift in Sources */,
 				B672128E29DE60F600FCF7BA /* SwiftUIView.swift in Sources */,
 				B672129029DE60F600FCF7BA /* SettingsView.swift in Sources */,
@@ -422,8 +428,9 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Yuna/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Yuna;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSCameraUsageDescription = "public.app-category.utilities";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Audio is recorded to transcribe the meeting. Audio recordings are discarded after transcription";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Audio is recorded to transcribe the meeting. Audio recordings are discarded after transcription";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -465,8 +472,9 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Yuna/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Yuna;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSCameraUsageDescription = "public.app-category.utilities";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Audio is recorded to transcribe the meeting. Audio recordings are discarded after transcription";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Audio is recorded to transcribe the meeting. Audio recordings are discarded after transcription";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;

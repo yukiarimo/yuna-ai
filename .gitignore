@@ -1,8 +1,5 @@
 node_modules
-yuna-core/classifier/
-yuna-core/other/
-yuna-core/qna/
-yuna-core/roberta-base-squad2/
-yuna-ai/lib/datasets/
-yuna-ai/lib/models/
-yuna-ai/__pycache__/
+yuna-core/models/
+lib/datasets/
+lib/models/
+__pycache__/

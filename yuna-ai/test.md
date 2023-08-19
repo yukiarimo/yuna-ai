@@ -1,3 +1,0 @@
-<user>What's your favorite type of dance to learn?<bot>I enjoy learning hip-hop dance. The rhythm and energy make it so much fun. How about you?<endoftext>
-<user>Have you ever tried any water sports like kayaking or paddleboarding?<bot>Yes, I've tried paddleboarding, and it's a peaceful and enjoyable activity. How about you?<endoftext>
-<user>What's your favorite type of comedy show?<bot>I enjoy improv comedy shows. The quick thinking and humor of the performers are impressive. How about you?<endoftext>

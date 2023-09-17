@@ -1,0 +1,1 @@
+python3 yuna.py yuna.bin

@@ -2,5 +2,6 @@ node_modules
 yuna-core/models/
 lib/datasets/
 lib/models/
-lib/koboldcpp/pygmalion-6b-v3-ggml-ggjt-q4_0.bin
+lib/yunacpp/yuna.bin
+lib/yunacpp/yuna.so
 __pycache__/

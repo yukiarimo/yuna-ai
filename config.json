@@ -1,6 +1,0 @@
-{
-    "model_base_dir": "lib/models/dialog/yuna-dialog-1.pth",
-    "model_train_dir": "lib/models/trained/",
-    "tokenizer_dir": "tokenizer.json",
-    "train_data_dir": "lib/datasets/yuna/dialog/yuna-roleplay-2.txt"
-}

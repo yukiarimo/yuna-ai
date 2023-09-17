@@ -3,12 +3,17 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="apple-mobile-web-app-status-bar" content="#aa7700">
-    <meta name="theme-color" content="#317EFB" />
-    <title>Yuna AI Model</title>
-    <link rel="stylesheet"
-        href="{{ url_for('static', filename='/css/styles.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="Yuna AI - a virtual girlfriend">
+    <meta name="keywords" content="Yuki Arimo, Yuna, Yuna AI, GPT">
+    <meta name="author" content="Yuki Arimo">
+    <meta name="robots" content="index, follow">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar" content="#99c189">
+    <meta name="theme-color" content="#99c189" />
+
+    <title>Yuna</title>
+
     <link rel="stylesheet"
         href="{{ url_for('static', filename='/css/index.css') }}">
     <link rel="stylesheet"
@@ -16,136 +21,124 @@
     <link
         href="{{ url_for('static', filename='/fonts/kawai-font.otf') }}"
         rel="stylesheet">
+    <link href="{{ url_for('static', filename='manifest.json') }}"
+        rel="manifest">
     <script src="{{ url_for('static', filename='/js/index.js') }}"
-        defer>
-    </script>
-    <script src="{{ url_for('static', filename='/js/script.js') }}"
         defer></script>
     <script src="{{ url_for('static', filename='/js/kawai.js') }}"
         defer></script>
 </head>
 
 <body>
-
     <div class="sidebar-o" id="sidebar">
-        <div class="chat-header" style="background: none;">
-            <div class="spacer"></div>
-            <button onclick="dismiss()">
-                <img src="/img/Yuna.png" class="profile-picture">
-            </button>
-            <h1 class="chat-title">Yuna</h1>
-            <div class="spacer"></div>
+        <div class="coll-lo h-coll" style="background: none;">
+            <img src="/static/img/yuna.png" alt="Yuna" class="block-image">
+            <div class="block-text">Yuna</div>
         </div>
-        <div class="side-tab-block">
-            <div class="side-tab-block-e" onclick="OpenTab('1')">Chats</div>
-            <div class="side-tab-block-e" onclick="OpenTab('2')">Tools</div>
+
+        <div class="side-tab-block">x
+            <div class="side-tab-block-e" id="toggleButtonSide">Side</div>
+            <div class="side-tab-block-e" onclick="OpenTab('1')">Chat</div>
+            <div class="side-tab-block-e" onclick="OpenTab('2')">Call</div>
             <div class="side-tab-block-e" onclick="OpenTab('3')">Settings</div>
         </div>
     </div>
 
-    <div class="block-o uside" id="sidebar-o">
+    <div class="block-o center">
         <div class="tab-o tab-o-default" id="1">
-            <div class="chat">
-                <div class="chat-header">
-                    <button class="circle-button">
-                        <img src="/icons/tools.svg" class="icon">
-                    </button>
-                    <div class="spacer"></div>
-                    <button>
-                        <img src="/img/Yuna.png" class="profile-picture">
-                    </button>
-                    <h1 class="chat-title">Yuna</h1>
-                    <div class="spacer"></div>
-                    <button onclick="toggleButtons()" class="camera-button">
-                        <img src="/icons/phone.svg" class="icon">
-                    </button>
+
+            <div class="topbar-o">
+                <div class="block-button" id="toggleButtonSide" onclick="openSidebar();">Side</div>
+                <div class="top-tab-block">
+                    <div class="top-tab-block-e block-text lc">
+                        <img src="/static/img/yuna.png" alt="Yuna" class="block-image">
+                        <h1 class="la block-text">Yuna</h1>
+                    </div>
                 </div>
+                <div class="la block-text">Contact</div>
             </div>
 
-            <div class="coll-lo h-coll">
-                <div class="block-l el-2">
-                    <h1>Hello there!</h1>
-                    <h2>Thanks for using the Yuna AI model</h2>
-                    <h2>For more information, look for the official Mirai LabX documentation!</h2>
-                    <img src="/static/img/yuna.png" alt="">
-                </div>
-
+            <div class="coll-lo v-coll">
                 <div class="block-l el-8">
-                    <div class="messages-container block-l block-scroll">
-                        <h1>History</h1>
+                    <h1>Chat</h1>
+                    <div class="block-scroll" id="message-container">
+                        <!-- Messages will be displayed here -->
                     </div>
-
-                    <form class="form-container" onsubmit="handleSubmit(event)">
-                        <textarea id="input_text" placeholder="Enter your message"></textarea>
-                        <div class="button-container">
-                            <button type="submit" class="send-button">Send with History</button>
-                            <button type="button" class="send-simple-button"
-                                onclick="handleSimpleSubmit()">Send</button>
-                            <button type="button" class="clear-history-button" onclick="clearHistory()">Clear
-                                History</button>
-                            <button type="button" class="load-history-button" onclick="loadHistory()">Load
-                                History</button>
-                            <button type="button" class="download-history-button" onclick="downloadHistory()">Download
-                                History</button>
-                        </div>
-                    </form>
                 </div>
+
+                <form class="block-form el-8" onsubmit="handleSubmit(event)">
+                    <textarea id="input_text" placeholder="Enter your message"></textarea>
+                    <div>
+                        <button type="submit" class="block-button">Send</button>
+                        <button type="button" class="block-button" onclick="clearHistory()">Clear History</button>
+                        <button type="button" class="block-button" onclick="loadHistory()">Load History</button>
+                        <button type="button" class="block-button" onclick="downloadHistory()">Download History</button>
+                    </div>
+                </form>
             </div>
         </div>
 
         <div class="tab-o" id="2">
-            <div class="chat">
-                <div class="chat-header">
-                    <div class="spacer"></div>
-                    <button onclick="dismiss()">
-                        <img src="/img/Yuna.png" class="profile-picture">
-                    </button>
-                    <h1 class="chat-title">Yuna</h1>
-                    <div class="spacer"></div>
-                </div>
-
-                <div class="collector-lo">
-                    <div class="block-card">
-                        <div class="block-text la">Tools</div>
-                    </div>
-                    <div class="block-l el-7">
-                        <h1>Train AI Model</h1>
-                        <div class="train-options">
-                            <label for="num_epochs">Number of Epochs:</label>
-                            <input type="number" id="num_epochs" name="num_epochs" min="1" value="1">
-
-                            <label for="learning_rate">Learning Rate:</label>
-                            <input type="number" id="learning_rate" name="learning_rate" step="0.001" value="0.001">
-
-                            <!-- Add more training options here based on your tokenizer.json file -->
-
-                            <button type="button" class="train-button" onclick="startTraining()">Start Training</button>
-                            <div id="training-status"></div>
-                        </div>
+            <div class="topbar-o">
+                <div class="block-button" id="toggleButtonSide" onclick="openSidebar();">Side</div>
+                <div class="top-tab-block">
+                    <div class="top-tab-block-e block-text lc">
+                        <img src="/static/img/yuna.png" alt="Yuna" class="block-image">
+                        <h1 class="la block-text">Yuna</h1>
                     </div>
                 </div>
+                <button class="block-button" id="startButton">Start Recognition</button>
+            </div>
+
+            <div class="coll-lo v-coll">
+                <div class="block-text la">Call</div>
+
+                    <div class="remote-participant block-l">
+                        <img src="/static/img/yuna-full.png" style="border-radius: 20px;" alt="Yuna Participant">
+                        <p>Yuna</p>
+                    </div>
+                    <div class="local-participant block-l">
+                        <video id="localVideo" style="border-radius: 20px;" playsinline autoplay muted></video>
+                        <p>You</p>
+                    </div>
             </div>
         </div>
 
         <div class="tab-o" id="3">
-            <div class="chat">
-                <div class="chat-header">
-                    <div class="spacer"></div>
-                    <button onclick="dismiss()">
-                        <img src="/img/Yuna.png" class="profile-picture">
-                    </button>
-                    <h1 class="chat-title">Yuna</h1>
-                    <div class="spacer"></div>
+            <div class="topbar-o">
+                <div class="block-button" id="toggleButtonSide" onclick="openSidebar();">Side</div>
+                <div class="top-tab-block">
+                    <div class="top-tab-block-e block-text lc">
+                        <img src="/static/img/yuna.png" alt="Yuna" class="block-image">
+                        <h1 class="la block-text">Yuna</h1>
+                    </div>
                 </div>
+                <div class="la block-text">Contact</div>
+            </div>
 
-                <div class="collector-lo">
-                    <div class="block-card">
-                        <div class="block-text la">Seetings</div>
+            <div class="coll-lo v-coll">
+                <div class="block-l el-8">
+                    <h1>Settings</h1>
+                    <div class="block-l">
+                        <div class="toggle-switch-block"></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Inside head tag -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/static/js/sw.js')
+                .then((registration) => {
+                    console.log('Service Worker registered with scope:', registration.scope);
+                })
+                .catch((error) => {
+                    console.error('Service Worker registration failed:', error);
+                });
+        }
+    </script>
 </body>
 
 </html>

@@ -1,258 +1,141 @@
-// Load history when page loads
-window.addEventListener('DOMContentLoaded', loadHistory);
-
 function handleSubmit(event) {
   event.preventDefault();
-  inputText = document.getElementById("input_text").value;
-  inputText = "<|user|>" + inputText + "<|bot|>"
+  const message = document.getElementById('input_text').value;
+  sendMessage(message);
+}
 
-  // Add the user's message block to the message history
-  addMessageBlock(inputText, "user");
+function sendMessage(message) {
+  setTimeout(loadHistory, 1000);
+  // Send a POST request to /send_message
+  fetch('/send_message', {
+      method: 'POST',
+      body: new URLSearchParams({
+        'message': message
+      }), // Send the message as form data
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    })
+    .then(response => response.json())
+    .then(data => {
+      // Display if ok
+      loadHistory();
+    })
+    .catch(error => {
+      console.error('Error sending message:', error);
+    });
+}
 
-  if (localStorage.getItem("history") == null) {
-    localStorage.setItem("history", "");
+// Other functions (clearHistory, loadHistory, downloadHistory) go here if needed.
+function formatMessage(messageData) {
+  // Create a div for the message
+  const messageDiv = document.createElement('div');
+
+  // Set the CSS class based on the name
+  if (messageData.name === 'Yuki') {
+    messageDiv.classList.add('message-right'); // Yuki's messages on the right
+  } else if (messageData.name === 'Yuna') {
+    messageDiv.classList.add('message-left'); // Yuna's messages on the left
   }
 
-  inputText = `${localStorage.getItem("history")}${inputText}`.replace("\r", "");
+  // Create a paragraph for the message text
+  const messageText = document.createElement('p');
+  messageText.textContent = `${messageData.name}: ${messageData.message}`;
 
-  const formData = new FormData();
-  formData.append("input_text", inputText);
-  fetch("/", {
-      method: "POST",
-      body: formData
+  // Append the message text to the message div
+  messageDiv.appendChild(messageText);
+
+  return messageDiv;
+}
+
+function displayMessages(messages) {
+  const messageContainer = document.getElementById('message-container');
+
+  // Clear the existing content of messageContainer
+  while (messageContainer.firstChild) {
+    messageContainer.removeChild(messageContainer.firstChild);
+  }
+
+  // Loop through the messages and format each one
+  messages.forEach(messageData => {
+    const formattedMessage = formatMessage(messageData);
+    messageContainer.appendChild(formattedMessage);
+  });
+}
+
+
+// Function to fetch and display chat history
+function loadHistory() {
+  fetch('/history', {
+      method: 'GET',
     })
-    .then(response => response.text())
+    .then(response => response.json())
     .then(data => {
-      // Add the server's response block to the message history
-      addMessageBlock(data, "server");
-      localStorage.setItem("history", `${localStorage.getItem("history")}\n${document.getElementById("input_text").value}${data}`.replace("\r", "").replace("<", ""));
+      displayMessages(data); // Display the chat history
     })
     .catch(error => {
-      console.error("Error:", error);
+      console.error('Error fetching history:', error);
     });
 }
 
-function handleSimpleSubmit2() {
-  let inputText = document.getElementById("input_text").value;
-  inputText = "<|user|>" + inputText + "<|bot|>"
+// Call loadHistory to initially load chat history
+loadHistory();
 
-  // Add the user's message block to the message history
-  addMessageBlock(inputText, "user");
+// Get access to the user's camera and display the video stream
+navigator.mediaDevices.getUserMedia({
+    video: true
+  })
+  .then(function (stream) {
+    const localVideo = document.getElementById('localVideo');
+    localVideo.srcObject = stream;
+  })
+  .catch(function (error) {
+    console.error('Error accessing the camera:', error);
+  });
 
-  const formData = new FormData();
-  formData.append("input_text", inputText);
-  fetch("/", {
-      method: "POST",
-      body: formData
-    })
-    .then(response => response.text())
-    .then(data => {
-      // Add the server's response block to the message history
-      addMessageBlock(data, "server");
-    })
-    .catch(error => {
-      console.error("Error:", error);
-    });
-}
+window.onload = function () {
+  // Check if SpeechRecognition is supported by the browser
+  if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+    // Create a new SpeechRecognition object
+    const recognition = new(window.SpeechRecognition || window.webkitSpeechRecognition)();
 
-const handleSimpleSubmit = async () => {
-  // Get the user's input text from the input field
-  let inputText = document.getElementById("input_text").value;
+    // Configure recognition settings
+    recognition.lang = 'en-US'; // Set the language for recognition
+    recognition.interimResults = true; // Enable interim results
+    recognition.continuous = true; // Enable continuous recognition
 
-  // Add the user's message block to the message history
-  addMessageBlock(inputText, "user");
+    // Variables to track previous recognized text
+    let previousText = '';
 
-  // Get the container for displaying messages
-  let messagesContainer = document.querySelector(".messages-container");
+    // Event listener for results
+    recognition.onresult = function (event) {
+      const result = event.results[event.resultIndex];
+      const recognizedText = result[0].transcript;
 
-  // Create a new message block element
-  let messageBlock = document.createElement("div");
-  messageBlock.classList.add("message-block");
-
-  // Create a new message div element inside the message block
-  let messageDiv = document.createElement("div");
-  messageDiv.classList.add("message");
-  messageBlock.appendChild(messageDiv);
-
-  // Mark the message block as a server message
-  messageBlock.classList.add("server-message");
-
-  // Append the new message block to the messages container
-  messagesContainer.appendChild(messageBlock);
-
-  // Create a FormData object and append the input_text to it
-  const formData = new FormData();
-  formData.append("input_text", inputText);
-
-  try {
-    // Make a POST request to the server
-    const response = await fetch('http://localhost:4848/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: `input_text=${encodeURIComponent("" + inputText + "")}`
-    });
-
-    if (!response.ok) {
-      throw new Error('Request failed.');
-    }
-
-    // Start receiving the streamed data
-    const reader = response.body.getReader();
-
-    const processStream = async () => {
-      // Continuously read data from the stream
-      while (true) {
-        const { done, value } = await reader.read();
-
-        if (done) {
-          break;
-        }
-
-        // Decode the streamed data
-        const streamText = new TextDecoder().decode(value);
-
-        // Update the message block's content in real-time
-        messageDiv.innerHTML += streamText;
+      if (recognizedText === previousText) {
+        console.log('Recognized Text:', recognizedText);
+        sendMessage(recognizedText)
       }
+
+      previousText = recognizedText;
     };
 
-    processStream();
-  } catch (error) {
-    console.error(error);
+    // Event listener for errors
+    recognition.onerror = function (event) {
+      console.error('Speech recognition error:', event.error);
+    };
+
+    // Event listener for end of speech
+    recognition.onend = function () {
+      console.log('Speech recognition ended.');
+    };
+
+    // Start recognition
+    document.getElementById('startButton').onclick = function () {
+      recognition.start();
+      console.log('Recognition started.');
+    };
+  } else {
+    console.error('SpeechRecognition not supported by the browser.');
   }
 };
-
-function addMessageBlock(message, sender) {
-  // Function to add a new message block to the messages container
-  const messagesContainer = document.querySelector(".messages-container");
-
-  // Create a new message block element
-  const messageBlock = document.createElement("div");
-  messageBlock.classList.add("message-block");
-
-  // Create a new message div element inside the message block
-  const messageDiv = document.createElement("div");
-  messageDiv.classList.add("message");
-  messageDiv.textContent = message.replace("<", "");
-  messageBlock.appendChild(messageDiv);
-
-  // Set the sender class based on the input "sender" argument
-  if (sender === "user") {
-    messageBlock.classList.add("user-message");
-  } else if (sender === "server") {
-    messageBlock.classList.add("server-message");
-  }
-
-  // Append the new message block to the messages container
-  messagesContainer.appendChild(messageBlock);
-}
-
-function clearHistory() {
-  // Function to clear the message history and remove it from localStorage
-  const messagesContainer = document.querySelector(".messages-container");
-  messagesContainer.innerHTML = "";
-  localStorage.removeItem("history");
-}
-
-function loadHistory() {
-  // Function to load the message history from localStorage and display it
-  const history = localStorage.getItem("history");
-  if (history) {
-    const messagesContainer = document.querySelector(".messages-container");
-    messagesContainer.innerHTML = "";
-    const messages = history.split("\n");
-    messages.forEach(message => {
-      const sender = message.startsWith("Yuki:") ? "user" : "server";
-      const text = message.replace("Yuki:", "").trim();
-      if (text !== "") {
-        addMessageBlock(text, sender);
-      }
-    });
-  }
-}
-
-function downloadHistory() {
-  // Function to download the message history as a text file
-  const history = localStorage.getItem("history");
-  if (history) {
-    const blob = new Blob([history], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "chat_history.txt";
-    a.click();
-  }
-}
-
-// Add this global variable to keep track of the training status
-let trainingStatus = document.getElementById("training-status");
-
-// Function to handle the "Start Training" button click
-async function startTraining() {
-  // Get the training options from the user input
-  const num_epochs = document.getElementById("num_epochs").value;
-  const learning_rate = document.getElementById("learning_rate").value;
-
-  // Create a FormData object and append the training options to it
-  const formData = new FormData();
-  formData.append("num_epochs", num_epochs);
-  formData.append("learning_rate", learning_rate);
-
-  // Clear the training status and disable the "Start Training" button
-  trainingStatus.innerHTML = "";
-  document.getElementById("num_epochs").disabled = true;
-  document.getElementById("learning_rate").disabled = true;
-  document.querySelector(".train-button").disabled = true;
-
-  try {
-    // Make a POST request to start the training process
-    const response = await fetch('/train', {
-      method: 'POST',
-      body: formData
-    });
-
-    if (!response.ok) {
-      throw new Error('Request failed.');
-    }
-
-    // Start receiving the streamed data
-    const reader = response.body.getReader();
-    let receivedData = "";
-
-    const processStream = async () => {
-      // Continuously read data from the stream
-      while (true) {
-        const { done, value } = await reader.read();
-
-        if (done) {
-          break;
-        }
-
-        // Decode the streamed data
-        const streamText = new TextDecoder().decode(value);
-
-        // Append the streamed data to the receivedData variable
-        receivedData += streamText;
-
-        // Check if a complete update has been received
-        if (receivedData.includes('\n')) {
-          const updates = receivedData.split('\n');
-          updates.forEach(update => {
-            if (update !== "") {
-              // Display the training update on the web page
-              trainingStatus.innerHTML += update + "<br>";
-            }
-          });
-          // Clear the receivedData variable after processing updates
-          receivedData = "";
-        }
-      }
-    };
-
-    processStream();
-  } catch (error) {
-    console.error(error);
-  }
-}

@@ -586,7 +586,6 @@
     }
 
     .top-tab-block {
-        display: none;
         width: 100%;
         flex-direction: column;
         align-items: center;
@@ -631,7 +630,7 @@ body {
 /*  FONT IMPORT  */
 @font-face {
     font-family: "kawai-font";
-    src: url("/static/kawai/kawai-font.woff") format("truetype");
+    src: url("/static/fonts/kawai-font.woff") format("truetype");
     font-style: normal;
     font-weight: normal;
 }

@@ -1,51 +1,76 @@
-import torch
-from tokenizer import load_tokenizer_file, tokenize_text, detokenize_text
-import os
+import requests
+import speech_recognition as sr
+from os import system
 import json
-import sys
 
-# Get the absolute path to the directory where the script is located
-script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
+history_file = "static/db/history.json"
+r = sr.Recognizer()
 
-with open(os.path.join(script_dir, "config.json"), 'r') as f:
-    config = json.load(f)
+def listen():
+    while True:
+        with sr.Microphone() as source:
+            print('Say something:')
+            audio = r.listen(source)
 
-model_base_dir = config["model_base_dir"]
-tokenizer_dir = config["tokenizer_dir"]
-os.environ["PYTORCH_MPS_HIGH_WATERMARK_RATIO"] = "0.0"
+        try:
+            text = r.recognize_google(audio)
+            if text:
+                print(f'You said: {text}')
+                generate(text, speech=True)  # Send detected speech to generation function
+                break  # Exit the loop if speech is successfully recognized
+        except sr.UnknownValueError:
+            print('Sorry, I couldn\'t understand what you said. Please try again.')
+        except sr.RequestError as e:
+            print(f'Sorry, an error occurred: {e}. Please try again.')
 
-tokenizer = load_tokenizer_file(os.path.join(script_dir, tokenizer_dir))
-device = torch.device("cpu")
+    return "done"
 
-def generate(user_input, model):
-    input_tokens = tokenize_text(os.path.join(script_dir, tokenizer_dir), f"<|user|>{user_input}<|bot|>")
-    input_tensor = torch.tensor(input_tokens, dtype=torch.long).unsqueeze(0).to(device)
+def generate(text, speech=False):
+    # Read the existing history from the file
+    with open(history_file, 'r') as file:
+        data = json.load(file)
+        history = ''
+        for item in data:
+            name = item.get('name', '')
+            message = item.get('message', '')
+            if name and message:
+                history += f'{name}: {message}\n'
 
-    response = ""
-    history = ""
+    # Append the new message to the history
+    new_history = f"{history}Yuki: {text}\nYuna:"
+    print(new_history)
 
-    with torch.no_grad():
-        print("Yuna: ", end="", flush=True)
-        while True:
-            # Generate one token at a time
-            generated_tokens = model.generate(input_tensor, max_new_tokens=1)
+    # Define the URL
+    url = 'http://localhost:5001/api/v1/generate'
 
-            # Convert generated token back to text
-            generated_text = detokenize_text(os.path.join(script_dir, tokenizer_dir), generated_tokens.squeeze().tolist())
+    # Define the request payload
+    payload = {
+        "n": 1,
+        "max_context_length": 1024,
+        "max_length": 64,
+        "rep_pen": 1.1,
+        "temperature": 0.6,
+        "top_p": 1,
+        "top_k": 0,
+        "top_a": 0,
+        "typical": 1,
+        "tfs": 1,
+        "rep_pen_range": 320,
+        "rep_pen_slope": 0.7,
+        "sampler_order": [6, 0, 1, 3, 4, 2, 5],
+        "prompt": new_history,  # Use the updated history here
+        "quiet": True,
+        "stop_sequence": ["Yuki:",  "\nYuki: ", "\nYou:", "\nYou: ", "\nYuna: ", "\nYuna:", "Yuuki: ", "\n"],
+        "use_default_badwordsids": True
+    }
 
-            token = generated_text[-1]
-            print(token, end="", flush=True)
-            yield token
-            
-            # Append the generated token to the response
-            response += token
+    # Send a POST request to the endpoint
+    response = requests.post(url, json=payload)
+    responsesay = response.json()['results'][0]['text']
 
-            # Break the loop if "<end>" is in the history
-            if "<" in response:
-                break
+    print('response = ', responsesay)
 
-            # Update the input tensor with the generated token
-            input_tensor = torch.cat([input_tensor, generated_tokens[:, -1:]], dim=1)
+    if speech == True:
+        system(f'say "{responsesay}"')
 
-            if "<" in response:
-                break
+    return responsesay

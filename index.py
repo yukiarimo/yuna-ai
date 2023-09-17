@@ -1,62 +1,73 @@
-import torch
-from flask import Flask, request, render_template, Response
-from flask_cors import CORS
-from tokenizer import load_tokenizer_file
-from generate import generate
-from model import GPTLanguageModel
-from train import train
+from flask import Flask, request, render_template, jsonify
+from flask_csp import csp
+from generate import generate  # Import the generate function from generate.py
 import os
 import json
-import sys
 
 app = Flask(__name__)
-CORS(app)
-app.config['SECRET_KEY'] = 'secret_key'
+app.config['CSP_DEFAULT_SRC'] = "'self'"
 
-# Get the absolute path to the directory where the script is located
-script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
+# Define your CSP policy
+csp.policy = ({
+    'default-src': "'self'",
+    'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'static/'],
+    'style-src': "'self'",
+    'img-src': "'self'",
+    'font-src': "'self'",
+    'connect-src': "'self'",
+})
 
-with open(os.path.join(script_dir, "config.json"), 'r') as f:
-    config = json.load(f)
+# Define the path to the chat history JSON file
+history_file = 'static/db/history.json'
 
-model_base_dir = config["model_base_dir"]
-tokenizer_dir = config["tokenizer_dir"]
+# Function to load chat history from the JSON file
+def load_chat_history():
+    if os.path.exists(history_file):
+        with open(history_file, 'r') as file:
+            return json.load(file)
+    else:
+        return []
 
-os.environ["PYTORCH_MPS_HIGH_WATERMARK_RATIO"] = "0.0"
-tokenizer = load_tokenizer_file(os.path.join(script_dir, tokenizer_dir))
+# Function to save chat history to the JSON file
+def save_chat_history(chat_history):
+    with open(history_file, 'w') as file:
+        json.dump(chat_history, file)
 
-device = torch.device("cpu")
-model = GPTLanguageModel()
-model.to(device)
-#model.load_state_dict(torch.load(os.path.join(script_dir, model_base_dir), map_location=device))
-model.eval()
-
+# Your existing route for rendering the HTML page
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    if request.method == 'POST':
-        print()
-        user_input = request.form['input_text'].replace("\r", "")
-        print("Yuki: " + request.form['input_text'])
+    return render_template('index.html')
 
-        generate(user_input, model)
-                
-        return Response(generate(user_input, model), mimetype='text/event-stream')
-    else:
-        return render_template('index.html')
-    
-@app.route('/train', methods=['GET', 'POST'])
-def training():
-    if request.method == 'POST':
+# New route for sending and receiving messages
+@app.route('/send_message', methods=['POST'])
+def send_message():
+    # Load chat history from the JSON file when the server starts
+    chat_history = load_chat_history()
+    message = request.form.get('message')  # Get the message from the request
 
-        training_options = request.form
-        num_epochs = int(training_options.get("num_epochs", 1))
-        learning_rate = float(training_options.get("learning_rate", 0.001))
+    # Append the message to the chat history
+    chat_history.append({"name": "Yuki", "message": message})
 
-        train()
+    # Save the updated chat history to the JSON file
+    save_chat_history(chat_history)
 
-        return Response(train(), mimetype='text/event-stream')
-    else:
-        return render_template('index.html')
+    # Call the generate function to get a response
+    response = generate(message)
+
+    # Append the message to the chat history
+    chat_history.append({"name": "Yuna", "message": response})
+
+    # Save the updated chat history to the JSON file
+    save_chat_history(chat_history)
+
+    return jsonify({'response': response})
+
+# New route for fetching chat history
+@app.route('/history', methods=['GET'])
+def get_history():
+    # Load chat history from the JSON file when the server starts
+    chat_history = load_chat_history()
+    return jsonify(chat_history)
 
 if __name__ == '__main__':
     app.run(port=4848)

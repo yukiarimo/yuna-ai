@@ -5,19 +5,6 @@
     KAWAI FRAMEWORK
 */
 
-var cssId = 'myCss';  // you could encode the css path itself to generate id..
-if (!document.getElementById(cssId))
-{
-    var head  = document.getElementsByTagName('head')[0];
-    var link  = document.createElement('link');
-    link.id   = cssId;
-    link.rel  = 'stylesheet';
-    link.type = 'text/css';
-    link.href = 'assets/css/kawai.css';
-    link.media = 'all';
-    head.appendChild(link);
-}
-
 // Variables and sub-processes
 let getsideid = 'sidebar'
 let checkSide = localStorage.getItem('side');
@@ -32,29 +19,27 @@ if (checkMode == '1') {
     DarkEnabler();
 }
 
-// Functions
-function SideBarSwitch() {
-    if (checkSide == 0) {
-        SideDisabler('sidebar');
-        document.location.reload(true);
+// DOM elements
+const sidebar = document.getElementById('sidebar');
+const toggleButtonSide = document.getElementById('toggleButtonSide');
+
+// Event listener for the toggle button
+toggleButtonSide.addEventListener('click', () => {
+    if (sidebar.classList.contains('showside')) {
+        closeSidebar();
     } else {
-        localStorage.setItem('side', '0');
-        document.location.reload(true);
+        openSidebar();
     }
+});
+
+// Function to open the sidebar
+function openSidebar() {
+    sidebar.classList.add('showside');
 }
 
-function SideDisabler() {
-    localStorage.setItem('sideid', 'sidebar');
-    document.getElementById(localStorage.getItem('sideid')).style = "display: none";
-    document.getElementsByClassName('block-o')[0].classList.remove('uside')
-    /*const howmanytabs = document.querySelectorAll('.tab-o');
-    if (howmanytabs.length) {
-        for (let step = 0; step < howmanytabs.length; step++) {
-            const element = howmanytabs[step];
-            element.style.display = 'block'
-        }
-    }*/
-    localStorage.setItem('side', '1');
+// Function to close the sidebar
+function closeSidebar() {
+    sidebar.classList.remove('showside');
 }
 
 function PopupClose() {
@@ -171,49 +156,7 @@ document.getElementsByClassName('toggle-switch-block')[0].innerHTML = `
   <span class="slider round"></span>
 </label>`;
 
-document.getElementsByClassName('toggle-menu-block')[0].innerHTML = `
-<span class="bar"></span>
-<span class="bar"></span>
-<span class="bar"></span>`;
-
 toggleButton.addEventListener('click', () => {
     navbarLinks.classList.toggle('active')
 })
 
-document.getElementsByClassName("block-button-close-e").onclick = function (e) {
-    location.reload(true);
-}
-
-if (addclosers.length) {
-    for (let step = 0; step < addclosers.length; step++) {
-        const element = addclosers[step];
-        let test = document.createElement("div")
-        test.setAttribute('class', 'block-button-close')
-        test.setAttribute('onclick', 'PopupClose()')
-        test.textContent = 'X'
-        element.appendChild(test);
-    }
-}
-
-let sideBar = document.getElementsByClassName('sidebar-o')[0]
-
-sideBar.style.display = "flex";
-sideBar.classList.add('side-on');
-
-var SideSwitcher = document.createElement('div');
-SideSwitcher.classList.add('side-switch');
-SideSwitcher.nodeValue = '='
-SideSwitcher.appendChild(sideBar);
-
-sideBar.addEventListener('click', () => {
-    if (sideBar.classList.contains('side-on')) {
-        sideBar.style.display = "none";
-    } else {
-        sideBar.style.display = "flex";
-    }
-})
-
-/*
-    COPYRIGHT BY YUKI ARIMO
-    KAWAI FRAMEWORK
-*/

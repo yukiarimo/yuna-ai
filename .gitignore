@@ -1,7 +1,8 @@
 node_modules
-yuna-core/models/
+__pycache__/
+static/db/history.json
+static/audio/output.aiff
 lib/datasets/
 lib/models/
-lib/yunacpp/yuna.bin
+lib/yunacpp/models/
 lib/yunacpp/yuna.so
-__pycache__/

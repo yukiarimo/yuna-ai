@@ -1,1 +1,1 @@
-python3 yuna.py yuna.bin
+python3 yuna.py models/yuna6.bin

@@ -1,3 +1,6 @@
+const backgroundMusic = document.getElementById('backgroundMusic');
+var isTTS = ''
+
 function handleSubmit(event) {
   event.preventDefault();
   const message = document.getElementById('input_text').value;
@@ -5,7 +8,12 @@ function handleSubmit(event) {
 }
 
 function sendMessage(message) {
-  setTimeout(loadHistory, 1000);
+  setTimeout(loadHistory, 300);
+
+  if (isTTS.toString() == 'true') {
+    message = message + '<tts>';
+  }
+
   // Send a POST request to /send_message
   fetch('/send_message', {
       method: 'POST',
@@ -23,7 +31,32 @@ function sendMessage(message) {
     })
     .catch(error => {
       console.error('Error sending message:', error);
+    })
+    .finally(() => {
+      // This code will be executed regardless of success or error
+      if (isTTS.toString() == 'true') {
+        playAudio()
+      }
+      console.log('done');
     });
+}
+
+function playAudio() {
+  stopSpeechRecognition()
+  // Generate a random query parameter value
+  const randomValue = Math.random();
+
+  // Get the audio source element
+  const audioSource = document.getElementById("backgroundMusic");
+
+  // Set the src attribute with the random query parameter
+  audioSource.src = `/static/audio/output.aiff?v=${randomValue}`;
+
+  // Get the audio element and play it
+  audio = document.getElementById("backgroundMusic");
+  audio.load(); // Reload the audio element to apply the new source
+  audio.play();
+  startSpeechRecognition()
 }
 
 // Other functions (clearHistory, loadHistory, downloadHistory) go here if needed.
@@ -72,6 +105,7 @@ function loadHistory() {
     .then(response => response.json())
     .then(data => {
       displayMessages(data); // Display the chat history
+      scrollMsg()
     })
     .catch(error => {
       console.error('Error fetching history:', error);
@@ -93,11 +127,13 @@ navigator.mediaDevices.getUserMedia({
     console.error('Error accessing the camera:', error);
   });
 
+let recognition; // Define the recognition object at a higher scope
+
 window.onload = function () {
   // Check if SpeechRecognition is supported by the browser
   if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
     // Create a new SpeechRecognition object
-    const recognition = new(window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition = new(window.SpeechRecognition || window.webkitSpeechRecognition)();
 
     // Configure recognition settings
     recognition.lang = 'en-US'; // Set the language for recognition
@@ -132,10 +168,35 @@ window.onload = function () {
 
     // Start recognition
     document.getElementById('startButton').onclick = function () {
-      recognition.start();
+      startSpeechRecognition();
+      isTTS = true;
       console.log('Recognition started.');
     };
   } else {
     console.error('SpeechRecognition not supported by the browser.');
   }
 };
+
+// Function to stop speech recognition
+function stopSpeechRecognition() {
+  if (recognition) {
+    recognition.stop();
+    isTTS = false; // Set isTTS to false when stopping recognition
+    console.log('Speech recognition stopped.');
+  }
+}
+
+// Function to start speech recognition
+function startSpeechRecognition() {
+  if (recognition) {
+    // Start speech recognition
+    recognition.start();
+    isTTS = true;
+    console.log('Speech recognition started.');
+  }
+}
+
+function scrollMsg() {
+  objDiv = document.getElementById("message-container");
+  objDiv.scrollTop = objDiv.scrollHeight;
+}

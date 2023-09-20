@@ -1,24 +1,35 @@
-from flask import Flask, request, render_template, jsonify
-from flask_csp import csp
+from flask import Flask, request, render_template, jsonify, send_from_directory
+import shutil
+import subprocess
 from generate import generate  # Import the generate function from generate.py
 import os
 import json
+import re
 
 app = Flask(__name__)
-app.config['CSP_DEFAULT_SRC'] = "'self'"
-
-# Define your CSP policy
-csp.policy = ({
-    'default-src': "'self'",
-    'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'static/'],
-    'style-src': "'self'",
-    'img-src': "'self'",
-    'font-src': "'self'",
-    'connect-src': "'self'",
-})
 
 # Define the path to the chat history JSON file
 history_file = 'static/db/history.json'
+
+def remove_emojis(input_string):
+    # Define a regular expression pattern to match emojis
+    emoji_pattern = re.compile("["
+                               u"\U0001F600-\U0001F64F"  # Emojis in the emoticons block
+                               u"\U0001F300-\U0001F5FF"  # Other symbols and pictographs
+                               u"\U0001F700-\U0001F77F"  # Alphabetic presentation forms
+                               u"\U0001F780-\U0001F7FF"  # Geometric shapes
+                               u"\U0001F800-\U0001F8FF"  # Supplemental arrows
+                               u"\U0001F900-\U0001F9FF"  # Supplemental symbols and pictographs
+                               u"\U0001FA00-\U0001FA6F"  # Chess symbols
+                               u"\U0001FA70-\U0001FAFF"  # Symbols and pictographs
+                               u"\U0001F004-\U0001F0CF"  # Miscellaneous symbols and pictographs
+                               u"\U0001F170-\U0001F251"  # Enclosed alphanumeric supplement
+                               "]+", flags=re.UNICODE)
+
+    # Use the sub() method to remove emojis
+    cleaned_string = emoji_pattern.sub(r'', input_string)
+
+    return cleaned_string
 
 # Function to load chat history from the JSON file
 def load_chat_history():
@@ -45,20 +56,34 @@ def send_message():
     chat_history = load_chat_history()
     message = request.form.get('message')  # Get the message from the request
 
-    # Append the message to the chat history
-    chat_history.append({"name": "Yuki", "message": message})
+    if "<tts>" in message:
+        message = message.replace("<tts>", "")
+        # Append the message to the chat history
+        chat_history.append({"name": "Yuki", "message": message})
+        # Save the updated chat history to the JSON file
+        save_chat_history(chat_history)
+        # Call the generate function to get a response
+        response = generate(message)
+        response = remove_emojis(response)
+        # Append the message to the chat history
+        chat_history.append({"name": "Yuna", "message": response})
+        # Save the updated chat history to the JSON file
+        save_chat_history(chat_history)
 
-    # Save the updated chat history to the JSON file
-    save_chat_history(chat_history)
-
-    # Call the generate function to get a response
-    response = generate(message)
-
-    # Append the message to the chat history
-    chat_history.append({"name": "Yuna", "message": response})
-
-    # Save the updated chat history to the JSON file
-    save_chat_history(chat_history)
+        subprocess.run(f'say "{response}" -o output', shell=True)
+        shutil.move("output.aiff", "static/audio/output.aiff")
+    else:
+        # Append the message to the chat history
+        chat_history.append({"name": "Yuki", "message": message})
+        # Save the updated chat history to the JSON file
+        save_chat_history(chat_history)
+        # Call the generate function to get a response
+        response = generate(message)
+        response = remove_emojis(response)
+        # Append the message to the chat history
+        chat_history.append({"name": "Yuna", "message": response})
+        # Save the updated chat history to the JSON file
+        save_chat_history(chat_history)
 
     return jsonify({'response': response})
 
@@ -70,4 +95,4 @@ def get_history():
     return jsonify(chat_history)
 
 if __name__ == '__main__':
-    app.run(port=4848)
+    app.run(host='0.0.0.0', port=4848)

@@ -14,19 +14,13 @@
 
     <title>Yuna</title>
 
-    <link rel="stylesheet"
-        href="{{ url_for('static', filename='/css/index.css') }}">
-    <link rel="stylesheet"
-        href="{{ url_for('static', filename='/css/kawai.css') }}">
-    <link
-        href="{{ url_for('static', filename='/fonts/kawai-font.otf') }}"
-        rel="stylesheet">
-    <link href="{{ url_for('static', filename='manifest.json') }}"
-        rel="manifest">
-    <script src="{{ url_for('static', filename='/js/index.js') }}"
-        defer></script>
-    <script src="{{ url_for('static', filename='/js/kawai.js') }}"
-        defer></script>
+    <link rel="stylesheet" href="/static/css/index.css">
+    <link rel="stylesheet" href="/static/css/kawai.css">
+    <link href="/static/fonts/kawai-font.otf" rel="stylesheet">
+    <link href="/static/manifest.json" rel="manifest">
+    <script src="/static/js/index.js" defer></script>
+    <script src="/static/js/kawai.js" defer></script>
+
 </head>
 
 <body>
@@ -70,9 +64,11 @@
                     <textarea id="input_text" placeholder="Enter your message"></textarea>
                     <div>
                         <button type="submit" class="block-button">Send</button>
-                        <button type="button" class="block-button" onclick="clearHistory()">Clear History</button>
-                        <button type="button" class="block-button" onclick="loadHistory()">Load History</button>
-                        <button type="button" class="block-button" onclick="downloadHistory()">Download History</button>
+                        <button type="button" class="block-button" onclick="clearHistory()">Clear 📖</button>
+                        <button type="button" class="block-button" onclick="loadHistory()">Load 📖</button>
+                        <button type="button" class="block-button" onclick="downloadHistory()">Download 📖</button>
+                        <button type="button" class="block-button" onclick="location.reload();">Reload</button>
+                        <button type="button" class="block-button" onclick="scrollMsg();">Scroll</button>
                     </div>
                 </form>
             </div>
@@ -93,14 +89,18 @@
             <div class="coll-lo v-coll">
                 <div class="block-text la">Call</div>
 
-                    <div class="remote-participant block-l">
-                        <img src="/static/img/yuna-full.png" style="border-radius: 20px;" alt="Yuna Participant">
-                        <p>Yuna</p>
-                    </div>
-                    <div class="local-participant block-l">
-                        <video id="localVideo" style="border-radius: 20px;" playsinline autoplay muted></video>
-                        <p>You</p>
-                    </div>
+                <audio id="backgroundMusic">
+                    <source src="/static/audio/output.aiff" type="audio/aiff">
+                </audio>
+
+                <div class="remote-participant block-l">
+                    <img src="/static/img/yuna-full.png" style="border-radius: 20px;" alt="Yuna Participant">
+                    <p>Yuna</p>
+                </div>
+                <div class="local-participant block-l">
+                    <video id="localVideo" style="border-radius: 20px;" playsinline autoplay muted></video>
+                    <p>You</p>
+                </div>
             </div>
         </div>
 

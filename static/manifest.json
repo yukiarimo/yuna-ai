@@ -1,7 +1,7 @@
 {
     "name": "Yuna",
     "short_name": "Yuna",
-    "description": "Yuna AI - a virtual girlfriend",
+    "description": "Yuna AI - your personal AI girlfriend",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#99c189",
@@ -18,5 +18,4 @@
             "type": "image/png"
         }
     ]
-
 }

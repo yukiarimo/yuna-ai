@@ -47,9 +47,9 @@ def generate(text, speech=False):
     payload = {
         "n": 1,
         "max_context_length": 1024,
-        "max_length": 64,
+        "max_length": 128,
         "rep_pen": 1.1,
-        "temperature": 0.6,
+        "temperature": 0.5,
         "top_p": 1,
         "top_k": 0,
         "top_a": 0,
@@ -67,10 +67,6 @@ def generate(text, speech=False):
     # Send a POST request to the endpoint
     response = requests.post(url, json=payload)
     responsesay = response.json()['results'][0]['text']
-
     print('response = ', responsesay)
-
-    if speech == True:
-        system(f'say "{responsesay}"')
 
     return responsesay

@@ -30,20 +30,19 @@ This repository contains the code for a Yuna AI, which was trained on a massive 
 1. Clone the Yuna-AI repository to your local machine using `git clone https://github.com/yukiarimo/yuna-ai.git`.
 2. Make sure you have Python 3.10 or later installed.
 3. Install the required dependencies by running `pip install -r requirements.txt`.
-4. Configure the project settings in the `config.json` file to suit your preferences.
-5. Run the `config.py` file to build external dependencies for Yuna in the `lib/yunacpp/` directory.
-6. Put your AI model like `ggml_model.bin` into the `lib/yunacpp/models/` directory.
-7. Run two files, `lib/yunacpp/start.sh` to start Yuna and `index.py` to start the WebUI.
-8. Open your browser and go to the `http://127.0.0.1:4848` 
-9. Done!
-10. In the project's configuration files, you can fine-tune various aspects of Yuna AI, including her behavior, appearance, and emotional responses. Detailed documentation on configuration options can be found in the project's documentation.
+4. Run the `config.py` file to build external dependencies for Yuna in the `lib/yunacpp/` directory.
+5. Put your AI model like `ggml_model.bin` into the `lib/yunacpp/models/` directory.
+6. Run two files, `lib/yunacpp/start.sh` to start Yuna and `index.py` to start the WebUI.
+7. Open your browser and go to the `http://127.0.0.1:4848` 
+8. Done!
+9. In the project's configuration files, you can fine-tune various aspects of Yuna AI, including her behavior, appearance, and emotional responses. Detailed documentation on configuration options can be found in the project's documentation.
 
 ### Requirements
 The following requirements need to be installed to run the code:
 
-Python 3.10+
-Flask 2.3+
-CLang
+- Python 3.10+
+- Flask 2.3+
+- CLang
 
 ## Project Overview
 This project aims to create a Yuna AI, the best AGI in the world. The key components of Yuna:

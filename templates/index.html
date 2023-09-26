@@ -24,14 +24,14 @@
 </head>
 
 <body>
-    <div class="sidebar-o" id="sidebar">
+    <div class="sidebar-o desktop-only" id="sidebar">
         <div class="coll-lo h-coll" style="background: none;">
             <img src="/static/img/yuna.png" alt="Yuna" class="block-image">
             <div class="block-text">Yuna</div>
         </div>
 
         <div class="side-tab-block">x
-            <div class="side-tab-block-e" id="toggleButtonSide">Side</div>
+            <div class="side-tab-block-e" onclick="SideSwitch();">Side</div>
             <div class="side-tab-block-e" onclick="OpenTab('1')">Chat</div>
             <div class="side-tab-block-e" onclick="OpenTab('2')">Call</div>
             <div class="side-tab-block-e" onclick="OpenTab('3')">Settings</div>
@@ -42,7 +42,7 @@
         <div class="tab-o tab-o-default" id="1">
 
             <div class="topbar-o">
-                <div class="block-button" id="toggleButtonSide" onclick="openSidebar();">Side</div>
+                <div class="block-button" id="toggleButtonSide" onclick="SideSwitch();">Side</div>
                 <div class="top-tab-block">
                     <div class="top-tab-block-e block-text lc">
                         <img src="/static/img/yuna.png" alt="Yuna" class="block-image">
@@ -53,7 +53,7 @@
             </div>
 
             <div class="coll-lo v-coll">
-                <div class="block-l el-8">
+                <div class="block-card el-8">
                     <h1>Chat</h1>
                     <div class="block-scroll" id="message-container">
                         <!-- Messages will be displayed here -->
@@ -93,11 +93,11 @@
                     <source src="/static/audio/output.aiff" type="audio/aiff">
                 </audio>
 
-                <div class="remote-participant block-l">
+                <div class="remote-participant card">
                     <img src="/static/img/yuna-full.png" style="border-radius: 20px;" alt="Yuna Participant">
                     <p>Yuna</p>
                 </div>
-                <div class="local-participant block-l">
+                <div class="local-participant block-card">
                     <video id="localVideo" style="border-radius: 20px;" playsinline autoplay muted></video>
                     <p>You</p>
                 </div>
@@ -117,9 +117,9 @@
             </div>
 
             <div class="coll-lo v-coll">
-                <div class="block-l el-8">
+                <div class="block-card el-8">
                     <h1>Settings</h1>
-                    <div class="block-l">
+                    <div class="block-card">
                         <div class="toggle-switch-block"></div>
                     </div>
                 </div>

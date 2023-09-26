@@ -14,20 +14,8 @@ form>div {
     height: 600px !important;
 }
 
-.block-l {
-    height: auto !important;
-}
-
 .tab-o {
     width: 100%;
-}
-
-#sidebar {
-    display: none;
-}
-
-.showside {
-    display: flex !important;
 }
 
 img {
@@ -39,40 +27,45 @@ img {
 #message-container {
     display: flex;
     flex-direction: column;
+    gap: 10px; /* Add spacing between messages */
+    max-width: 80%; /* Limit message container width */
+    overflow: auto; /* Add scrolling for overflow */
+    padding: 10px;
+    background-color: #f0f0f0; /* Light background color */
+    border-radius: 12px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow for a modern look */
 }
 
 /* Individual chat message styles */
-.message-left {
-    background-color: #ffc0cb;
-    /* Pink background for Yuna's messages */
-    border-radius: 10px;
-    padding: 8px;
-    margin: 5px 0;
+.block-message-1,
+.block-message-2 {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 10px;
+    border-radius: 12px;
     max-width: 70%;
-    align-self: flex-start;
-    /* Align Yuna's messages to the left */
 }
 
-.message-right {
+.block-message-1 {
+    background-color: #ffc0cb;
+    /* Pink background for Yuna's messages */
+    align-self: flex-start;
+}
+
+.block-message-2 {
     background-color: #add8e6;
     /* Light blue background for Yuki's messages */
-    border-radius: 10px;
-    padding: 8px;
-    margin: 5px 0;
-    max-width: 70%;
     align-self: flex-end;
-    /* Align Yuki's messages to the right */
 }
 
 /* Text styles */
-.message-left p,
-.message-right p {
+.block-message-1-left p,
+.block-message-2 p {
     margin: 0;
     padding: 0;
     font-size: 16px;
-    color: #000;
-    /* Black text color */
-    font-family: 'Arial', sans-serif;
+    color: #333; /* Slightly darker text color for readability */
 }
 
 /* Style for the input area */

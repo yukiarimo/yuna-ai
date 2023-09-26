@@ -66,9 +66,9 @@ function formatMessage(messageData) {
 
   // Set the CSS class based on the name
   if (messageData.name === 'Yuki') {
-    messageDiv.classList.add('message-right'); // Yuki's messages on the right
+    messageDiv.classList.add('block-message-2'); // Yuki's messages on the right
   } else if (messageData.name === 'Yuna') {
-    messageDiv.classList.add('message-left'); // Yuna's messages on the left
+    messageDiv.classList.add('block-message-1'); // Yuna's messages on the left
   }
 
   // Create a paragraph for the message text
@@ -168,33 +168,14 @@ window.onload = function () {
 
     // Start recognition
     document.getElementById('startButton').onclick = function () {
-      startSpeechRecognition();
       isTTS = true;
+      recognition.start();
       console.log('Recognition started.');
     };
   } else {
     console.error('SpeechRecognition not supported by the browser.');
   }
 };
-
-// Function to stop speech recognition
-function stopSpeechRecognition() {
-  if (recognition) {
-    recognition.stop();
-    isTTS = false; // Set isTTS to false when stopping recognition
-    console.log('Speech recognition stopped.');
-  }
-}
-
-// Function to start speech recognition
-function startSpeechRecognition() {
-  if (recognition) {
-    // Start speech recognition
-    recognition.start();
-    isTTS = true;
-    console.log('Speech recognition started.');
-  }
-}
 
 function scrollMsg() {
   objDiv = document.getElementById("message-container");

@@ -1,1 +1,1 @@
-python3 yuna.py models/yuna6.bin
+python3 build-yuna/koboldcpp.py models/yuna7.bin

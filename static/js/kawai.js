@@ -1,11 +1,8 @@
-"use strict"
-
 /*
     COPYRIGHT BY YUKI ARIMO
     KAWAI FRAMEWORK
 */
 
-// Variables and sub-processes
 let getsideid = 'sidebar'
 let checkSide = localStorage.getItem('side');
 const toggleButton = document.getElementsByClassName('toggle-menu-block')[0]
@@ -19,27 +16,36 @@ if (checkMode == '1') {
     DarkEnabler();
 }
 
-// DOM elements
 const sidebar = document.getElementById('sidebar');
-const toggleButtonSide = document.getElementById('toggleButtonSide');
 
 // Event listener for the toggle button
-toggleButtonSide.addEventListener('click', () => {
+function SideSwitch() {
     if (sidebar.classList.contains('showside')) {
         closeSidebar();
     } else {
         openSidebar();
     }
-});
+};
 
 // Function to open the sidebar
 function openSidebar() {
+    if (sidebar.classList.contains('hideside')) {
+        sidebar.classList.remove('hideside');
+        sidebar.classList.add('showside');
+    } else {
+        sidebar.classList.add('showside');
+    }
     sidebar.classList.add('showside');
 }
 
 // Function to close the sidebar
 function closeSidebar() {
-    sidebar.classList.remove('showside');
+    if (sidebar.classList.contains('showside')) {
+        sidebar.classList.remove('showside');
+        sidebar.classList.add('hideside');
+    } else {
+        sidebar.classList.add('hideside');
+    }
 }
 
 function PopupClose() {
@@ -149,14 +155,7 @@ function ThemeSwitch() {
     }
 }
 
-// Document element optimizers
-document.getElementsByClassName('toggle-switch-block')[0].innerHTML = `
-<label class="switch" onclick="ThemeSwitch()">
-  <input type="checkbox">
-  <span class="slider round"></span>
-</label>`;
-
-toggleButton.addEventListener('click', () => {
-    navbarLinks.classList.toggle('active')
-})
-
+/*
+    COPYRIGHT BY YUKI ARIMO
+    KAWAI FRAMEWORK
+*/

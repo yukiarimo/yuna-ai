@@ -6,3 +6,4 @@ lib/datasets/
 lib/models/
 lib/yunacpp/models/
 lib/yunacpp/yuna.so
+lib/yunacpp/build-yuna/

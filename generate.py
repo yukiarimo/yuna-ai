@@ -46,8 +46,8 @@ def generate(text, speech=False):
     # Define the request payload
     payload = {
         "n": 1,
-        "max_context_length": 1024,
-        "max_length": 128,
+        "max_context_length": 128,
+        "max_length": 1024,
         "rep_pen": 1.1,
         "temperature": 0.5,
         "top_p": 1,

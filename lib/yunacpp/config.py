@@ -19,15 +19,8 @@ if not os.path.exists('yuna.so'):
         # Run the 'make' command
         os.system('make')
         
-        # Rename koboldcpp_default.so to yuna.so
-        if os.path.exists('koboldcpp_default.so'):
-            os.rename('koboldcpp_default.so', '../yuna.so')
-
         # Change back to the parent directory
         os.chdir('..')
-
-        # Remove the 'build-yuna' directory and its contents
-        shutil.rmtree('build-yuna')
     else:
         print('Makefile not found in the "build-yuna" directory. Please check the directory contents.')
 

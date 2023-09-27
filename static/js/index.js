@@ -9,6 +9,7 @@ function handleSubmit(event) {
 
 function sendMessage(message) {
   setTimeout(loadHistory, 300);
+  document.getElementById('input_text').value = ''
 
   if (isTTS.toString() == 'true') {
     message = message + '<tts>';
@@ -81,6 +82,63 @@ function formatMessage(messageData) {
   return messageDiv;
 }
 
+function downloadHistory() {
+  fetch('/history', {
+    method: 'GET',
+  })
+  .then(response => response.json())
+  .then(data => {
+    const chatHistory = JSON.stringify(data);
+    const blob = new Blob([chatHistory], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+
+    // Create a temporary anchor element for downloading
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'chat_history.txt';
+    a.click();
+
+    // Clean up
+    URL.revokeObjectURL(url);
+  })
+  .catch(error => {
+    console.error('Error fetching history for download:', error);
+  });
+}
+
+// Function to open a pop-up dialog for editing history
+function editHistory(messageId, currentText) {
+  // Create a pop-up dialog
+  const editDialog = document.createElement('div');
+  editDialog.classList.add('edit-dialog');
+
+  // Create a textarea to edit the message
+  const editTextArea = document.createElement('textarea');
+  editTextArea.value = currentText;
+  editDialog.appendChild(editTextArea);
+
+  // Create a button to save the edited message
+  const saveButton = document.createElement('button');
+  saveButton.textContent = 'Save';
+  saveButton.addEventListener('click', () => {
+    const editedText = editTextArea.value;
+    // Call the function to save the edited message here, e.g., send it to the server
+    saveEditedMessage(messageId, editedText);
+    // Remove the pop-up dialog
+    editDialog.remove();
+  });
+  editDialog.appendChild(saveButton);
+
+  // Add the pop-up dialog to the body
+  document.body.appendChild(editDialog);
+}
+
+// Function to save the edited message (you can send it to the server here)
+function saveEditedMessage(messageId, editedText) {
+  // Assuming you send the edited message to the server and handle the update there
+  console.log(`Message with ID ${messageId} edited: ${editedText}`);
+}
+
 function displayMessages(messages) {
   const messageContainer = document.getElementById('message-container');
 
@@ -95,7 +153,6 @@ function displayMessages(messages) {
     messageContainer.appendChild(formattedMessage);
   });
 }
-
 
 // Function to fetch and display chat history
 function loadHistory() {

@@ -46,8 +46,8 @@ def generate(text, speech=False):
     # Define the request payload
     payload = {
         "n": 1,
-        "max_context_length": 128,
-        "max_length": 1024,
+        "max_context_length": 1024,
+        "max_length": 128,
         "rep_pen": 1.1,
         "temperature": 0.5,
         "top_p": 1,
@@ -58,7 +58,7 @@ def generate(text, speech=False):
         "rep_pen_range": 320,
         "rep_pen_slope": 0.7,
         "sampler_order": [6, 0, 1, 3, 4, 2, 5],
-        "prompt": new_history,  # Use the updated history here
+        "prompt": "[The following is an interesting chat message log between Yuki and Yuna.]\n\n" + new_history,  # Use the updated history here
         "quiet": True,
         "stop_sequence": ["Yuki:",  "\nYuki: ", "\nYou:", "\nYou: ", "\nYuna: ", "\nYuna:", "Yuuki: ", "\n"],
         "use_default_badwordsids": True

@@ -23,12 +23,16 @@ img {
     width: 50px !important;
 }
 
+.hideside {
+    display: none !important;
+}
+
 /* CSS for the chat messages */
 #message-container {
     display: flex;
     flex-direction: column;
     gap: 10px; /* Add spacing between messages */
-    max-width: 80%; /* Limit message container width */
+    max-height: 600px !important; /* Limit message container width */
     overflow: auto; /* Add scrolling for overflow */
     padding: 10px;
     background-color: #f0f0f0; /* Light background color */

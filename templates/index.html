@@ -40,50 +40,56 @@
 
     <div class="block-o center">
         <div class="tab-o tab-o-default" id="1">
-
             <div class="topbar-o">
                 <div class="block-button" id="toggleButtonSide" onclick="SideSwitch();">Side</div>
                 <div class="top-tab-block">
-                    <div class="top-tab-block-e block-text lc">
+                    <div class="top-tab-block-e block-text">
                         <img src="/static/img/yuna.png" alt="Yuna" class="block-image">
+                    </div>
+                    <div class="top-tab-block-e block-text">
                         <h1 class="la block-text">Yuna</h1>
                     </div>
                 </div>
-                <div class="la block-text">Contact</div>
+                <div class="la block-text">📖</div>
             </div>
 
             <div class="coll-lo v-coll">
-                <div class="block-card el-8">
+                <div class="block-card el-9">
                     <h1>Chat</h1>
                     <div class="block-scroll" id="message-container">
                         <!-- Messages will be displayed here -->
                     </div>
                 </div>
+            </div>
 
-                <form class="block-form el-8" onsubmit="handleSubmit(event)">
+            <div class="coll-lo v-coll">
+                <form class="block-form el-9" onsubmit="handleSubmit(event)">
                     <textarea id="input_text" placeholder="Enter your message"></textarea>
-                    <div>
-                        <button type="submit" class="block-button">Send</button>
-                        <button type="button" class="block-button" onclick="clearHistory()">Clear 📖</button>
-                        <button type="button" class="block-button" onclick="loadHistory()">Load 📖</button>
-                        <button type="button" class="block-button" onclick="downloadHistory()">Download 📖</button>
-                        <button type="button" class="block-button" onclick="location.reload();">Reload</button>
-                        <button type="button" class="block-button" onclick="scrollMsg();">Scroll</button>
-                    </div>
+                    <button type="submit" class="block-button">Send</button>
                 </form>
+
+                <div class="block-card el-9">
+                    <button type="button" class="block-button" onclick="editHistory()">Edit</button>
+                    <button type="button" class="block-button" onclick="loadHistory()">Load</button>
+                    <button type="button" class="block-button" onclick="downloadHistory()">Download</button>
+                    <button type="button" class="block-button" onclick="location.reload();">Reload</button>
+                    <button type="button" class="block-button" onclick="scrollMsg();">Scroll</button>
+                </div>
             </div>
         </div>
 
         <div class="tab-o" id="2">
             <div class="topbar-o">
-                <div class="block-button" id="toggleButtonSide" onclick="openSidebar();">Side</div>
+                <div class="block-button" id="toggleButtonSide" onclick="SideSwitch();">Side</div>
                 <div class="top-tab-block">
-                    <div class="top-tab-block-e block-text lc">
+                    <div class="top-tab-block-e block-text">
                         <img src="/static/img/yuna.png" alt="Yuna" class="block-image">
+                    </div>
+                    <div class="top-tab-block-e block-text">
                         <h1 class="la block-text">Yuna</h1>
                     </div>
                 </div>
-                <button class="block-button" id="startButton">Start Recognition</button>
+                <button class="block-button" id="startButton">Talk</button>
             </div>
 
             <div class="coll-lo v-coll">
@@ -106,18 +112,20 @@
 
         <div class="tab-o" id="3">
             <div class="topbar-o">
-                <div class="block-button" id="toggleButtonSide" onclick="openSidebar();">Side</div>
+                <div class="block-button" id="toggleButtonSide" onclick="SideSwitch();">Side</div>
                 <div class="top-tab-block">
-                    <div class="top-tab-block-e block-text lc">
+                    <div class="top-tab-block-e block-text">
                         <img src="/static/img/yuna.png" alt="Yuna" class="block-image">
+                    </div>
+                    <div class="top-tab-block-e block-text">
                         <h1 class="la block-text">Yuna</h1>
                     </div>
                 </div>
-                <div class="la block-text">Contact</div>
+                <div class="la block-text">📖</div>
             </div>
 
             <div class="coll-lo v-coll">
-                <div class="block-card el-8">
+                <div class="block-card el-9">
                     <h1>Settings</h1>
                     <div class="block-card">
                         <div class="toggle-switch-block"></div>

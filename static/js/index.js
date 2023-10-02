@@ -1,25 +1,42 @@
-const backgroundMusic = document.getElementById('backgroundMusic');
+var backgroundMusic = document.getElementById('backgroundMusic');
 var isTTS = ''
+var messageContainer = document.getElementById('message-container');
 
 function handleSubmit(event) {
   event.preventDefault();
-  const message = document.getElementById('input_text').value;
+  var message = document.getElementById('input_text').value;
   sendMessage(message);
 }
 
 function sendMessage(message) {
-  setTimeout(loadHistory, 300);
   document.getElementById('input_text').value = ''
+
+  messageContainer = document.getElementById('message-container');
+
+  messageData = {
+    "name": "Yuki",
+    "message": message
+  }
+
+  let formattedMessage = formatMessage(messageData);
+  messageContainer.appendChild(formattedMessage);
+
+  scrollMsg()
+  playAudio(audioType = 'send')
 
   if (isTTS.toString() == 'true') {
     message = message + '<tts>';
   }
 
+  historySelect = document.getElementById('history-select');
+  var selectedFilename = historySelect.value;
+
   // Send a POST request to /send_message
   fetch('/send_message', {
       method: 'POST',
       body: new URLSearchParams({
-        'message': message
+        'message': message,
+        'chat': selectedFilename
       }), // Send the message as form data
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -28,42 +45,80 @@ function sendMessage(message) {
     .then(response => response.json())
     .then(data => {
       // Display if ok
-      loadHistory();
-    })
-    .catch(error => {
-      console.error('Error sending message:', error);
-    })
-    .finally(() => {
-      // This code will be executed regardless of success or error
+      messageContainer = document.getElementById('message-container');
+
+      messageData = {
+        "name": "Yuna",
+        "message": data.response
+      }
+
+      let formattedMessage = formatMessage(messageData);
+      messageContainer.appendChild(formattedMessage);
+
+      scrollMsg()
+      playAudio(audioType = 'message')
+
       if (isTTS.toString() == 'true') {
         playAudio()
       }
-      console.log('done');
-    });
+    })
+    .catch(error => {
+      console.error('Error sending message:', error);
+
+      messageContainer = document.getElementById('message-container');
+
+      messageData = {
+        "name": "Yuna",
+        "message": error
+      }
+
+      let formattedMessage = formatMessage(messageData);
+      messageContainer.appendChild(formattedMessage);
+
+      scrollMsg()
+      playAudio(audioType = 'error')
+    })
 }
 
-function playAudio() {
-  stopSpeechRecognition()
+function playAudio(audioType = 'tts') {
   // Generate a random query parameter value
-  const randomValue = Math.random();
+  var randomValue = Math.random();
 
   // Get the audio source element
-  const audioSource = document.getElementById("backgroundMusic");
+  var audioSource = document.getElementById("backgroundMusic");
 
-  // Set the src attribute with the random query parameter
-  audioSource.src = `/static/audio/output.aiff?v=${randomValue}`;
+  if (audioType == 'tts') {
+    // Set the src attribute with the random query parameter
+    audioSource.src = `/static/audio/output.mp3?v=${randomValue}`;
+  } else if (audioType == 'message') {
+    audioSource.src = '/static/audio/sounds/message.mp3';
+  } else if (audioType == 'send') {
+    audioSource.src = '/static/audio/sounds/send.mp3';
+  } else if (audioType == 'error') {
+    audioSource.src = '/static/audio/sounds/error.mp3';
+  } else if (audioType == 'ringtone') {
+    audioSource.src = '/static/audio/sounds/ringtone.mp3';
+  }
 
   // Get the audio element and play it
   audio = document.getElementById("backgroundMusic");
   audio.load(); // Reload the audio element to apply the new source
-  audio.play();
-  startSpeechRecognition()
+  audio.play()
+    .then(() => {
+      // Audio playback started successfully
+      console.log('Audio playback started.');
+    })
+    .catch(error => {
+      // Handle the error if audio playback fails
+      console.error('Error playing audio:', error);
+      playAudio()
+    });
 }
 
 // Other functions (clearHistory, loadHistory, downloadHistory) go here if needed.
 function formatMessage(messageData) {
   // Create a div for the message
-  const messageDiv = document.createElement('div');
+  var messageDiv = document.createElement('div');
 
   // Set the CSS class based on the name
   if (messageData.name === 'Yuki') {
@@ -73,7 +128,7 @@ function formatMessage(messageData) {
   }
 
   // Create a paragraph for the message text
-  const messageText = document.createElement('p');
+  var messageText = document.createElement('p');
   messageText.textContent = `${messageData.name}: ${messageData.message}`;
 
   // Append the message text to the message div
@@ -84,44 +139,46 @@ function formatMessage(messageData) {
 
 function downloadHistory() {
   fetch('/history', {
-    method: 'GET',
-  })
-  .then(response => response.json())
-  .then(data => {
-    const chatHistory = JSON.stringify(data);
-    const blob = new Blob([chatHistory], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
+      method: 'GET',
+    })
+    .then(response => response.json())
+    .then(data => {
+      var chatHistory = JSON.stringify(data);
+      var blob = new Blob([chatHistory], {
+        type: 'text/plain'
+      });
+      var url = URL.createObjectURL(blob);
 
-    // Create a temporary anchor element for downloading
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'chat_history.txt';
-    a.click();
+      // Create a temporary anchor element for downloading
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'chat_history.txt';
+      a.click();
 
-    // Clean up
-    URL.revokeObjectURL(url);
-  })
-  .catch(error => {
-    console.error('Error fetching history for download:', error);
-  });
+      // Clean up
+      URL.revokeObjectURL(url);
+    })
+    .catch(error => {
+      console.error('Error fetching history for download:', error);
+    });
 }
 
 // Function to open a pop-up dialog for editing history
 function editHistory(messageId, currentText) {
   // Create a pop-up dialog
-  const editDialog = document.createElement('div');
+  var editDialog = document.createElement('div');
   editDialog.classList.add('edit-dialog');
 
   // Create a textarea to edit the message
-  const editTextArea = document.createElement('textarea');
+  var editTextArea = document.createElement('textarea');
   editTextArea.value = currentText;
   editDialog.appendChild(editTextArea);
 
   // Create a button to save the edited message
-  const saveButton = document.createElement('button');
+  var saveButton = document.createElement('button');
   saveButton.textContent = 'Save';
   saveButton.addEventListener('click', () => {
-    const editedText = editTextArea.value;
+    var editedText = editTextArea.value;
     // Call the function to save the edited message here, e.g., send it to the server
     saveEditedMessage(messageId, editedText);
     // Remove the pop-up dialog
@@ -140,7 +197,7 @@ function saveEditedMessage(messageId, editedText) {
 }
 
 function displayMessages(messages) {
-  const messageContainer = document.getElementById('message-container');
+  messageContainer = document.getElementById('message-container');
 
   // Clear the existing content of messageContainer
   while (messageContainer.firstChild) {
@@ -149,35 +206,17 @@ function displayMessages(messages) {
 
   // Loop through the messages and format each one
   messages.forEach(messageData => {
-    const formattedMessage = formatMessage(messageData);
+    var formattedMessage = formatMessage(messageData);
     messageContainer.appendChild(formattedMessage);
   });
 }
-
-// Function to fetch and display chat history
-function loadHistory() {
-  fetch('/history', {
-      method: 'GET',
-    })
-    .then(response => response.json())
-    .then(data => {
-      displayMessages(data); // Display the chat history
-      scrollMsg()
-    })
-    .catch(error => {
-      console.error('Error fetching history:', error);
-    });
-}
-
-// Call loadHistory to initially load chat history
-loadHistory();
 
 // Get access to the user's camera and display the video stream
 navigator.mediaDevices.getUserMedia({
     video: true
   })
   .then(function (stream) {
-    const localVideo = document.getElementById('localVideo');
+    var localVideo = document.getElementById('localVideo');
     localVideo.srcObject = stream;
   })
   .catch(function (error) {
@@ -202,8 +241,8 @@ window.onload = function () {
 
     // Event listener for results
     recognition.onresult = function (event) {
-      const result = event.results[event.resultIndex];
-      const recognizedText = result[0].transcript;
+      var result = event.results[event.resultIndex];
+      var recognizedText = result[0].transcript;
 
       if (recognizedText === previousText) {
         console.log('Recognized Text:', recognizedText);
@@ -221,6 +260,7 @@ window.onload = function () {
     // Event listener for end of speech
     recognition.onend = function () {
       console.log('Speech recognition ended.');
+      recognition.start()
     };
 
     // Start recognition
@@ -238,3 +278,133 @@ function scrollMsg() {
   objDiv = document.getElementById("message-container");
   objDiv.scrollTop = objDiv.scrollHeight;
 }
+
+// Get the video element and its container
+var video = document.getElementById('localVideo');
+var videoContainer = document.querySelector('.draggable-video');
+
+let isDragging = false;
+let offsetX, offsetY;
+
+// Add mousedown event listener to start dragging
+video.addEventListener('mousedown', (e) => {
+  isDragging = true;
+  offsetX = e.clientX - video.getBoundingClientRect().left;
+  offsetY = e.clientY - video.getBoundingClientRect().top;
+  video.style.cursor = 'grabbing';
+});
+
+// Add mousemove event listener to drag the video
+document.addEventListener('mousemove', (e) => {
+  if (!isDragging) return;
+  var newX = e.clientX - offsetX - videoContainer.getBoundingClientRect().left;
+  var newY = e.clientY - offsetY - videoContainer.getBoundingClientRect().top;
+
+  video.style.left = `${newX}px`;
+  video.style.top = `${newY}px`;
+});
+
+// Add mouseup event listener to stop dragging
+document.addEventListener('mouseup', () => {
+  isDragging = false;
+  video.style.cursor = 'grab';
+});
+
+// Add an event listener to the "Capture Image" button
+document.getElementById('capture-image').addEventListener('click', function () {
+  var localVideo = document.getElementById('localVideo');
+  var captureCanvas = document.getElementById('capture-canvas');
+  var captureContext = captureCanvas.getContext('2d');
+
+  // Set the canvas dimensions to match the video element
+  captureCanvas.width = localVideo.videoWidth;
+  captureCanvas.height = localVideo.videoHeight;
+
+  // Draw the current frame from the video onto the canvas
+  captureContext.drawImage(localVideo, 0, 0, captureCanvas.width, captureCanvas.height);
+
+  // Show the canvas (optional)
+  captureCanvas.style.display = 'block';
+});
+
+// Add an event listener to the "Send Captured Image" button
+document.getElementById('send-captured-image').addEventListener('click', function () {
+  var captureCanvas = document.getElementById('capture-canvas');
+  var imageDataURL = captureCanvas.toDataURL('image/png'); // Convert canvas to base64 data URL
+
+  // Send the captured image to the Flask server
+  fetch('/upload_captured_image', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        image: imageDataURL
+      })
+    })
+    .then(response => {
+      if (response.ok) {
+        // Image successfully sent
+        alert('Captured image sent successfully!');
+        // You can add further actions here if needed
+      } else {
+        // Handle the error
+        alert('Error sending captured image.');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+});
+
+// Function to fetch and populate chat history file options
+function populateHistorySelect() {
+  var historySelect = document.getElementById('history-select');
+  messageContainer = document.getElementById('message-container');
+
+  // Fetch the list of history files from the server
+  fetch('/list_history_files', {
+      method: 'GET',
+  })
+  .then(response => response.json())
+  .then(data => {
+      // Populate the <select> with the available options
+      data.forEach(filename => {
+          var option = document.createElement('option');
+          option.value = filename;
+          option.textContent = filename;
+          historySelect.appendChild(option);
+      });
+  })
+  .catch(error => {
+      console.error('Error fetching history files:', error);
+  });
+}
+
+// Function to load the selected chat history file
+function loadSelectedHistory() {
+  var historySelect = document.getElementById('history-select');
+  var selectedFilename = historySelect.value;
+  messageContainer = document.getElementById('message-container');
+
+  if (selectedFilename == "") {
+    selectedFilename = "history.json"
+  }
+
+  // Fetch the selected chat history file from the server
+  fetch(`/load_history_file/${selectedFilename}`, {
+      method: 'GET',
+  })
+  .then(response => response.json())
+  .then(data => {
+      displayMessages(data); // Display the selected chat history
+      scrollMsg();
+  })
+  .catch(error => {
+      console.error('Error loading selected history file:', error);
+  });
+}
+
+// Call populateHistorySelect to populate the <select> element on page load
+populateHistorySelect();
+loadSelectedHistory()

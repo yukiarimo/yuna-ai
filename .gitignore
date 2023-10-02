@@ -2,6 +2,7 @@ node_modules
 __pycache__/
 static/db/history.json
 static/audio/output.aiff
+static/audio/output.mp3
 lib/datasets/
 lib/models/
 lib/yunacpp/models/

@@ -5,6 +5,10 @@
     height: 100vh;
 }
 
+.topbar-o {
+    height: 50px !important;
+}
+
 form>div {
     flex-direction: row !important;
     display: flex;
@@ -31,13 +35,19 @@ img {
 #message-container {
     display: flex;
     flex-direction: column;
-    gap: 10px; /* Add spacing between messages */
-    max-height: 600px !important; /* Limit message container width */
-    overflow: auto; /* Add scrolling for overflow */
+    gap: 10px;
+    /* Add spacing between messages */
+    max-height: 600px !important;
+    /* Limit message container width */
+    overflow: auto;
+    /* Add scrolling for overflow */
     padding: 10px;
-    background-color: #f0f0f0; /* Light background color */
+    background-color: #f0f0f0;
+    /* Light background color */
     border-radius: 12px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow for a modern look */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    /* Add shadow for a modern look */
+    overflow-x: hidden !important;
 }
 
 /* Individual chat message styles */
@@ -69,7 +79,8 @@ img {
     margin: 0;
     padding: 0;
     font-size: 16px;
-    color: #333; /* Slightly darker text color for readability */
+    color: #333;
+    /* Slightly darker text color for readability */
 }
 
 /* Style for the input area */
@@ -99,30 +110,49 @@ img {
     margin-left: 10px;
 }
 
-#localVideo,
-.remote-participant>img {
-    width: 80% !important;
-    height: 100% !important;
+.el-9 {
+    width: 95% !important;
 }
 
-/* Call UI */
-.video-call {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    width: 80%;
-    max-width: 800px;
-    background-color: #fff;
-    padding: 20px;
-    border: 1px solid #ccc;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.remote-participant,
-.local-participant {
-    text-align: center;
+.participant {
     width: 150px;
     height: 150px;
     border-radius: 20px;
     object-fit: cover;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#localVideo,
+.participant>img {
+    width: 70% !important;
+    height: 85% !important;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.draggable-video {
+    max-height: 20%;
+    border-radius: 20px;
+    object-fit: cover;
+    position: fixed;
+    top: 70%;
+    left: 70%;
+    cursor: grab;
+    max-width: 20%;
+}
+
+.controls {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    background-color: #fff;
+    padding: 10px;
+}
+
+@media (max-width : 428px) {
+    .participant>img {
+        width: 100% !important;
+    }
 }

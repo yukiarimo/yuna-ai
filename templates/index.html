@@ -16,7 +16,7 @@
 
     <link rel="stylesheet" href="/static/css/index.css">
     <link rel="stylesheet" href="/static/css/kawai.css">
-    <link href="/static/fonts/kawai-font.otf" rel="stylesheet">
+    <link href="/static/fonts/kawai-font.woff" rel="stylesheet">
     <link href="/static/manifest.json" rel="manifest">
     <script src="/static/js/index.js" defer></script>
     <script src="/static/js/kawai.js" defer></script>
@@ -53,28 +53,39 @@
                 <div class="la block-text">📖</div>
             </div>
 
-            <div class="coll-lo v-coll">
+            <div class="coll-lo">
                 <div class="block-card el-9">
-                    <h1>Chat</h1>
                     <div class="block-scroll" id="message-container">
                         <!-- Messages will be displayed here -->
                     </div>
                 </div>
             </div>
 
-            <div class="coll-lo v-coll">
-                <form class="block-form el-9" onsubmit="handleSubmit(event)">
+            <div class="coll-lo">
+                <form class="block-card el-9 h-coll" onsubmit="handleSubmit(event)">
                     <textarea id="input_text" placeholder="Enter your message"></textarea>
                     <button type="submit" class="block-button">Send</button>
                 </form>
+            </div>
 
-                <div class="block-card el-9">
+            <div class="coll-lo">
+                <div class="block-card el-9 h-coll">
                     <button type="button" class="block-button" onclick="editHistory()">Edit</button>
                     <button type="button" class="block-button" onclick="loadHistory()">Load</button>
-                    <button type="button" class="block-button" onclick="downloadHistory()">Download</button>
+                    <button type="button" class="block-button" onclick="downloadHistory()">Downdl</button>
                     <button type="button" class="block-button" onclick="location.reload();">Reload</button>
                     <button type="button" class="block-button" onclick="scrollMsg();">Scroll</button>
+                    <button class="block-button"><select id="history-select" onchange="loadSelectedHistory()"></select></button>
                 </div>
+            </div>
+
+            <div class="coll-lo">
+                <details class="block-card el-9">
+                    <div class="center block-text la">Console</div>
+                    <textarea id="codeInput" rows="5" cols="40" placeholder="Enter JavaScript"></textarea>
+                    <button type="button" class="block-button" id="executeButton">Execute</button>
+                    <textarea id="consoleOutput" rows="10" cols="40" readonly=""></textarea>
+                </details>
             </div>
         </div>
 
@@ -92,20 +103,25 @@
                 <button class="block-button" id="startButton">Talk</button>
             </div>
 
-            <div class="coll-lo v-coll">
-                <div class="block-text la">Call</div>
-
+            <div class="coll-lo">
                 <audio id="backgroundMusic">
-                    <source src="/static/audio/output.aiff" type="audio/aiff">
+                    <source src="/static/audio/output.mp3" type="audio/mp3">
                 </audio>
 
-                <div class="remote-participant card">
-                    <img src="/static/img/yuna-full.png" style="border-radius: 20px;" alt="Yuna Participant">
-                    <p>Yuna</p>
-                </div>
-                <div class="local-participant block-card">
-                    <video id="localVideo" style="border-radius: 20px;" playsinline autoplay muted></video>
-                    <p>You</p>
+                <div class="participant el-9 block-card">
+                    <div class="block-text la">Call</div>
+                    <img src="/static/img/yuna-full.png" alt="Yuna Participant" style="border-radius: 20px;">
+                    <video id="localVideo" playsinline autoplay muted class="draggable-video"></video>
+                    <div class="controls">
+                        <button class="block-button" id="camera-off">📷</button>
+                        <button class="block-button" id="end-call">📞</button>
+                        <button class="block-button" id="mute-microphone">🎤</button>
+
+                        <canvas id="capture-canvas" style="display: none;"></canvas> <!-- Add this canvas element -->
+                        <button class="block-button" id="capture-image">Capture Image</button> <!-- Add this button -->
+                        <button class="block-button" id="send-captured-image">Send Captured Image</button>
+                        <!-- Add this button -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -124,7 +140,7 @@
                 <div class="la block-text">📖</div>
             </div>
 
-            <div class="coll-lo v-coll">
+            <div class="coll-lo">
                 <div class="block-card el-9">
                     <h1>Settings</h1>
                     <div class="block-card">
@@ -146,6 +162,25 @@
                     console.error('Service Worker registration failed:', error);
                 });
         }
+    </script>
+
+    <script>
+        // Function to execute JavaScript code entered by the user
+        document.getElementById("executeButton").addEventListener("click", function () {
+            // Get the JavaScript code from the textarea
+            var code = document.getElementById("codeInput").value;
+
+            try {
+                // Use eval to execute the code
+                var result = eval(code);
+
+                // Display the result in the console output textarea
+                document.getElementById("consoleOutput").value += "Result: " + result + "\n";
+            } catch (error) {
+                // If there's an error, display it in the console output textarea
+                document.getElementById("consoleOutput").value += "Error: " + error.message + "\n";
+            }
+        });
     </script>
 </body>
 

@@ -138,7 +138,16 @@ function formatMessage(messageData) {
 }
 
 function downloadHistory() {
-  fetch('/history', {
+  var historySelect = document.getElementById('history-select');
+  var selectedFilename = historySelect.value;
+  messageContainer = document.getElementById('message-container');
+
+  if (selectedFilename == "") {
+    selectedFilename = "history.json"
+  }
+
+  // Fetch the selected chat history file from the server
+  fetch(`/load_history_file/${selectedFilename}`, {
       method: 'GET',
     })
     .then(response => response.json())
@@ -152,7 +161,7 @@ function downloadHistory() {
       // Create a temporary anchor element for downloading
       var a = document.createElement('a');
       a.href = url;
-      a.download = 'chat_history.txt';
+      a.download = `${selectedFilename}.json`;
       a.click();
 
       // Clean up
@@ -164,36 +173,80 @@ function downloadHistory() {
 }
 
 // Function to open a pop-up dialog for editing history
-function editHistory(messageId, currentText) {
-  // Create a pop-up dialog
-  var editDialog = document.createElement('div');
-  editDialog.classList.add('edit-dialog');
+function editHistory() {
+  var historySelect = document.getElementById('history-select');
+  var selectedFilename = historySelect.value;
 
-  // Create a textarea to edit the message
-  var editTextArea = document.createElement('textarea');
-  editTextArea.value = currentText;
-  editDialog.appendChild(editTextArea);
+  if (selectedFilename == "") {
+    selectedFilename = "history.json"
+  }
 
-  // Create a button to save the edited message
-  var saveButton = document.createElement('button');
-  saveButton.textContent = 'Save';
-  saveButton.addEventListener('click', () => {
-    var editedText = editTextArea.value;
-    // Call the function to save the edited message here, e.g., send it to the server
-    saveEditedMessage(messageId, editedText);
-    // Remove the pop-up dialog
-    editDialog.remove();
-  });
-  editDialog.appendChild(saveButton);
+  // Fetch the selected chat history file from the server
+  fetch(`/load_history_file/${selectedFilename}`, {
+      method: 'GET',
+    })
+    .then(response => response.json())
+    .then(data => {
+      var historyPopup = document.createElement('div');
+      historyPopup.classList.add('block-popup');
 
-  // Add the pop-up dialog to the body
-  document.body.appendChild(editDialog);
+      // Create a pop-up dialog
+      var editDialog = document.createElement('div');
+      editDialog.classList.add('block-card');
+
+      // Create a textarea to edit the message
+      var editTextArea = document.createElement('textarea');
+      editTextArea.classList.add('block-scroll');
+      editTextArea.value = JSON.stringify(data);
+      editDialog.appendChild(editTextArea);
+
+      // Create a button to save the edited message
+      var saveButton = document.createElement('button');
+      saveButton.classList.add('block-button');
+      saveButton.textContent = 'Save';
+      saveButton.addEventListener('click', () => {
+        var editedText = editTextArea.value;
+        // Call the function to save the edited message here, e.g., send it to the server
+        sendEditHistory(editedText);
+        // Remove the pop-up dialog
+        editDialog.remove();
+      });
+      editDialog.appendChild(saveButton);
+
+      historyPopup.appendChild(editDialog)
+
+      // Add the pop-up dialog to the body
+      document.body.appendChild(historyPopup);
+    })
+    .catch(error => {
+      console.error('Error loading selected history file:', error);
+    });
 }
 
-// Function to save the edited message (you can send it to the server here)
-function saveEditedMessage(messageId, editedText) {
-  // Assuming you send the edited message to the server and handle the update there
-  console.log(`Message with ID ${messageId} edited: ${editedText}`);
+function sendEditHistory(editTextArea) {
+  historySelect = document.getElementById('history-select');
+  var selectedFilename = historySelect.value;
+
+  // Send a POST request to /send_message
+  fetch('/edit_history', {
+      method: 'POST',
+      body: new URLSearchParams({
+        'history': editTextArea,
+        'chat': selectedFilename
+      }), // Send the message as form data
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    })
+    .then(response => response.json())
+    .then(data => {
+      // Display if ok
+      console.log(data.response)
+      loadSelectedHistory()
+    })
+    .catch(error => {
+      console.error('Error sending message:', error);
+    })
 }
 
 function displayMessages(messages) {
@@ -365,20 +418,20 @@ function populateHistorySelect() {
   // Fetch the list of history files from the server
   fetch('/list_history_files', {
       method: 'GET',
-  })
-  .then(response => response.json())
-  .then(data => {
+    })
+    .then(response => response.json())
+    .then(data => {
       // Populate the <select> with the available options
       data.forEach(filename => {
-          var option = document.createElement('option');
-          option.value = filename;
-          option.textContent = filename;
-          historySelect.appendChild(option);
+        var option = document.createElement('option');
+        option.value = filename;
+        option.textContent = filename;
+        historySelect.appendChild(option);
       });
-  })
-  .catch(error => {
+    })
+    .catch(error => {
       console.error('Error fetching history files:', error);
-  });
+    });
 }
 
 // Function to load the selected chat history file
@@ -394,15 +447,15 @@ function loadSelectedHistory() {
   // Fetch the selected chat history file from the server
   fetch(`/load_history_file/${selectedFilename}`, {
       method: 'GET',
-  })
-  .then(response => response.json())
-  .then(data => {
+    })
+    .then(response => response.json())
+    .then(data => {
       displayMessages(data); // Display the selected chat history
       scrollMsg();
-  })
-  .catch(error => {
+    })
+    .catch(error => {
       console.error('Error loading selected history file:', error);
-  });
+    });
 }
 
 // Call populateHistorySelect to populate the <select> element on page load

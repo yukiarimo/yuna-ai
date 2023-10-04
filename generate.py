@@ -8,6 +8,7 @@ import os
 import json
 import re
 from transformers import pipeline
+import sys
 
 classifier = pipeline("text-classification", model="j-hartmann/emotion-english-distilroberta-base")
 history_file = "static/db/"
@@ -23,11 +24,11 @@ def listen(chat_id):
             text = r.recognize_google(audio)
             if text:
                 print(f'You said: {text}')
-                chat_history = load_chat_history()
+                chat_history = load_chat_history(chat_id)
                 chat_history.append({"name": "Yuki", "message": text})
-                save_chat_history(chat_history)
+                save_chat_history(chat_history, chat_id)
                 generate(text, chat_id, speech=True)  # Send detected speech to generation function
-                break  # Exit the loop if speech is successfully recognized
+                #break  # Exit the loop if speech is successfully recognized
         except sr.UnknownValueError:
             print('Sorry, I couldn\'t understand what you said. Please try again.')
         except sr.RequestError as e:
@@ -56,9 +57,9 @@ def generate(text, chat_id, speech=False):
     payload = {
         "n": 1,
         "max_context_length": 1024,
-        "max_length": 128,
-        "rep_pen": 1.1,
-        "temperature": 0.65,
+        "max_length": 64,
+        "rep_pen": 1.2,
+        "temperature": 0.7,
         "top_p": 1,
         "top_k": 0,
         "top_a": 0,
@@ -80,7 +81,7 @@ def generate(text, chat_id, speech=False):
     print('response = ', responsesay)
 
     if speech == True:
-        send_message(responsesay)
+        send_message(responsesay, chat_id)
 
     return responsesay
 
@@ -88,7 +89,7 @@ def send_message(response, chat_id):
     # Load chat history from the JSON file when the server starts
     chat_history = load_chat_history(chat_id)
     response = remove_emojis(response)
-    responseAdd = classifier(response)[0]['label']
+    responseAdd = "" #classifier(response)[0]['label']
 
     # Replace words
     replacement_dict = {
@@ -104,13 +105,14 @@ def send_message(response, chat_id):
     for word, replacement in replacement_dict.items():
         responseAdd = responseAdd.replace(word, replacement)
 
-    response = response + f" *{responseAdd}*"
+    response = response + f"{responseAdd}"
     # Append the message to the chat history
     chat_history.append({"name": "Yuna", "message": response})
     # Save the updated chat history to the JSON file
     save_chat_history(chat_history, chat_id)
 
     subprocess.run(f'say "{response}"', shell=True)
+    print("go")
 
     return "True"
 
@@ -163,3 +165,7 @@ def remove_emojis(input_string):
     cleaned_string = cleaned_string.replace("  ", ' ').replace("  ", ' ')
 
     return cleaned_string
+
+if "--call" in sys.argv:
+    chat_id = input("Chat: ")
+    listen(chat_id)

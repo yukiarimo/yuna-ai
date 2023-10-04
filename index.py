@@ -117,12 +117,14 @@ def send_message():
 
     return jsonify({'response': response})
 
-# New route for fetching chat history
-@app.route('/history', methods=['GET'])
-def get_history():
-    # Load chat history from the JSON file when the server starts
-    chat_history = load_chat_history()
-    return jsonify(chat_history)
+# New route for sending and receiving messages
+@app.route('/edit_history', methods=['POST'])
+def edit_history():
+    history = json.loads(request.form.get('history'))  # Get the message from the request
+    chat_id = request.form.get('chat')
+    save_chat_history(history, chat_id)
+
+    return jsonify({'response': "response"})
 
 # New route for uploading a captured image
 @app.route('/upload_captured_image', methods=['POST'])

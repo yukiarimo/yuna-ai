@@ -5,6 +5,10 @@
     height: 100vh;
 }
 
+.block-popup {
+    display: flex !important;
+}
+
 .topbar-o {
     height: 50px !important;
 }

@@ -31,7 +31,7 @@ This repository contains the code for a Yuna AI, which was trained on a massive 
 2. Make sure you have Python 3.10 or later installed.
 3. Install the required dependencies by running `pip install -r requirements.txt`.
 4. Run the `config.py` file to build external dependencies for Yuna in the `lib/yunacpp/` directory.
-5. Put your AI model like `ggml_model.bin` into the `lib/yunacpp/models/` directory.
+5. Put your AI model like `gguf_model.bin` into the `lib/yunacpp/models/` directory.
 6. Run two files, `lib/yunacpp/start.sh` to start Yuna and `index.py` to start the WebUI.
 7. Open your browser and go to the `http://127.0.0.1:4848` 
 8. Done!

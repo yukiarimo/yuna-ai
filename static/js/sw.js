@@ -9,9 +9,11 @@ self.addEventListener('install', (event) => {
                     '/',
                     '/static/js/index.js',
                     '/static/js/kawai.js',
+                    '/static/js/sw.js',
                     '/static/css/index.js',
                     '/static/css/kawai.js',
-                    // Add other static assets as needed
+                    '/static/img/yuna.png',
+                    '/static/img/yuna-full.png'
                 ]);
             })
     );

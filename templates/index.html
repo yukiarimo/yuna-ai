@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="/static/css/index.css">
     <link rel="stylesheet" href="/static/css/kawai.css">
     <link href="/static/fonts/kawai-font.woff" rel="stylesheet">
-    <link href="/static/manifest.json" rel="manifest">
+    <link href="/static/manifest.json" rel="manifest" crossorigin="use-credentials" />
     <script src="/static/js/index.js" defer></script>
     <script src="/static/js/kawai.js" defer></script>
 
@@ -25,9 +25,9 @@
 
 <body>
     <div class="sidebar-o desktop-only" id="sidebar">
-        <div class="coll-lo h-coll" style="background: none;">
+        <div class="coll-lo v-coll" style="background: none;">
             <img src="/static/img/yuna.png" alt="Yuna" class="block-image">
-            <div class="block-text">Yuna</div>
+            <div class="block-text la">Yuna</div>
         </div>
 
         <div class="side-tab-block">x
@@ -50,7 +50,7 @@
                         <h1 class="la block-text">Yuna</h1>
                     </div>
                 </div>
-                <div class="la block-text">📖</div>
+                <div class="la block-text">⚙️</div>
             </div>
 
             <div class="coll-lo">
@@ -63,30 +63,31 @@
 
             <div class="coll-lo">
                 <form class="block-card el-9 h-coll" onsubmit="handleSubmit(event)">
-                    <textarea id="input_text" placeholder="Enter your message"></textarea>
+                    <textarea id="input_text" placeholder="Talk to Yuna..."></textarea>
                     <button type="submit" class="block-button">Send</button>
                 </form>
             </div>
 
             <div class="coll-lo">
                 <div class="block-card el-9 h-coll">
-                    <button type="button" class="block-button" onclick="editHistory()">Edit</button>
-                    <button type="button" class="block-button" onclick="loadSelectedHistory()">Load</button>
-                    <button type="button" class="block-button" onclick="downloadHistory()">Downdl</button>
-                    <button type="button" class="block-button" onclick="location.reload();">Reload</button>
-                    <button type="button" class="block-button" onclick="scrollMsg();">Scroll</button>
-                    <button class="block-button"><select id="history-select" onchange="loadSelectedHistory()"></select></button>
+                    <button type="button" class="block-button" onclick="editHistory()">📝</button>
+                    <button type="button" class="block-button" onclick="loadSelectedHistory()">⌛</button>
+                    <button type="button" class="block-button" onclick="downloadHistory()">⬇️</button>
+                    <button type="button" class="block-button" onclick="location.reload();">🔄</button>
+                    <button type="button" class="block-button" onclick="scrollMsg();">👇</button>
+                    <button type="button" class="block-button" onclick="muteAudio()">🔇</button>
+                    <button class="block-button" aria-label="History"><select id="history-select"
+                            onchange="loadSelectedHistory()">📁</select></button>
                 </div>
             </div>
 
-            <div class="coll-lo">
-                <details class="block-card el-9">
-                    <div class="center block-text la">Console</div>
+            <details class="coll-lo">
+                <div class="block-card el-9 h-coll">
                     <textarea id="codeInput" rows="5" cols="40" placeholder="Enter JavaScript"></textarea>
-                    <button type="button" class="block-button" id="executeButton">Execute</button>
+                    <button type="button" class="block-button" id="executeButton">Run</button>
                     <textarea id="consoleOutput" rows="10" cols="40" readonly=""></textarea>
-                </details>
-            </div>
+                </div>
+            </details>
         </div>
 
         <div class="tab-o" id="2">
@@ -118,9 +119,8 @@
                         <button class="block-button" id="mute-microphone">🎤</button>
 
                         <canvas id="capture-canvas" style="display: none;"></canvas> <!-- Add this canvas element -->
-                        <button class="block-button" id="capture-image">Capture Image</button> <!-- Add this button -->
-                        <button class="block-button" id="send-captured-image">Send Captured Image</button>
-                        <!-- Add this button -->
+                        <button class="block-button" id="capture-image">📷</button> <!-- Add this button -->
+                        <button class="block-button" id="send-captured-image">Send</button>
                     </div>
                 </div>
             </div>
@@ -137,21 +137,21 @@
                         <h1 class="la block-text">Yuna</h1>
                     </div>
                 </div>
-                <div class="la block-text">📖</div>
+                <div class="la block-text">⚙️</div>
             </div>
 
             <div class="coll-lo">
                 <div class="block-card el-9">
                     <h1>Settings</h1>
                     <div class="block-card">
-                        <div class="toggle-switch-block"></div>
+                        <div class="block-text lc">Dark Mode</div>
+                        <div class="block-toggle"></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Inside head tag -->
     <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/static/js/sw.js')

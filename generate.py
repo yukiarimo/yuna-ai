@@ -56,10 +56,10 @@ def generate(text, chat_id, speech=False):
     # Define the request payload
     payload = {
         "n": 1,
-        "max_context_length": 1024,
-        "max_length": 64,
-        "rep_pen": 1.2,
-        "temperature": 0.7,
+        "max_context_length": 1280,
+        "max_length": 128,
+        "rep_pen": 1.1,
+        "temperature": 0.65,
         "top_p": 1,
         "top_k": 0,
         "top_a": 0,
@@ -78,7 +78,6 @@ def generate(text, chat_id, speech=False):
     response = requests.post(url, json=payload)
     responsesay = response.json()['results'][0]['text']
     responsesay = responsesay.replace('\n', '')
-    print('response = ', responsesay)
 
     if speech == True:
         send_message(responsesay, chat_id)

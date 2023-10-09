@@ -62,7 +62,7 @@ img {
     align-items: flex-start;
     padding: 10px;
     border-radius: 12px;
-    max-width: 70%;
+    max-width: 75%;
 }
 
 .block-message-1 {
@@ -78,13 +78,13 @@ img {
 }
 
 /* Text styles */
-.block-message-1-left p,
+.block-message-1 p,
 .block-message-2 p {
     margin: 0;
     padding: 0;
     font-size: 16px;
     color: #333;
-    /* Slightly darker text color for readability */
+    text-align: left;
 }
 
 /* Style for the input area */
@@ -106,7 +106,7 @@ img {
     border-radius: 5px;
     padding: 10px 20px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 20px !important;
 }
 
 /* Style for other buttons (Clear, Load, Download) */

@@ -458,6 +458,16 @@ function loadSelectedHistory() {
     });
 }
 
+function muteAudio() {
+  audioElement = document.getElementById("backgroundMusic");
+
+  if (audioElement) {
+    audioElement.muted = true
+  } else {
+    audioElement.muted = false
+  }
+}
+
 // Call populateHistorySelect to populate the <select> element on page load
 populateHistorySelect();
 loadSelectedHistory()

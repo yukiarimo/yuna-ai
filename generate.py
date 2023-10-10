@@ -10,8 +10,11 @@ import re
 from transformers import pipeline
 import sys
 
+if os.path.exists("config.json"):
+    with open("config.json", 'r') as file:
+        config = json.load(file)
+
 classifier = pipeline("text-classification", model="j-hartmann/emotion-english-distilroberta-base")
-history_file = "static/db/"
 r = sr.Recognizer()
 
 def listen(chat_id):
@@ -38,7 +41,7 @@ def listen(chat_id):
 
 def generate(text, chat_id, speech=False):
     # Read the existing history from the file
-    with open(history_file + chat_id, 'r') as file:
+    with open(config["history"] + chat_id, 'r') as file:
         data = json.load(file)
         history = ''
         for item in data:
@@ -56,76 +59,75 @@ def generate(text, chat_id, speech=False):
     # Define the request payload
     payload = {
         "n": 1,
-        "max_context_length": 1280,
-        "max_length": 128,
-        "rep_pen": 1.1,
-        "temperature": 0.65,
-        "top_p": 1,
-        "top_k": 0,
-        "top_a": 0,
-        "typical": 1,
-        "tfs": 1,
-        "rep_pen_range": 320,
-        "rep_pen_slope": 0.7,
-        "sampler_order": [6, 0, 1, 3, 4, 2, 5],
+        "max_context_length": config["request"]["max_context_length"],
+        "max_length": config["request"]["max_length"],
+        "rep_pen": config["request"]["rep_pen"],
+        "temperature": config["request"]["temperature"],
+        "top_p": config["request"]["top_p"],
+        "top_k": config["request"]["top_k"],
+        "top_a": config["request"]["top_a"],
+        "typical": config["request"]["typical"],
+        "tfs": config["request"]["tfs"],
+        "rep_pen_range": config["request"]["rep_pen_range"],
+        "rep_pen_slope": config["request"]["rep_pen_slope"],
+        "sampler_order": config["request"]["sampler_order"],
         "prompt": new_history,  # Use the updated history here
-        "quiet": True,
-        "stop_sequence": ["Yuki:",  "\nYuki: ", "\nYou:", "\nYou: ", "\nYuna: ", "\nYuna:", "Yuuki: ", "\n", "<|user|>", "<|system|>", "<|model|>"],
-        "use_default_badwordsids": True
+        "quiet": config["request"]["quiet"],
+        "stop_sequence": config["request"]["stop_sequence"],
+        "use_default_badwordsids": config["request"]["use_default_badwordsids"]
     }
 
     # Send a POST request to the endpoint
     response = requests.post(url, json=payload)
-    responsesay = response.json()['results'][0]['text']
-    responsesay = responsesay.replace('\n', '')
+    response = response.json()['results'][0]['text']
+    response = response.replace('\n', '')
 
-    if speech == True:
-        send_message(responsesay, chat_id)
+    response = remove_emojis(str(response))
 
-    return responsesay
+    if (config["emotions"] == False):
+        responseAdd = classifier(response)[0]['label']
 
-def send_message(response, chat_id):
+        # Replace words
+        replacement_dict = {
+            "anger": "angry",
+            "disgust": "disgusted",
+            "fear": "scared",
+            "joy": "smiling",
+            "neutral": "calm",
+            "sadness": "sad",
+            "surprise": "surprised"
+        }
+
+        for word, replacement in replacement_dict.items():
+            responseAdd = responseAdd.replace(word, replacement)
+
+        response = response + f" *{responseAdd}*"
+
     # Load chat history from the JSON file when the server starts
     chat_history = load_chat_history(chat_id)
-    response = remove_emojis(response)
-    responseAdd = "" #classifier(response)[0]['label']
 
-    # Replace words
-    replacement_dict = {
-        "anger": "angry",
-        "disgust": "disgusted",
-        "fear": "scared",
-        "joy": "smiling",
-        "neutral": "calm",
-        "sadness": "sad",
-        "surprise": "surprised"
-    }
-
-    for word, replacement in replacement_dict.items():
-        responseAdd = responseAdd.replace(word, replacement)
-
-    response = response + f"{responseAdd}"
     # Append the message to the chat history
     chat_history.append({"name": "Yuna", "message": response})
     # Save the updated chat history to the JSON file
     save_chat_history(chat_history, chat_id)
 
-    subprocess.run(f'say "{response}"', shell=True)
-    print("go")
+    if speech == True:
+        subprocess.run(f'say "{response}"', shell=True)
+        print("go")
 
-    return "True"
+    return response
 
 # Function to load chat history from the JSON file
 def load_chat_history(chat):
-    if os.path.exists(history_file):
-        with open(history_file + chat, 'r') as file:
+    if os.path.exists(config["history"]):
+        with open(config["history"] + chat, 'r') as file:
             return json.load(file)
     else:
         return []
 
 # Function to save chat history to the JSON file
 def save_chat_history(chat_history, chat):
-    with open(history_file + chat, 'w') as file:
+    with open(config["history"] + chat, 'w') as file:
         json.dump(chat_history, file)
 
 def remove_emojis(input_string):

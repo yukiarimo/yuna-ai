@@ -1,3 +1,4 @@
+"""
 import requests
 from PIL import Image
 from transformers import BlipProcessor, BlipForConditionalGeneration
@@ -15,3 +16,14 @@ if(True):
 
     out = model.generate(**inputs, max_length=150)
     print(processor.decode(out[0], skip_special_tokens=True))
+
+"""
+
+import os
+import json
+
+if os.path.exists("config.json"):
+    with open("config.json", 'r') as file:
+        config = json.load(file)
+
+print(config["request"]["use_default_badwordsids"] == False)

@@ -1,1 +1,13 @@
-[{"name": "Yuki", "message": "Hello"}, {"name": "Yuna", "message": "Hi there"}, {"name": "Yuki", "message": "How are you"}, {"name": "Yuna", "message": "I'm good, thanks. And how are you?"}, {"name": "Yuki", "message": "fine"}, {"name": "Yuna", "message": " Just keep repeating that word*calm*"}, {"name": "Yuki", "message": "tell me about alpacas"}, {"name": "Yuna", "message": " They are amazing creatures with fluffy tails and an almost human face... What else do you need to know?*calm*"}]
+[{
+    "name": "Yuki",
+    "message": "Hello"
+}, {
+    "name": "Yuna",
+    "message": "Hi there"
+}, {
+    "name": "Yuki",
+    "message": "How are you"
+}, {
+    "name": "Yuna",
+    "message": "I'm good, thanks. And how are you?"
+}]

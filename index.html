@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="Yuna AI - a virtual girlfriend">
+    <meta name="keywords" content="Yuki Arimo, Yuna, Yuna AI, GPT">
+    <meta name="author" content="Yuki Arimo">
+    <meta name="robots" content="index, follow">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar" content="#99c189">
+    <meta name="theme-color" content="#99c189" />
+    <link rel="icon" href="static/img/favicon.ico" type="image/x-icon">
+    <meta name="referrer" content="no-referrer-when-downgrade"> <!-- For privacy and security -->
+
+    <title>Yuna</title>
+
+    <link rel="stylesheet" href="static/css/index.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/yukiarimo/kawai-framework@main/assets/css/kawai.css">
+    <script src="https://cdn.jsdelivr.net/gh/yukiarimo/kawai-framework@main/assets/js/kawai.js" defer></script>
+    <link href="static/fonts/kawai-font.woff" rel="stylesheet">
+    <link href="/manifest.json" rel="manifest" crossorigin="use-credentials" />
+    <script src="static/js/index.js" defer></script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('/sw.js').then(
+                    function (registration) {
+                        // Registration was successful
+                        console.log('ServiceWorker registration successful with scope: ', registration
+                            .scope);
+                    },
+                    function (err) {
+                        // registration failed :(
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
+</head>
+
+<body>
+    <div class="sidebar-o hideside" id="sidebar">
+        <div class="coll-lo v-coll" style="background: none;">
+            <div class="block-text la">Menu</div>
+        </div>
+
+        <div class="side-tab-block">
+            <div class="side-tab-block-e" onclick="OpenTab('1')">Chat</div>
+            <div class="side-tab-block-e" onclick="OpenTab('2')">Call</div>
+            <div class="side-tab-block-e" onclick="OpenTab('3')">Mode</div>
+        </div>
+    </div>
+
+    <div class="block-o center">
+        <div class="tab-o tab-o-default" id="1">
+            <div class="topbar-o">
+                <div class="block-button" id="toggleButtonSide" onclick="toggleSidebar();">Side</div>
+                <div class="top-tab-block">
+                    <div class="top-tab-block-e block-text">
+                        <img src="static/img/yuna.png" alt="Yuna" class="block-image">
+                    </div>
+                    <div class="top-tab-block-e block-text">
+                        <h1 class="la block-text">Yuna</h1>
+                    </div>
+                </div>
+                <div class="la block-text" id="settingsButton">⚙️</div>
+            </div>
+
+            <div class="coll-lo">
+                <div class="block-card el-9">
+                    <div class="block-scroll" id="message-container">
+                        <!-- Messages will be displayed here -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="coll-lo">
+                <form class="block-card el-9 h-coll" onsubmit="handleSubmit(event)">
+                    <textarea id="input_text" placeholder="Talk to Yuna..."></textarea>
+                    <button type="submit" class="block-button">💬</button>
+                    <button type="button" class="block-button" onclick="OpenPopup('options')">☰</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="tab-o" id="2">
+            <div class="topbar-o">
+                <div class="block-button" id="toggleButtonSide" onclick="toggleSidebar();">Side</div>
+                <div class="top-tab-block">
+                    <div class="top-tab-block-e block-text">
+                        <img src="static/img/yuna.png" alt="Yuna" class="block-image">
+                    </div>
+                    <div class="top-tab-block-e block-text">
+                        <h1 class="la block-text">Yuna</h1>
+                    </div>
+                </div>
+                <button class="block-button" id="startButton">Talk</button>
+            </div>
+
+            <div class="coll-lo">
+                <audio id="backgroundMusic">
+                    <source src="static/audio/output.mp3" type="audio/mp3">
+                </audio>
+
+                <div class="participant el-9 block-card">
+                    <div class="block-text la">Call</div>
+                    <img src="static/img/yuna-full.png" alt="Yuna Participant" style="border-radius: 20px;">
+                    <video id="localVideo" playsinline autoplay muted class="draggable-video"></video>
+                    <div class="controls">
+                        <button class="block-button" id="camera-off">📷</button>
+                        <button class="block-button" id="end-call">📞</button>
+                        <button class="block-button" id="mute-microphone">🎤</button>
+
+                        <canvas id="capture-canvas" style="display: none;"></canvas> <!-- Add this canvas element -->
+                        <button class="block-button" id="capture-image">📷</button> <!-- Add this button -->
+                        <button class="block-button" id="send-captured-image">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-o" id="3">
+            <div class="topbar-o">
+                <div class="block-button" id="toggleButtonSide" onclick="toggleSidebar();">Side</div>
+                <div class="top-tab-block">
+                    <div class="top-tab-block-e block-text">
+                        <img src="static/img/yuna.png" alt="Yuna" class="block-image">
+                    </div>
+                    <div class="top-tab-block-e block-text">
+                        <h1 class="la block-text">Yuna</h1>
+                    </div>
+                </div>
+                <div class="la block-text">⚙️</div>
+            </div>
+
+            <div class="coll-lo">
+                <div class="block-card el-9">
+                    <h1>Modes</h1>
+                    <div class="block-card">
+                        <div class="block-text lc">Story writting</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="block-popup" id="settings">
+        <div class="block-button-close" onclick="PopupClose();">X</div>
+        <div class="coll-lo">
+            <div class="block-card el-9">
+                <h1>Mode</h1>
+                <div class="block-toggle"></div>
+            </div>
+        </div>
+
+        <div class="coll-lo">
+            <div class="block-card el-9">
+                <div id="parameter-container">
+                    <!-- Dynamic HTML elements will be added here -->
+                </div>
+                <button id="save-button">Save Parameters to Local Storage</button>
+            </div>
+        </div>
+
+        <div class="coll-lo">
+            <details class="coll-lo">
+                <div class="block-card el-9 h-coll">
+                    <textarea id="codeInput" rows="5" cols="40" placeholder="Enter JavaScript"></textarea>
+                    <button type="button" class="block-button" id="executeButton">Run</button>
+                    <textarea id="consoleOutput" rows="10" cols="40" readonly=""></textarea>
+                </div>
+            </details>
+        </div>
+    </div>
+
+    <div class="block-popup" id="options">
+        <div class="block-button-close" onclick="PopupClose();">X</div>
+        <div class="coll-lo">
+            <div class="block-list el-9 v-coll">
+                <div class="block-list-e" onclick="editHistory()">✍️ Edit</div>
+                <div class="block-list-e" onclick="loadSelectedHistory()">👇 Load</div>
+                <div class="block-list-e" onclick="downloadHistory()">⬇️ Download</div>
+                <div class="block-list-e" onclick="location.reload();">🔄 Refresh</div>
+                <div class="block-list-e" onclick="scrollMsg();">📜 Scroll</div>
+                <div class="block-list-e" onclick="muteAudio()">📢 Mute</div>
+                <label for="history-select">History</label>
+                <button class="block-button" aria-label="History">
+                    <select id="history-select" onchange="loadSelectedHistory()">📁</select>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to execute JavaScript code entered by the user
+        document.getElementById("executeButton").addEventListener("click", function () {
+            // Get the JavaScript code from the textarea
+            var code = document.getElementById("codeInput").value;
+
+            try {
+                // Use eval to execute the code
+                var result = eval(code);
+
+                // Display the result in the console output textarea
+                document.getElementById("consoleOutput").value += "Result: " + result + "\n";
+            } catch (error) {
+                // If there's an error, display it in the console output textarea
+                document.getElementById("consoleOutput").value += "Error: " + error.message + "\n";
+            }
+        });
+    </script>
+</body>
+
+</html>

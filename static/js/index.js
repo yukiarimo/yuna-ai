@@ -1,3 +1,6 @@
+var server_url = 'http://localhost:4848/';
+var config_data;
+
 var backgroundMusic = document.getElementById('backgroundMusic');
 var isTTS = ''
 var messageContainer = document.getElementById('message-container');
@@ -32,7 +35,7 @@ function sendMessage(message) {
   var selectedFilename = historySelect.value;
 
   // Send a POST request to /send_message
-  fetch('/send_message', {
+  fetch(`${server_url}send_message`, {
       method: 'POST',
       body: new URLSearchParams({
         'message': message,
@@ -63,7 +66,7 @@ function sendMessage(message) {
       }
     })
     .catch(error => {
-      console.error('Error sending message:', error);
+      //console.error('Error sending message:', error);
 
       messageContainer = document.getElementById('message-container');
 
@@ -89,15 +92,15 @@ function playAudio(audioType = 'tts') {
 
   if (audioType == 'tts') {
     // Set the src attribute with the random query parameter
-    audioSource.src = `/static/audio/output.mp3?v=${randomValue}`;
+    audioSource.src = `static/audio/output.mp3?v=${randomValue}`;
   } else if (audioType == 'message') {
-    audioSource.src = '/static/audio/sounds/message.mp3';
+    audioSource.src = 'static/audio/sounds/message.mp3';
   } else if (audioType == 'send') {
-    audioSource.src = '/static/audio/sounds/send.mp3';
+    audioSource.src = 'static/audio/sounds/send.mp3';
   } else if (audioType == 'error') {
-    audioSource.src = '/static/audio/sounds/error.mp3';
+    audioSource.src = 'static/audio/sounds/error.mp3';
   } else if (audioType == 'ringtone') {
-    audioSource.src = '/static/audio/sounds/ringtone.mp3';
+    audioSource.src = 'static/audio/sounds/ringtone.mp3';
   }
 
   // Get the audio element and play it
@@ -147,7 +150,7 @@ function downloadHistory() {
   }
 
   // Fetch the selected chat history file from the server
-  fetch(`/load_history_file/${selectedFilename}`, {
+  fetch(`${server_url}load_history_file/${selectedFilename}`, {
       method: 'GET',
     })
     .then(response => response.json())
@@ -182,7 +185,7 @@ function editHistory() {
   }
 
   // Fetch the selected chat history file from the server
-  fetch(`/load_history_file/${selectedFilename}`, {
+  fetch(`${server_url}load_history_file/${selectedFilename}`, {
       method: 'GET',
     })
     .then(response => response.json())
@@ -228,7 +231,7 @@ function sendEditHistory(editTextArea) {
   var selectedFilename = historySelect.value;
 
   // Send a POST request to /send_message
-  fetch('/edit_history', {
+  fetch(`${server_url}edit_history`, {
       method: 'POST',
       body: new URLSearchParams({
         'history': editTextArea,
@@ -273,7 +276,7 @@ navigator.mediaDevices.getUserMedia({
     localVideo.srcObject = stream;
   })
   .catch(function (error) {
-    console.error('Error accessing the camera:', error);
+    console.log('Error accessing the camera:', error);
   });
 
 let recognition; // Define the recognition object at a higher scope
@@ -386,7 +389,7 @@ document.getElementById('send-captured-image').addEventListener('click', functio
   var imageDataURL = captureCanvas.toDataURL('image/png'); // Convert canvas to base64 data URL
 
   // Send the captured image to the Flask server
-  fetch('/upload_captured_image', {
+  fetch(`${server_url}upload_captured_image`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -416,7 +419,7 @@ function populateHistorySelect() {
   messageContainer = document.getElementById('message-container');
 
   // Fetch the list of history files from the server
-  fetch('/list_history_files', {
+  fetch(`${server_url}list_history_files`, {
       method: 'GET',
     })
     .then(response => response.json())
@@ -445,7 +448,7 @@ function loadSelectedHistory() {
   }
 
   // Fetch the selected chat history file from the server
-  fetch(`/load_history_file/${selectedFilename}`, {
+  fetch(`${server_url}load_history_file/${selectedFilename}`, {
       method: 'GET',
     })
     .then(response => response.json())
@@ -471,3 +474,90 @@ function muteAudio() {
 // Call populateHistorySelect to populate the <select> element on page load
 populateHistorySelect();
 loadSelectedHistory()
+
+// Get all elements with the class 'side-tab-block-e'
+const tabElements = document.getElementsByClassName('side-tab-block-e');
+
+// Add a click event listener to each tab element
+for (let i = 0; i < tabElements.length; i++) {
+  tabElements[i].addEventListener('click', toggleSidebar);
+}
+
+if (localStorage.getItem('config')) {
+  data = localStorage.getItem('config')
+  config_data = data
+  configUrl = config_data.configUrl
+} else {
+  // Construct the full URL for the config.json file
+  const configUrl = `static/config.json`;
+
+  // Fetch the JSON data
+  fetch(configUrl)
+    .then((response) => {
+      // Check if the response status is OK (200)
+      if (!response.ok) {
+        throw new Error(`Failed to fetch JSON: ${response.status} ${response.statusText}`);
+      }
+
+      // Parse the JSON response
+      return response.json();
+    })
+    .then((data) => {
+      // Handle the JSON data
+      config_data = data
+      localStorage.getItem('config')
+      server_url = config_data.server
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
+}
+
+function configParams() {
+  var config = config_data
+
+  // Get the parameter container element
+  const parameterContainer = document.getElementById('parameter-container');
+
+  // Iterate over the JSON properties and create input elements
+  for (const key in config) {
+      if (config.hasOwnProperty(key)) {
+          const label = document.createElement('label');
+          label.textContent = key;
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.value = config[key];
+
+          // Append the label and input to the container
+          parameterContainer.appendChild(label);
+          parameterContainer.appendChild(input);
+      }
+  }
+
+  // Add an event listener to the save button
+  const saveButton = document.getElementById('save-button');
+  saveButton.addEventListener('click', () => {
+      const updatedConfig = { ...config };
+      for (const key in config) {
+          if (config.hasOwnProperty(key)) {
+              const input = parameterContainer.querySelector(`input[label=${key}]`);
+              if (input) {
+                  updatedConfig[key] = input.value;
+              }
+          }
+      }
+      // Save the updated config to local storage
+      localStorage.setItem('customConfig', JSON.stringify(updatedConfig));
+  });
+}
+
+// Get the element with the ID "settingsButton"
+const settingsButton = document.getElementById('settingsButton');
+
+// Add a click event listener to the "settingsButton"
+settingsButton.addEventListener('click', function() {
+    // Call the OpenPopup function
+    OpenPopup('settings');
+    // Call the configParams function
+    configParams();
+});

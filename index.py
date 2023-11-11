@@ -1,15 +1,16 @@
-from flask import Flask, request, render_template, jsonify, send_from_directory
+from flask import Flask, request, jsonify
 import shutil
 import subprocess
 from generate import generate  # Import the generate function from generate.py
 import os
 import json
-import re
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
-if os.path.exists("config.json"):
-    with open("config.json", 'r') as file:
+if os.path.exists("static/config.json"):
+    with open("static/config.json", 'r') as file:
         config = json.load(file)
 
 # Function to load chat history from the JSON file
@@ -24,11 +25,6 @@ def load_chat_history(chat):
 def save_chat_history(chat_history, chat):
     with open(config["history"] + chat, 'w') as file:
         json.dump(chat_history, file)
-
-# Your existing route for rendering the HTML page
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    return render_template('index.html')
 
 # New route for sending and receiving messages
 @app.route('/send_message', methods=['POST'])

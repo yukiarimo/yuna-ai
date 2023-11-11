@@ -5,8 +5,14 @@
     height: 100vh;
 }
 
-.block-popup {
-    display: flex !important;
+.block-button-close {
+    position: relative !important;
+}
+
+#parameter-container {
+    display: flex;
+    flex-direction: column;
+    padding: 2%;
 }
 
 .topbar-o {
@@ -52,6 +58,7 @@ img {
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
     /* Add shadow for a modern look */
     overflow-x: hidden !important;
+    max-height: calc(100vh - 500px) !important;
 }
 
 /* Individual chat message styles */
@@ -155,8 +162,17 @@ img {
     padding: 10px;
 }
 
+.uside {
+    width: auto !important;
+    float: none !important;
+}
+
 @media (max-width : 428px) {
     .participant>img {
         width: 100% !important;
+    }
+
+    #message-container {
+        max-height: calc(100vh - 300px) !important;
     }
 }

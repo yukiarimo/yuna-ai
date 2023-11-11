@@ -10,8 +10,8 @@ import re
 from transformers import pipeline
 import sys
 
-if os.path.exists("config.json"):
-    with open("config.json", 'r') as file:
+if os.path.exists("static/config.json"):
+    with open("static/config.json", 'r') as file:
         config = json.load(file)
 
 classifier = pipeline("text-classification", model="j-hartmann/emotion-english-distilroberta-base")

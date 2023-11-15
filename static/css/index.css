@@ -70,18 +70,30 @@ img {
     padding: 10px;
     border-radius: 12px;
     max-width: 75%;
+    background-color: #fff;
+    /* White background for all messages */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    /* Add shadow for a modern look */
 }
 
 .block-message-1 {
+    align-self: flex-start;
+    border-top-left-radius: 0;
+    /* Remove top left border radius for Yuna's messages */
+    border-bottom-right-radius: 20px;
+    /* Add bottom right border radius for Yuna's messages */
     background-color: #ffc0cb;
     /* Pink background for Yuna's messages */
-    align-self: flex-start;
 }
 
 .block-message-2 {
+    align-self: flex-end;
+    border-top-right-radius: 0;
+    /* Remove top right border radius for Yuki's messages */
+    border-bottom-left-radius: 20px;
+    /* Add bottom left border radius for Yuki's messages */
     background-color: #add8e6;
     /* Light blue background for Yuki's messages */
-    align-self: flex-end;
 }
 
 /* Text styles */
@@ -92,6 +104,29 @@ img {
     font-size: 16px;
     color: #333;
     text-align: left;
+    font-family: 'Helvetica Neue', sans-serif;
+    /* Use a sans-serif font for all messages */
+}
+
+/* Cute styles */
+.block-message-1 {
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4);
+    /* Add stronger shadow for Yuna's messages */
+}
+
+.block-message-2 {
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4);
+    /* Add stronger shadow for Yuki's messages */
+}
+
+.block-message-1 p {
+    font-size: 18px;
+    /* Slightly larger font size for Yuna's messages */
+}
+
+.block-message-2 p {
+    font-size: 18px;
+    /* Slightly larger font size for Yuki's messages */
 }
 
 /* Style for the input area */
@@ -99,9 +134,23 @@ img {
     width: 96%;
     padding: 10px;
     font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    border: none;
+    border-radius: 16px;
     margin-bottom: 10px;
+    background-color: #f0f0f0;
+    /* Light background color */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    /* Add shadow for a modern look */
+    outline: none;
+    /* Remove outline on focus */
+    transition: all 0.3s ease-in-out;
+}
+
+#input_text:focus {
+    background-color: #fff;
+    /* White background color on focus */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4);
+    /* Add stronger shadow on focus */
 }
 
 /* Style for the Send button */
@@ -175,4 +224,80 @@ img {
     #message-container {
         max-height: calc(100vh - 300px) !important;
     }
+}
+
+.typing-bubble {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    margin: 0 5px;
+    background-color: #000000;
+    border-radius: 50%;
+    animation: typing 1s infinite;
+}
+
+.dot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.dot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes typing {
+    0% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    50% {
+        transform: translateY(-10px);
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.edit-popup {
+    display: flex !important;
+}
+
+.block-popup {
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    position: fixed;
+    background: rgba(255, 255, 255, 0.9);
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    padding: 20px;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.block-popup * {
+    margin: 10px;
+    font-size: 1.2rem;
+    text-shadow: 1px 1px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff;
+}
+
+.block-popup img {
+    max-width: 100%;
+    border-radius: 50%;
+    box-shadow: 2px 2px 5px #888888;
 }

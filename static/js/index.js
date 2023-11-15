@@ -24,6 +24,18 @@ function sendMessage(message) {
   let formattedMessage = formatMessage(messageData);
   messageContainer.appendChild(formattedMessage);
 
+  const typingBubble = `
+    <div class="block-message-1" id="bubble">
+      <div class="typing-bubble">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+    </div>
+  `;
+
+  messageContainer.insertAdjacentHTML('beforeend', typingBubble);
+
   scrollMsg()
   playAudio(audioType = 'send')
 
@@ -47,6 +59,11 @@ function sendMessage(message) {
     })
     .then(response => response.json())
     .then(data => {
+      // Delete the element with id "bubble"
+      const bubble = document.getElementById('bubble');
+      if (bubble) {
+        bubble.remove();
+      }
       // Display if ok
       messageContainer = document.getElementById('message-container');
 
@@ -66,7 +83,10 @@ function sendMessage(message) {
       }
     })
     .catch(error => {
-      //console.error('Error sending message:', error);
+      const bubble = document.getElementById('bubble');
+      if (bubble) {
+        bubble.remove();
+      }
 
       messageContainer = document.getElementById('message-container');
 
@@ -192,6 +212,7 @@ function editHistory() {
     .then(data => {
       var historyPopup = document.createElement('div');
       historyPopup.classList.add('block-popup');
+      historyPopup.classList.add('edit-popup');
 
       // Create a pop-up dialog
       var editDialog = document.createElement('div');
@@ -200,7 +221,7 @@ function editHistory() {
       // Create a textarea to edit the message
       var editTextArea = document.createElement('textarea');
       editTextArea.classList.add('block-scroll');
-      editTextArea.value = JSON.stringify(data);
+      editTextArea.value = JSON.stringify(data, null, 2);
       editDialog.appendChild(editTextArea);
 
       // Create a button to save the edited message
@@ -212,7 +233,7 @@ function editHistory() {
         // Call the function to save the edited message here, e.g., send it to the server
         sendEditHistory(editedText);
         // Remove the pop-up dialog
-        editDialog.remove();
+        historyPopup.remove();
       });
       editDialog.appendChild(saveButton);
 
@@ -244,7 +265,6 @@ function sendEditHistory(editTextArea) {
     .then(response => response.json())
     .then(data => {
       // Display if ok
-      console.log(data.response)
       loadSelectedHistory()
     })
     .catch(error => {
@@ -335,36 +355,54 @@ function scrollMsg() {
   objDiv.scrollTop = objDiv.scrollHeight;
 }
 
-// Get the video element and its container
-var video = document.getElementById('localVideo');
-var videoContainer = document.querySelector('.draggable-video');
-
+// code to drag the video
+const localVideo = document.getElementById('localVideo');
 let isDragging = false;
-let offsetX, offsetY;
+let currentX;
+let currentY;
+let initialX;
+let initialY;
+let xOffset = 0;
+let yOffset = 0;
 
-// Add mousedown event listener to start dragging
-video.addEventListener('mousedown', (e) => {
-  isDragging = true;
-  offsetX = e.clientX - video.getBoundingClientRect().left;
-  offsetY = e.clientY - video.getBoundingClientRect().top;
-  video.style.cursor = 'grabbing';
-});
+localVideo.addEventListener('mousedown', dragStart);
+localVideo.addEventListener('mouseup', dragEnd);
+localVideo.addEventListener('mousemove', drag);
 
-// Add mousemove event listener to drag the video
-document.addEventListener('mousemove', (e) => {
-  if (!isDragging) return;
-  var newX = e.clientX - offsetX - videoContainer.getBoundingClientRect().left;
-  var newY = e.clientY - offsetY - videoContainer.getBoundingClientRect().top;
+function dragStart(e) {
+  initialX = e.clientX - xOffset;
+  initialY = e.clientY - yOffset;
 
-  video.style.left = `${newX}px`;
-  video.style.top = `${newY}px`;
-});
+  if (e.target === localVideo) {
+    isDragging = true;
+  }
+}
 
-// Add mouseup event listener to stop dragging
-document.addEventListener('mouseup', () => {
+function dragEnd(e) {
+  initialX = currentX;
+  initialY = currentY;
+
   isDragging = false;
-  video.style.cursor = 'grab';
-});
+}
+
+function drag(e) {
+  if (isDragging) {
+    e.preventDefault();
+
+    currentX = e.clientX - initialX;
+    currentY = e.clientY - initialY;
+
+    xOffset = currentX;
+    yOffset = currentY;
+
+    setTranslate(currentX, currentY, localVideo);
+  }
+}
+
+function setTranslate(xPos, yPos, el) {
+  el.style.transform = `translate3d(${xPos}px, ${yPos}px, 0)`;
+}
+
 
 // Add an event listener to the "Capture Image" button
 document.getElementById('capture-image').addEventListener('click', function () {
@@ -485,27 +523,20 @@ for (let i = 0; i < tabElements.length; i++) {
 
 if (localStorage.getItem('config')) {
   data = localStorage.getItem('config')
-  config_data = data
+  config_data = JSON.parse(data)
   configUrl = config_data.configUrl
+  server_url = config_data.server
 } else {
   // Construct the full URL for the config.json file
-  const configUrl = `static/config.json`;
+  var configUrl = `static/config.json`;
 
   // Fetch the JSON data
   fetch(configUrl)
-    .then((response) => {
-      // Check if the response status is OK (200)
-      if (!response.ok) {
-        throw new Error(`Failed to fetch JSON: ${response.status} ${response.statusText}`);
-      }
-
-      // Parse the JSON response
-      return response.json();
-    })
+    .then(response => response.json())
     .then((data) => {
       // Handle the JSON data
       config_data = data
-      localStorage.getItem('config')
+      localStorage.setItem('config', JSON.stringify(config_data));
       server_url = config_data.server
     })
     .catch((error) => {
@@ -513,7 +544,8 @@ if (localStorage.getItem('config')) {
     });
 }
 
-function configParams() {
+function openConfigParams() {
+  OpenPopup('settings');
   var config = config_data
 
   // Get the parameter container element
@@ -521,43 +553,33 @@ function configParams() {
 
   // Iterate over the JSON properties and create input elements
   for (const key in config) {
-      if (config.hasOwnProperty(key)) {
-          const label = document.createElement('label');
-          label.textContent = key;
-          const input = document.createElement('input');
-          input.type = 'text';
-          input.value = config[key];
+    if (config.hasOwnProperty(key)) {
+      const label = document.createElement('label');
+      label.textContent = key;
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.value = config[key];
 
-          // Append the label and input to the container
-          parameterContainer.appendChild(label);
-          parameterContainer.appendChild(input);
-      }
+      // Append the label and input to the container
+      parameterContainer.appendChild(label);
+      parameterContainer.appendChild(input);
+    }
   }
 
-  // Add an event listener to the save button
-  const saveButton = document.getElementById('save-button');
-  saveButton.addEventListener('click', () => {
-      const updatedConfig = { ...config };
-      for (const key in config) {
-          if (config.hasOwnProperty(key)) {
-              const input = parameterContainer.querySelector(`input[label=${key}]`);
-              if (input) {
-                  updatedConfig[key] = input.value;
-              }
-          }
-      }
-      // Save the updated config to local storage
-      localStorage.setItem('customConfig', JSON.stringify(updatedConfig));
-  });
+  return parameterContainer;
 }
 
-// Get the element with the ID "settingsButton"
-const settingsButton = document.getElementById('settingsButton');
+function saveConfigParams() {
+  const parameterContainer = document.getElementById('parameter-container');
+  const inputs = parameterContainer.querySelectorAll('input');
+  const obj = {};
 
-// Add a click event listener to the "settingsButton"
-settingsButton.addEventListener('click', function() {
-    // Call the OpenPopup function
-    OpenPopup('settings');
-    // Call the configParams function
-    configParams();
-});
+  inputs.forEach((input) => {
+    const label = input.previousSibling.textContent.trim();
+    obj[label] = input.value;
+  });
+
+  localStorage.setItem('config', JSON.stringify(obj));
+  document.getElementById('parameter-container').innerHTML = '';
+  PopupClose();
+}

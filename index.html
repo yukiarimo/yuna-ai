@@ -66,7 +66,7 @@
                         <h1 class="la block-text">Yuna</h1>
                     </div>
                 </div>
-                <div class="la block-text" id="settingsButton">⚙️</div>
+                <div class="la block-text" id="settingsButton" onclick="openConfigParams();">⚙️</div>
             </div>
 
             <div class="coll-lo">
@@ -149,29 +149,25 @@
 
     <div class="block-popup" id="settings">
         <div class="block-button-close" onclick="PopupClose();">X</div>
-        <div class="coll-lo">
+
+        <div class="coll-lo v-coll">
             <div class="block-card el-9">
                 <h1>Mode</h1>
                 <div class="block-toggle"></div>
             </div>
-        </div>
 
-        <div class="coll-lo">
             <div class="block-card el-9">
                 <div id="parameter-container">
                     <!-- Dynamic HTML elements will be added here -->
                 </div>
-                <button id="save-button">Save Parameters to Local Storage</button>
+                <button id="save-button" onclick="saveConfigParams();">Save Parameters to Local Storage</button>
             </div>
-        </div>
 
-        <div class="coll-lo">
-            <details class="coll-lo">
-                <div class="block-card el-9 h-coll">
-                    <textarea id="codeInput" rows="5" cols="40" placeholder="Enter JavaScript"></textarea>
-                    <button type="button" class="block-button" id="executeButton">Run</button>
-                    <textarea id="consoleOutput" rows="10" cols="40" readonly=""></textarea>
-                </div>
+
+            <details class="block-card el-9 v-coll">
+                <textarea id="codeInput" rows="5" cols="40" placeholder="Enter JavaScript"></textarea>
+                <button type="button" class="block-button" id="executeButton">Run</button>
+                <textarea id="consoleOutput" rows="10" cols="40" readonly=""></textarea>
             </details>
         </div>
     </div>

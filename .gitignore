@@ -1,11 +1,9 @@
-node_modules
 __pycache__/
 static/db/*.json
 !static/db/history_template.json
 static/audio/output.aiff
 static/audio/output.mp3
-lib/datasets/
-lib/models/
-lib/yunacpp/models/
-lib/yunacpp/yuna.so
-lib/yunacpp/build-yuna/
+lib/datasets/yuna/
+lib/yuna/models/
+lib/yuna/build-yuna/
+static/img/call/captured_image.jpg

@@ -15,17 +15,13 @@
     padding: 2%;
 }
 
-.topbar-o {
-    height: 50px !important;
+.block-text {
+    color: white !important;
 }
 
 form>div {
     flex-direction: row !important;
     display: flex;
-}
-
-.block-scroll {
-    height: 600px !important;
 }
 
 .tab-o {
@@ -46,9 +42,6 @@ img {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    /* Add spacing between messages */
-    max-height: 600px !important;
-    /* Limit message container width */
     overflow: auto;
     /* Add scrolling for overflow */
     padding: 10px;
@@ -58,7 +51,7 @@ img {
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
     /* Add shadow for a modern look */
     overflow-x: hidden !important;
-    max-height: calc(100vh - 500px) !important;
+    max-height: calc(100vh - 300px) !important
 }
 
 /* Individual chat message styles */
@@ -291,9 +284,7 @@ img {
 }
 
 .block-popup * {
-    margin: 10px;
     font-size: 1.2rem;
-    text-shadow: 1px 1px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff;
 }
 
 .block-popup img {

@@ -20,6 +20,6 @@
     },
     "port": 4848,
     "history": "static/db/",
-    "manes": ["Yuki", "Yuna"],
+    "names": ["Yuki", "Yuna"],
     "server": "http://localhost:4848/"
 }

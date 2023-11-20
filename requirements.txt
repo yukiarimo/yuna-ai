@@ -1,2 +1,8 @@
 flask
 flask_cors
+torch
+torchvision
+torchaudio
+ctransformers
+transformers
+diffusers

@@ -61,14 +61,18 @@ To install Yuna AI, follow these steps:
 1. Clone the Yuna AI repository to your local machine using `git clone https://github.com/yukiarimo/yuna-ai.git`.
 2. Make sure you have Python 3.10 or later installed.
 3. Install the required dependencies by running `pip install -r requirements.txt`.
-4. Run the `config.py` file to build external dependencies for Yuna in the `lib/yunacpp/` directory.
-5. Put your AI model like `gguf_model.bin` into the `lib/yunacpp/models/` directory.
+4. Open terminal and run `cd 'lib/yuna/'`.
+5. Activate virtual environment (optional).
+6. Run the `config.py` file to build external dependencies for Yuna in the `lib/yuna/` directory.
+7. Put your AI model like `gguf_model.bin` into the `lib/yuna/models/` directory.
 
 To start using AI, do the following:
-1. Run the AI starter file with the command `sh start.sh` in the `libyunacpp/` directory to start the Yuna model.
-2. Run `python index.py` command in the main directory to start the WebUI.
-3. Double-click the `index.html` file in the directory or run it via Live Server.
-4. Done!
+1. Go to previous terminal
+2. Run the AI starter file with the command `sh start.sh` in the `lib/yuna/` directory to start the Yuna model.
+3. Open second terminal window
+4. Run `python index.py` command in the main directory to start the WebUI.
+5. Double-click the `index.html` file in the directory or run it via Live Server (better).
+6. Done!
 
 > Note: port and directory or file names can depend on your configuration.
 

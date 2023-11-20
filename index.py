@@ -1,10 +1,17 @@
+import base64
 from flask import Flask, request, jsonify
 import shutil
 import subprocess
-from generate import generate  # Import the generate function from generate.py
+from lib.generate import generate  # Import the generate function from generate.py
 import os
 import json
 from flask_cors import CORS
+from ctransformers import AutoModelForCausalLM
+from PIL import Image
+from transformers import BlipProcessor, BlipForConditionalGeneration
+
+processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
+model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
 
 app = Flask(__name__)
 CORS(app)
@@ -70,12 +77,24 @@ def upload_captured_image():
 
         # Decode the base64 image data URL and process it as needed
         # You can use a library like Pillow to save or manipulate the image
+        image_data = base64.b64decode(image_data_url.split(',')[1])
+        image_path = os.path.join('static', 'img', 'call', 'captured_image.jpg')
+        with open(image_path, 'wb') as image_file:
+            image_file.write(image_data)
+
+        img_path = 'static/img/call/captured_image.jpg' 
+        raw_image = Image.open(img_path).convert('RGB')
+
+        # unconditional image captioning
+        inputs = processor(raw_image, return_tensors="pt")
+
+        out = model.generate(**inputs, max_length=150)
+        image_caption = str(processor.decode(out[0], skip_special_tokens=True))
+        print(image_caption)
 
         # Respond with a success message
-        print('ok')
-        return jsonify({'message': 'Captured image received and processed successfully'})
+        return jsonify({'message': f'{image_caption}'})
 
-    print('shit')
     # If something goes wrong or no image data is provided
     return jsonify({'error': 'Image upload failed'}), 400
 
@@ -95,6 +114,45 @@ def load_history_file(filename):
             return json.load(file)
     else:
         return []
+    
+def stableDiffusion(prompt):
+    import torch
+    from diffusers import StableDiffusionPipeline
+
+    device = "mps" if torch.backends.mps.is_available() else "cpu"
+    torch.device(device)
+
+    pipe = StableDiffusionPipeline.from_pretrained('./image-gen', torch_dtype=torch.float16)
+    pipe = pipe.to(device)
+
+    prompt = "Japanese girl with background of london bridge in color with text"
+    image = pipe(prompt).images[0]  
+        
+    image.save("result.png")
+    
+def clearGen(prompt):
+    llm = AutoModelForCausalLM.from_pretrained(
+    "lib/yuna/models/pygmalion-2-7b.Q5_K_M.gguf",
+    model_type='llama2',
+    top_k=40,
+    top_p=0.1,
+    temperature=0.7,
+    repetition_penalty=1.18,
+    last_n_tokens=64,
+    seed=123,
+    batch_size=64,
+    context_length=8192,
+    max_new_tokens=300,
+    gpu_layers=1
+    )
+
+    while True:
+        test = input("YUKI: ")
+
+        print("Yuna: ", end="")
+        for text in llm("Yuki: " + test + "\nYuna:", stream=True):
+            print(text, end="", flush=True)
+        print()
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=4848)

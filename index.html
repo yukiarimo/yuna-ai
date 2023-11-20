@@ -42,9 +42,10 @@
 </head>
 
 <body>
-    <div class="sidebar-o hideside" id="sidebar">
+    <div class="sidebar-o" id="sidebar">
         <div class="coll-lo v-coll" style="background: none;">
             <div class="block-text la">Menu</div>
+            <img src="static/img/yuna.png" alt="Yuna" class="block-image">
         </div>
 
         <div class="side-tab-block">
@@ -54,21 +55,14 @@
         </div>
     </div>
 
-    <div class="block-o center">
-        <div class="tab-o tab-o-default" id="1">
-            <div class="topbar-o">
-                <div class="block-button" id="toggleButtonSide" onclick="toggleSidebar();">Side</div>
-                <div class="top-tab-block">
-                    <div class="top-tab-block-e block-text">
-                        <img src="static/img/yuna.png" alt="Yuna" class="block-image">
-                    </div>
-                    <div class="top-tab-block-e block-text">
-                        <h1 class="la block-text">Yuna</h1>
-                    </div>
-                </div>
-                <div class="la block-text" id="settingsButton" onclick="openConfigParams();">⚙️</div>
-            </div>
+    <div class="topbar-o">
+        <div class="block-button" id="toggleButtonSide" onclick="toggleSidebar();">Side</div>
+        <div><div class="la block-text">Yuna</div></div>
+        <div class="la block-text" id="settingsButton" onclick="openConfigParams();">⚙️</div>
+    </div>
 
+    <div class="block-o">
+        <div class="tab-o tab-o-default" id="1">
             <div class="coll-lo">
                 <div class="block-card el-9">
                     <div class="block-scroll" id="message-container">
@@ -87,19 +81,6 @@
         </div>
 
         <div class="tab-o" id="2">
-            <div class="topbar-o">
-                <div class="block-button" id="toggleButtonSide" onclick="toggleSidebar();">Side</div>
-                <div class="top-tab-block">
-                    <div class="top-tab-block-e block-text">
-                        <img src="static/img/yuna.png" alt="Yuna" class="block-image">
-                    </div>
-                    <div class="top-tab-block-e block-text">
-                        <h1 class="la block-text">Yuna</h1>
-                    </div>
-                </div>
-                <button class="block-button" id="startButton">Talk</button>
-            </div>
-
             <div class="coll-lo">
                 <audio id="backgroundMusic">
                     <source src="static/audio/output.mp3" type="audio/mp3">
@@ -110,32 +91,19 @@
                     <img src="static/img/yuna-full.png" alt="Yuna Participant" style="border-radius: 20px;">
                     <video id="localVideo" playsinline autoplay muted class="draggable-video"></video>
                     <div class="controls">
-                        <button class="block-button" id="camera-off">📷</button>
-                        <button class="block-button" id="end-call">📞</button>
-                        <button class="block-button" id="mute-microphone">🎤</button>
+                        <button class="block-button" id="camera-off">Off</button>
+                        <button class="block-button" id="end-call">End</button>
+                        <button class="block-button" id="mute-microphone">Mute</button>
 
                         <canvas id="capture-canvas" style="display: none;"></canvas> <!-- Add this canvas element -->
-                        <button class="block-button" id="capture-image">📷</button> <!-- Add this button -->
-                        <button class="block-button" id="send-captured-image">Send</button>
+                        <button class="block-button" id="capture-image">Capture</button> <!-- Add this button -->
+                        <button class="block-button" id="startButton">Talk</button>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="tab-o" id="3">
-            <div class="topbar-o">
-                <div class="block-button" id="toggleButtonSide" onclick="toggleSidebar();">Side</div>
-                <div class="top-tab-block">
-                    <div class="top-tab-block-e block-text">
-                        <img src="static/img/yuna.png" alt="Yuna" class="block-image">
-                    </div>
-                    <div class="top-tab-block-e block-text">
-                        <h1 class="la block-text">Yuna</h1>
-                    </div>
-                </div>
-                <div class="la block-text">⚙️</div>
-            </div>
-
             <div class="coll-lo">
                 <div class="block-card el-9">
                     <h1>Modes</h1>
@@ -157,7 +125,7 @@
             </div>
 
             <div class="block-card el-9">
-                <div id="parameter-container">
+                <div class="block-scroll" id="parameter-container">
                     <!-- Dynamic HTML elements will be added here -->
                 </div>
                 <button id="save-button" onclick="saveConfigParams();">Save Parameters to Local Storage</button>
@@ -182,10 +150,7 @@
                 <div class="block-list-e" onclick="location.reload();">🔄 Refresh</div>
                 <div class="block-list-e" onclick="scrollMsg();">📜 Scroll</div>
                 <div class="block-list-e" onclick="muteAudio()">📢 Mute</div>
-                <label for="history-select">History</label>
-                <button class="block-button" aria-label="History">
-                    <select id="history-select" onchange="loadSelectedHistory()">📁</select>
-                </button>
+                <select class="block-list-e block-button" id="history-select" onchange="loadSelectedHistory()">📁</select>
             </div>
         </div>
     </div>

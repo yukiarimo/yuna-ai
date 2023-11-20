@@ -417,37 +417,38 @@ document.getElementById('capture-image').addEventListener('click', function () {
   // Draw the current frame from the video onto the canvas
   captureContext.drawImage(localVideo, 0, 0, captureCanvas.width, captureCanvas.height);
 
-  // Show the canvas (optional)
-  captureCanvas.style.display = 'block';
-});
-
-// Add an event listener to the "Send Captured Image" button
-document.getElementById('send-captured-image').addEventListener('click', function () {
-  var captureCanvas = document.getElementById('capture-canvas');
-  var imageDataURL = captureCanvas.toDataURL('image/png'); // Convert canvas to base64 data URL
+  captureCanvas = document.getElementById('capture-canvas');
+  imageDataURL = captureCanvas.toDataURL('image/png'); // Convert canvas to base64 data URL
 
   // Send the captured image to the Flask server
   fetch(`${server_url}upload_captured_image`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        image: imageDataURL
-      })
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      image: imageDataURL
     })
+  })
     .then(response => {
       if (response.ok) {
-        // Image successfully sent
-        alert('Captured image sent successfully!');
-        // You can add further actions here if needed
+        // Parse the JSON data from the response
+        return response.json();
       } else {
-        // Handle the error
-        alert('Error sending captured image.');
+        throw new Error('Error sending captured image.');
       }
+    })
+    .then(data => {
+      // Access the image caption from the server response
+      const imageCaption = data.message;
+      console.log('Image Caption:', imageCaption);
+
+      // You can add further actions here if needed
+      alert('Image successfully sent. Caption: ' + imageCaption);
     })
     .catch(error => {
       console.error('Error:', error);
+      alert('Error sending captured image.');
     });
 });
 
@@ -546,25 +547,108 @@ if (localStorage.getItem('config')) {
 
 function openConfigParams() {
   OpenPopup('settings');
-  var config = config_data
+  var config = config_data;
 
   // Get the parameter container element
   const parameterContainer = document.getElementById('parameter-container');
 
-  // Iterate over the JSON properties and create input elements
-  for (const key in config) {
-    if (config.hasOwnProperty(key)) {
-      const label = document.createElement('label');
-      label.textContent = key;
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.value = config[key];
+  // Create the block list element
+  const blockList = document.createElement('div');
+  blockList.classList.add('block-list', 'el-9', 'v-coll');
 
-      // Append the label and input to the container
-      parameterContainer.appendChild(label);
-      parameterContainer.appendChild(input);
-    }
-  }
+  // Create the HTML for the predefined blocks
+  const html = `
+    <div class="block-list-e">
+      <label>Emotions</label>
+      <input type="checkbox" id="emotions" ${config.emotions ? 'checked' : ''}>
+    </div>
+    <div class="block-list-e">
+      <label>Request N</label>
+      <input type="number" id="request-n" value="${config.request.n}">
+    </div>
+    <div class="block-list-e">
+      <label>Max Context Length</label>
+      <input type="number" id="max-context-length" value="${config.request.max_context_length}">
+    </div>
+    <div class="block-list-e">
+      <label>Max Length</label>
+      <input type="number" id="max-length" value="${config.request.max_length}">
+    </div>
+    <div class="block-list-e">
+      <label>Rep Pen</label>
+      <input type="number" id="rep-pen" value="${config.request.rep_pen}">
+    </div>
+    <div class="block-list-e">
+      <label>Temperature</label>
+      <input type="number" id="temperature" value="${config.request.temperature}">
+    </div>
+    <div class="block-list-e">
+      <label>Top P</label>
+      <input type="number" id="top-p" value="${config.request.top_p}">
+    </div>
+    <div class="block-list-e">
+      <label>Top K</label>
+      <input type="number" id="top-k" value="${config.request.top_k}">
+    </div>
+    <div class="block-list-e">
+      <label>Top A</label>
+      <input type="number" id="top-a" value="${config.request.top_a}">
+    </div>
+    <div class="block-list-e">
+      <label>Typical</label>
+      <input type="number" id="typical" value="${config.request.typical}">
+    </div>
+    <div class="block-list-e">
+      <label>TFS</label>
+      <input type="number" id="tfs" value="${config.request.tfs}">
+    </div>
+    <div class="block-list-e">
+      <label>Rep Pen Range</label>
+      <input type="number" id="rep-pen-range" value="${config.request.rep_pen_range}">
+    </div>
+    <div class="block-list-e">
+      <label>Rep Pen Slope</label>
+      <input type="number" id="rep-pen-slope" value="${config.request.rep_pen_slope}">
+    </div>
+    <div class="block-list-e">
+      <label>Sampler Order</label>
+      <input type="text" id="sampler-order" value="${config.request.sampler_order.join(',')}">
+    </div>
+    <div class="block-list-e">
+      <label>Quiet</label>
+      <input type="checkbox" id="quiet" ${config.request.quiet ? 'checked' : ''}>
+    </div>
+    <div class="block-list-e">
+      <label>Stop Sequence</label>
+      <input type="text" id="stop-sequence" value="${config.request.stop_sequence.join(',')}">
+    </div>
+    <div class="block-list-e">
+      <label>Use Default Badwords IDs</label>
+      <input type="checkbox" id="use-default-badwordsids" ${config.request.use_default_badwordsids ? 'checked' : ''}>
+    </div>
+    <div class="block-list-e">
+      <label>Port</label>
+      <input type="number" id="port" value="${config.port}">
+    </div>
+    <div class="block-list-e">
+      <label>History</label>
+      <input type="text" id="history" value="${config.history}">
+    </div>
+    <div class="block-list-e">
+      <label>Names</label>
+      <input type="text" id="names" value="${config.names}">
+    </div>
+    <div class="block-list-e">
+      <label>Server</label>
+      <input type="text" id="server" value="${config.server}">
+    </div>
+  `;
+
+  // Set the HTML of the block list
+  blockList.innerHTML = html;
+
+  // Append the block list to the parameter container
+  parameterContainer.appendChild(blockList);
 
   return parameterContainer;
 }
@@ -576,7 +660,14 @@ function saveConfigParams() {
 
   inputs.forEach((input) => {
     const label = input.previousSibling.textContent.trim();
-    obj[label] = input.value;
+    const value = input.type === 'checkbox' ? input.checked : input.value;
+
+    // Handle special cases for parsing values
+    if (input.id === 'sampler-order' || input.id === 'stop-sequence') {
+      obj[label] = value.split(',').map(item => item.trim());
+    } else {
+      obj[label] = value;
+    }
   });
 
   localStorage.setItem('config', JSON.stringify(obj));

@@ -1,25 +1,28 @@
 {
-    "emotions": false,
-    "request": {
-        "n": 1,
-        "max_context_length": 1024,
-        "max_length": 256,
-        "rep_pen": 1.1,
+    "ai": {
+        "names": ["Yuki", "Yuna"],
+        "emotions": false,
+        "max_new_tokens": 128,
+        "context_length": 512,
         "temperature": 0.7,
-        "top_p": 1,
-        "top_k": 0,
-        "top_a": 0,
-        "typical": 1,
-        "tfs": 1,
-        "rep_pen_range": 320,
-        "rep_pen_slope": 0.7,
-        "sampler_order": [6, 0, 1, 3, 4, 2, 5],
-        "quiet": true,
-        "stop_sequence": ["Yuki:",  "\nYuki: ", "\nYou:", "\nYou: ", "\nYuna: ", "\nYuna:", "Yuuki: ", "\n", "<|user|>", "<|system|>", "<|model|>"],
-        "use_default_badwordsids": false
+        "repetition_penalty": 1.5,
+        "last_n_tokens": 64,
+        "seed": -1,
+        "top_k": 40,
+        "top_p": 0.92,
+        "stop": ["Yuki:",  "\nYuki: ", "\nYou:", "\nYou: ", "\nYuna: ", "\nYuna:", "Yuuki: ", "<|user|>", "<|system|>", "<|model|>"],
+        "stream": false,
+        "batch_size": 128,
+        "threads": -1,
+        "gpu_layers": 1
     },
-    "port": 4848,
-    "history": "static/db/",
-    "names": ["Yuki", "Yuna"],
-    "server": "http://localhost:4848/"
+    "server": {
+        "port": 4848,
+        "url": "http://localhost:",
+        "history": "static/db/",
+        "default_history_file": "history_template.json",
+        "images": "static/images/",
+        "models_dir": "lib/models/yuna/",
+        "default_model_file": "pygmalion-2-7b.Q5_K_M.gguf"
+    }
 }

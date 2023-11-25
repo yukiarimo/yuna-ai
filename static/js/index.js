@@ -1,30 +1,11 @@
-var server_url = 'http://localhost:4848/';
-var config_data;
-
+var server_url = '';
+var server_port = '';
+var config_data;;
 var backgroundMusic = document.getElementById('backgroundMusic');
-var isTTS = ''
+var isTTS = false;
 var messageContainer = document.getElementById('message-container');
-
-function handleSubmit(event) {
-  event.preventDefault();
-  var message = document.getElementById('input_text').value;
-  sendMessage(message);
-}
-
-function sendMessage(message) {
-  document.getElementById('input_text').value = ''
-
-  messageContainer = document.getElementById('message-container');
-
-  messageData = {
-    "name": "Yuki",
-    "message": message
-  }
-
-  let formattedMessage = formatMessage(messageData);
-  messageContainer.appendChild(formattedMessage);
-
-  const typingBubble = `
+var configUrl = `static/config.json`;
+const typingBubble = `
     <div class="block-message-1" id="bubble">
       <div class="typing-bubble">
         <div class="dot"></div>
@@ -33,6 +14,35 @@ function sendMessage(message) {
       </div>
     </div>
   `;
+
+function handleSubmit(event) {
+  event.preventDefault();
+  var message = document.getElementById('input_text').value;
+  sendMessage(message);
+}
+
+function sendMessage(message, imageName = false) {
+  document.getElementById('input_text').value = ''
+
+  messageContainer = document.getElementById('message-container');
+
+  // image check
+  if (imageName.toString() == 'false') {
+    console.log('no image')
+    imageName = ''
+  } else {
+    imageName = `<img src='static/img/call/${imageName}.jpg' class='image-message'>`
+  }
+
+  var messageData = {
+    "name": "Yuki",
+    "message": message + imageName
+  }
+
+  console.log(messageData.message)
+
+  let formattedMessage = formatMessage(messageData);
+  messageContainer.appendChild(formattedMessage);
 
   messageContainer.insertAdjacentHTML('beforeend', typingBubble);
 
@@ -47,10 +57,10 @@ function sendMessage(message) {
   var selectedFilename = historySelect.value;
 
   // Send a POST request to /send_message
-  fetch(`${server_url}send_message`, {
+  fetch(`${server_url+server_port}/send_message`, {
       method: 'POST',
       body: new URLSearchParams({
-        'message': message,
+        'message': messageData.message,
         'chat': selectedFilename
       }), // Send the message as form data
       headers: {
@@ -98,7 +108,6 @@ function sendMessage(message) {
       let formattedMessage = formatMessage(messageData);
       messageContainer.appendChild(formattedMessage);
 
-      scrollMsg()
       playAudio(audioType = 'error')
     })
 }
@@ -134,7 +143,7 @@ function playAudio(audioType = 'tts') {
     .catch(error => {
       // Handle the error if audio playback fails
       console.error('Error playing audio:', error);
-      playAudio()
+      //playAudio()
     });
 }
 
@@ -152,10 +161,12 @@ function formatMessage(messageData) {
 
   // Create a paragraph for the message text
   var messageText = document.createElement('p');
-  messageText.textContent = `${messageData.name}: ${messageData.message}`;
+  messageText.innerHTML = `${messageData.name}: ${messageData.message}`;
 
   // Append the message text to the message div
   messageDiv.appendChild(messageText);
+
+  scrollMsg()
 
   return messageDiv;
 }
@@ -166,11 +177,11 @@ function downloadHistory() {
   messageContainer = document.getElementById('message-container');
 
   if (selectedFilename == "") {
-    selectedFilename = "history.json"
+    selectedFilename = config_data.server.default_history_file
   }
 
   // Fetch the selected chat history file from the server
-  fetch(`${server_url}load_history_file/${selectedFilename}`, {
+  fetch(`${server_url+server_port}/load_history_file/${selectedFilename}`, {
       method: 'GET',
     })
     .then(response => response.json())
@@ -201,11 +212,11 @@ function editHistory() {
   var selectedFilename = historySelect.value;
 
   if (selectedFilename == "") {
-    selectedFilename = "history.json"
+    selectedFilename = config_data.default_history_file
   }
 
   // Fetch the selected chat history file from the server
-  fetch(`${server_url}load_history_file/${selectedFilename}`, {
+  fetch(`${server_url+server_port}/load_history_file/${selectedFilename}`, {
       method: 'GET',
     })
     .then(response => response.json())
@@ -252,7 +263,7 @@ function sendEditHistory(editTextArea) {
   var selectedFilename = historySelect.value;
 
   // Send a POST request to /send_message
-  fetch(`${server_url}edit_history`, {
+  fetch(`${server_url+server_port}/edit_history`, {
       method: 'POST',
       body: new URLSearchParams({
         'history': editTextArea,
@@ -285,9 +296,10 @@ function displayMessages(messages) {
     var formattedMessage = formatMessage(messageData);
     messageContainer.appendChild(formattedMessage);
   });
+
+  scrollMsg()
 }
 
-// Get access to the user's camera and display the video stream
 navigator.mediaDevices.getUserMedia({
     video: true
   })
@@ -301,54 +313,62 @@ navigator.mediaDevices.getUserMedia({
 
 let recognition; // Define the recognition object at a higher scope
 
-window.onload = function () {
-  // Check if SpeechRecognition is supported by the browser
-  if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
-    // Create a new SpeechRecognition object
-    recognition = new(window.SpeechRecognition || window.webkitSpeechRecognition)();
+function startVoiceRecognition() {
+  const setupRecognition = function () {
+    // Check if SpeechRecognition is supported by the browser
+    if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+      // Create a new SpeechRecognition object
+      recognition = new(window.SpeechRecognition || window.webkitSpeechRecognition)();
 
-    // Configure recognition settings
-    recognition.lang = 'en-US'; // Set the language for recognition
-    recognition.interimResults = true; // Enable interim results
-    recognition.continuous = true; // Enable continuous recognition
+      // Configure recognition settings
+      recognition.lang = 'en-US'; // Set the language for recognition
+      recognition.interimResults = true; // Enable interim results
+      recognition.continuous = true; // Enable continuous recognition
 
-    // Variables to track previous recognized text
-    let previousText = '';
+      recognition.start(); // Start recognition
 
-    // Event listener for results
-    recognition.onresult = function (event) {
-      var result = event.results[event.resultIndex];
-      var recognizedText = result[0].transcript;
+      // Variables to track previous recognized text
+      let previousText = '';
 
-      if (recognizedText === previousText) {
-        console.log('Recognized Text:', recognizedText);
-        sendMessage(recognizedText)
-      }
+      // Event listener for results
+      recognition.onresult = function (event) {
+        console.log('Speech recognition results.');
+        var result = event.results[event.resultIndex];
+        var recognizedText = result[0].transcript;
 
-      previousText = recognizedText;
-    };
+        if (recognizedText === previousText) {
+          console.log('Recognized Text:', recognizedText);
+          sendMessage(recognizedText)
+        }
 
-    // Event listener for errors
-    recognition.onerror = function (event) {
-      console.error('Speech recognition error:', event.error);
-    };
+        previousText = recognizedText;
+      };
 
-    // Event listener for end of speech
-    recognition.onend = function () {
-      console.log('Speech recognition ended.');
-      recognition.start()
-    };
+      // Event listener for errors
+      recognition.onerror = function (event) {
+        if (event.error == 'not-allowed') {
+          console.error('Permission to access microphone is blocked or denied.');
+        } else {
+          console.error('Speech recognition error:', event.error);
+        }
+      };
 
-    // Start recognition
-    document.getElementById('startButton').onclick = function () {
-      isTTS = true;
-      recognition.start();
-      console.log('Recognition started.');
-    };
+      // Event listener for end of speech
+      recognition.onend = function () {
+        console.log('Speech recognition ended.');
+        recognition.start()
+      };
+    } else {
+      console.error('SpeechRecognition not supported by the browser.');
+    }
+  };
+
+  if (document.readyState === 'complete') {
+    setupRecognition();
   } else {
-    console.error('SpeechRecognition not supported by the browser.');
+    window.onload = setupRecognition;
   }
-};
+}
 
 function scrollMsg() {
   objDiv = document.getElementById("message-container");
@@ -403,12 +423,82 @@ function setTranslate(xPos, yPos, el) {
   el.style.transform = `translate3d(${xPos}px, ${yPos}px, 0)`;
 }
 
+function drawArt() {
+  historySelect = document.getElementById('history-select');
+  messageContainer = document.getElementById('message-container');
+
+  var selectedFilename = historySelect.value
+  console.log(selectedFilename)
+  var imagePrompt = prompt('Enter a prompt for the image:');
+
+  messageData = {
+    "name": "Yuki",
+    "message": imagePrompt
+  }
+
+  closePopupsAll();
+
+  let formattedMessage = formatMessage(messageData);
+  messageContainer.appendChild(formattedMessage);
+
+  messageContainer.insertAdjacentHTML('beforeend', typingBubble);
+  scrollMsg()
+
+  // Send the captured image to the Flask server
+  fetch(`${server_url+server_port}/text_to_image`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        prompt: imagePrompt,
+        chat: selectedFilename,
+      })
+    })
+    .then(response => {
+      if (response.ok) {
+        // Parse the JSON data from the response
+        return response.json();
+      } else {
+        throw new Error('Error generating image.');
+      }
+    })
+    .then(data => {
+      // Delete the element with id "bubble"
+      const bubble = document.getElementById('bubble');
+      if (bubble) {
+        bubble.remove();
+      }
+      // Display if ok
+      messageContainer = document.getElementById('message-container');
+
+      // Access the image caption from the server response
+      const imageCreated = data.message;
+
+      messageData2 = {
+        "name": "Yuna",
+        "message": imageCreated
+      }
+    
+      let formattedMessage = formatMessage(messageData2);
+      messageContainer.appendChild(formattedMessage);
+
+      console.log('Image Generated Successfully');
+
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Error sending captured image.');
+    });
+}
 
 // Add an event listener to the "Capture Image" button
-document.getElementById('capture-image').addEventListener('click', function () {
+function captureImage() {
   var localVideo = document.getElementById('localVideo');
   var captureCanvas = document.getElementById('capture-canvas');
   var captureContext = captureCanvas.getContext('2d');
+  historySelect = document.getElementById('history-select');
+  messageContainer = document.getElementById('message-container');
 
   // Set the canvas dimensions to match the video element
   captureCanvas.width = localVideo.videoWidth;
@@ -420,16 +510,29 @@ document.getElementById('capture-image').addEventListener('click', function () {
   captureCanvas = document.getElementById('capture-canvas');
   imageDataURL = captureCanvas.toDataURL('image/png'); // Convert canvas to base64 data URL
 
+  var messageForImage = ''
+  var selectedFilename = historySelect.value
+
+  if (isTTS.toString() == 'false') {
+    messageForImage = prompt('Enter a message for the image:');
+  }
+
+  // generate a random image name using current timestamp
+  var imageName = new Date().getTime().toString();
+
+  closePopupsAll();
+
   // Send the captured image to the Flask server
-  fetch(`${server_url}upload_captured_image`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      image: imageDataURL
+  fetch(`${server_url+server_port}/upload_captured_image`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        image: imageDataURL,
+        name: imageName,
+      })
     })
-  })
     .then(response => {
       if (response.ok) {
         // Parse the JSON data from the response
@@ -439,41 +542,65 @@ document.getElementById('capture-image').addEventListener('click', function () {
       }
     })
     .then(data => {
+      // Delete the element with id "bubble"
+      const bubble = document.getElementById('bubble');
+      if (bubble) {
+        bubble.remove();
+      }
+      // Display if ok
+      messageContainer = document.getElementById('message-container');
+
       // Access the image caption from the server response
       const imageCaption = data.message;
       console.log('Image Caption:', imageCaption);
 
-      // You can add further actions here if needed
-      alert('Image successfully sent. Caption: ' + imageCaption);
+      var askYunaImage = `*You can see ${imageCaption} in the image* ${messageForImage}`
+
+      sendMessage(askYunaImage, imageName)
     })
     .catch(error => {
       console.error('Error:', error);
       alert('Error sending captured image.');
     });
-});
+}
 
 // Function to fetch and populate chat history file options
 function populateHistorySelect() {
-  var historySelect = document.getElementById('history-select');
-  messageContainer = document.getElementById('message-container');
+  return new Promise((resolve, reject) => {
+    var historySelect = document.getElementById('history-select');
+    messageContainer = document.getElementById('message-container');
 
-  // Fetch the list of history files from the server
-  fetch(`${server_url}list_history_files`, {
-      method: 'GET',
-    })
-    .then(response => response.json())
-    .then(data => {
-      // Populate the <select> with the available options
-      data.forEach(filename => {
-        var option = document.createElement('option');
-        option.value = filename;
-        option.textContent = filename;
-        historySelect.appendChild(option);
+    if (localStorage.getItem('config') == null) {
+      // reload the page with delay of 1 second if config is not available
+      setTimeout(function () {
+        location.reload()
+      }, 300);
+    }
+
+    server_port = JSON.parse(localStorage.getItem('config')).server.port
+    server_url = JSON.parse(localStorage.getItem('config')).server.url
+
+    // Fetch the list of history files from the server
+    fetch(`${server_url+server_port}/list_history_files`, {
+        method: 'GET',
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Populate the <select> with the available options
+        data.forEach(filename => {
+          var option = document.createElement('option');
+          option.value = filename;
+          option.textContent = filename;
+          historySelect.appendChild(option);
+        });
+      })
+      .catch(error => {
+        console.error('Error fetching history files:', error);
       });
-    })
-    .catch(error => {
-      console.error('Error fetching history files:', error);
-    });
+
+    // Resolve the promise when the operation is complete
+    resolve();
+  });
 }
 
 // Function to load the selected chat history file
@@ -483,21 +610,22 @@ function loadSelectedHistory() {
   messageContainer = document.getElementById('message-container');
 
   if (selectedFilename == "") {
-    selectedFilename = "history.json"
+    selectedFilename = config_data.server.default_history_file
   }
 
   // Fetch the selected chat history file from the server
-  fetch(`${server_url}load_history_file/${selectedFilename}`, {
+  fetch(`${server_url+server_port}/load_history_file/${selectedFilename}`, {
       method: 'GET',
     })
     .then(response => response.json())
     .then(data => {
-      displayMessages(data); // Display the selected chat history
-      scrollMsg();
+      displayMessages(data);
     })
     .catch(error => {
       console.error('Error loading selected history file:', error);
     });
+
+  closePopupsAll();
 }
 
 function muteAudio() {
@@ -510,44 +638,36 @@ function muteAudio() {
   }
 }
 
-// Call populateHistorySelect to populate the <select> element on page load
-populateHistorySelect();
-loadSelectedHistory()
+// Run populateHistorySelect first and then loadSelectedHistory
 
-// Get all elements with the class 'side-tab-block-e'
-const tabElements = document.getElementsByClassName('side-tab-block-e');
+/* CRINGE CODE EVERYTHING IS CRASHED
+populateHistorySelect().then(() => {
+  loadSelectedHistory();
+}); */
 
-// Add a click event listener to each tab element
-for (let i = 0; i < tabElements.length; i++) {
-  tabElements[i].addEventListener('click', toggleSidebar);
+function fixDialogData() {
+  populateHistorySelect().then(() => {
+    loadSelectedHistory();
+  });
+
+  closePopupsAll();
 }
 
-if (localStorage.getItem('config')) {
-  data = localStorage.getItem('config')
-  config_data = JSON.parse(data)
-  configUrl = config_data.configUrl
-  server_url = config_data.server
-} else {
-  // Construct the full URL for the config.json file
-  var configUrl = `static/config.json`;
+function closePopupsAll() {
+  var popups = document.querySelectorAll('.block-popup');
+  popups.forEach(popup => {
+    popup.style.display = 'none';
+  });
 
-  // Fetch the JSON data
-  fetch(configUrl)
-    .then(response => response.json())
-    .then((data) => {
-      // Handle the JSON data
-      config_data = data
-      localStorage.setItem('config', JSON.stringify(config_data));
-      server_url = config_data.server
-    })
-    .catch((error) => {
-      console.error('Error:', error);
-    });
+  var parameterContainer = document.getElementById('parameter-container');
+  parameterContainer.innerHTML = '';
 }
 
 function openConfigParams() {
   OpenPopup('settings');
-  var config = config_data;
+
+  var aiConfig = config_data.ai;
+  var serverConfig = config_data.server;
 
   // Get the parameter container element
   const parameterContainer = document.getElementById('parameter-container');
@@ -556,121 +676,208 @@ function openConfigParams() {
   const blockList = document.createElement('div');
   blockList.classList.add('block-list', 'el-9', 'v-coll');
 
-  // Create the HTML for the predefined blocks
-  const html = `
-    <div class="block-list-e">
-      <label>Emotions</label>
-      <input type="checkbox" id="emotions" ${config.emotions ? 'checked' : ''}>
-    </div>
-    <div class="block-list-e">
-      <label>Request N</label>
-      <input type="number" id="request-n" value="${config.request.n}">
-    </div>
-    <div class="block-list-e">
-      <label>Max Context Length</label>
-      <input type="number" id="max-context-length" value="${config.request.max_context_length}">
-    </div>
-    <div class="block-list-e">
-      <label>Max Length</label>
-      <input type="number" id="max-length" value="${config.request.max_length}">
-    </div>
-    <div class="block-list-e">
-      <label>Rep Pen</label>
-      <input type="number" id="rep-pen" value="${config.request.rep_pen}">
-    </div>
-    <div class="block-list-e">
-      <label>Temperature</label>
-      <input type="number" id="temperature" value="${config.request.temperature}">
-    </div>
-    <div class="block-list-e">
-      <label>Top P</label>
-      <input type="number" id="top-p" value="${config.request.top_p}">
-    </div>
-    <div class="block-list-e">
-      <label>Top K</label>
-      <input type="number" id="top-k" value="${config.request.top_k}">
-    </div>
-    <div class="block-list-e">
-      <label>Top A</label>
-      <input type="number" id="top-a" value="${config.request.top_a}">
-    </div>
-    <div class="block-list-e">
-      <label>Typical</label>
-      <input type="number" id="typical" value="${config.request.typical}">
-    </div>
-    <div class="block-list-e">
-      <label>TFS</label>
-      <input type="number" id="tfs" value="${config.request.tfs}">
-    </div>
-    <div class="block-list-e">
-      <label>Rep Pen Range</label>
-      <input type="number" id="rep-pen-range" value="${config.request.rep_pen_range}">
-    </div>
-    <div class="block-list-e">
-      <label>Rep Pen Slope</label>
-      <input type="number" id="rep-pen-slope" value="${config.request.rep_pen_slope}">
-    </div>
-    <div class="block-list-e">
-      <label>Sampler Order</label>
-      <input type="text" id="sampler-order" value="${config.request.sampler_order.join(',')}">
-    </div>
-    <div class="block-list-e">
-      <label>Quiet</label>
-      <input type="checkbox" id="quiet" ${config.request.quiet ? 'checked' : ''}>
-    </div>
-    <div class="block-list-e">
-      <label>Stop Sequence</label>
-      <input type="text" id="stop-sequence" value="${config.request.stop_sequence.join(',')}">
-    </div>
-    <div class="block-list-e">
-      <label>Use Default Badwords IDs</label>
-      <input type="checkbox" id="use-default-badwordsids" ${config.request.use_default_badwordsids ? 'checked' : ''}>
-    </div>
-    <div class="block-list-e">
-      <label>Port</label>
-      <input type="number" id="port" value="${config.port}">
-    </div>
-    <div class="block-list-e">
-      <label>History</label>
-      <input type="text" id="history" value="${config.history}">
-    </div>
-    <div class="block-list-e">
-      <label>Names</label>
-      <input type="text" id="names" value="${config.names}">
-    </div>
-    <div class="block-list-e">
-      <label>Server</label>
-      <input type="text" id="server" value="${config.server}">
-    </div>
-  `;
+  console.log(config_data)
 
-  // Set the HTML of the block list
-  blockList.innerHTML = html;
+  // Create the AI block list element
+  const aiBlockList = createAIBlockList(aiConfig);
 
-  // Append the block list to the parameter container
-  parameterContainer.appendChild(blockList);
+  // Create the Server block list element
+  const serverBlockList = createServerBlockList(serverConfig);
+
+  // Append both block lists to the parameter container
+  parameterContainer.appendChild(aiBlockList);
+  parameterContainer.appendChild(serverBlockList);
 
   return parameterContainer;
 }
 
-function saveConfigParams() {
-  const parameterContainer = document.getElementById('parameter-container');
-  const inputs = parameterContainer.querySelectorAll('input');
-  const obj = {};
+function createAIBlockList(aiConfig) {
+  // Create the AI block list element
+  const aiBlockList = document.createElement('div');
+  aiBlockList.classList.add('block-list', 'el-9', 'v-coll', 'ai-block-list');
 
-  inputs.forEach((input) => {
-    const label = input.previousSibling.textContent.trim();
-    const value = input.type === 'checkbox' ? input.checked : input.value;
+  // Create the HTML for the AI-related predefined blocks
+  const aiHtml = `
+    <div class="block-list-e">
+      <label>Names</label>
+      <input type="text" id="names" value="${aiConfig.names.join(',')}">
+    </div>
+    <div class="block-list-e">
+      <label>Emotions</label>
+      <input type="checkbox" id="emotions" ${aiConfig.emotions ? 'checked' : ''}>
+    </div>
+    <div class="block-list-e">
+      <label>Max New Tokens</label>
+      <input type="number" id="max-new-tokens" value="${aiConfig.max_new_tokens}">
+    </div>
+    <div class="block-list-e">
+      <label>Context Length</label>
+      <input type="number" id="context-length" value="${aiConfig.context_length}">
+    </div>
+    <div class="block-list-e">
+      <label>Temperature</label>
+      <input type="number" id="temperature" value="${aiConfig.temperature}">
+    </div>
+    <div class="block-list-e">
+      <label>Repetition Penalty</label>
+      <input type="number" id="repetition-penalty" value="${aiConfig.repetition_penalty}">
+    </div>
+    <div class="block-list-e">
+      <label>Last N Tokens</label>
+      <input type="number" id="last-n-tokens" value="${aiConfig.last_n_tokens}">
+    </div>
+    <div class="block-list-e">
+      <label>Seed</label>
+      <input type="number" id="seed" value="${aiConfig.seed}">
+    </div>
+    <div class="block-list-e">
+      <label>Top K</label>
+      <input type="number" id="top-k" value="${aiConfig.top_k}">
+    </div>
+    <div class="block-list-e">
+      <label>Top P</label>
+      <input type="number" id="top-p" value="${aiConfig.top_p}">
+    </div>
+    <div class="block-list-e">
+      <label>Stop</label>
+      <input type="text" id="stop" value="${aiConfig.stop.join(',')}">
+    </div>
+    <div class="block-list-e">
+      <label>Stream</label>
+      <input type="checkbox" id="stream" ${aiConfig.stream ? 'checked' : ''}>
+    </div>
+    <div class="block-list-e">
+      <label>Batch Size</label>
+      <input type="number" id="batch-size" value="${aiConfig.batch_size}">
+    </div>
+    <div class="block-list-e">
+      <label>Threads</label>
+      <input type="number" id="threads" value="${aiConfig.threads}">
+    </div>
+    <div class="block-list-e">
+      <label>GPU Layers</label>
+      <input type="number" id="gpu-layers" value="${aiConfig.gpu_layers}">
+    </div>
+  `;
 
-    // Handle special cases for parsing values
-    if (input.id === 'sampler-order' || input.id === 'stop-sequence') {
-      obj[label] = value.split(',').map(item => item.trim());
-    } else {
-      obj[label] = value;
-    }
-  });
+  // Set the HTML of the AI block list
+  aiBlockList.innerHTML = aiHtml;
 
-  localStorage.setItem('config', JSON.stringify(obj));
-  document.getElementById('parameter-container').innerHTML = '';
-  PopupClose();
+  return aiBlockList;
 }
+
+function createServerBlockList(serverConfig) {
+  // Create the Server block list element
+  const serverBlockList = document.createElement('div');
+  serverBlockList.classList.add('block-list', 'el-9', 'v-coll', 'server-block-list');
+
+  // Create the HTML for the Server-related predefined blocks
+  const serverHtml = `
+    <div class="block-list-e">
+      <label>Port</label>
+      <input type="number" id="port" value="${serverConfig.port}">
+    </div>
+    <div class="block-list-e">
+      <label>History</label>
+      <input type="text" id="history" value="${serverConfig.history}">
+    </div>
+    <div class="block-list-e">
+      <label>Default History</label>
+      <input type="text" id="default-history" value="${serverConfig.default_history_file}">
+    </div>
+    <div class="block-list-e">
+      <label>Server URL</label>
+      <input type="text" id="server" value="${serverConfig.url}">
+    </div>
+  `;
+
+  // Set the HTML of the Server block list
+  serverBlockList.innerHTML = serverHtml;
+
+  return serverBlockList;
+}
+
+function saveConfigParams() {
+  // Create an object to store the reverse configuration
+  const reverseConfig = {
+    ai: {},
+    server: {}
+  };
+
+  // Get the AI block list element
+  const aiBlockList = document.querySelector('.ai-block-list');
+
+  // Extract values from AI block list
+  reverseConfig.ai.names = aiBlockList.querySelector('#names').value.split(',');
+  reverseConfig.ai.emotions = aiBlockList.querySelector('#emotions').checked;
+  reverseConfig.ai.max_new_tokens = parseInt(aiBlockList.querySelector('#max-new-tokens').value);
+  reverseConfig.ai.context_length = parseInt(aiBlockList.querySelector('#context-length').value);
+  reverseConfig.ai.temperature = parseFloat(aiBlockList.querySelector('#temperature').value);
+  reverseConfig.ai.repetition_penalty = parseFloat(aiBlockList.querySelector('#repetition-penalty').value);
+  reverseConfig.ai.last_n_tokens = parseInt(aiBlockList.querySelector('#last-n-tokens').value);
+  reverseConfig.ai.seed = parseInt(aiBlockList.querySelector('#seed').value);
+  reverseConfig.ai.top_k = parseInt(aiBlockList.querySelector('#top-k').value);
+  reverseConfig.ai.top_p = parseFloat(aiBlockList.querySelector('#top-p').value);
+  reverseConfig.ai.stop = aiBlockList.querySelector('#stop').value.split(',');
+  reverseConfig.ai.stream = aiBlockList.querySelector('#stream').checked;
+  reverseConfig.ai.batch_size = parseInt(aiBlockList.querySelector('#batch-size').value);
+  reverseConfig.ai.threads = parseInt(aiBlockList.querySelector('#threads').value);
+  reverseConfig.ai.gpu_layers = parseInt(aiBlockList.querySelector('#gpu-layers').value);
+
+  // Get the Server block list element
+  const serverBlockList = document.querySelector('.server-block-list');
+
+  // Extract values from Server block list
+  reverseConfig.server.port = parseInt(serverBlockList.querySelector('#port').value);
+  reverseConfig.server.history = serverBlockList.querySelector('#history').value;
+  reverseConfig.server.default_history_file = serverBlockList.querySelector('#default-history').value;
+  reverseConfig.server.url = serverBlockList.querySelector('#server').value;
+
+  localStorage.setItem('config', JSON.stringify(reverseConfig));
+}
+
+async function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function checkConfigData() {
+  await delay(300);
+  if (typeof config_data === 'undefined') {
+    console.warn('You messed up production. Trying to load config.json again');
+
+    if (localStorage.getItem('config')) {
+      // reload the page with delay of 1 second if config is not available
+      setTimeout(function () {
+        config_data = JSON.parse(localStorage.getItem('config'))
+        server_url = config_data.server.url
+        server_port = config_data.server.port
+
+        fixDialogData();
+      }, 300);
+    } else {
+      // Fetch the JSON data
+      fetch(configUrl)
+        .then(response => response.json())
+        .then((data) => {
+          // Handle the JSON data
+          config_data = data
+          localStorage.setItem('config', JSON.stringify(config_data));
+          server_url = config_data.server.url
+          server_port = config_data.server.port
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+
+      await delay(300);
+      openConfigParams();
+    }
+
+    closePopupsAll();
+
+  } else {
+    console.log('You did it');
+  }
+}
+
+checkConfigData();

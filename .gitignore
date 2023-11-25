@@ -4,6 +4,8 @@ static/db/*.json
 static/audio/output.aiff
 static/audio/output.mp3
 lib/datasets/yuna/
-lib/yuna/models/
-lib/yuna/build-yuna/
-static/img/call/captured_image.jpg
+lib/models/
+static/img/call/*
+!static/img/call/image_template.jpg
+static/img/art/*
+!static/img/art/art_template.png

@@ -198,10 +198,8 @@ img {
 
 .controls {
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
     width: 100%;
-    background-color: #fff;
-    padding: 10px;
 }
 
 .uside {
@@ -211,7 +209,7 @@ img {
 
 @media (max-width : 428px) {
     .participant>img {
-        width: 100% !important;
+        width: 90% !important;
     }
 
     #message-container {
@@ -291,4 +289,13 @@ img {
     max-width: 100%;
     border-radius: 50%;
     box-shadow: 2px 2px 5px #888888;
+}
+
+textarea {
+    width: -webkit-fill-available;
+}
+
+.image-message {
+    width: 100% !important;
+    height: auto !important;
 }

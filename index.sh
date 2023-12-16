@@ -112,7 +112,7 @@ install_vision_model() {
 # Function to install Art model
 install_art_model() {
     echo "Installing Art model..."
-    git clone https://huggingface.co/yukiarimo/anyloli/resolve/main/any_loli.safetensors lib/models/agi/art/
+    wget https://huggingface.co/yukiarimo/anyloli/resolve/main/any_loli.safetensors -P lib/models/agi/art/
 }
 
 # Function to install Vision model
@@ -124,7 +124,7 @@ install_emotion_model() {
 # Function to install Yuna model
 install_yuna_model() {
     echo "Installing Yuna model..."
-    git clone https://huggingface.co/TheBloke/Pygmalion-2-7B-GGUF/resolve/main/pygmalion-2-7b.Q5_K_M.gguf lib/models/yuna/
+    wget https://huggingface.co/TheBloke/Pygmalion-2-7B-GGUF/resolve/main/pygmalion-2-7b.Q5_K_M.gguf -P lib/models/yuna/
 }
 
 # Function to clear models

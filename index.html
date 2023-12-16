@@ -23,7 +23,9 @@
     <script src="static/js/index.js" defer></script>
     <script src="static/js/himitsu.js" defer></script>
     <script src="static/js/setup.js" defer></script>
+    <script src="static/js/auth.js" defer></script>
 
+    
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function () {
@@ -43,6 +45,9 @@
 </head>
 
 <body>
+
+    <div id="main">
+
     <div class="sidebar-o desktop-only" id="sidebar">
 
         <div class="side-tab-block">
@@ -62,7 +67,6 @@
             <div class="side-tab-block-e" onclick="openConfigParams()">
                 <div class="block-text lb">Params</div>
                 <div class="block-scroll" id="parameter-container">
-                    <!-- Dynamic HTML elements will be added here -->
                 </div>
                 <img class="block-icon" src="static/img/icons/delete.png" onclick="localStorage.clear()" alt="Delete">
                 <img class="block-icon" src="static/img/icons/cancel.png" alt="Cancel">
@@ -218,6 +222,7 @@
                 </div>
             </div>
         </div>
+    </div>
 </body>
 
 </html>

@@ -1,6 +1,6 @@
 __pycache__/
-static/db/*.json
-!static/db/history_template.json
+static/db/history/*.json
+!static/db/history/history_template.json
 static/audio/output.aiff
 static/audio/output.mp3
 lib/datasets/yuna/

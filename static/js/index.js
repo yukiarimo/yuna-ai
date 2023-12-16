@@ -4,16 +4,67 @@ var config_data;;
 var backgroundMusic = document.getElementById('backgroundMusic');
 var isTTS = false;
 var messageContainer = document.getElementById('message-container');
-var configUrl = `static/config.json`;
-const typingBubble = `
-    <div class="block-message-1" id="bubble">
-      <div class="typing-bubble">
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
-      </div>
-    </div>
-  `;
+const typingBubble = `<div class="block-message-1" id="circle-loader"><div class="circle-loader"></div></div>`;
+
+// Class and functions to add and removed <br>s from the message container
+class messageManager {
+  constructor() {
+    this.brCount = 0;
+  }
+
+  addBr() {
+    this.brCount += 1;
+    messageContainer = document.getElementById('message-container');
+
+    messageContainer.innerHTML = messageContainer.innerHTML + `<br><br><br><br><br>`
+    scrollMsg();
+  }
+
+  removeBr() {
+    this.brCount -= 1;
+    messageContainer = document.getElementById('message-container');
+
+    // Get the current innerHTML
+    let currentHTML = messageContainer.innerHTML;
+
+    // Calculate the index to start removing elements from
+    let removeIndex = currentHTML.length - 5 * '<br>'.length;
+
+    // Remove the last 5 elements
+    let newHTML = currentHTML.substring(0, removeIndex);
+
+    // Set the new innerHTML
+    messageContainer.innerHTML = newHTML;
+  }
+
+  createMessage(name, messageContent) {
+    const messageContainer = document.getElementById('message-container');
+    const messageData = {
+      name: name,
+      message: messageContent,
+    };
+
+    const formattedMessage = formatMessage(messageData);
+    messageContainer.appendChild(formattedMessage);
+    scrollMsg();
+  }
+
+  createTypingBubble() {
+    const messageContainer = document.getElementById('message-container');
+    messageContainer.insertAdjacentHTML('beforeend', typingBubble);
+    scrollMsg();
+  }
+
+  removeTypingBubble() {
+    const bubble = document.getElementById('circle-loader');
+    if (bubble) {
+      bubble.remove();
+    }
+  }
+}
+
+// Create a new instance of the messageManager class
+messageManager = new messageManager();
 
 function handleSubmit(event) {
   event.preventDefault();
@@ -24,92 +75,135 @@ function handleSubmit(event) {
 function sendMessage(message, imageName = false) {
   document.getElementById('input_text').value = ''
 
+  var messageContainer = document.getElementById('message-container');
+
+  messageManager.removeBr();
   messageContainer = document.getElementById('message-container');
 
-  // image check
-  if (imageName.toString() == 'false') {
-    console.log('no image')
-    imageName = ''
-  } else {
-    imageName = `<img src='static/img/call/${imageName}.jpg' class='image-message'>`
+  var messageData;
+
+  if (currentPromptName == 'default') {
+    // Image check
+    if (imageName.toString() == 'false') {
+      imageName = '';
+    } else {
+      imageName = `<img src='static/img/call/${imageName}.jpg' class='image-message'>`;
+    }
+
+    messageData = {
+      name: 'Yuki',
+      message: message + imageName,
+    };
+
+    messageManager.createMessage(messageData.name, messageData.message);
+    messageManager.createTypingBubble();
+    messageManager.addBr();
+
+    playAudio(audioType = 'send');
+
+    const historySelect = document.getElementById('history-select');
+    const selectedFilename = historySelect.value;
+
+  } else if (currentPromptName != 'default') {
+    var messageDiv = document.createElement('div');
+
+    // create #Himitsu element into messageDiv
+    const form = document.createElement('form');
+    form.setAttribute("id", "Himitsu");
+    messageDiv.appendChild(form);
+
+    // Append the button
+    const buttonDiv = document.createElement('div');
+    buttonDiv.className = 'block-button';
+    buttonDiv.setAttribute('type', 'button');
+    buttonDiv.setAttribute('onclick', 'generateText();');
+    buttonDiv.innerText = 'Gen';
+    messageDiv.appendChild(buttonDiv);
+
+    messageData = {
+      name: 'Yuki',
+      message: messageDiv.innerHTML,
+    };
+
+    messageManager.createMessage(messageData.name, messageData.message);
+
+    if (currentPromptName == 'himitsu') {
+      himitsu.generateSelectElements();
+      himitsu.generateTemplateInputs();
+    } else if (currentPromptName == 'writer') {
+      writer.generateSelectElements();
+      writer.generateTemplateInputs();
+    } else if (currentPromptName == 'paraphrase') {
+      paraphrase.generateSelectElements();
+      paraphrase.generateTemplateInputs();
+    } else if (currentPromptName == 'decisionMaking') {
+      decisionMaking.generateSelectElements();
+      decisionMaking.generateTemplateInputs();
+    }
+
+    // input a value like before with a 200ms delay
+    setTimeout(function () {
+      document.getElementById('text').value = message
+    }, 50);
+
+    messageManager.createTypingBubble();
+
+    messageManager.addBr();
+    return;
   }
 
-  var messageData = {
-    "name": "Yuki",
-    "message": message + imageName
-  }
+  playAudio(audioType = 'send');
 
-  console.log(messageData.message)
+  const historySelect = document.getElementById('history-select');
+  const selectedFilename = historySelect.value;
 
-  let formattedMessage = formatMessage(messageData);
-  messageContainer.appendChild(formattedMessage);
-
-  messageContainer.insertAdjacentHTML('beforeend', typingBubble);
-
-  scrollMsg()
-  playAudio(audioType = 'send')
-
-  if (isTTS.toString() == 'true') {
-    message = message + '<tts>';
-  }
-
-  historySelect = document.getElementById('history-select');
-  var selectedFilename = historySelect.value;
-
-  // Send a POST request to /send_message
-  fetch(`${server_url+server_port}/send_message`, {
+  // Send a POST request to /message endpoint
+  fetch(`${server_url + server_port}/message`, {
       method: 'POST',
-      body: new URLSearchParams({
-        'message': messageData.message,
-        'chat': selectedFilename
-      }), // Send the message as form data
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'application/json',
       },
+      body: JSON.stringify({
+        chat: selectedFilename,
+        text: messageData.message,
+      }),
     })
     .then(response => response.json())
     .then(data => {
-      // Delete the element with id "bubble"
-      const bubble = document.getElementById('bubble');
-      if (bubble) {
-        bubble.remove();
-      }
+      messageManager.removeBr();
+      messageManager.removeTypingBubble();
+
       // Display if ok
-      messageContainer = document.getElementById('message-container');
+      const messageContainer = document.getElementById('message-container');
 
-      messageData = {
-        "name": "Yuna",
-        "message": data.response
-      }
+      const messageData = {
+        name: 'Yuna',
+        message: data.response,
+      };
 
-      let formattedMessage = formatMessage(messageData);
-      messageContainer.appendChild(formattedMessage);
+      messageManager.createMessage(messageData.name, messageData.message);
 
-      scrollMsg()
-      playAudio(audioType = 'message')
+      messageManager.addBr();
+
+      playAudio(audioType = 'message');
 
       if (isTTS.toString() == 'true') {
-        playAudio()
+        playAudio();
       }
     })
     .catch(error => {
-      const bubble = document.getElementById('bubble');
-      if (bubble) {
-        bubble.remove();
-      }
+      messageManager.removeTypingBubble();
 
-      messageContainer = document.getElementById('message-container');
+      const messageContainer = document.getElementById('message-container');
 
-      messageData = {
-        "name": "Yuna",
-        "message": error
-      }
+      const messageData = {
+        name: 'Yuna',
+        message: error,
+      };
 
-      let formattedMessage = formatMessage(messageData);
-      messageContainer.appendChild(formattedMessage);
-
-      playAudio(audioType = 'error')
-    })
+      messageManager.createMessage(messageData.name, messageData.message);
+      playAudio(audioType = 'error');
+    });
 }
 
 function playAudio(audioType = 'tts') {
@@ -143,7 +237,6 @@ function playAudio(audioType = 'tts') {
     .catch(error => {
       // Handle the error if audio playback fails
       console.error('Error playing audio:', error);
-      //playAudio()
     });
 }
 
@@ -160,8 +253,8 @@ function formatMessage(messageData) {
   }
 
   // Create a paragraph for the message text
-  var messageText = document.createElement('p');
-  messageText.innerHTML = `${messageData.name}: ${messageData.message}`;
+  var messageText = document.createElement('pre');
+  messageText.innerHTML = messageData.message;
 
   // Append the message text to the message div
   messageDiv.appendChild(messageText);
@@ -174,21 +267,29 @@ function formatMessage(messageData) {
 function downloadHistory() {
   var historySelect = document.getElementById('history-select');
   var selectedFilename = historySelect.value;
-  messageContainer = document.getElementById('message-container');
 
   if (selectedFilename == "") {
-    selectedFilename = config_data.server.default_history_file
+    selectedFilename = config_data.server.default_history_file;
   }
 
+  const historyContainer = document.getElementById('message-container');
+
   // Fetch the selected chat history file from the server
-  fetch(`${server_url+server_port}/load_history_file/${selectedFilename}`, {
-      method: 'GET',
+  fetch(`${server_url + server_port}/history`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        chat: selectedFilename,
+        task: 'load',
+      }),
     })
     .then(response => response.json())
     .then(data => {
       var chatHistory = JSON.stringify(data);
       var blob = new Blob([chatHistory], {
-        type: 'text/plain'
+        type: 'text/plain',
       });
       var url = URL.createObjectURL(blob);
 
@@ -212,12 +313,19 @@ function editHistory() {
   var selectedFilename = historySelect.value;
 
   if (selectedFilename == "") {
-    selectedFilename = config_data.default_history_file
+    selectedFilename = config_data.default_history_file;
   }
 
   // Fetch the selected chat history file from the server
-  fetch(`${server_url+server_port}/load_history_file/${selectedFilename}`, {
-      method: 'GET',
+  fetch(`${server_url+server_port}/history`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        chat: selectedFilename,
+        task: 'load',
+      }),
     })
     .then(response => response.json())
     .then(data => {
@@ -225,30 +333,21 @@ function editHistory() {
       historyPopup.classList.add('block-popup');
       historyPopup.classList.add('edit-popup');
 
-      // Create a pop-up dialog
-      var editDialog = document.createElement('div');
-      editDialog.classList.add('block-card');
+      // Create the HTML content for the pop-up dialog
+      var popupContent = `
+        <div class="modal-content">
+          <div class="modal-header">Edit History</div>
+          <div class="modal-body">
+            <textarea class="block-scroll">${JSON.stringify(data, null, 2)}</textarea>
+          </div>
+          <div class="modal-footer">
+            <button class="block-button" onclick="saveEditedHistory('${selectedFilename}')">Save</button>
+            <button class="block-button" onclick="closePopup('${historyPopup.id}')">Cancel</button>
+          </div>
+        </div>
+      `;
 
-      // Create a textarea to edit the message
-      var editTextArea = document.createElement('textarea');
-      editTextArea.classList.add('block-scroll');
-      editTextArea.value = JSON.stringify(data, null, 2);
-      editDialog.appendChild(editTextArea);
-
-      // Create a button to save the edited message
-      var saveButton = document.createElement('button');
-      saveButton.classList.add('block-button');
-      saveButton.textContent = 'Save';
-      saveButton.addEventListener('click', () => {
-        var editedText = editTextArea.value;
-        // Call the function to save the edited message here, e.g., send it to the server
-        sendEditHistory(editedText);
-        // Remove the pop-up dialog
-        historyPopup.remove();
-      });
-      editDialog.appendChild(saveButton);
-
-      historyPopup.appendChild(editDialog)
+      historyPopup.innerHTML = popupContent;
 
       // Add the pop-up dialog to the body
       document.body.appendChild(historyPopup);
@@ -258,29 +357,43 @@ function editHistory() {
     });
 }
 
-function sendEditHistory(editTextArea) {
-  historySelect = document.getElementById('history-select');
-  var selectedFilename = historySelect.value;
+function saveEditedHistory(selectedFilename) {
+  var editTextArea = document.querySelector('.block-popup.edit-popup textarea');
+  var editedText = editTextArea.value;
 
-  // Send a POST request to /send_message
-  fetch(`${server_url+server_port}/edit_history`, {
+  // Call the function to save the edited message here, e.g., send it to the server
+  sendEditHistory(editedText, selectedFilename);
+
+  // Close the pop-up dialog
+  closePopup('call');
+}
+
+function closePopup(popupId) {
+  var popup = document.getElementById(popupId);
+  popup.remove();
+}
+
+function sendEditHistory(editTextArea, selectedFilename) {
+  // Send a POST request to /history endpoint
+  fetch(`${server_url+server_port}/history`, {
       method: 'POST',
-      body: new URLSearchParams({
-        'history': editTextArea,
-        'chat': selectedFilename
-      }), // Send the message as form data
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'application/json',
       },
+      body: JSON.stringify({
+        chat: selectedFilename,
+        task: 'edit',
+        history: JSON.parse(editTextArea),
+      }),
     })
     .then(response => response.json())
     .then(data => {
       // Display if ok
-      loadSelectedHistory()
+      loadSelectedHistory();
     })
     .catch(error => {
       console.error('Error sending message:', error);
-    })
+    });
 }
 
 function displayMessages(messages) {
@@ -297,6 +410,8 @@ function displayMessages(messages) {
     messageContainer.appendChild(formattedMessage);
   });
 
+  messageContainer.innerHTML = `<br>` + messageContainer.innerHTML + `<br><br><br><br><br>`
+
   scrollMsg()
 }
 
@@ -308,119 +423,128 @@ navigator.mediaDevices.getUserMedia({
     localVideo.srcObject = stream;
   })
   .catch(function (error) {
+    document.getElementById('localVideo').remove()
     console.log('Error accessing the camera:', error);
   });
 
-let recognition; // Define the recognition object at a higher scope
+document.addEventListener('DOMContentLoaded', function () {
+  const startBtn = document.getElementById('startBtn');
+  const pauseBtn = document.getElementById('pauseBtn');
+  const stopBtn = document.getElementById('stopBtn');
+  const sendBtn = document.getElementById('sendBtn');
+  const durationElem = document.getElementById('duration');
+  const audioPlayer = document.getElementById('audioPlayer');
 
-function startVoiceRecognition() {
-  const setupRecognition = function () {
-    // Check if SpeechRecognition is supported by the browser
-    if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
-      // Create a new SpeechRecognition object
-      recognition = new(window.SpeechRecognition || window.webkitSpeechRecognition)();
+  let recorder;
+  let startTime;
+  let isRecording = false;
+  let recordedChunks = [];
 
-      // Configure recognition settings
-      recognition.lang = 'en-US'; // Set the language for recognition
-      recognition.interimResults = true; // Enable interim results
-      recognition.continuous = true; // Enable continuous recognition
+  startBtn.addEventListener('click', startRecording);
+  pauseBtn.addEventListener('click', pauseRecording);
+  stopBtn.addEventListener('click', stopRecording);
+  sendBtn.addEventListener('click', sendAudio);
 
-      recognition.start(); // Start recognition
+  function startRecording() {
+    navigator.mediaDevices.getUserMedia({
+        audio: true
+      })
+      .then(function (stream) {
+        recorder = new MediaRecorder(stream);
+        recorder.ondataavailable = handleDataAvailable;
+        recorder.onstop = handleRecordingStop;
+        recorder.start();
+        startTime = new Date();
+        isRecording = true;
 
-      // Variables to track previous recognized text
-      let previousText = '';
-
-      // Event listener for results
-      recognition.onresult = function (event) {
-        console.log('Speech recognition results.');
-        var result = event.results[event.resultIndex];
-        var recognizedText = result[0].transcript;
-
-        if (recognizedText === previousText) {
-          console.log('Recognized Text:', recognizedText);
-          sendMessage(recognizedText)
-        }
-
-        previousText = recognizedText;
-      };
-
-      // Event listener for errors
-      recognition.onerror = function (event) {
-        if (event.error == 'not-allowed') {
-          console.error('Permission to access microphone is blocked or denied.');
-        } else {
-          console.error('Speech recognition error:', event.error);
-        }
-      };
-
-      // Event listener for end of speech
-      recognition.onend = function () {
-        console.log('Speech recognition ended.');
-        recognition.start()
-      };
-    } else {
-      console.error('SpeechRecognition not supported by the browser.');
-    }
-  };
-
-  if (document.readyState === 'complete') {
-    setupRecognition();
-  } else {
-    window.onload = setupRecognition;
+        updateButtons();
+        updateDuration();
+      })
+      .catch(function (err) {
+        console.error('Error accessing microphone:', err);
+      });
   }
-}
+
+  function pauseRecording() {
+    if (isRecording) {
+      recorder.pause();
+      isRecording = false;
+    } else {
+      recorder.resume();
+      isRecording = true;
+    }
+
+    updateButtons();
+  }
+
+  function stopRecording() {
+    recorder.stop();
+    isRecording = false;
+
+    updateButtons();
+  }
+
+  function handleDataAvailable(event) {
+    if (event.data.size > 0) {
+      recordedChunks.push(event.data);
+    }
+  }
+
+  function handleRecordingStop() {
+    const audioBlob = new Blob(recordedChunks, {
+      type: 'audio/wav'
+    });
+    audioPlayer.src = URL.createObjectURL(audioBlob);
+    audioPlayer.style.display = 'block';
+    audioPlayer.controls = true; // Enable controls for audio playback
+    audioPlayer.autoplay = true; // Auto-play the recorded audio
+
+    sendBtn.disabled = false;
+
+    updateDuration();
+  }
+
+  function updateButtons() {
+    startBtn.disabled = isRecording;
+    pauseBtn.disabled = !isRecording;
+    stopBtn.disabled = !isRecording;
+    sendBtn.disabled = !audioPlayer.src;
+  }
+
+  function updateDuration() {
+    if (isRecording) {
+      const currentTime = new Date();
+      const elapsedTime = new Date(currentTime - startTime);
+      const minutes = elapsedTime.getUTCMinutes();
+      const seconds = elapsedTime.getUTCSeconds();
+      durationElem.textContent = `Duration: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+      setTimeout(updateDuration, 1000);
+    }
+  }
+
+  function sendAudio() {
+    const audioData = new FormData();
+    audioData.append('audio', new Blob(recordedChunks, {
+      type: 'audio/wav'
+    }));
+
+    fetch('http://127.0.0.1:5000/upload', {
+        method: 'POST',
+        body: audioData
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Server response:', data);
+      })
+      .catch(error => {
+        console.error('Error sending audio:', error);
+      });
+  }
+});
 
 function scrollMsg() {
   objDiv = document.getElementById("message-container");
   objDiv.scrollTop = objDiv.scrollHeight;
-}
-
-// code to drag the video
-const localVideo = document.getElementById('localVideo');
-let isDragging = false;
-let currentX;
-let currentY;
-let initialX;
-let initialY;
-let xOffset = 0;
-let yOffset = 0;
-
-localVideo.addEventListener('mousedown', dragStart);
-localVideo.addEventListener('mouseup', dragEnd);
-localVideo.addEventListener('mousemove', drag);
-
-function dragStart(e) {
-  initialX = e.clientX - xOffset;
-  initialY = e.clientY - yOffset;
-
-  if (e.target === localVideo) {
-    isDragging = true;
-  }
-}
-
-function dragEnd(e) {
-  initialX = currentX;
-  initialY = currentY;
-
-  isDragging = false;
-}
-
-function drag(e) {
-  if (isDragging) {
-    e.preventDefault();
-
-    currentX = e.clientX - initialX;
-    currentY = e.clientY - initialY;
-
-    xOffset = currentX;
-    yOffset = currentY;
-
-    setTranslate(currentX, currentY, localVideo);
-  }
-}
-
-function setTranslate(xPos, yPos, el) {
-  el.style.transform = `translate3d(${xPos}px, ${yPos}px, 0)`;
 }
 
 function drawArt() {
@@ -445,7 +569,7 @@ function drawArt() {
   scrollMsg()
 
   // Send the captured image to the Flask server
-  fetch(`${server_url+server_port}/text_to_image`, {
+  fetch(`${server_url+server_port}/image`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -453,6 +577,7 @@ function drawArt() {
       body: JSON.stringify({
         prompt: imagePrompt,
         chat: selectedFilename,
+        task: 'generate',
       })
     })
     .then(response => {
@@ -465,7 +590,7 @@ function drawArt() {
     })
     .then(data => {
       // Delete the element with id "bubble"
-      const bubble = document.getElementById('bubble');
+      const bubble = document.getElementById('circle-loader');
       if (bubble) {
         bubble.remove();
       }
@@ -479,7 +604,7 @@ function drawArt() {
         "name": "Yuna",
         "message": imageCreated
       }
-    
+
       let formattedMessage = formatMessage(messageData2);
       messageContainer.appendChild(formattedMessage);
 
@@ -523,7 +648,7 @@ function captureImage() {
   closePopupsAll();
 
   // Send the captured image to the Flask server
-  fetch(`${server_url+server_port}/upload_captured_image`, {
+  fetch(`${server_url+server_port}/image`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -531,6 +656,7 @@ function captureImage() {
       body: JSON.stringify({
         image: imageDataURL,
         name: imageName,
+        task: 'caption',
       })
     })
     .then(response => {
@@ -543,7 +669,7 @@ function captureImage() {
     })
     .then(data => {
       // Delete the element with id "bubble"
-      const bubble = document.getElementById('bubble');
+      const bubble = document.getElementById('circle-loader');
       if (bubble) {
         bubble.remove();
       }
@@ -552,8 +678,6 @@ function captureImage() {
 
       // Access the image caption from the server response
       const imageCaption = data.message;
-      console.log('Image Caption:', imageCaption);
-
       var askYunaImage = `*You can see ${imageCaption} in the image* ${messageForImage}`
 
       sendMessage(askYunaImage, imageName)
@@ -574,25 +698,27 @@ function populateHistorySelect() {
       // reload the page with delay of 1 second if config is not available
       setTimeout(function () {
         location.reload()
-      }, 300);
+      }, 100);
     }
 
     server_port = JSON.parse(localStorage.getItem('config')).server.port
     server_url = JSON.parse(localStorage.getItem('config')).server.url
 
-    // Fetch the list of history files from the server
-    fetch(`${server_url+server_port}/list_history_files`, {
-        method: 'GET',
+    // Fetch the list of history files from the server using the new /history route with 'load' task
+    fetch(`${server_url+server_port}/history`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          task: 'list',
+        }),
       })
       .then(response => response.json())
       .then(data => {
         // Populate the <select> with the available options
-        data.forEach(filename => {
-          var option = document.createElement('option');
-          option.value = filename;
-          option.textContent = filename;
-          historySelect.appendChild(option);
-        });
+        historySelect.innerHTML = data.map(filename => `<option class="block-list-e" value="${filename}">${filename}</option>`).join('');
+        countOptions()
       })
       .catch(error => {
         console.error('Error fetching history files:', error);
@@ -610,12 +736,22 @@ function loadSelectedHistory() {
   messageContainer = document.getElementById('message-container');
 
   if (selectedFilename == "") {
-    selectedFilename = config_data.server.default_history_file
+    selectedFilename = config_data.server.default_history_file;
   }
 
-  // Fetch the selected chat history file from the server
-  fetch(`${server_url+server_port}/load_history_file/${selectedFilename}`, {
-      method: 'GET',
+  // Define the data to be sent in the POST request
+  var requestData = {
+    task: 'load',
+    chat: selectedFilename
+  };
+
+  // Fetch the selected chat history file from the server using POST
+  fetch(`${server_url+server_port}/history`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestData),
     })
     .then(response => response.json())
     .then(data => {
@@ -638,13 +774,6 @@ function muteAudio() {
   }
 }
 
-// Run populateHistorySelect first and then loadSelectedHistory
-
-/* CRINGE CODE EVERYTHING IS CRASHED
-populateHistorySelect().then(() => {
-  loadSelectedHistory();
-}); */
-
 function fixDialogData() {
   populateHistorySelect().then(() => {
     loadSelectedHistory();
@@ -662,222 +791,3 @@ function closePopupsAll() {
   var parameterContainer = document.getElementById('parameter-container');
   parameterContainer.innerHTML = '';
 }
-
-function openConfigParams() {
-  OpenPopup('settings');
-
-  var aiConfig = config_data.ai;
-  var serverConfig = config_data.server;
-
-  // Get the parameter container element
-  const parameterContainer = document.getElementById('parameter-container');
-
-  // Create the block list element
-  const blockList = document.createElement('div');
-  blockList.classList.add('block-list', 'el-9', 'v-coll');
-
-  console.log(config_data)
-
-  // Create the AI block list element
-  const aiBlockList = createAIBlockList(aiConfig);
-
-  // Create the Server block list element
-  const serverBlockList = createServerBlockList(serverConfig);
-
-  // Append both block lists to the parameter container
-  parameterContainer.appendChild(aiBlockList);
-  parameterContainer.appendChild(serverBlockList);
-
-  return parameterContainer;
-}
-
-function createAIBlockList(aiConfig) {
-  // Create the AI block list element
-  const aiBlockList = document.createElement('div');
-  aiBlockList.classList.add('block-list', 'el-9', 'v-coll', 'ai-block-list');
-
-  // Create the HTML for the AI-related predefined blocks
-  const aiHtml = `
-    <div class="block-list-e">
-      <label>Names</label>
-      <input type="text" id="names" value="${aiConfig.names.join(',')}">
-    </div>
-    <div class="block-list-e">
-      <label>Emotions</label>
-      <input type="checkbox" id="emotions" ${aiConfig.emotions ? 'checked' : ''}>
-    </div>
-    <div class="block-list-e">
-      <label>Max New Tokens</label>
-      <input type="number" id="max-new-tokens" value="${aiConfig.max_new_tokens}">
-    </div>
-    <div class="block-list-e">
-      <label>Context Length</label>
-      <input type="number" id="context-length" value="${aiConfig.context_length}">
-    </div>
-    <div class="block-list-e">
-      <label>Temperature</label>
-      <input type="number" id="temperature" value="${aiConfig.temperature}">
-    </div>
-    <div class="block-list-e">
-      <label>Repetition Penalty</label>
-      <input type="number" id="repetition-penalty" value="${aiConfig.repetition_penalty}">
-    </div>
-    <div class="block-list-e">
-      <label>Last N Tokens</label>
-      <input type="number" id="last-n-tokens" value="${aiConfig.last_n_tokens}">
-    </div>
-    <div class="block-list-e">
-      <label>Seed</label>
-      <input type="number" id="seed" value="${aiConfig.seed}">
-    </div>
-    <div class="block-list-e">
-      <label>Top K</label>
-      <input type="number" id="top-k" value="${aiConfig.top_k}">
-    </div>
-    <div class="block-list-e">
-      <label>Top P</label>
-      <input type="number" id="top-p" value="${aiConfig.top_p}">
-    </div>
-    <div class="block-list-e">
-      <label>Stop</label>
-      <input type="text" id="stop" value="${aiConfig.stop.join(',')}">
-    </div>
-    <div class="block-list-e">
-      <label>Stream</label>
-      <input type="checkbox" id="stream" ${aiConfig.stream ? 'checked' : ''}>
-    </div>
-    <div class="block-list-e">
-      <label>Batch Size</label>
-      <input type="number" id="batch-size" value="${aiConfig.batch_size}">
-    </div>
-    <div class="block-list-e">
-      <label>Threads</label>
-      <input type="number" id="threads" value="${aiConfig.threads}">
-    </div>
-    <div class="block-list-e">
-      <label>GPU Layers</label>
-      <input type="number" id="gpu-layers" value="${aiConfig.gpu_layers}">
-    </div>
-  `;
-
-  // Set the HTML of the AI block list
-  aiBlockList.innerHTML = aiHtml;
-
-  return aiBlockList;
-}
-
-function createServerBlockList(serverConfig) {
-  // Create the Server block list element
-  const serverBlockList = document.createElement('div');
-  serverBlockList.classList.add('block-list', 'el-9', 'v-coll', 'server-block-list');
-
-  // Create the HTML for the Server-related predefined blocks
-  const serverHtml = `
-    <div class="block-list-e">
-      <label>Port</label>
-      <input type="number" id="port" value="${serverConfig.port}">
-    </div>
-    <div class="block-list-e">
-      <label>History</label>
-      <input type="text" id="history" value="${serverConfig.history}">
-    </div>
-    <div class="block-list-e">
-      <label>Default History</label>
-      <input type="text" id="default-history" value="${serverConfig.default_history_file}">
-    </div>
-    <div class="block-list-e">
-      <label>Server URL</label>
-      <input type="text" id="server" value="${serverConfig.url}">
-    </div>
-  `;
-
-  // Set the HTML of the Server block list
-  serverBlockList.innerHTML = serverHtml;
-
-  return serverBlockList;
-}
-
-function saveConfigParams() {
-  // Create an object to store the reverse configuration
-  const reverseConfig = {
-    ai: {},
-    server: {}
-  };
-
-  // Get the AI block list element
-  const aiBlockList = document.querySelector('.ai-block-list');
-
-  // Extract values from AI block list
-  reverseConfig.ai.names = aiBlockList.querySelector('#names').value.split(',');
-  reverseConfig.ai.emotions = aiBlockList.querySelector('#emotions').checked;
-  reverseConfig.ai.max_new_tokens = parseInt(aiBlockList.querySelector('#max-new-tokens').value);
-  reverseConfig.ai.context_length = parseInt(aiBlockList.querySelector('#context-length').value);
-  reverseConfig.ai.temperature = parseFloat(aiBlockList.querySelector('#temperature').value);
-  reverseConfig.ai.repetition_penalty = parseFloat(aiBlockList.querySelector('#repetition-penalty').value);
-  reverseConfig.ai.last_n_tokens = parseInt(aiBlockList.querySelector('#last-n-tokens').value);
-  reverseConfig.ai.seed = parseInt(aiBlockList.querySelector('#seed').value);
-  reverseConfig.ai.top_k = parseInt(aiBlockList.querySelector('#top-k').value);
-  reverseConfig.ai.top_p = parseFloat(aiBlockList.querySelector('#top-p').value);
-  reverseConfig.ai.stop = aiBlockList.querySelector('#stop').value.split(',');
-  reverseConfig.ai.stream = aiBlockList.querySelector('#stream').checked;
-  reverseConfig.ai.batch_size = parseInt(aiBlockList.querySelector('#batch-size').value);
-  reverseConfig.ai.threads = parseInt(aiBlockList.querySelector('#threads').value);
-  reverseConfig.ai.gpu_layers = parseInt(aiBlockList.querySelector('#gpu-layers').value);
-
-  // Get the Server block list element
-  const serverBlockList = document.querySelector('.server-block-list');
-
-  // Extract values from Server block list
-  reverseConfig.server.port = parseInt(serverBlockList.querySelector('#port').value);
-  reverseConfig.server.history = serverBlockList.querySelector('#history').value;
-  reverseConfig.server.default_history_file = serverBlockList.querySelector('#default-history').value;
-  reverseConfig.server.url = serverBlockList.querySelector('#server').value;
-
-  localStorage.setItem('config', JSON.stringify(reverseConfig));
-}
-
-async function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-async function checkConfigData() {
-  await delay(300);
-  if (typeof config_data === 'undefined') {
-    console.warn('You messed up production. Trying to load config.json again');
-
-    if (localStorage.getItem('config')) {
-      // reload the page with delay of 1 second if config is not available
-      setTimeout(function () {
-        config_data = JSON.parse(localStorage.getItem('config'))
-        server_url = config_data.server.url
-        server_port = config_data.server.port
-
-        fixDialogData();
-      }, 300);
-    } else {
-      // Fetch the JSON data
-      fetch(configUrl)
-        .then(response => response.json())
-        .then((data) => {
-          // Handle the JSON data
-          config_data = data
-          localStorage.setItem('config', JSON.stringify(config_data));
-          server_url = config_data.server.url
-          server_port = config_data.server.port
-        })
-        .catch((error) => {
-          console.error('Error:', error);
-        });
-
-      await delay(300);
-      openConfigParams();
-    }
-
-    closePopupsAll();
-
-  } else {
-    console.log('You did it');
-  }
-}
-
-checkConfigData();

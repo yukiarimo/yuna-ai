@@ -1,16 +1,22 @@
 import base64
+import json
 import os
 from transformers import BlipProcessor, BlipForConditionalGeneration
 from diffusers import StableDiffusionPipeline
 from PIL import Image
 from datetime import datetime
-import torch
 
-processor = BlipProcessor.from_pretrained("./lib/models/agi/blip-image-captioning-base")
-model = BlipForConditionalGeneration.from_pretrained("./lib/models/agi/blip-image-captioning-base")
+if os.path.exists("static/config.json"):
+    with open("static/config.json", 'r') as file:
+        config = json.load(file)
 
-art = StableDiffusionPipeline.from_single_file('./lib/models/agi/sd/any_loli.safetensors', safety_checker=None, load_safety_checker=None)
-art.to('mps')
+agi_model_dir = config["server"]["agi_model_dir"]
+processor = BlipProcessor.from_pretrained(f"{agi_model_dir}yuna-vision")
+model = BlipForConditionalGeneration.from_pretrained(f"{agi_model_dir}yuna-vision")
+
+if config["ai"]["art"] == True:
+    art = StableDiffusionPipeline.from_single_file(f'{agi_model_dir}art/{config["server"]["art_default_model"]}', safety_checker=None, load_safety_checker=None, sequence_length=256, guidance_scale=7)
+    art.to('mps')
 
 def capture_image(data):
     image_data_url = data['image']
@@ -30,7 +36,7 @@ def capture_image(data):
 
     out = model.generate(**inputs, max_length=150)
     image_caption = str(processor.decode(out[0], skip_special_tokens=True))
-    print("Image caption: " + image_caption)
+
 
     # Respond with a success message
     return image_caption
@@ -47,6 +53,5 @@ def create_image(prompt):
     image_name = str(current_time_milliseconds) + '-art' + '.png'
 
     image.save(f"static/img/art/{image_name}")
-    print('image_name: ' + image_name)
 
     return image_name

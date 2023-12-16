@@ -1,108 +1,117 @@
 import base64
 from flask import Flask, request, jsonify
-import shutil
-import subprocess
-from lib.generate import generate
-from lib.generate import load_chat_history, save_chat_history
-import os
-import json
-from flask_cors import CORS
+from lib.generate import ChatGenerator, ChatHistoryManager
 from lib.vision import capture_image, create_image
+from pydub import AudioSegment
+from flask_cors import CORS
+import whisper
+import json
+import os
 
-app = Flask(__name__)
-CORS(app)
+class YunaServer:
+    def __init__(self):
+        self.app = Flask(__name__)
+        CORS(self.app, resources={r"/*": {"origins": "*"}})
+        self.configure_routes()
+        self.load_config()
+        self.chat_generator = ChatGenerator(self.config)
+        self.chat_history_manager = ChatHistoryManager(self.config)
 
-if os.path.exists("static/config.json"):
-    with open("static/config.json", 'r') as file:
-        config = json.load(file)
+    def load_config(self):
+        if os.path.exists("static/config.json"):
+            with open("static/config.json", 'r') as file:
+                self.config = json.load(file)
 
-# New route for sending and receiving messages
-@app.route('/send_message', methods=['POST'])
-def send_message():
-    message = request.form.get('message')  # Get the message from the request
-    chat_id = request.form.get('chat')
+    def configure_routes(self):
+        self.app.route('/history', methods=['POST'])(self.handle_history_request)
+        self.app.route('/image', methods=['POST'])(self.handle_image_request)
+        self.app.route('/message', methods=['POST'])(self.handle_message_request)
+        self.app.route('/audio', methods=['POST'])(self.handle_audio_request)
 
-    # Load chat history from the JSON file when the server starts
-    chat_history = load_chat_history(chat_id)
+    def run(self):
+        self.app.run(host='0.0.0.0', port=self.config["server"]["port"])
 
-    messageOriginal = message
-    message = message.replace("<tts>", "")
+    def handle_history_request(self):
+        data = request.get_json()
+        chat_id = data.get('chat')
+        task = data.get('task')
 
-    # Append the message to the chat history
-    chat_history.append({"name": "Yuki", "message": message})
-    # Save the updated chat history to the JSON file
-    save_chat_history(chat_history, chat_id)
-    # Call the generate function to get a response
-    response = generate(chat_id)
+        if task == 'load':
+            return jsonify(self.chat_history_manager.load_chat_history(chat_id))
+        elif task == 'list':
+            return jsonify(self.chat_history_manager.list_history_files())
+        elif task == 'edit':
+            history = data.get('history')
+            self.chat_history_manager.save_chat_history(history, chat_id)
+            return jsonify({'response': 'History edited successfully'})
+        elif task == 'create':
+            self.chat_history_manager.create_chat_history_file(chat_id)
+            return jsonify({'response': 'History created successfully'})
+        elif task == 'delete':
+            self.chat_history_manager.delete_chat_history_file(chat_id)
+            return jsonify({'response': 'History deleted successfully'})
+        elif task == 'rename':
+            new_chat_id_name = data.get('name')
+            self.chat_history_manager.rename_chat_history_file(chat_id, new_chat_id_name)
+            return jsonify({'response': 'History renamed successfully'})
+        else:
+            return jsonify({'error': 'Invalid task parameter'}), 400
 
-    if "<tts>" in messageOriginal:
-        subprocess.run(f'say "{response}" -o output', shell=True)
-        shutil.move("output.aiff", "static/audio/output.aiff")
-        subprocess.run(f"ffmpeg -y -i 'static/audio/output.aiff' -b:a 192K -f mp3 static/audio/output.mp3", shell=True)
+    def handle_image_request(self):
+        data = request.get_json()
 
-    return jsonify({'response': response})
+        if 'image' in data and 'task' in data and data['task'] == 'caption':
+            image_caption = capture_image(data)
+            return jsonify({'message': f'{image_caption}'})
+        elif 'prompt' in data and 'chat' in data and data['task'] == 'generate':
+            prompt = data['prompt']
+            chat_id = data['chat']
 
-# New route for sending and receiving messages
-@app.route('/edit_history', methods=['POST'])
-def edit_history():
-    history = json.loads(request.form.get('history'))  # Get the message from the request
-    chat_id = request.form.get('chat')
-    save_chat_history(history, chat_id)
+            chat_history = self.chat_history_manager.load_chat_history(chat_id)
+            chat_history.append({"name": "Yuki", "message": prompt})
 
-    return jsonify({'response': "response"})
+            created_image = create_image(prompt)
+            chat_history.append({"name": "Yuna", "message": f"Sure, here you go! <img src='static/img/art/{created_image}' class='image-message'>"})
 
-# New route for uploading a captured image
-@app.route('/upload_captured_image', methods=['POST'])
-def upload_captured_image():
-    data = request.get_json()
-    if 'image' in data:
+            self.chat_history_manager.save_chat_history(chat_history, chat_id)
+            yuna_image_message = f"Sure, here you go! <img src='static/img/art/{created_image}' class='image-message'>"
 
-        image_caption = capture_image(data)
-        return jsonify({'message': f'{image_caption}'})
+            return jsonify({'message': yuna_image_message})
+        else:
+            return jsonify({'error': 'Invalid task parameter'}), 400
+        
+    def handle_message_request(self):
+        data = request.get_json()
+        chat_id = data.get('chat')
+        speech = data.get('speech')
+        text = data.get('text')
+        naked = data.get('naked')
 
-    # If something goes wrong or no image data is provided
-    return jsonify({'error': 'Image upload failed'}), 400
+        response = self.chat_generator.generate(chat_id, speech, text, naked)
 
-@app.route('/text_to_image', methods=['POST'])
-def text_to_image():
-    data = request.get_json()
+        return jsonify({'response': response})
+    
+    def handle_audio_request(self):
+        audio_data = request.files['audio']
+        
+        try:
+            # Save the audio file
+            audio_path = 'audio.wav'
+            audio_data.save(audio_path)
 
-    prompt = data.get('prompt')
-    chat_id = data.get('chat')
+            # Convert the audio to MP3
+            mp3_path = 'audio.mp3'
+            sound = AudioSegment.from_wav(audio_path)
+            sound.export(mp3_path, format='mp3')
 
-    # Load chat history from the JSON file when the server starts
-    chat_history = load_chat_history(chat_id)
+            print('Audio saved')
 
-    chat_history.append({"name": "Yuki", "message": prompt})
+            result = whisper.transcribe("audio.mp3")
 
-    created_image = create_image(prompt)
-    chat_history.append({"name": "Yuna", "message": f"Sure, here you go! <img src='static/img/art/{created_image}' class='image-message'>"})
-
-    save_chat_history(chat_history, chat_id)
-    yunaImageMessage = f"Sure, here you go! <img src='static/img/art/{created_image}' class='image-message'>"
-
-    return jsonify({'message': yunaImageMessage})
-
-# New route to list available chat history files
-@app.route('/list_history_files', methods=['GET'])
-def list_history_files():
-    history_files = [f for f in os.listdir(config["server"]["history"]) if os.path.isfile(os.path.join(config["server"]["history"], f))]
-
-    # Place main_history_file first and then sort alphabetically
-    history_files.sort(key=lambda x: (x != config["server"]["default_history_file"], x.lower()))
-
-    return jsonify(history_files)
-
-# New route to load a specific chat history file
-@app.route('/load_history_file/<filename>', methods=['GET'])
-def load_history_file(filename):
-    history_file = os.path.join(config["server"]["history"], filename)
-
-    if os.path.exists(history_file):
-        with open(history_file, 'r') as file:
-            return json.load(file)
-    else:
-        return []
+            return jsonify({'message': result["text"]})
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=config["server"]["port"], debug=True)
+    yuna_server = YunaServer()
+    yuna_server.run()

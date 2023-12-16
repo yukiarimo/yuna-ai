@@ -16,15 +16,16 @@
 
     <title>Yuna</title>
 
+    <link rel="stylesheet" href="static/css/kawai-v11-2.css">
     <link rel="stylesheet" href="static/css/index.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/yukiarimo/kawai-framework@main/assets/css/kawai.css">
-    <script src="https://cdn.jsdelivr.net/gh/yukiarimo/kawai-framework@main/assets/js/kawai.js" defer></script>
-    <link href="static/fonts/kawai-font.woff" rel="stylesheet">
+    <script src="static/js/kawai-v11-2.js" defer></script>
     <link href="/manifest.json" rel="manifest" crossorigin="use-credentials" />
     <script src="static/js/index.js" defer></script>
+    <script src="static/js/himitsu.js" defer></script>
+    <script src="static/js/setup.js" defer></script>
 
-    <!--<script>
-            if ('serviceWorker' in navigator) {
+    <script>
+        if ('serviceWorker' in navigator) {
             window.addEventListener('load', function () {
                 navigator.serviceWorker.register('/sw.js').then(
                     function (registration) {
@@ -38,68 +39,80 @@
                     });
             });
         }
-    </script>-->
+    </script>
 </head>
 
 <body>
-    <div class="topbar-o">
-        <div class="block-button" id="callButton" onclick="OpenPopup('call');">📞</div>
-        <div>
-            <div class="la block-text">Yuna</div>
+    <div class="sidebar-o desktop-only" id="sidebar">
+
+        <div class="side-tab-block">
+            <div class="side-tab-block-e" style="align-self: center; flex-direction: column;" onclick="toggleSidebar()">
+                <img src="static/img/yuna.png" alt="Yuna logo">
+            </div>
+
+            <div class="side-tab-block-e">
+                <div style="display: flex; flex-direction: row;">
+                    <img class="block-icon" src="static/img/icons/edit.png" onclick="openChatManager()" alt="">
+                    <div class="block-text lb">Chats</div>
+                    <img class="block-icon" src="static/img/icons/flask.png" onclick="OpenPopup('options')" alt="">
+                </div>
+                
+                <select class="block-select" id="history-select" onchange="loadSelectedHistory()">📁</select>
+            </div>
+            <div class="side-tab-block-e" onclick="openConfigParams()">
+                <div class="block-text lb">Params</div>
+                <div class="block-scroll" id="parameter-container">
+                    <!-- Dynamic HTML elements will be added here -->
+                </div>
+                <img class="block-icon" src="static/img/icons/delete.png" onclick="localStorage.clear()" alt="Delete">
+                <img class="block-icon" src="static/img/icons/cancel.png" alt="Cancel">
+                <img class="block-icon" src="static/img/icons/done.png" onclick="saveConfigParams()" alt="Save">
+            </div>
+
+            <div class="side-tab-block-e">
+                <div class="block-text lb">Prompts</div>
+                <label for="templateSelect">Select Template:</label>
+                <select class="block-select block-list" id="templateSelect" size="3" onchange="changeTemplate()">
+                    <option value="default">Default</option>
+                    <option value="writer">Writer</option>
+                    <option value="paraphrase">Paraphrase</option>
+                    <option value="decisionMaking">Decision</option>
+                    <option value="himitsu">himitsu</option>
+                </select>
+
+                <div id="generatedText"></div>
+
+            </div>
         </div>
-        <div class="la block-text" id="settingsButton" onclick="openConfigParams();">⚙️</div>
+    </div>
+
+    <div class="topbar-o">
+        <div class="block-button" onclick="toggleSidebar()"><img class="block-icon" src="static/img/icons/hamburger.png"
+                alt="Menu"></div>
+        <div class="la block-text">Yuna</div>
+        <div class="top-tab-block">
+            <div class="block-button" id="callButton" onclick="OpenPopup('call');"><img class="block-icon"
+                    src="static/img/icons/call.png" alt="Call"></div>
+        </div>
     </div>
 
     <div class="block-o">
-        <div class="coll-lo">
-            <div class="block-card el-9">
-                <div class="block-scroll" id="message-container">
-                    <!-- Messages will be displayed here -->
+        <div class="tab-o tab-o-default" id="1">
+            <div class="coll-lo">
+                <div class="block-card block-scroll" id="message-container">
+                    <!-- Dynamic HTML elements will be added here -->
                 </div>
             </div>
-        </div>
 
-        <div class="coll-lo">
-            <form class="block-card el-9 h-coll" onsubmit="handleSubmit(event)">
-                <textarea id="input_text" placeholder="Talk to Yuna..."></textarea>
-                <button type="submit" class="block-button">💬</button>
-                <button type="button" class="block-button" onclick="OpenPopup('options')">☰</button>
-            </form>
-        </div>
-    </div>
-
-    <div class="block-popup" id="settings">
-        <div class="coll-lo v-coll">
-            <div class="modal-content">
-                <div class="modal-header">Parameters</div>
-                <div class="modal-body">
-                    <div class="popup-content">
-                        <div class="block-card el-9">
-                            <div class="block-scroll" id="parameter-container">
-                                <!-- Dynamic HTML elements will be added here -->
-                            </div>
+            <div class="coll-lo">
+                <div class="input-wrapper">
+                    <form class="block-card el-9 h-coll" onsubmit="handleSubmit(event)" id="send-msg">
+                        <textarea id="input_text" placeholder="Talk to Yuna..."></textarea>
+                        <div id="msg-btn">
+                            <button type="submit" class="block-button"><img class="block-icon"
+                                    src="static/img/icons/send.png" alt="Send"></button>
                         </div>
-            
-                        <div class="block-card el-9">
-                            <h1>Mode and fix</h1>
-                            <div>
-                                <div class="block-toggle" onclick="toggleTheme()"></div>
-                                <button class="block-button" onclick="checkConfigData();">Fix</button>
-                                <button class="block-button" onclick="fixDialogData();">Build</button>
-                            </div>
-                        </div>
-            
-                        <details class="block-card el-9 v-coll">
-                            <textarea id="codeInput" rows="5" cols="40" placeholder="Enter JavaScript"></textarea>
-                            <button type="button" class="block-button" id="executeButton">Run</button>
-                            <textarea id="consoleOutput" rows="10" cols="40" readonly=""></textarea>
-                        </details>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <div class="block-button-close" onclick="closePopupsAll();">Close</div>
-                    <button id="save-button block-button" onclick="saveConfigParams();">Save</button>
-                    <button id="reset-button block-button" onclick="localStorage.clear()">Reset</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -107,75 +120,104 @@
 
     <div class="block-popup" id="options">
         <div class="modal-content">
-            <div class="modal-header">Options</div>
+            <div class="modal-header">Settings</div>
+
             <div class="modal-body">
-                <div class="coll-lo">
-                    <div class="block-list el-9 v-coll">
-                        <div class="block-list-e" onclick="editHistory()">✍️ Edit</div>
-                        <div class="block-list-e" onclick="loadSelectedHistory()">👇 Load</div>
-                        <div class="block-list-e" onclick="downloadHistory()">⬇️ Download</div>
-                        <div class="block-list-e" onclick="location.reload();">🔄 Refresh</div>
-                        <div class="block-list-e" onclick="scrollMsg();">📜 Scroll</div>
-                        <div class="block-list-e" onclick="muteAudio()">📢 Mute</div>
-                        <div class="block-list-e">
-                            <select class="block-list-e block-button" id="history-select" onchange="loadSelectedHistory()">📁</select>
-                        </div>
-                    </div>
+                <div class="block-list block-card el-9">
+                    <div class="block-list-e" onclick="checkConfigData()">⚙️ Auto Fix</div>
+                    <div class="block-list-e" onclick="fixDialogData()">⚙️ Auto Build</div>
+                    <div class="block-list-e" onclick="toggleTheme()">⚙️ Toggle Mode</div>
+                    <div class="block-list-e" onclick="openConfigParams()">⚙️ Settings</div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <div class="block-button-close" onclick="closePopupsAll();">Cancel</div>
+
+                <div class="modal-footer">
+                    <div class="block-button" onclick="closePopupsAll();">Close</div>
+                </div>
             </div>
         </div>
     </div>
 
     <div class="block-popup" id="call">
-        <div class="modal-content">
-            <div class="modal-header">Call</div>
-            <div class="modal-body">
-                <div class="coll-lo">
-                    <audio id="backgroundMusic">
-                        <source src="static/audio/output.mp3" type="audio/mp3">
-                    </audio>
-        
-                    <div class="participant el-9 block-card">
-                        <img src="static/img/yuna-full.png" alt="Yuna Participant" style="border-radius: 20px;">
-                        <video id="localVideo" playsinline autoplay muted class="draggable-video"></video>
-                        <div class="controls">
-                            <button class="block-button" id="end-call">End</button>
-                            <button class="block-button" id="mute-microphone">Mute</button>
-                            <button class="block-button" id="draw-art" onclick="drawArt()">Draw</button>
-                            <canvas id="capture-canvas" style="display: none;"></canvas> <!-- Add this canvas element -->
-                            <button class="block-button" id="capture-image" onclick="captureImage()">Capture</button> <!-- Add this button -->
-                            <button class="block-button" id="startButton" onclick="startVoiceRecognition()">Talk</button>
-                        </div>
-                    </div>
-                </div>
+        <audio id="backgroundMusic">
+            <source src="static/audio/output.mp3" type="audio/mp3">
+        </audio>
+
+        <canvas id="capture-canvas" style="display: none;"></canvas>
+
+        <div class="video-call-container">
+            <div class="participant participant-1"><img src="static/img/yuna-full.png" alt="Yuna Participant"></div>
+            <div class="participant participant-2"><video id="localVideo" playsinline autoplay muted
+                    class="draggable-video"></video></div>
+        </div>
+
+        <div class="controls">
+            <div class="control">
+                <img src="static/img/icons/camera.png" id="capture-image" onclick="captureImage()" alt="Camera">
             </div>
-            <div class="modal-footer">
-                <div class="block-button-close" onclick="closePopupsAll();">Close</div>
+            <div class="control">
+                <img src="static/img/icons/microphone.png" onclick="muteAudio();" alt="Microphone">
             </div>
+            <div class="control">
+                <img src="static/img/icons/art.png" id="draw-art" onclick="drawArt()" alt="Other Control">
+            </div>
+            <div class="control">
+                <img src="static/img/icons/end.png" alt="Hang Up" onclick="closePopupsAll();">
+            </div>
+
+            <!--
+            <div class="controls">
+                <button class="block-button" id="startBtn">Rec</button>
+                <button class="block-button" id="pauseBtn" disabled>Pause</button>
+                <button class="block-button" id="stopBtn" disabled>Stop</button>
+                <button class="block-button" id="sendBtn" disabled>Send</button>
+            </div>
+
+            <div id="duration">Duration: 0:00</div>
+            <audio id="audioPlayer" controls></audio>
+            -->
         </div>
     </div>
 
-    <!--<script>
-        // Function to execute JavaScript code entered by the user
-        document.getElementById("executeButton").addEventListener("click", function () {
-            // Get the JavaScript code from the textarea
-            var code = document.getElementById("codeInput").value;
+        <div class="block-popup" id="chat">
+            <div class="modal-content">
+                <div class="modal-header">Chat manager</div>
+                <div class="modal-body">
+                    <div class="coll-lo">
+                        <div class="block-card el-9">
+                            <div class="block-card la" id="current-history" style="color: black !important;">History
+                            </div>
 
-            try {
-                // Use eval to execute the code
-                var result = eval(code);
+                            <div style="display: flex; flex-direction: row;">
+                                <img class="block-icon" src="static/img/icons/edit.png" onclick="editHistory()" alt="">
+                                <img class="block-icon" src="static/img/icons/flask.png" onclick="loadSelectedHistory()" alt="">
+                                <img class="block-icon" src="static/img/icons/download.png" onclick="downloadHistory()" alt="">
+                            </div>
+                        </div>
+                    </div>
 
-                // Display the result in the console output textarea
-                document.getElementById("consoleOutput").value += "Result: " + result + "\n";
-            } catch (error) {
-                // If there's an error, display it in the console output textarea
-                document.getElementById("consoleOutput").value += "Error: " + error.message + "\n";
-            }
-        });
-    </script>-->
+                    <div class="coll-lo">
+                        <form class="el-9 block-card" id="mng-hist-form" onsubmit="processForm(event)">
+                            <label for="historyName">History Name:</label>
+                            <input class="block-input" type="text" id="historyName" name="historyName"
+                                placeholder="Enter file name">
+                            <label for="historyNewName">New Name:</label>
+                            <input class="block-input" type="text" id="historyNewName" name="historyNewName"
+                                placeholder="New name, only for rename">
+                            <label for="historyOptions">Options:</label>
+                            <select class="block-select" id="historyOptions" name="historyOptions">
+                                <option value="create">Create</option>
+                                <option value="rename">Rename</option>
+                                <option value="delete">Delete</option>
+                            </select>
+                            <input type="submit" value="Submit">
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="block-button" onclick="closePopupsAll();">Close</div>
+                </div>
+            </div>
+        </div>
 </body>
 
 </html>

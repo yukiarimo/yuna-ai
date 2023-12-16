@@ -46,3 +46,43 @@ def receive_data_ruen():
 
 if __name__ == '__main__':
     app.run(port=3006)
+
+"""
+from ctransformers import AutoModelForCausalLM
+
+model = AutoModelForCausalLM.from_pretrained(
+    "lib/models/yuna/pygmalion-2-7b.Q5_K_M.gguf",
+    model_type='llama2',
+    max_new_tokens=512,
+    context_length=4096,
+    temperature=0.3, # less better to intruction following
+    repetition_penalty=1.2,
+    last_n_tokens=128,
+    seed=-1,
+    top_k=40,
+    top_p=0.92,
+    batch_size=256,
+    gpu_layers=1,
+    reset=True
+    )
+
+# function to read text from a file
+def read_text_file():
+    with open("test.txt", 'r') as f:
+        text = f.read()
+
+    new_history_crop = model.tokenize(text)
+    new_history_crop = new_history_crop[:1024]
+
+    print(model.detokenize(new_history_crop))
+    return text
+
+while True:
+    input("Press Enter to continue...")
+    text = read_text_file()
+
+    for text in model(text, stream=True):
+        print(text, end="", flush=True)
+
+    print("done")
+"""

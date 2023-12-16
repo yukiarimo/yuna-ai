@@ -13,6 +13,12 @@
     display: flex;
     flex-direction: column;
     padding: 2%;
+    overflow-x: hidden;
+}
+
+.block-card {
+    border: none !important;
+    box-shadow: none !important;
 }
 
 .block-text {
@@ -35,91 +41,6 @@ img {
 
 .hideside {
     display: none !important;
-}
-
-/* CSS for the chat messages */
-#message-container {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    overflow: auto;
-    /* Add scrolling for overflow */
-    padding: 10px;
-    background-color: #f0f0f0;
-    /* Light background color */
-    border-radius: 12px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-    /* Add shadow for a modern look */
-    overflow-x: hidden !important;
-    max-height: calc(100vh - 300px) !important
-}
-
-/* Individual chat message styles */
-.block-message-1,
-.block-message-2 {
-    display: flex;
-    justify-content: flex-start;
-    align-items: flex-start;
-    padding: 10px;
-    border-radius: 12px;
-    max-width: 75%;
-    background-color: #fff;
-    /* White background for all messages */
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-    /* Add shadow for a modern look */
-}
-
-.block-message-1 {
-    align-self: flex-start;
-    border-top-left-radius: 0;
-    /* Remove top left border radius for Yuna's messages */
-    border-bottom-right-radius: 20px;
-    /* Add bottom right border radius for Yuna's messages */
-    background-color: #ffc0cb;
-    /* Pink background for Yuna's messages */
-}
-
-.block-message-2 {
-    align-self: flex-end;
-    border-top-right-radius: 0;
-    /* Remove top right border radius for Yuki's messages */
-    border-bottom-left-radius: 20px;
-    /* Add bottom left border radius for Yuki's messages */
-    background-color: #add8e6;
-    /* Light blue background for Yuki's messages */
-}
-
-/* Text styles */
-.block-message-1 p,
-.block-message-2 p {
-    margin: 0;
-    padding: 0;
-    font-size: 16px;
-    color: #333;
-    text-align: left;
-    font-family: 'Helvetica Neue', sans-serif;
-    /* Use a sans-serif font for all messages */
-}
-
-/* Cute styles */
-.block-message-1 {
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4);
-    /* Add stronger shadow for Yuna's messages */
-}
-
-.block-message-2 {
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4);
-    /* Add stronger shadow for Yuki's messages */
-}
-
-.block-message-1 p {
-    font-size: 18px;
-    /* Slightly larger font size for Yuna's messages */
-}
-
-.block-message-2 p {
-    font-size: 18px;
-    /* Slightly larger font size for Yuki's messages */
 }
 
 /* Style for the input area */
@@ -146,18 +67,6 @@ img {
     /* Add stronger shadow on focus */
 }
 
-/* Style for the Send button */
-.block-button {
-    background-color: #4caf50;
-    /* Green button color */
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 10px 20px;
-    cursor: pointer;
-    font-size: 20px !important;
-}
-
 /* Style for other buttons (Clear, Load, Download) */
 .block-button:not(.block-button:first-child) {
     margin-left: 10px;
@@ -167,33 +76,11 @@ img {
     width: 95% !important;
 }
 
-.participant {
-    width: 150px;
-    height: 150px;
-    border-radius: 20px;
-    object-fit: cover;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-}
-
 #localVideo,
-.participant>img {
-    width: 70% !important;
-    height: 85% !important;
-    background: rgba(0, 0, 0, 0.3);
-}
-
 .draggable-video {
-    max-height: 20%;
-    border-radius: 20px;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
-    position: fixed;
-    top: 70%;
-    left: 70%;
-    cursor: grab;
-    max-width: 20%;
 }
 
 .controls {
@@ -207,54 +94,22 @@ img {
     float: none !important;
 }
 
-@media (max-width : 428px) {
-    .participant>img {
-        width: 90% !important;
-    }
-
-    #message-container {
-        max-height: calc(100vh - 300px) !important;
-    }
-}
-
-.typing-bubble {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 20px;
-}
-
-.dot {
-    width: 10px;
-    height: 10px;
-    margin: 0 5px;
-    background-color: #000000;
+.circle-loader {
+    width: 25px;
+    height: 25px;
     border-radius: 50%;
-    animation: typing 1s infinite;
+    background: linear-gradient(0deg, black 50%, white 50%);
+    border: 1px solid black;
+    animation: spin 2s linear infinite;
 }
 
-.dot:nth-child(2) {
-    animation-delay: 0.2s;
-}
-
-.dot:nth-child(3) {
-    animation-delay: 0.4s;
-}
-
-@keyframes typing {
-    0% {
-        transform: translateY(0);
-        opacity: 1;
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
     }
 
-    50% {
-        transform: translateY(-10px);
-        opacity: 0.5;
-    }
-
-    100% {
-        transform: translateY(0);
-        opacity: 1;
+    to {
+        transform: rotate(360deg);
     }
 }
 
@@ -298,4 +153,242 @@ textarea {
 .image-message {
     width: 100% !important;
     height: auto !important;
+}
+
+#generation {
+    display: none;
+}
+
+.side-tab-block-e::before {
+    content: '' !important;
+    font-size: 0 !important;
+    margin-right: 0 !important;
+}
+
+#history-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 100%;
+    font-size: 1rem;
+    padding: 0.5em 2em 0.5em 1em;
+    background-color: #f5f5f5;
+    border: 1px solid #caced1;
+    border-radius: 4px;
+    color: #333;
+    cursor: pointer;
+    position: relative;
+    outline: none;
+}
+
+#history-select::-ms-expand {
+    display: none;
+}
+
+#history-select::after {
+    content: "▼";
+    position: absolute;
+    top: 50%;
+    right: 1em;
+    transform: translateY(-50%);
+    font-size: 0.75em;
+    color: #999;
+}
+
+#history-select:hover {
+    border-color: #999;
+}
+
+#history-select:focus {
+    border-color: #48abe0;
+}
+
+#history-select option {
+    padding: 0.5em 1em;
+}
+
+@media (max-width : 428px) {
+    #message-container {
+        max-height: calc(100vh - 300px) !important;
+    }
+
+    .topbar-o {
+        margin-bottom: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+    }
+
+    .showside {
+        display: flex !important;
+    }
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.topbar-o {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    /* Add other styles as needed */
+}
+
+#message-container {
+    position: absolute;
+    top: 50px;
+    width: auto;
+    width: min-intrinsic !important;
+    bottom: 0px;
+    left: 0;
+    right: 0;
+    overflow-y: auto;
+    max-height: 100% !important;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+#message-container::-webkit-scrollbar {
+    display: none;
+}
+
+.coll-lo {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 2%;
+    width: auto;
+    height: auto;
+}
+
+.input-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+#send-msg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 25px;
+    padding: 10px;
+    background: none !important;
+    width: 70% !important;
+}
+
+#send-msg>textarea {
+    position: relative;
+    outline: none;
+    border-radius: 20px;
+    padding: 10px;
+    resize: none;
+    width: 100%;
+    height: 40px;
+}
+
+#msg-btn>.block-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    margin-left: 10px;
+    padding: 0;
+    border-radius: 50%;
+}
+
+#msg-btn>.block-button:first-child {
+    right: 50px;
+}
+
+#msg-btn>.block-button:last-child {
+    right: 10px;
+}
+
+.block-icon:nth-of-type(1),
+.block-icon:nth-of-type(2) {
+    filter: invert(100%);
+}
+
+.side-tab-block-e {
+    background-color: rgba(73,67,66,255) !important;
+}
+
+#Himitsu {
+    width: 90%;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.block-list-e {
+    width: -webkit-fill-available;
+}
+
+.block-list-e>input {
+    width: -webkit-fill-available;
+}
+
+.video-call-container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #333;
+}
+
+#call {
+    padding: 0% !important;
+}
+
+.participant {
+    width: 90%;
+    height: 40%;
+    background-color: #444;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.participant-1 img {
+    width: 100% !important;
+    height: auto !important;
+    object-fit: cover;
+    border-radius: 0 !important;
+}
+
+.controls {
+    position: fixed;
+    bottom: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.control {
+    width: 60px;
+    height: 60px;
+    margin: 0 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+}
+
+.control img {
+    width: 50%;
+    height: auto;
 }

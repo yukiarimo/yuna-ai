@@ -6,3 +6,5 @@ torchaudio
 ctransformers
 transformers
 diffusers
+html2text
+bs4

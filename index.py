@@ -24,7 +24,6 @@ class YunaServer:
                 self.config = json.load(file)
 
     def configure_routes(self):
-        self.app.route('/')(self.render_index)
         self.app.route('/history', methods=['POST'])(self.handle_history_request)
         self.app.route('/image', methods=['POST'])(self.handle_image_request)
         self.app.route('/message', methods=['POST'])(self.handle_message_request)
@@ -35,10 +34,6 @@ class YunaServer:
 
     def render_index(self):
         return send_from_directory('.', 'index.html')
-
-
-    def run(self):
-        self.app.run(host='0.0.0.0', port=self.config["server"]["port"])
 
     def handle_history_request(self):
         data = request.get_json()

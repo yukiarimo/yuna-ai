@@ -43,6 +43,5 @@
         "art_default_model": "any_loli.safetensors",
         "prompts": "static/db/prompts/",
         "default_prompt_file": "dialog.txt"
-    },
-    "password": "scrypt:32768:8:1$Mw5oxbXBEW99XThW$f300b55b6e222a6569257b9df4df83079fc0a733fb95023d35652ef09fb9fb42cca5533efa6ba70466131dbb0f8a265f206f310ed2e5cfbc0a8e80afe9ae489e"
+    }
 }

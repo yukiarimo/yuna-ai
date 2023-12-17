@@ -392,3 +392,7 @@ body {
     width: 50%;
     height: auto;
 }
+
+#main, #login-form, #register-form {
+    display: none;
+}

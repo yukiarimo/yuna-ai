@@ -44,7 +44,30 @@
     </script>
 </head>
 
-<body>
+<body onload="checkLoginStatus()">
+
+    <div id="login-form" style="display:none;">
+        <form onsubmit="handleLogin(event)">
+            <h2>Login</h2>
+            <label for="login-username">Username:</label>
+            <input type="text" id="login-username" name="username" required>
+            <label for="login-password">Password:</label>
+            <input type="password" id="login-password" name="password" required>
+            <input type="submit" value="Login">
+        </form>
+    </div>
+
+    <div id="register-form" style="display:none;">
+        <form onsubmit="handleRegister(event)">
+            <h2>Register</h2>
+            <label for="register-username">Username:</label>
+            <input type="text" id="register-username" name="username" required>
+            <label for="register-password">Password:</label>
+            <input type="password" id="register-password" name="password" required>
+            <input type="submit" value="Register">
+        </form>
+    </div>
+
 
     <div id="main">
 

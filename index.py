@@ -31,7 +31,8 @@ class YunaServer:
         self.app.route('/audio', methods=['POST'])(self.handle_audio_request)
         self.app.route('/login', methods=['POST'])(self.handle_login)
         self.app.route('/register', methods=['POST'])(self.handle_register)
-    
+        self.app.route('/check_login', methods=['GET'])(self.check_login)
+
     def render_index(self):
         return send_from_directory('.', 'index.html')
 
@@ -122,50 +123,60 @@ class YunaServer:
 
 
 
-def handle_register():
-    data = request.get_json()
-    username = data.get('username')
-    password = data.get('password')
-    if not username or not password:
-        return jsonify({'error': 'Username and password are required'}), 400
-    password_hash = generate_password_hash(password)
-    users = self.load.users()
-    if username in users:
-        return jsonify({'error': 'Username already exists'}), 400
+    def handle_register(self):
+        data = request.get_json()
+        username = data.get('username')
+        password = data.get('password')
+        if not username or not password:
+            return jsonify({'error': 'Username and password are required'}), 400
+        password_hash = generate_password_hash(password)
+        users = self.load_users()
+        if username in users:
+            return jsonify({'error': 'Username already exists'}), 400
+        users[username] = password_hash
+        self.save_users(users)
+        return jsonify({'response': 'User created successfully'})
 
-    users[username] = password_hash
-    self.save_users(users)
 
-    return jsonify({'response': 'User created successfully'})
+    def handle_login(self):
+        data = request.get_json()
+        username = data.get('username')
+        password = data.get('password')
+        if not username or not password:
+            return jsonify({'error': 'Username and password are required'}), 400
+        users = self.load_users()
+        if username not in users:
+            return jsonify({'error': 'Username does not exist'}), 400
+        if not check_password_hash(users[username], password):
+            return jsonify({'error': 'Invalid password'}), 401
 
-def handle_login():
-    data = request.get_json()
-    username = data.get('username')
-    password = data.get('password')
-    if not username or not password:
-        return jsonify({'error': 'Username and password are required'}), 400
-    users = self.load_users()
-    if username not in users:
-        return jsonify({'error': 'Username does not exist'}), 400
-    if not check_password_hash(users[username], password):
-        return jsonify({'error': 'Invalid password'}), 401
+        resp = make_response(jsonify({'response': 'Login successful'}))
+        resp.set_cookie('login', 'true', max_age=60*60*24*7)  # Set cookie for 7 days
+        return resp
 
-    resp = make_response(jsonify({'response': 'Login successful'}))
-    resp.set_cookie('login', 'true', max_age=60*60*24*7)  # Set cookie for 7 days
-    return resp
+    def load_users(self):
+        users_file_path = os.path.join('db', 'auth', 'auth.json')
+        if os.path.exists(users_file_path):
+           with open(users_file_path, 'r') as file:
+                return json.load(file)
+        else:
+            return {}
 
-def load_users(self):
-    users_file_path = os.path.join('db', 'auth', 'auth.json')
-    if os.path.exists(users_file_path):
-        with open("users_file_path", 'r') as file:
-            return json.load(file)
-    else:
-        return {}
+    def save_users(self, users):
+        users_file_path = os.path.join('db', 'auth', 'auth.json')
+        os.makedirs(os.path.dirname(users_file_path), exist_ok=True)
+        with open(users_file_path, 'w') as file:
+            json.dump(users, file, indent=4)
 
-def save_users(self, users):
-    users_file_path = os.path.join('db', 'auth', 'auth.json')
-    with open(users_file_path, 'w') as file:
-        json.dump(users, file, indent=4)
+
+    def check_login(self):
+        login_cookie = request.cookies.get('login')
+        if login_cookie:
+            return jsonify({'logged_in': True})
+        else:
+            users_file_path = os.path.join('db', 'auth', 'auth.json')
+            users_exist = os.path.exists(users_file_path) and os.stat(users_file_path).st_size > 0
+            return jsonify({'logged_in': False, 'users_exist': users_exist})
 
 if __name__ == '__main__':
     yuna_server = YunaServer()

@@ -155,15 +155,18 @@ class YunaServer:
         return resp
 
     def load_users(self):
-        users_file_path = os.path.join('db', 'auth', 'auth.json')
-        if os.path.exists(users_file_path):
-           with open(users_file_path, 'r') as file:
-                return json.load(file)
-        else:
+        users_file_path = os.path.join('auth', 'auth.json')
+        try:
+            if os.path.exists(users_file_path):
+                with open(users_file_path, 'r') as file:
+                    return json.load(file)
+            else:
+                return {}
+        except json.JSONDecodeError:
             return {}
 
     def save_users(self, users):
-        users_file_path = os.path.join('db', 'auth', 'auth.json')
+        users_file_path = os.path.join('auth', 'auth.json')
         os.makedirs(os.path.dirname(users_file_path), exist_ok=True)
         with open(users_file_path, 'w') as file:
             json.dump(users, file, indent=4)
@@ -174,7 +177,7 @@ class YunaServer:
         if login_cookie:
             return jsonify({'logged_in': True})
         else:
-            users_file_path = os.path.join('db', 'auth', 'auth.json')
+            users_file_path = os.path.join('auth', 'auth.json')
             users_exist = os.path.exists(users_file_path) and os.stat(users_file_path).st_size > 0
             return jsonify({'logged_in': False, 'users_exist': users_exist})
 

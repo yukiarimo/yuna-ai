@@ -15,6 +15,8 @@ function handleLogin(event) {
         if (data.response === 'Login successful') {
             document.getElementById('login-form').style.display = 'none';
             document.getElementById('main').style.display = 'block';
+            window.location.reload();
+
         } else {
             alert(data.error);
         }
@@ -41,6 +43,7 @@ function handleRegister(event) {
         if (data.response === 'User created successfully') {
             document.getElementById('register-form').style.display = 'none';
             document.getElementById('login-form').style.display = 'block';
+            window.location.reload();
         } else {
             alert(data.error);
         }

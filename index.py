@@ -32,9 +32,9 @@ class YunaServer:
         self.app.route('/register', methods=['POST'])(self.handle_register)
         self.app.route('/check_login', methods=['GET'])(self.check_login)
 
-    def render_index(self):
-        return send_from_directory('.', 'index.html')
-
+    def run(self):
+        self.app.run(host='0.0.0.0', port=self.config["server"]["port"])
+        
     def handle_history_request(self):
         data = request.get_json()
         chat_id = data.get('chat')

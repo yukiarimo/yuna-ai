@@ -1,12 +1,5 @@
-/* Basic CSS */
-.center {
-    display: flex;
-    justify-content: center;
-    height: 100vh;
-}
-
-.block-button-close {
-    position: relative !important;
+.sidebar-o {
+    scrollbar-width: none;
 }
 
 #parameter-container {
@@ -25,11 +18,6 @@
     color: white !important;
 }
 
-form>div {
-    flex-direction: row !important;
-    display: flex;
-}
-
 .tab-o {
     width: 100%;
 }
@@ -37,39 +25,6 @@ form>div {
 img {
     height: 50px;
     width: 50px !important;
-}
-
-.hideside {
-    display: none !important;
-}
-
-/* Style for the input area */
-#input_text {
-    width: 96%;
-    padding: 10px;
-    font-size: 16px;
-    border: none;
-    border-radius: 16px;
-    margin-bottom: 10px;
-    background-color: #f0f0f0;
-    /* Light background color */
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-    /* Add shadow for a modern look */
-    outline: none;
-    /* Remove outline on focus */
-    transition: all 0.3s ease-in-out;
-}
-
-#input_text:focus {
-    background-color: #fff;
-    /* White background color on focus */
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4);
-    /* Add stronger shadow on focus */
-}
-
-/* Style for other buttons (Clear, Load, Download) */
-.block-button:not(.block-button:first-child) {
-    margin-left: 10px;
 }
 
 .el-9 {
@@ -87,11 +42,6 @@ img {
     display: flex;
     justify-content: center;
     width: 100%;
-}
-
-.uside {
-    width: auto !important;
-    float: none !important;
 }
 
 .circle-loader {
@@ -155,72 +105,8 @@ textarea {
     height: auto !important;
 }
 
-#generation {
-    display: none;
-}
-
-.side-tab-block-e::before {
-    content: '' !important;
-    font-size: 0 !important;
-    margin-right: 0 !important;
-}
-
-#history-select {
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    width: 100%;
-    font-size: 1rem;
-    padding: 0.5em 2em 0.5em 1em;
-    background-color: #f5f5f5;
-    border: 1px solid #caced1;
-    border-radius: 4px;
-    color: #333;
-    cursor: pointer;
-    position: relative;
-    outline: none;
-}
-
-#history-select::-ms-expand {
-    display: none;
-}
-
-#history-select::after {
-    content: "▼";
-    position: absolute;
-    top: 50%;
-    right: 1em;
-    transform: translateY(-50%);
-    font-size: 0.75em;
-    color: #999;
-}
-
-#history-select:hover {
-    border-color: #999;
-}
-
-#history-select:focus {
-    border-color: #48abe0;
-}
-
 #history-select option {
     padding: 0.5em 1em;
-}
-
-@media (max-width : 428px) {
-    #message-container {
-        max-height: calc(100vh - 300px) !important;
-    }
-
-    .topbar-o {
-        margin-bottom: 0 !important;
-        padding: 0 !important;
-        width: 100% !important;
-    }
-
-    .showside {
-        display: flex !important;
-    }
 }
 
 body {
@@ -232,14 +118,19 @@ body {
     position: fixed;
     top: 0;
     width: 100%;
-    /* Add other styles as needed */
+}
+
+.topbar-o>.block-button {
+    background-color: transparent;
+}
+
+.top-tab-block>.block-button {
+    background-color: transparent;
 }
 
 #message-container {
-    position: absolute;
     top: 50px;
     width: auto;
-    width: min-intrinsic !important;
     bottom: 0px;
     left: 0;
     right: 0;
@@ -247,10 +138,8 @@ body {
     max-height: 100% !important;
     -ms-overflow-style: none;
     scrollbar-width: none;
-}
-
-#message-container::-webkit-scrollbar {
-    display: none;
+    display: flex;
+    flex-direction: column;
 }
 
 .coll-lo {
@@ -262,53 +151,15 @@ body {
 }
 
 .input-wrapper {
-    position: relative;
-    display: inline-block;
-}
-
-#send-msg {
+    position: fixed;
     display: flex;
+    bottom: 5px;
+    right: 0;
+    left: 0;
     align-items: center;
     justify-content: center;
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    border-radius: 25px;
-    padding: 10px;
-    background: none !important;
-    width: 70% !important;
 }
 
-#send-msg>textarea {
-    position: relative;
-    outline: none;
-    border-radius: 20px;
-    padding: 10px;
-    resize: none;
-    width: 100%;
-    height: 40px;
-}
-
-#msg-btn>.block-button {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    border: none;
-    cursor: pointer;
-    font-size: 20px;
-    margin-left: 10px;
-    padding: 0;
-    border-radius: 50%;
-}
-
-#msg-btn>.block-button:first-child {
-    right: 50px;
-}
-
-#msg-btn>.block-button:last-child {
-    right: 10px;
-}
 
 .block-icon:nth-of-type(1),
 .block-icon:nth-of-type(2) {
@@ -316,21 +167,16 @@ body {
 }
 
 .side-tab-block-e {
-    background-color: rgba(73,67,66,255) !important;
+    background-color: rgba(73, 67, 66, 255) !important;
 }
 
-#Himitsu {
-    width: 90%;
-    overflow-x: hidden;
-    display: flex;
-    flex-direction: column;
+.side-tab-block-e::before {
+    content: '';
+    font-size: 0;
+    margin-right: 0;
 }
 
 .block-list-e {
-    width: -webkit-fill-available;
-}
-
-.block-list-e>input {
     width: -webkit-fill-available;
 }
 
@@ -391,4 +237,424 @@ body {
 .control img {
     width: 50%;
     height: auto;
+}
+
+h1 {
+    color: #333;
+    /* Replace with the actual color from your Figma design */
+    margin-bottom: 20px;
+}
+
+button {
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    padding: 10px;
+    font-size: 16px;
+    /* Adjust font size to match Figma design */
+}
+
+#copilot-button {
+    background-color: #4CAF50;
+    /* Replace with the actual color from your Figma design */
+    color: white;
+    border-radius: 20px;
+    margin-left: 10px;
+}
+
+.icon img {
+    width: 40px !important;
+    height: 40px !important;
+}
+
+.settings-container {
+    max-width: 600px;
+    margin: 50px auto;
+    background-color: #1f1f1f;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.tab-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    position: relative;
+    /* Added to position the pseudo-element relative to the tab-header */
+}
+
+.tab {
+    cursor: pointer;
+    padding: 10px 20px;
+    border: none;
+    background: none;
+    color: #ffffff;
+    font-size: 16px;
+    position: relative;
+    /* Added to position the pseudo-element relative to the tab */
+    transition: color 0.3s;
+    /* Smooth transition for the color */
+}
+
+/* Pseudo-element for the underline */
+.tab:after {
+    content: '';
+    display: block;
+    height: 2px;
+    width: 0;
+    background: #ffffff;
+    transition: width 0.3s;
+    /* Animation for the underline */
+    position: absolute;
+    bottom: -10px;
+    /* Position the line under the tab */
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* When a tab has the .active class, the underline will appear and span the full width */
+.tab.active:after {
+    width: 100%;
+}
+
+/* Optional: Change the color of the active tab text */
+.tab.active {
+    color: #ffffff;
+    /* Or any other color you prefer */
+}
+
+.section {
+    border-bottom: 1px solid #333;
+    padding: 10px 0;
+}
+
+.section:last-child {
+    border-bottom: none;
+}
+
+.section-heading {
+    color: #ffffff;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.input-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    color: #ffffff;
+}
+
+.input-group input {
+    background-color: #333;
+    border: none;
+    color: #ffffff;
+    padding: 10px;
+    border-radius: 4px;
+    width: calc(100% - 50px);
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked+.slider {
+    background-color: #2196F3;
+}
+
+input:focus+.slider {
+    box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked+.slider:before {
+    /* Move the slider to the right when checked */
+    transform: translateX(26px);
+}
+
+/* Style for the "on" label */
+.toggle-switch .on-label {
+    position: absolute;
+    left: 10px;
+    font-size: 0.9em;
+    color: black;
+    bottom: 10px;
+}
+
+/* Style for the "off" label */
+.toggle-switch .off-label {
+    position: absolute;
+    right: 10px;
+    display: none;
+    color: black;
+}
+
+/* Show the "on" label when the switch is checked */
+input:checked~.slider .on-label {
+    display: block;
+}
+
+/* Hide the "off" label when the switch is checked */
+input:checked~.slider .off-label {
+    display: none;
+}
+
+.ui-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.title {
+    color: #ffffff;
+    margin-bottom: 20px;
+}
+
+.input-container {
+    display: flex;
+    align-items: center;
+    background-color: #333;
+    border-radius: 22px;
+    padding: 10px;
+}
+
+.attach-button,
+.copilot-button,
+.send-button {
+    background-color: #555;
+    border: none;
+    border-radius: 50%;
+    color: #fff;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 10px;
+    margin: 0 5px;
+}
+
+.attach-button {
+    background-color: transparent;
+}
+
+.copilot-button {
+    background-color: #00bcd4;
+    border-radius: 22px;
+    padding: 10px 20px;
+}
+
+.send-button {
+    background-color: #00bcd4;
+}
+
+.input-field {
+    flex: 1;
+    background-color: transparent;
+    border: none;
+    color: #fff;
+    margin: 0 10px;
+    padding: 10px;
+    font-size: 16px;
+}
+
+.input-field:focus {
+    outline: none;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.header h1 {
+    font-size: 24px;
+    margin: 0;
+}
+
+.add-button {
+    background-color: #4CAF50;
+    /* Adjust color to match your design */
+    border: none;
+    padding: 10px 20px;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.collection-list {
+    list-style: none;
+    padding: 0;
+}
+
+.collection-item {
+    background-color: #333;
+    /* Card background */
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.collection-info {
+    display: flex;
+    align-items: center;
+}
+
+.collection-info img {
+    margin-right: 10px;
+}
+
+.collection-actions {
+    display: flex;
+}
+
+.collection-actions button {
+    background-color: #4CAF50;
+    /* Adjust color to match your design */
+    border: none;
+    padding: 10px;
+    margin-left: 5px;
+    color: white;
+    cursor: pointer;
+}
+
+.pricing-container {
+    display: flex;
+    justify-content: center;
+    background-color: #1a1a1a;
+    /* Adjust to match your exact color */
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.pricing-option {
+    background-color: #333;
+    /* Adjust to match your exact color */
+    padding: 20px;
+    margin: 0 10px;
+    border-radius: 8px;
+    width: 300px;
+    /* Adjust based on your design */
+    color: white;
+}
+
+.pricing-option h2 {
+    margin-bottom: 20px;
+}
+
+.feature-list {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 20px;
+}
+
+.feature-list li {
+    margin-bottom: 10px;
+}
+
+.price-info {
+    margin-bottom: 20px;
+}
+
+.price {
+    font-size: 24px;
+    color: #4caf50;
+    /* Adjust to match your exact color */
+}
+
+.billing-cycle,
+.trial-info {
+    font-size: 16px;
+    color: #aaa;
+    /* Adjust to match your exact color */
+}
+
+.cta-button {
+    background-color: #008cba;
+    /* Adjust to match your exact color */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 100%;
+}
+
+.cta-button:hover {
+    background-color: #005f73;
+    /* Darker shade for hover effect */
+}
+
+#templateSelect {
+    background: transparent !important;
+    border: none !important;
+    scrollbar-width: none;
+}
+
+#templateSelect::-webkit-scrollbar {
+    display: none;
+}
+
+body {
+    scrollbar-width: none;
+}
+
+body::-webkit-scrollbar {
+    display: none;
+}
+
+#Himitsu {
+    display: flex;
+    flex-direction: column;
+}
+
+@media (max-width : 428px) {
+    .topbar-o {
+        margin-bottom: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+    }
+}
+
+@media (min-width : 428px) {
+    .sidebar-o {
+        border-right: 1px dashed white;
+    }
 }

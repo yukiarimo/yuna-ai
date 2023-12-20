@@ -4,7 +4,7 @@
         "emotions": false,
         "art": false,
         "max_new_tokens": 128,
-        "context_length": 512,
+        "context_length": 1024,
         "temperature": 0.7,
         "repetition_penalty": 1.2,
         "last_n_tokens": 128,

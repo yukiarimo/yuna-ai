@@ -201,8 +201,20 @@ const himitsu = new PromptTemplate([{
   }
 ])
 
-let currentPrompt = 'default';
-let currentPromptName = 'default';
+const dialog = new PromptTemplate([{
+    id: 'text',
+    label: 'Question',
+    type: 'input'
+  },
+  {
+    id: 'clarification',
+    label: 'Clarification',
+    type: 'input'
+  }
+])
+
+let currentPrompt = 'dialog';
+let currentPromptName = 'dialog';
 
 function changeTemplate() {
   const templateSelect = document.getElementById("templateSelect");
@@ -225,10 +237,16 @@ function changeTemplate() {
     'himitsu': {
       prompt: himitsu,
       name: 'himitsu'
+    },
+    "dialog": {
+      prompt: dialog,
+      name: 'dialog'
     }
   };
 
-  if (templateMap[selectedTemplate]) {
+  if (templateMap[selectedTemplate] == "dialog") {
+    // Generate select elements based on the selected template
+  } else if (templateMap[selectedTemplate]) {
     currentPrompt = templateMap[selectedTemplate].prompt;
     currentPromptName = templateMap[selectedTemplate].name;
   }
@@ -258,9 +276,6 @@ function generateText() {
 }
 
 function sendGeneratedTextToServer(generatedText) {
-  const historySelect = document.getElementById('history-select');
-  const selectedFilename = historySelect.value;
-
   const templateSelect = document.getElementById("templateSelect");
   const selectedTemplate = templateSelect.value;
 
@@ -273,20 +288,47 @@ function sendGeneratedTextToServer(generatedText) {
       body: JSON.stringify({
         chat: selectedFilename,
         text: generatedText,
-        naked: selectedTemplate,
+        template: currentPromptName,
       }),
     })
     .then((response) => response.json())
     .then((data) => {
       // Handle the response from the server
       console.log(data);
+
+      messageManager.removeBr();
+      messageManager.removeTypingBubble();
+
+      const messageData = {
+        name: 'Yuna',
+        message: data.response,
+      };
+
+      messageManager.createMessage(messageData.name, messageData.message);
+      messageManager.addBr();
+
+      playAudio(audioType = 'message');
+
+      if (isTTS.toString() == 'true') {
+        playAudio();
+      }
     })
     .catch((error) => {
-      // Handle any errors
-      console.error(error);
+      messageManager.removeTypingBubble();
+
+      const messageData = {
+        name: 'Yuna',
+        message: error,
+      };
+
+      messageManager.createMessage(messageData.name, messageData.message);
+      playAudio(audioType = 'error');
     });
 }
 
 // Add event listener to the button
 const buttonDiv = document.querySelector('.block-button');
 buttonDiv.addEventListener('click', generateText);
+
+applyDarkModeStyles();
+toggleSidebar();

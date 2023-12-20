@@ -29,7 +29,7 @@
         "stream": false,
         "batch_size": 128,
         "threads": -1,
-        "gpu_layers": 1
+        "gpu_layers": 50
     },
     "server": {
         "port": 4848,

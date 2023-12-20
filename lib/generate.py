@@ -170,6 +170,7 @@ class ChatHistoryManager:
         shutil.move("output.aiff", "static/audio/output.aiff")
         subprocess.run(f"ffmpeg -y -i 'static/audio/output.aiff' -b:a 192K -f mp3 static/audio/output.mp3", shell=True)
 
+
 if __name__ == '__main__':
     with open("static/config.json", 'r') as file:
         config = json.load(file)

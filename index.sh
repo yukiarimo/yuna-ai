@@ -112,7 +112,7 @@ install_vision_model() {
 # Function to install Art model
 install_art_model() {
     echo "Installing Art model..."
-    wget https://huggingface.co/yukiarimo/anyloli/resolve/main/any_loli.safetensors -P lib/models/agi/art/
+    wget https://huggingface.co/hakurei/waifu-diffusion-v1-4/resolve/main/wd-1-4-anime_e2.ckpt -P lib/models/agi/art/
 }
 
 # Function to install Vision model

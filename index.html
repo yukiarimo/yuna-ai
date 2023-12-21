@@ -23,7 +23,9 @@
     <script src="static/js/index.js" defer></script>
     <script src="static/js/himitsu.js" defer></script>
     <script src="static/js/setup.js" defer></script>
+    <script src="static/js/auth.js" defer></script>
 
+    
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function () {
@@ -42,7 +44,33 @@
     </script>
 </head>
 
-<body>
+<body onload="checkLoginStatus()">
+
+    <div id="login-form" style="display:none;">
+        <form onsubmit="handleLogin(event)">
+            <h2>Login</h2>
+            <label for="login-username">Username:</label>
+            <input type="text" id="login-username" name="username" required>
+            <label for="login-password">Password:</label>
+            <input type="password" id="login-password" name="password" required>
+            <input type="submit" value="Login">
+        </form>
+    </div>
+
+    <div id="register-form" style="display:none;">
+        <form onsubmit="handleRegister(event)">
+            <h2>Register</h2>
+            <label for="register-username">Username:</label>
+            <input type="text" id="register-username" name="username" required>
+            <label for="register-password">Password:</label>
+            <input type="password" id="register-password" name="password" required>
+            <input type="submit" value="Register">
+        </form>
+    </div>
+
+
+    <div id="main">
+
     <div class="sidebar-o desktop-only" id="sidebar">
 
         <div class="side-tab-block">
@@ -52,6 +80,15 @@
 
             <div class="side-tab-block-e">
                 <div class="block-text lb" onclick="OpenTab('1')">Home</div>
+            </div>
+
+            <div class="side-tab-block-e" onclick="openConfigParams()">
+                <div class="block-text lb">Params</div>
+                <div class="block-scroll" id="parameter-container">
+                </div>
+                <img class="block-icon" src="static/img/icons/delete.png" onclick="localStorage.clear()" alt="Delete">
+                <img class="block-icon" src="static/img/icons/cancel.png" alt="Cancel">
+                <img class="block-icon" src="static/img/icons/done.png" onclick="saveConfigParams()" alt="Save">
             </div>
 
             <div class="side-tab-block-e">
@@ -248,6 +285,7 @@
                 </div>
             </div>
         </div>
+    </div>
 </body>
 
 </html>

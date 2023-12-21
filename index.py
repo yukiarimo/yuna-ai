@@ -1,5 +1,5 @@
 import base64
-from flask import Flask, request, jsonify,render_template, send_from_directory, make_response
+from flask import Flask, request, jsonify, render_template, send_from_directory, make_response
 from lib.generate import ChatGenerator, ChatHistoryManager
 from lib.vision import capture_image, create_image
 from pydub import AudioSegment
@@ -93,9 +93,9 @@ class YunaServer:
         chat_id = data.get('chat')
         speech = data.get('speech')
         text = data.get('text')
-        naked = data.get('naked')
+        template = data.get('template')
 
-        response = self.chat_generator.generate(chat_id, speech, text, naked)
+        response = self.chat_generator.generate(chat_id, speech, text, template)
 
         return jsonify({'response': response})
     

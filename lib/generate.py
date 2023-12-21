@@ -1,13 +1,9 @@
-import shutil
-import speech_recognition as sr
 import json
-import subprocess
-import subprocess
 import os
 import re
-import glob
 from transformers import pipeline
 from ctransformers import AutoModelForCausalLM
+from lib.history import ChatHistoryManager
 
 class ChatGenerator:
     def __init__(self, config):
@@ -29,10 +25,13 @@ class ChatGenerator:
         )
         self.classifier = pipeline("text-classification", model=f"{config['server']['agi_model_dir']}yuna-emotion")
 
-    def generate(self, chat_id, speech=False, text="", naked=False):
-        new_history = ''
+    def generate(self, chat_id, speech=False, text="", template=None):
+        if template == "dialog":
+            prompt_dir = os.path.join(self.config["server"]["prompts"] + 'dialog.txt')
+            with open(prompt_dir, 'r') as file:
+                prompt = file.read()
 
-        if naked==False:
+            history = ''
             with open(os.path.join(self.config["server"]["history"], chat_id), 'r') as file:
                 data = json.load(file)
                 history = ''
@@ -42,28 +41,45 @@ class ChatGenerator:
                     if name and message:
                         history += f'{name}: {message}\n'
 
-            new_history = f"{history}Yuki: {text}\nYuna:"
-            new_history_crop = self.clearText(new_history)
-        elif naked:
-            prompts_dir = os.path.join(self.config["server"]["prompts"])
-            prompt_files = glob.glob(os.path.join(prompts_dir, '*.txt'))
+            history = f"{history}Yuki: {text}\nYuna:"
 
-            file_contents = {}  # Create a dictionary to store the file contents
+            # calculate the length of the prompt variable
+            prompt_length = len(self.model.tokenize(prompt))
 
-            for prompt_file in prompt_files:
-                with open(prompt_file, 'r') as file:
-                    file_content = file.read()
-                    file_content = file_content.replace('{user_msg}', text)
-                    variable_name = os.path.splitext(os.path.basename(prompt_file))[0]
-                    file_contents[variable_name] = file_content  # Store the file content in the dictionary
-            
-            # inject prompt variable from naked into new_history
-            new_history = file_contents[naked]
+            # Calculate the maximum length for the history
+            max_length = self.config["ai"]["context_length"] - self.config["ai"]["max_new_tokens"]
 
-        new_history_crop = self.model.tokenize(new_history)
-        new_history_crop = new_history_crop[-((self.config["ai"]["context_length"] - self.config["ai"]["max_new_tokens"]) - 2):]
+            # Crop the history to fit within the max_length and prompt_length combined, counting from the end of the text
+            cropped_history = history[-(max_length - prompt_length):]
 
-        response = self.model(self.model.detokenize(new_history_crop), stream=False)
+            # replace string {user_msg} in the prompt with the history
+            response = prompt.replace('{user_msg}', cropped_history)
+
+            print(len(self.model.tokenize(response)), '<- response length')
+
+            # inject prompt variable from dialog into new_history
+        elif template != "dialog" and template != None:
+            prompt_dir = os.path.join(self.config["server"]["prompts"] + f'{template}.txt')
+            with open(prompt_dir, 'r') as file:
+                prompt = file.read()
+
+            # calculate the length of the prompt variable
+            prompt_length = len(self.model.tokenize(prompt))
+
+            # Calculate the maximum length for the history
+            max_length = self.config["ai"]["context_length"] - self.config["ai"]["max_new_tokens"]
+
+            # Crop the history to fit within the max_length and prompt_length combined, counting from the end of the text
+            cropped_history = text[:(max_length - prompt_length)]
+
+            # replace string {user_msg} in the prompt with the history
+            response = prompt.replace('{user_msg}', cropped_history)
+
+            print(len(self.model.tokenize(response)), '<- response length')
+        elif template == None:
+            print('template is none')
+
+        response = self.model(response, stream=False)
         response = self.clearText(str(response))
 
         if self.config["ai"]["emotions"]:
@@ -90,7 +106,7 @@ class ChatGenerator:
         chat_history.append({"name": "Yuna", "message": response})
         ChatHistoryManager.save_chat_history(self, chat_history, chat_id)
 
-        if speech and "<tts>" in text:
+        if speech==True:
             self.generate_speech(response)
 
         return response
@@ -169,7 +185,6 @@ class ChatHistoryManager:
         subprocess.run(f'say "{response}" -o output', shell=True)
         shutil.move("output.aiff", "static/audio/output.aiff")
         subprocess.run(f"ffmpeg -y -i 'static/audio/output.aiff' -b:a 192K -f mp3 static/audio/output.mp3", shell=True)
-
 
 if __name__ == '__main__':
     with open("static/config.json", 'r') as file:

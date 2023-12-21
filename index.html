@@ -79,14 +79,9 @@
             </div>
 
             <div class="side-tab-block-e">
-                <div style="display: flex; flex-direction: row;">
-                    <img class="block-icon" src="static/img/icons/edit.png" onclick="openChatManager()" alt="">
-                    <div class="block-text lb">Chats</div>
-                    <img class="block-icon" src="static/img/icons/flask.png" onclick="OpenPopup('options')" alt="">
-                </div>
-                
-                <select class="block-select" id="history-select" onchange="loadSelectedHistory()">📁</select>
+                <div class="block-text lb" onclick="OpenTab('1')">Home</div>
             </div>
+
             <div class="side-tab-block-e" onclick="openConfigParams()">
                 <div class="block-text lb">Params</div>
                 <div class="block-scroll" id="parameter-container">
@@ -97,14 +92,21 @@
             </div>
 
             <div class="side-tab-block-e">
-                <div class="block-text lb">Prompts</div>
-                <label for="templateSelect">Select Template:</label>
+                <div class="block-text lb" onclick="OpenTab('2')">Library</div>
+            </div>
+
+            <div class="side-tab-block-e">
+                <div class="block-text lb" onclick="OpenTab('3')">Settings</div>
+            </div>
+
+            <div class="side-tab-block-e">
+                <div class="block-text lb">Prompt Tempate</div>
                 <select class="block-select block-list" id="templateSelect" size="3" onchange="changeTemplate()">
-                    <option value="default">Default</option>
-                    <option value="writer">Writer</option>
-                    <option value="paraphrase">Paraphrase</option>
-                    <option value="decisionMaking">Decision</option>
-                    <option value="himitsu">himitsu</option>
+                    <option class="block-list-e" value="dialog">Default</option>
+                    <option class="block-list-e" value="writer">Writer</option>
+                    <option class="block-list-e" value="paraphrase">Paraphrase</option>
+                    <option class="block-list-e" value="decisionMaking">Decision</option>
+                    <option class="block-list-e" value="himitsu">himitsu</option>
                 </select>
 
                 <div id="generatedText"></div>
@@ -131,117 +133,155 @@
                 </div>
             </div>
 
+            <div class="input-wrapper ui-container">
+                <div class="input-container">
+                    <button class="attach-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg></button>
+                    <input id="input_text" type="text" class="input-field" placeholder="Ask Yuna...">
+                    <!--
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="slider">
+                            <span class="on-label">ひみつ</span>
+                            <span class="off-label">ひみつ</span>
+                        </span>
+                    </label>
+                    -->
+
+                    <svg id="sendMessage" onclick="sendMessage('')" xmlns="http://www.w3.org/2000/svg" width="40" height="40"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" style="color: white;">
+                        <circle cx="12" cy="12" r="10" fill="#00BFFF"></circle> <!-- Tint color circle -->
+                        <path d="M12 8l-4 4h8l-4-4z" fill="white"></path> <!-- Arrow up -->
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-o" id="2">
+            <div class="header">
+                <h1>Collections</h1>
+                <button class="add-button">+</button>
+            </div>
+
+            <ul class="collection-list" id="collection-items">
+            </ul>
+        </div>
+
+        <div class="tab-o" id="3">
             <div class="coll-lo">
-                <div class="input-wrapper">
-                    <form class="block-card el-9 h-coll" onsubmit="handleSubmit(event)" id="send-msg">
-                        <textarea id="input_text" placeholder="Talk to Yuna..."></textarea>
-                        <div id="msg-btn">
-                            <button type="submit" class="block-button"><img class="block-icon"
-                                    src="static/img/icons/send.png" alt="Send"></button>
+                <div class="block-card settings-container">
+                    <div class="tab-header">
+                        <button class="tab active">Account</button>
+                        <button class="tab">Params</button>
+                        <button class="tab">API</button>
+                        <button class="tab">Yuna +</button>
+                    </div>
+                    <div class="section">
+                        <div class="section-heading">Dark Mode</div>
+                        <div class="input-group">
+                            <label class="toggle-switch" onclick="toggleTheme()">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
                         </div>
-                    </form>
+
+                        <div class="block-list block-card el-9">
+                            <div class="block-list-e" onclick="checkConfigData()">⚙️ Auto Fix</div>
+                            <div class="block-list-e" onclick="fixDialogData()">⚙️ Auto Build</div>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <div class="section-heading">Params</div>
+                        <div id="parameter-container">
+                            <!-- Dynamic HTML elements will be added here -->
+                        </div>
+                        <img class="block-icon" src="static/img/icons/delete.png" onclick="localStorage.clear()"
+                            alt="Delete">
+                        <img class="block-icon" src="static/img/icons/cancel.png" alt="Cancel">
+                        <img class="block-icon" src="static/img/icons/done.png" onclick="saveConfigParams()" alt="Save">
+                    </div>
+
+                    <div class="section">
+                        <div class="section-heading">AI Data Usage</div>
+                        <div class="input-group">
+                            <span>This feature allows us to use your search data to improve our AI models.</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <div class="section-heading">Yuna +</div>
+                        <div class="pricing-container">
+                            <div class="pricing-option">
+                                <h2>Monthly</h2>
+                                <ul class="feature-list">
+                                    <li>Unlimited uses</li>
+                                    <li>Fle uploads</li>
+                                    <li>Priority support</li>
+                                </ul>
+                                <div class="price-info">
+                                    <p class="price">$20</p>
+                                    <p class="billing-cycle">billed per month</p>
+                                    <p class="trial-info">Starts today</p>
+                                </div>
+                                <button class="cta-button" onclick="OpenLink('https://www.patreon.com/YukiArimo')">Get
+                                    Started</button>
+                            </div>
+                            <div class="pricing-option">
+                                <h2>Yearly</h2>
+                                <ul class="feature-list">
+                                    <li>Best AI models</li>
+                                    <li>Pro support</li>
+                                    <li>Image gen</li>
+                                </ul>
+                                <div class="price-info">
+                                    <p class="price">$200</p>
+                                    <p class="billing-cycle">billed per year</p>
+                                    <p class="trial-info">7 day free trial</p>
+                                </div>
+                                <button class="cta-button" onclick="OpenLink('https://www.patreon.com/YukiArimo')">Get
+                                    Started</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="block-popup" id="options">
-        <div class="modal-content">
-            <div class="modal-header">Settings</div>
+        <div class="block-popup" id="call">
+            <audio id="backgroundMusic">
+                <source src="static/audio/output.mp3" type="audio/mp3">
+            </audio>
 
-            <div class="modal-body">
-                <div class="block-list block-card el-9">
-                    <div class="block-list-e" onclick="checkConfigData()">⚙️ Auto Fix</div>
-                    <div class="block-list-e" onclick="fixDialogData()">⚙️ Auto Build</div>
-                    <div class="block-list-e" onclick="toggleTheme()">⚙️ Toggle Mode</div>
-                    <div class="block-list-e" onclick="openConfigParams()">⚙️ Settings</div>
-                </div>
+            <canvas id="capture-canvas" style="display: none;"></canvas>
 
-                <div class="modal-footer">
-                    <div class="block-button" onclick="closePopupsAll();">Close</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="block-popup" id="call">
-        <audio id="backgroundMusic">
-            <source src="static/audio/output.mp3" type="audio/mp3">
-        </audio>
-
-        <canvas id="capture-canvas" style="display: none;"></canvas>
-
-        <div class="video-call-container">
-            <div class="participant participant-1"><img src="static/img/yuna-full.png" alt="Yuna Participant"></div>
-            <div class="participant participant-2"><video id="localVideo" playsinline autoplay muted
-                    class="draggable-video"></video></div>
-        </div>
-
-        <div class="controls">
-            <div class="control">
-                <img src="static/img/icons/camera.png" id="capture-image" onclick="captureImage()" alt="Camera">
-            </div>
-            <div class="control">
-                <img src="static/img/icons/microphone.png" onclick="muteAudio();" alt="Microphone">
-            </div>
-            <div class="control">
-                <img src="static/img/icons/art.png" id="draw-art" onclick="drawArt()" alt="Other Control">
-            </div>
-            <div class="control">
-                <img src="static/img/icons/end.png" alt="Hang Up" onclick="closePopupsAll();">
+            <div class="video-call-container">
+                <div class="participant participant-1"><img src="static/img/yuna-full.png" alt="Yuna Participant"></div>
+                <div class="participant participant-2"><video id="localVideo" playsinline autoplay muted
+                        class="draggable-video"></video></div>
             </div>
 
-            <!--
             <div class="controls">
-                <button class="block-button" id="startBtn">Rec</button>
-                <button class="block-button" id="pauseBtn" disabled>Pause</button>
-                <button class="block-button" id="stopBtn" disabled>Stop</button>
-                <button class="block-button" id="sendBtn" disabled>Send</button>
-            </div>
-
-            <div id="duration">Duration: 0:00</div>
-            <audio id="audioPlayer" controls></audio>
-            -->
-        </div>
-    </div>
-
-        <div class="block-popup" id="chat">
-            <div class="modal-content">
-                <div class="modal-header">Chat manager</div>
-                <div class="modal-body">
-                    <div class="coll-lo">
-                        <div class="block-card el-9">
-                            <div class="block-card la" id="current-history" style="color: black !important;">History
-                            </div>
-
-                            <div style="display: flex; flex-direction: row;">
-                                <img class="block-icon" src="static/img/icons/edit.png" onclick="editHistory()" alt="">
-                                <img class="block-icon" src="static/img/icons/flask.png" onclick="loadSelectedHistory()" alt="">
-                                <img class="block-icon" src="static/img/icons/download.png" onclick="downloadHistory()" alt="">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="coll-lo">
-                        <form class="el-9 block-card" id="mng-hist-form" onsubmit="processForm(event)">
-                            <label for="historyName">History Name:</label>
-                            <input class="block-input" type="text" id="historyName" name="historyName"
-                                placeholder="Enter file name">
-                            <label for="historyNewName">New Name:</label>
-                            <input class="block-input" type="text" id="historyNewName" name="historyNewName"
-                                placeholder="New name, only for rename">
-                            <label for="historyOptions">Options:</label>
-                            <select class="block-select" id="historyOptions" name="historyOptions">
-                                <option value="create">Create</option>
-                                <option value="rename">Rename</option>
-                                <option value="delete">Delete</option>
-                            </select>
-                            <input type="submit" value="Submit">
-                        </form>
-                    </div>
+                <div class="control">
+                    <img src="static/img/icons/camera.png" id="capture-image" onclick="captureImage()" alt="Camera">
                 </div>
-                <div class="modal-footer">
-                    <div class="block-button" onclick="closePopupsAll();">Close</div>
+                <div class="control">
+                    <img src="static/img/icons/microphone.png" onclick="muteAudio();" alt="Microphone">
+                </div>
+                <div class="control">
+                    <img src="static/img/icons/art.png" id="draw-art" onclick="drawArt()" alt="Other Control">
+                </div>
+                <div class="control">
+                    <img src="static/img/icons/end.png" alt="Hang Up" onclick="closePopupsAll();">
                 </div>
             </div>
         </div>

@@ -123,6 +123,18 @@ function sendMessage(message, imageName = false) {
     messageManager.createMessage(messageData.name, messageData.message);
 
     if (currentPromptName == 'himitsu') {
+      const himitsu = new PromptTemplate([{
+          id: 'text',
+          label: 'Question',
+          type: 'input'
+        },
+        {
+          id: 'clarification',
+          label: 'Clarification',
+          type: 'input'
+        }
+      ])
+
       himitsu.generateSelectElements();
       himitsu.generateTemplateInputs();
     } else if (currentPromptName == 'writer') {

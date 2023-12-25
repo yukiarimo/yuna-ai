@@ -7,6 +7,7 @@ class PromptTemplate {
 
   generateSelectElements() {
     const form = document.getElementById("Himitsu");
+    form.innerHTML = '';
 
     this.fields.forEach(field => {
       const label = document.createElement("label");
@@ -188,18 +189,6 @@ const decisionMaking = new PromptTemplate(
     }
   ]
 );
-
-const himitsu = new PromptTemplate([{
-    id: 'text',
-    label: 'Question',
-    type: 'input'
-  },
-  {
-    id: 'clarification',
-    label: 'Clarification',
-    type: 'input'
-  }
-])
 
 const dialog = new PromptTemplate([{
     id: 'text',

@@ -1,6 +1,8 @@
 import json
 import os
 import re
+import shutil
+import subprocess
 from transformers import pipeline
 from ctransformers import AutoModelForCausalLM
 from lib.history import ChatHistoryManager

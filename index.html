@@ -112,6 +112,34 @@
                 <div id="generatedText"></div>
 
             </div>
+                        <div class="side-tab-block-e">
+                <div class="block-text lb" onclick="toggleChangePassword()">Change Password</div>
+                <form id="change-password-form" onsubmit="handleChangePassword(event)" style="display: none;">
+                    <label for="current-password">Current Password:</label>
+                    <input class="block-input" type="password" id="current-password" name="current_password" required>
+                    <label for="new-password">New Password:</label>
+                    <input class="block-input" type="password" id="new-password" name="new_password" required>
+                    <label for="confirm-new-password">Confirm New Password:</label>
+                    <input class="block-input" type="password" id="confirm-new-password" name="confirm_new_password" required>
+                    <input type="submit" value="Change Password">
+                </form>
+            </div>
+
+            <div class="side-tab-block-e">
+                <div class="block-text lb" onclick="toggleRegisterForm()">New User</div>
+                <form id="register-form2" onsubmit="handleRegister2(event)" style="display: none;">
+                    <label for="register-username2">Username:</label>
+                    <input class="block-input" type="text" id="register-username2" name="username" required>
+                    <label for="register-password2">Password:</label>
+                    <input class="block-input" type="password" id="register-password2" name="password" required>
+                    <input type="submit" value="Register">
+                </form>
+            </div>
+
+            <div class="side-tab-block-e">
+                <button onclick="handleLogout()">Logout</button>
+            </div>
+
         </div>
     </div>
 

@@ -8,6 +8,12 @@ import whisper
 import json
 import os
 from werkzeug.security import generate_password_hash, check_password_hash
+from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
+
+with open('static/config.json', 'r') as config_file:
+    config = json.load(config_file)
+secret_key = config['security']['secret_key']
+serializer = URLSafeTimedSerializer(secret_key)
 
 class YunaServer:
     def __init__(self):
@@ -148,9 +154,10 @@ class YunaServer:
             return jsonify({'error': 'Username does not exist'}), 400
         if not check_password_hash(users[username], password):
             return jsonify({'error': 'Invalid password'}), 401
-
+            
+        session_token = serializer.dumps({'username': username})
         resp = make_response(jsonify({'response': 'Login successful'}))
-        resp.set_cookie('login', 'true', max_age=60*60*24*7)  # Set cookie for 7 days
+        resp.set_cookie('session_token', session_token, max_age=60*60*24*7, httponly=True, secure=True)
         return resp
 
     def load_users(self):
@@ -172,13 +179,37 @@ class YunaServer:
 
 
     def check_login(self):
-        login_cookie = request.cookies.get('login')
-        if login_cookie:
-            return jsonify({'logged_in': True})
+        session_token = request.cookies.get('session_token')
+        users_file_path = os.path.join('auth', 'auth.json')
+        users_exist = os.path.exists(users_file_path) and os.stat(users_file_path).st_size > 0
+        if session_token:
+            try:
+                session_data = serializer.loads(session_token, max_age=60*60*24*7)
+                username = session_data['username']
+                return jsonify({'logged_in': True, 'username': username})
+            except (BadSignature, SignatureExpired):
+                return jsonify({'logged_in': False, 'users_exist': users_exist})
         else:
-            users_file_path = os.path.join('auth', 'auth.json')
-            users_exist = os.path.exists(users_file_path) and os.stat(users_file_path).st_size > 0
             return jsonify({'logged_in': False, 'users_exist': users_exist})
+
+    def handle_change_password(self):
+        data = request.get_json()
+        username = request.cookies.get('username')
+        current_password = data.get('current_password')
+        new_password = data.get('new_password')
+        users = self.load_users()
+        if not check_password_hash(users[username], current_password):
+            return jsonify({'error': 'Current password is incorrect'}), 401
+        users[username] = generate_password_hash(new_password)
+        self.save_users(users)
+        return jsonify({'response': 'Password changed successfully'})
+
+
+    def handle_logout(self):
+        resp = make_response(jsonify({'response': 'Logout successful'}))
+        resp.set_cookie('session_token', '', expires=0)
+        return resp
+
 
 if __name__ == '__main__':
     yuna_server = YunaServer()

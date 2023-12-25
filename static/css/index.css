@@ -130,7 +130,7 @@ body {
 
 #message-container {
     top: 50px;
-    width: auto;
+    width: 100%;
     bottom: 0px;
     left: 0;
     right: 0;
@@ -517,41 +517,68 @@ input:checked~.slider .off-label {
 
 .collection-list {
     list-style: none;
-    padding: 0;
+    display: flex;
+    flex-wrap: wrap; /* Enable wrapping of items */
+    gap: 20px; /* Space between cards */
+    justify-content: center; /* Align items to the start */
+    flex-direction: row;
 }
 
 .collection-item {
-    background-color: #333;
-    /* Card background */
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 10px;
+    background-color: #8BC34A; /* Card background color */
+    border-radius: 16px; /* Rounded corners for the card */
+    padding: 2%;
+    margin-bottom: 20px; /* Space below each card */
+    flex-basis: calc(33.333% - 20px); /* Width for 3 cards per row minus the gap */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Shadow for depth */
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column; /* Stack elements vertically */
+    justify-content: space-between; /* Distribute space between content */
 }
 
 .collection-info {
     display: flex;
-    align-items: center;
+    flex-direction: column; /* Stack info vertically */
+    align-items: flex-start; /* Align items to the start */
+    margin-bottom: 20px; /* Space between info and actions */
 }
 
 .collection-info img {
-    margin-right: 10px;
+    border-radius: 8px; /* Match the card's border radius */
+    margin-bottom: 10px; /* Space between image and text */
+}
+
+.collection-info h2 {
+    font-size: 1.5em; /* Larger heading font size */
+    margin: 0 0 10px 0; /* Space between heading and description */
+}
+
+.collection-info p {
+    font-size: 1em; /* Standard text size */
+    color: #666; /* Lighter text color for contrast */
+    margin: 0; /* Remove default margins */
 }
 
 .collection-actions {
     display: flex;
+    justify-content: flex-start; /* Align buttons to the start */
+    width: 100%; /* Full width to contain buttons */
+    flex-direction: column; /* Stack buttons vertically */
 }
 
 .collection-actions button {
-    background-color: #4CAF50;
-    /* Adjust color to match your design */
+    background-color: #2196F3; /* Adjusted to match the button color in the image */
     border: none;
-    padding: 10px;
-    margin-left: 5px;
+    border-radius: 8px; /* Rounded corners for the button */
+    padding: 15px 30px; /* Larger padding for a bigger button */
+    margin-bottom: 10px; /* Space between buttons */
     color: white;
     cursor: pointer;
+    transition: background-color 0.3s ease; /* Smooth background color transition */
+}
+
+.collection-actions button:hover {
+    background-color: #1976D2; /* Darker shade on hover */
 }
 
 .pricing-container {
@@ -650,6 +677,17 @@ body::-webkit-scrollbar {
         margin-bottom: 0 !important;
         padding: 0 !important;
         width: 100% !important;
+    }
+
+    .collection-actions button {
+        padding: 10px 20px; /* Smaller padding on mobile */
+        margin-right: 10px; /* Space between buttons on mobile */
+    }
+
+    ..collection-list {
+        flex-direction: row; /* Stack cards horizontally on mobile */
+        flex-wrap: wrap; /* Enable wrapping of items */
+        justify-content: center; /* Align items to the center */
     }
 }
 

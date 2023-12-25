@@ -180,9 +180,9 @@
                     </label>
                     -->
 
-                    <svg id="sendMessage" onclick="sendMessage('')" xmlns="http://www.w3.org/2000/svg" width="40" height="40"
-                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round" style="color: white;">
+                    <svg id="sendMessage" onclick="sendMessage('')" xmlns="http://www.w3.org/2000/svg" width="40"
+                        height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" style="color: white;">
                         <circle cx="12" cy="12" r="10" fill="#00BFFF"></circle> <!-- Tint color circle -->
                         <path d="M12 8l-4 4h8l-4-4z" fill="white"></path> <!-- Arrow up -->
                     </svg>
@@ -191,13 +191,35 @@
         </div>
 
         <div class="tab-o" id="2">
-            <div class="header">
-                <h1>Collections</h1>
-                <button class="add-button">+</button>
-            </div>
+            <div class="coll-lo">
+                <div class="block-card settings-container">
+                    <div class="tab-header">
+                        <button class="tab active">Chats</button>
+                        <button class="tab">Collections</button>
+                    </div>
 
-            <ul class="collection-list" id="collection-items">
-            </ul>
+                    <div class="section">
+                        <div class="header">
+                            <h1>Collections</h1>
+                            <button class="add-button">+</button>
+                        </div>
+
+                        <ul class="collection-list" id="collection-items">
+                        </ul>
+                    </div>
+
+                    <div class="section">
+                        <div class="section-heading">AI Data Usage</div>
+                        <div class="input-group">
+                            <span>This feature allows us to use your search data to improve our AI models.</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="tab-o" id="3">

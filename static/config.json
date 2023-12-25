@@ -43,5 +43,8 @@
         "art_default_model": "wd-1-4-anime_e2.ckpt",
         "prompts": "static/db/prompts/",
         "default_prompt_file": "dialog.txt"
+    },
+    "security": {
+        "secret_key": "YourSecretKeyHere123!"
     }
 }

@@ -211,6 +211,8 @@ class YunaServer:
         return resp
 
 
+yuna_server = YunaServer()
+app = yuna_server.app
+
 if __name__ == '__main__':
-    yuna_server = YunaServer()
-    yuna_server.run()
+    app.run(host='0.0.0.0', port=yuna_server.config["server"]["port"])

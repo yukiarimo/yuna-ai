@@ -27,35 +27,45 @@ class ChatGenerator:
 
     def generate(self, chat_id, speech=False, text="", template=None):
         if template == "dialog":
-            prompt_dir = os.path.join(self.config["server"]["prompts"] + 'dialog.txt')
+            # Load the prompt template
+            prompt_dir = os.path.join(self.config["server"]["prompts"], 'dialog.txt')
             with open(prompt_dir, 'r') as file:
                 prompt = file.read()
 
+            # Load the chat history
             history = ''
-            with open(os.path.join(self.config["server"]["history"], chat_id), 'r') as file:
-                data = json.load(file)
-                history = ''
-                for item in data:
-                    name = item.get('name', '')
-                    message = item.get('message', '')
-                    if name and message:
-                        history += f'{name}: {message}\n'
+            history_path = os.path.join(self.config["server"]["history"], chat_id)
+            if os.path.exists(history_path):
+                with open(history_path, 'r') as file:
+                    data = json.load(file)
+                    for item in data:
+                        name = item.get('name', '')
+                        message = item.get('message', '')
+                        if name and message:
+                            history += f'{name}: {message}\n'
 
-            history = f"{history}Yuki: {text}\nYuna:"
+            # Append the latest message from Yuki
+            history += f"Yuki: {text}\nYuna:"
 
-            # calculate the length of the prompt variable
-            prompt_length = len(self.model.tokenize(prompt))
+            # Tokenize the history to calculate its length in tokens
+            tokenized_history = self.model.tokenize(history)
 
-            # Calculate the maximum length for the history
-            max_length = self.config["ai"]["context_length"] - self.config["ai"]["max_new_tokens"]
+            # Calculate the maximum length for the history in tokens
+            max_length_tokens = self.config["ai"]["context_length"] - self.config["ai"]["max_new_tokens"]
 
-            # Crop the history to fit within the max_length and prompt_length combined, counting from the end of the text
-            cropped_history = history[-(max_length - prompt_length):]
+            # Crop the tokenized history to fit within the max_length_tokens
+            # Ensure we are cropping tokens, not characters
+            if len(tokenized_history) > max_length_tokens:
+                tokenized_history = tokenized_history[-max_length_tokens:]
 
-            # replace string {user_msg} in the prompt with the history
+            # Convert the cropped tokenized history back to a string
+            cropped_history = self.model.detokenize(tokenized_history)
+
+            # Replace the placeholder in the prompt with the cropped history
             response = prompt.replace('{user_msg}', cropped_history)
 
-            print(len(self.model.tokenize(response)), '<- response length')
+            # Output the combined prompt and history (for debugging or further processing)
+            print(response)
 
             # inject prompt variable from dialog into new_history
         elif template != "dialog" and template != None:
@@ -75,9 +85,11 @@ class ChatGenerator:
             # replace string {user_msg} in the prompt with the history
             response = prompt.replace('{user_msg}', cropped_history)
 
-            print(len(self.model.tokenize(response)), '<- response length')
         elif template == None:
             print('template is none')
+
+        print(len(self.model.tokenize(response)), '<- response length')
+        print('------\n\n\n', response, '------\n\n\n')
 
         response = self.model(response, stream=False)
         response = self.clearText(str(response))

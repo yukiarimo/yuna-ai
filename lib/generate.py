@@ -4,6 +4,7 @@ import re
 from transformers import pipeline
 from ctransformers import AutoModelForCausalLM
 from lib.history import ChatHistoryManager
+from cryptography.fernet import Fernet
 
 class ChatGenerator:
     def __init__(self, config):
@@ -26,20 +27,20 @@ class ChatGenerator:
         self.classifier = pipeline("text-classification", model=f"{config['server']['agi_model_dir']}yuna-emotion")
 
     def generate(self, chat_id, speech=False, text="", template=None):
+        chat_history_manager = ChatHistoryManager(self.config)
+        chat_history = chat_history_manager.load_chat_history(chat_id)
+
         if template == "dialog":
             prompt_dir = os.path.join(self.config["server"]["prompts"] + 'dialog.txt')
             with open(prompt_dir, 'r') as file:
                 prompt = file.read()
 
             history = ''
-            with open(os.path.join(self.config["server"]["history"], chat_id), 'r') as file:
-                data = json.load(file)
-                history = ''
-                for item in data:
-                    name = item.get('name', '')
-                    message = item.get('message', '')
-                    if name and message:
-                        history += f'{name}: {message}\n'
+            for item in chat_history:
+                name = item.get('name', '')
+                message = item.get('message', '')
+                if name and message:
+                    history += f'{name}: {message}\n'
 
             history = f"{history}Yuki: {text}\nYuna:"
 
@@ -101,14 +102,13 @@ class ChatGenerator:
 
             response = response + f" {response_add}"
 
-        chat_history = ChatHistoryManager.load_chat_history(self, chat_id)
         chat_history.append({"name": "Yuki", "message": text})
+        response = self.clearText(str(response))
         chat_history.append({"name": "Yuna", "message": response})
         ChatHistoryManager.save_chat_history(self, chat_history, chat_id)
 
         if speech==True:
-            self.generate_speech(response)
-
+            chat_history_manager.generate_speech(response)
         return response
     
     def clearText(self, text):
@@ -139,52 +139,6 @@ class ChatGenerator:
         cleaned_string = cleaned_string.replace("  ", ' ').replace("  ", ' ')
 
         return cleaned_string
-
-class ChatHistoryManager:
-    def __init__(self, config):
-        self.config = config
-
-    def create_chat_history_file(self, chat_id):
-        history_starting_template = [{"name": "Yuki", "message": "Hi"}, {"name": "Yuna", "message": "Hello"}]
-        with open(os.path.join(self.config["server"]["history"], chat_id), 'w') as file:
-            json.dump(history_starting_template, file)
-
-    def delete_chat_history_file(self, chat_id):
-        os.remove(os.path.join(self.config["server"]["history"], chat_id))
-
-    def rename_chat_history_file(self, chat_id, new_chat_id):
-        os.rename(
-            os.path.join(self.config["server"]["history"], chat_id),
-            os.path.join(self.config["server"]["history"], new_chat_id)
-        )
-
-    def list_history_files(self):
-        history_files = [f for f in os.listdir(self.config["server"]["history"]) if os.path.isfile(os.path.join(self.config["server"]["history"], f))]
-
-        # Place main_history_file first and then sort alphabetically
-        history_files.sort(key=lambda x: (x != self.config["server"]["default_history_file"], x.lower()))
-
-        return history_files
-
-    def load_chat_history(self, chat):
-        print(self.config["server"]["history"], chat)
-        print(chat)
-        history_path = os.path.join(self.config["server"]["history"], chat)
-        if os.path.exists(history_path):
-            with open(history_path, 'r') as file:
-                return json.load(file)
-        else:
-            return []
-
-    def save_chat_history(self, chat_history, chat):
-        history_path = os.path.join(self.config["server"]["history"], chat)
-        with open(history_path, 'w') as file:
-            json.dump(chat_history, file)
-
-    def generate_speech(self, response):
-        subprocess.run(f'say "{response}" -o output', shell=True)
-        shutil.move("output.aiff", "static/audio/output.aiff")
-        subprocess.run(f"ffmpeg -y -i 'static/audio/output.aiff' -b:a 192K -f mp3 static/audio/output.mp3", shell=True)
 
 if __name__ == '__main__':
     with open("static/config.json", 'r') as file:

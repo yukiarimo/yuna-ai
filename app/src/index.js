@@ -5,6 +5,19 @@ const {
 } = require('electron');
 const path = require('path');
 
+let currentPath = app.getAppPath();
+
+if (currentPath.includes('/yuna-ai')) {
+  currentPath = currentPath.substring(0, currentPath.indexOf('/yuna-ai') + '/yuna-ai'.length);
+} else {
+  if (currentPath[currentPath.length - 1] !== '/') {
+    currentPath += '/';
+  }
+  currentPath += 'yuna-ai';
+}
+
+console.log(currentPath);
+
 let mainWindow; // Keep a global reference to avoid garbage collection
 
 const createWindow = () => {
@@ -13,21 +26,21 @@ const createWindow = () => {
     width: 800,
     height: 600,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      preload: `${currentPath}/preload.js`,
       webSecurity: false,
     },
     transparent: true,
     resizable: true,
     titleBarStyle: 'hidden',
     title: 'Yuna AI',
-    icon: path.join(__dirname, '../../static/img/favicon.ico'),
+    icon: `${currentPath}/static/img/favicon.ico`,
     openDevTools: false,
     vibrancy: 'appearance-based',
     darkTheme: true,
   });
 
   // and load the yuna.html of the app.
-  mainWindow.loadFile(path.join(__dirname, '../../yuna.html'));
+  mainWindow.loadFile(`${currentPath}/yuna.html`);
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
@@ -247,7 +260,7 @@ app.on('ready', () => {
         {
           label: 'Reload',
           click: () => {
-            mainWindow.reload();
+            mainWindow.webContents.executeJavaScript('location.reload();');
           }
         },
         {

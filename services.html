@@ -43,7 +43,7 @@
                     <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
                     <li class="nav-item"><a class="nav-link active" href="services.html">Services</a></li>
                     <li class="nav-item"><a class="nav-link" href="pricing.html">Pricing</a></li>
-                </ul><a class="btn btn-primary shadow" role="button" href="signup.html">Login</a>
+                </ul><a class="btn btn-primary shadow" role="button" href="yuna.html">Login</a>
             </div>
         </div>
     </nav><!-- End: Navbar Centered Links -->
@@ -126,23 +126,23 @@
                     <h3 class="fs-6 fw-bold">Services</h3>
                     <ul class="list-unstyled">
                         <li><a href="#">Web design</a></li>
-                        <li><a href="#">Development</a></li>
+                        <li><a href="https://github.com/yukiarimo/yuna-ai">Development</a></li>
                     </ul>
                 </div><!-- End: Services -->
                 <!-- Start: About -->
                 <div class="col-sm-4 col-md-3 text-center text-lg-start d-flex flex-column">
                     <h3 class="fs-6 fw-bold">About</h3>
                     <ul class="list-unstyled">
-                        <li><a href="#">Team</a></li>
-                        <li><a href="#">Privacy</a></li>
+                        <li><a href="#" data-bs-toggle="modal" data-bs-target="#teamModal">Team</a></li>
+                        <li><a href="#" data-bs-toggle="modal" data-bs-target="#privacyModal">Privacy</a></li>
                     </ul>
                 </div><!-- End: About -->
                 <!-- Start: Social Icons -->
                 <div class="col-lg-3 text-center text-lg-start d-flex flex-column align-items-center order-first align-items-lg-start order-lg-last">
-                    <div class="fw-bold d-flex align-items-center mb-2"><span class="bs-icon-sm bs-icon-circle bs-icon-primary d-flex justify-content-center align-items-center bs-icon me-2"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-bezier">
-                                <path fill-rule="evenodd" d="M0 10.5A1.5 1.5 0 0 1 1.5 9h1A1.5 1.5 0 0 1 4 10.5v1A1.5 1.5 0 0 1 2.5 13h-1A1.5 1.5 0 0 1 0 11.5v-1zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zm10.5.5A1.5 1.5 0 0 1 13.5 9h1a1.5 1.5 0 0 1 1.5 1.5v1a1.5 1.5 0 0 1-1.5 1.5h-1a1.5 1.5 0 0 1-1.5-1.5v-1zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zM6 4.5A1.5 1.5 0 0 1 7.5 3h1A1.5 1.5 0 0 1 10 4.5v1A1.5 1.5 0 0 1 8.5 7h-1A1.5 1.5 0 0 1 6 5.5v-1zM7.5 4a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1z"></path>
-                                <path d="M6 4.5H1.866a1 1 0 1 0 0 1h2.668A6.517 6.517 0 0 0 1.814 9H2.5c.123 0 .244.015.358.043a5.517 5.517 0 0 1 3.185-3.185A1.503 1.503 0 0 1 6 5.5v-1zm3.957 1.358A1.5 1.5 0 0 0 10 5.5v-1h4.134a1 1 0 1 1 0 1h-2.668a6.517 6.517 0 0 1 2.72 3.5H13.5c-.123 0-.243.015-.358.043a5.517 5.517 0 0 0-3.185-3.185z"></path>
-                            </svg></span><span>Yuna AI</span></div>
+                    <div class="fw-bold d-flex align-items-center mb-2"><span class="bs-icon-sm bs-icon-circle d-flex justify-content-center align-items-center bs-icon me-2"><span class="bs-icon-sm bs-icon-circle shadow d-flex justify-content-center align-items-center me-2 bs-icon">
+                        <!-- Add img-fluid class and set a max-height -->
+                        <img src="static/img/Yuna AI.png" alt="Yuna AI" class="img-fluid" style="max-height: 70px;">
+                      </span></span><span>Yuna AI</span></div>
                     <p class="text-muted">Your personal AI girlfriend.</p>
                 </div><!-- End: Social Icons -->
             </div>
@@ -163,6 +163,69 @@
             </div>
         </div>
     </footer><!-- End: Footer Multi Column -->
+
+    <!-- Modal -->
+    <div class="modal fade" id="agiModal" tabindex="-1" aria-labelledby="agiModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="agiModalLabel">Artificial General Intelligence (AGI)</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+            AGI is a hypothetical type of intelligent agent that could learn to accomplish any intellectual task that a human being can perform. The development of AGI is a major challenge and a primary goal for some AI researchers.
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="privacyModal" tabindex="-1" aria-labelledby="privacyModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="privacyModalLabel">Privacy Assurance</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <strong>Yuna AI: Your Dedicated Companion</strong>
+              <p>Yuna AI is designed to run exclusively on your machine, ensuring your privacy and security are never compromised. As your digital girlfriend, Yuna is for your eyes only, with no right for external access.</p>
+              <p><strong>Privacy Guidelines:</strong></p>
+              <ul>
+                <li>Do not share your dialogs with external platforms like OpenAI.</li>
+                <li>Use web scraping to provide additional data directly to Yuna's model or use embeddings.</li>
+                <li>Adopt a one server per user policy to maintain privacy.</li>
+              </ul>
+              <p><strong>External APIs:</strong></p>
+              <p>Usage of any external APIs is strictly forbidden to protect your intimate interactions with Yuna AI.</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="teamModal" tabindex="-1" aria-labelledby="teamModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="teamModalLabel">Meet Our Team</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p>At the heart of our innovation lies a small, yet dynamic group of individuals. Each member brings their unique expertise and passion to the table, creating a synergy that drives us forward. We are a melting pot of ideas, cultures, and perspectives, united by a common goal to deliver exceptional results.</p>
+              <p>While we are diverse in our skills and backgrounds, we share an unwavering commitment to excellence and a belief in the transformative power of collaboration. Our team is always open to new talents and fresh ideas, so if you're looking for a place where your work will make an impact, we're waiting for you. Join us, and let's create something remarkable together.</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
     <script src="static/bootstrap/js/bootstrap.min.js?h=e55bde7d6e36ebf17ba0b8c1e80e4065"></script>
     <script src="static/js/bold-and-dark.js?h=78569998362133b84a76614652f3624f"></script>
 </body>

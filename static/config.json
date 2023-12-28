@@ -28,6 +28,7 @@
         "agi_model_dir": "lib/models/agi/",
         "art_default_model": "any_loli.safetensors",
         "prompts": "static/db/prompts/",
-        "default_prompt_file": "dialog.txt"
+        "default_prompt_file": "dialog.txt",
+        "device": "mps"
     }
 }

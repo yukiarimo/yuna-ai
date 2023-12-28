@@ -608,7 +608,7 @@ function populateHistorySelect() {
             </div>
           </li>`).join(''));
 
-        // Add event listeners to the buttons
+        duplicateAndCategorizeChats()
         // Select all the buttons in the list
         let buttons = document.querySelectorAll('.collection-item .collection-actions button');
 
@@ -751,8 +751,8 @@ function duplicateAndCategorizeChats() {
   var historySelect = document.getElementById('chat-items');
 
   // Create a new div for the categorized chats
-  var collectionIems = document.createElement('div');
-  collectionIems.id = 'collectionIems';
+  var collectionItems = document.createElement('div');
+  collectionItems.id = 'collectionItems';
 
   // Get the chat items
   var chatItems = historySelect.querySelectorAll('.collection-item');
@@ -782,11 +782,11 @@ function duplicateAndCategorizeChats() {
   });
 
   // Add the general and other chats divs to the collection select div
-  collectionIems.appendChild(generalChatsDiv);
-  collectionIems.appendChild(otherChatsDiv);
+  collectionItems.appendChild(generalChatsDiv);
+  collectionItems.appendChild(otherChatsDiv);
 
   // Add the collection select div to the body
-  document.body.appendChild(collectionIems);
+  document.getElementById('collectionItems').innerHTML = collectionItems.innerHTML;
 }
 
 // Function to load the selected chat history file

@@ -268,7 +268,6 @@ button {
 }
 
 .settings-container {
-    max-width: 600px;
     margin: 50px auto;
     background-color: #1f1f1f;
     padding: 20px;
@@ -649,16 +648,6 @@ input:checked~.slider .off-label {
     /* Darker shade for hover effect */
 }
 
-#templateSelect {
-    background: transparent !important;
-    border: none !important;
-    scrollbar-width: none;
-}
-
-#templateSelect::-webkit-scrollbar {
-    display: none;
-}
-
 body {
     scrollbar-width: none;
 }
@@ -684,7 +673,7 @@ body::-webkit-scrollbar {
         margin-right: 10px; /* Space between buttons on mobile */
     }
 
-    ..collection-list {
+    .collection-list {
         flex-direction: row; /* Stack cards horizontally on mobile */
         flex-wrap: wrap; /* Enable wrapping of items */
         justify-content: center; /* Align items to the center */

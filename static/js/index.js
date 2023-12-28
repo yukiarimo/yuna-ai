@@ -123,6 +123,18 @@ function sendMessage(message, imageName = false) {
     messageManager.createMessage(messageData.name, messageData.message);
 
     if (currentPromptName == 'himitsu') {
+      const himitsu = new PromptTemplate([{
+          id: 'text',
+          label: 'Question',
+          type: 'input'
+        },
+        {
+          id: 'clarification',
+          label: 'Clarification',
+          type: 'input'
+        }
+      ])
+
       himitsu.generateSelectElements();
       himitsu.generateTemplateInputs();
     } else if (currentPromptName == 'writer') {
@@ -557,7 +569,7 @@ function captureImage() {
 // Function to fetch and populate chat history file options
 function populateHistorySelect() {
   return new Promise((resolve, reject) => {
-    var historySelect = document.getElementById('collection-items');
+    var historySelect = document.getElementById('chat-items');
 
     if (localStorage.getItem('config') == null) {
       // reload the page with delay of 1 second if config is not available
@@ -596,7 +608,7 @@ function populateHistorySelect() {
             </div>
           </li>`).join(''));
 
-        // Add event listeners to the buttons
+        duplicateAndCategorizeChats()
         // Select all the buttons in the list
         let buttons = document.querySelectorAll('.collection-item .collection-actions button');
 
@@ -732,6 +744,49 @@ function populateHistorySelect() {
     // Resolve the promise when the operation is complete
     resolve();
   });
+}
+
+function duplicateAndCategorizeChats() {
+  // Get the history select element
+  var historySelect = document.getElementById('chat-items');
+
+  // Create a new div for the categorized chats
+  var collectionItems = document.createElement('div');
+  collectionItems.id = 'collectionItems';
+
+  // Get the chat items
+  var chatItems = historySelect.querySelectorAll('.collection-item');
+
+  // Create divs for the general and other chats
+  var generalChatsDiv = document.createElement('div');
+  generalChatsDiv.className = 'general-chats';
+  var otherChatsDiv = document.createElement('div');
+  otherChatsDiv.className = 'other-chats';
+
+  // Iterate over the chat items
+  chatItems.forEach(item => {
+    // Clone the item
+    var clonedItem = item.cloneNode(true);
+
+    // Get the collection name
+    var collectionName = clonedItem.querySelector('.collection-name').textContent;
+
+    // Check if the collection name contains ':general:'
+    if (collectionName.includes(':general:')) {
+      // Add the cloned item to the general chats div
+      generalChatsDiv.appendChild(clonedItem);
+    } else {
+      // Add the cloned item to the other chats div
+      otherChatsDiv.appendChild(clonedItem);
+    }
+  });
+
+  // Add the general and other chats divs to the collection select div
+  collectionItems.appendChild(generalChatsDiv);
+  collectionItems.appendChild(otherChatsDiv);
+
+  // Add the collection select div to the body
+  document.getElementById('collectionItems').innerHTML = collectionItems.innerHTML;
 }
 
 // Function to load the selected chat history file

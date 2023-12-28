@@ -1,0 +1,86 @@
+{
+  "name": "yuna-ai",
+  "productName": "Yuna AI",
+  "version": "1.0.0",
+  "description": "Your Personal AI girlfriend",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
+    "lint": "echo \"No linting configured\""
+  },
+  "keywords": [
+    "Yuna AI",
+    "Yuna",
+    "AI",
+    "Personal AI",
+    "Personal AI girlfriend",
+    "Personal AI partner",
+    "GPT"
+  ],
+  "author": {
+    "name": "Yuki Arimo",
+    "email": "yukiarimo@gmail.com"
+  },
+  "license": "MIT",
+  "config": {
+    "forge": {
+      "packagerConfig": {
+        "asar": true
+      },
+      "makers": [
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "darwin"
+          ]
+        },
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "platforms": [
+            "win32"
+          ]
+        }
+      ]
+    }
+  },
+  "dependencies": {
+    "electron-forge": "^5.2.4",
+    "electron-icon-maker": "^0.0.5",
+    "electron-squirrel-startup": "^1.0.0"
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^7.2.0",
+    "@electron-forge/maker-deb": "^7.2.0",
+    "@electron-forge/maker-rpm": "^7.2.0",
+    "@electron-forge/maker-squirrel": "^7.2.0",
+    "@electron-forge/maker-zip": "^7.2.0",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.2.0",
+    "electron": "28.1.0",
+    "electron-packager": "^17.1.2"
+  },
+  "build": {
+    "appId": "com.yuna-ai",
+    "mac": {
+      "category": "public.app-category.productivity",
+      "icon": "icons/icon.icns"
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "icons/icon.ico"
+    },
+    "linux": {
+      "target": [
+        "deb",
+        "rpm",
+        "AppImage"
+      ],
+      "category": "Utility",
+      "icon": "icons/icon.png"
+    }
+  }
+}

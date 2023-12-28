@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="Yuna AI - a virtual girlfriend">
+    <meta name="keywords" content="Yuki Arimo, Yuna, Yuna AI, GPT">
+    <meta name="author" content="Yuki Arimo">
+    <meta name="robots" content="index, follow">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar" content="#99c189">
+    <meta name="theme-color" content="#99c189" />
+    <link rel="icon" href="static/img/favicon.ico" type="image/x-icon">
+    <meta name="referrer" content="no-referrer-when-downgrade"> <!-- For privacy and security -->
+
+    <title>Yuna</title>
+
+    <link rel="stylesheet" href="static/css/kawai-v11-2.css">
+    <link rel="stylesheet" href="static/css/index.css">
+    <script src="static/js/kawai-v11-2.js" defer></script>
+    <link href="/manifest.json" rel="manifest" crossorigin="use-credentials" />
+    <script src="static/js/index.js" defer></script>
+    <script src="static/js/himitsu.js" defer></script>
+    <script src="static/js/setup.js" defer></script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('/sw.js').then(
+                    function (registration) {
+                        // Registration was successful
+                        console.log('ServiceWorker registration successful with scope: ', registration
+                            .scope);
+                    },
+                    function (err) {
+                        // registration failed :(
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
+</head>
+
+<body>
+    <div class="sidebar-o desktop-only" id="sidebar">
+
+        <div class="side-tab-block">
+            <div class="side-tab-block-e" style="align-self: center; flex-direction: column;" onclick="toggleSidebar()">
+                <img src="static/img/yuna.png" alt="Yuna logo">
+            </div>
+
+            <div class="side-tab-block-e">
+                <div class="block-text lb" onclick="OpenTab('1')">Home</div>
+            </div>
+
+            <div class="side-tab-block-e">
+                <div class="block-text lb" onclick="OpenTab('2')">Library</div>
+            </div>
+
+            <div class="side-tab-block-e">
+                <div class="block-text lb" onclick="OpenTab('3')">Settings</div>
+            </div>
+
+            <div class="side-tab-block-e">
+                <div class="block-text lb">Prompt Tempate</div>
+                <select class="block-select" id="templateSelect" onchange="changeTemplate()">
+                    <option class="block-list-e" value="dialog">Default</option>
+                    <option class="block-list-e" value="writer">Writer</option>
+                    <option class="block-list-e" value="paraphrase">Paraphrase</option>
+                    <option class="block-list-e" value="decisionMaking">Decision</option>
+                    <option class="block-list-e" value="himitsu">himitsu</option>
+                </select>
+
+                <div id="generatedText"></div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="topbar-o">
+        <div class="block-button" onclick="toggleSidebar()"><img class="block-icon" src="static/img/icons/hamburger.png"
+                alt="Menu"></div>
+        <div class="la block-text">Yuna</div>
+        <div class="top-tab-block">
+            <div class="block-button" id="callButton" onclick="OpenPopup('call');"><img class="block-icon"
+                    src="static/img/icons/call.png" alt="Call"></div>
+        </div>
+    </div>
+
+    <div class="block-o">
+        <div class="tab-o tab-o-default" id="1">
+            <div class="coll-lo">
+                <div class="block-card block-scroll" id="message-container">
+                    <!-- Dynamic HTML elements will be added here -->
+                </div>
+            </div>
+
+            <div class="input-wrapper ui-container">
+                <div class="input-container">
+                    <button class="attach-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg></button>
+                    <input id="input_text" type="text" class="input-field" placeholder="Ask Yuna...">
+                    <!--
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="slider">
+                            <span class="on-label">ひみつ</span>
+                            <span class="off-label">ひみつ</span>
+                        </span>
+                    </label>
+                    -->
+
+                    <svg id="sendMessage" onclick="sendMessage('')" xmlns="http://www.w3.org/2000/svg" width="40"
+                        height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" style="color: white;">
+                        <circle cx="12" cy="12" r="10" fill="#00BFFF"></circle> <!-- Tint color circle -->
+                        <path d="M12 8l-4 4h8l-4-4z" fill="white"></path> <!-- Arrow up -->
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-o" id="2">
+            <div class="coll-lo">
+                <div class="block-card settings-container el-9">
+                    <div class="tab-header">
+                        <button class="tab active">Chats</button>
+                        <button class="tab">Collections</button>
+                    </div>
+
+                    <div class="section">
+                        <div class="header">
+                            <h1>Chats</h1>
+                            <button class="add-button">+</button>
+                        </div>
+
+                        <ul class="collection-list" id="chat-items">
+                        </ul>
+                    </div>
+
+                    <div class="section">
+                        <div class="header">Collections</div>
+
+                        <ul class="collection-list" id="collectionItems">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-o" id="3">
+            <div class="coll-lo">
+                <div class="block-card settings-container el-9">
+                    <div class="tab-header">
+                        <button class="tab active">Account</button>
+                        <button class="tab">Params</button>
+                        <button class="tab">API</button>
+                        <button class="tab">Yuna +</button>
+                    </div>
+                    <div class="section">
+                        <div class="section-heading">Dark Mode</div>
+                        <div class="input-group">
+                            <label class="toggle-switch" onclick="toggleTheme()">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="block-list block-card el-9">
+                            <div class="block-list-e" onclick="checkConfigData()">⚙️ Auto Fix</div>
+                            <div class="block-list-e" onclick="fixDialogData()">⚙️ Auto Build</div>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <div class="section-heading">Params</div>
+                        <div id="parameter-container">
+                            <!-- Dynamic HTML elements will be added here -->
+                        </div>
+                        <img class="block-icon" src="static/img/icons/delete.png" onclick="localStorage.clear()"
+                            alt="Delete">
+                        <img class="block-icon" src="static/img/icons/cancel.png" alt="Cancel">
+                        <img class="block-icon" src="static/img/icons/done.png" onclick="saveConfigParams()" alt="Save">
+                    </div>
+
+                    <div class="section">
+                        <div class="section-heading">AI Data Usage</div>
+                        <div class="input-group">
+                            <span>This feature allows us to use your search data to improve our AI models.</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <div class="section-heading">Yuna +</div>
+                        <div class="pricing-container">
+                            <div class="pricing-option">
+                                <h2>Monthly</h2>
+                                <ul class="feature-list">
+                                    <li>Unlimited uses</li>
+                                    <li>Fle uploads</li>
+                                    <li>Priority support</li>
+                                </ul>
+                                <div class="price-info">
+                                    <p class="price">$20</p>
+                                    <p class="billing-cycle">billed per month</p>
+                                    <p class="trial-info">Starts today</p>
+                                </div>
+                                <button class="cta-button" onclick="OpenLink('https://www.patreon.com/YukiArimo')">Get
+                                    Started</button>
+                            </div>
+                            <div class="pricing-option">
+                                <h2>Yearly</h2>
+                                <ul class="feature-list">
+                                    <li>Best AI models</li>
+                                    <li>Pro support</li>
+                                    <li>Image gen</li>
+                                </ul>
+                                <div class="price-info">
+                                    <p class="price">$200</p>
+                                    <p class="billing-cycle">billed per year</p>
+                                    <p class="trial-info">7 day free trial</p>
+                                </div>
+                                <button class="cta-button" onclick="OpenLink('https://www.patreon.com/YukiArimo')">Get
+                                    Started</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="block-popup" id="call">
+            <audio id="backgroundMusic">
+                <source src="static/audio/output.mp3" type="audio/mp3">
+            </audio>
+
+            <canvas id="capture-canvas" style="display: none;"></canvas>
+
+            <div class="video-call-container">
+                <div class="participant participant-1"><img src="static/img/yuna-full.png" alt="Yuna Participant"></div>
+                <div class="participant participant-2"><video id="localVideo" playsinline autoplay muted
+                        class="draggable-video"></video></div>
+            </div>
+
+            <div class="controls">
+                <div class="control">
+                    <img src="static/img/icons/camera.png" id="capture-image" onclick="captureImage()" alt="Camera">
+                </div>
+                <div class="control">
+                    <img src="static/img/icons/microphone.png" onclick="muteAudio();" alt="Microphone">
+                </div>
+                <div class="control">
+                    <img src="static/img/icons/art.png" id="draw-art" onclick="drawArt()" alt="Other Control">
+                </div>
+                <div class="control">
+                    <img src="static/img/icons/end.png" alt="Hang Up" onclick="closePopupsAll();">
+                </div>
+            </div>
+        </div>
+</body>
+
+</html>

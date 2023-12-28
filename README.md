@@ -95,7 +95,7 @@ To install Yuna AI, follow these steps:
 To start using AI, do the following:
 1. Go to the terminal
 2. Run the `python index.py` command in the main directory to start the WebUI.
-3. Double-click the `index.html` file in the directory or run it via Live Server (better).
+3. Double-click the `yuna.html` file in the directory or run it via Live Server (better).
 4. Done!
 
 > Note: port and directory or file names can depend on your configuration.
@@ -107,7 +107,7 @@ The following is the file structure of the project:
 ├── LICENSE
 ├── README.html
 ├── SECURITY.md
-├── index.html
+├── yuna.html
 ├── index.py
 ├── index.sh
 ├── lib

@@ -5,8 +5,8 @@
         "art": false,
         "max_new_tokens": 128,
         "context_length": 1024,
-        "temperature": 0.7,
-        "repetition_penalty": 1.2,
+        "temperature": 0.65,
+        "repetition_penalty": 1.5,
         "last_n_tokens": 128,
         "seed": -1,
         "top_k": 40,
@@ -28,6 +28,7 @@
         "agi_model_dir": "lib/models/agi/",
         "art_default_model": "any_loli.safetensors",
         "prompts": "static/db/prompts/",
-        "default_prompt_file": "dialog.txt"
+        "default_prompt_file": "dialog.txt",
+        "device": "mps"
     }
 }

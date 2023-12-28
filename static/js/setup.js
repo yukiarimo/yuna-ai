@@ -288,3 +288,7 @@ document.addEventListener('keydown', function (event) {
     }
   }
 });
+
+function Test12() {
+  console.log('Test12() called');
+}

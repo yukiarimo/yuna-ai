@@ -1,5 +1,5 @@
 {
-    "name": "Yuna",
+    "name": "Yuna AI",
     "short_name": "Yuna",
     "description": "Yuna AI - your personal AI girlfriend",
     "lang": "en",
@@ -17,6 +17,17 @@
             "src": "static/img/yuna.png",
             "sizes": "512x512",
             "type": "image/png"
+        },
+        {
+            "src": "http://www.yuna-ai.live/static/img/Yuna%20AI.png?h=b5a2c76a793aa38091c50cbc0efbc386",
+            "type": "image/png",
+            "sizes": "1000x1000",
+            "purpose": "any maskable"
+        }, {
+            "src": "http://www.yuna-ai.live/static/img/Yuna%20AI.png?h=b5a2c76a793aa38091c50cbc0efbc386",
+            "type": "image/png",
+            "sizes": "1000x1000",
+            "purpose": "any maskable"
         }
     ]
 }

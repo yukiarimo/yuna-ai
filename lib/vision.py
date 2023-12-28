@@ -16,7 +16,7 @@ model = BlipForConditionalGeneration.from_pretrained(f"{agi_model_dir}yuna-visio
 
 if config["ai"]["art"] == True:
     art = StableDiffusionPipeline.from_single_file(f'{agi_model_dir}art/{config["server"]["art_default_model"]}', safety_checker=None, load_safety_checker=None, sequence_length=256, guidance_scale=7)
-    art.to('mps')
+    art.to(config["server"]["device"])
 
 def capture_image(data):
     image_data_url = data['image']

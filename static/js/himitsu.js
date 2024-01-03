@@ -315,9 +315,4 @@ function sendGeneratedTextToServer(generatedText) {
     });
 }
 
-// Add event listener to the button
-const buttonDiv = document.querySelector('.block-button');
-buttonDiv.addEventListener('click', generateText);
-
 applyDarkModeStyles();
-toggleSidebar();

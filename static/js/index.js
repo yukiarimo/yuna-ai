@@ -593,36 +593,50 @@ function populateHistorySelect() {
       })
       .then(response => response.json())
       .then(data => {
+
+        console.log(data) // Prints result from `response.json()` in getRequest
+        // ["history_template.json", "date.json", "history.json", "history:general:.json"]
+
         // Populate the <select> with the available options 
         historySelect.insertAdjacentHTML('beforeend', data.map(filename => ` 
-          <li class="collection-item"> 
-            <div class="collection-info"> 
+          
+          
+          <li class="collection-item list-group-item d-flex justify-content-between align-items-center">
+          <div class="collection-info"> 
               <span class="collection-name">${filename}</span> 
-            </div> 
-            <div class="collection-actions"> 
-              <button>Open</button>
-              <button>Edit</button>
-              <button>Delete</button>
-              <button>Download</button>
-              <button>Rename</button>
             </div>
-          </li>`).join(''));
+              <div class="btn-group">
+                  <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Action</button>
+                  <ul class="dropdown-menu collection-actions">
+                      <li><button class="dropdown-item" type="button">Open</button></li>
+                      <li><button class="dropdown-item" type="button">Edit</button></li>
+                      <li><button class="dropdown-item" type="button">Delete</button></li>
+                      <li><button class="dropdown-item" type="button">Download</button></li>
+                      <li><button class="dropdown-item" type="button">Rename</button></li>
+                  </ul>
+              </div>
+          </li>
+          
+          `).join(''));
 
         duplicateAndCategorizeChats()
         // Select all the buttons in the list
-        let buttons = document.querySelectorAll('.collection-item .collection-actions button');
+        let buttons = document.querySelectorAll('.collection-item .collection-actions li button');
 
         // Add an event listener to each button
         buttons.forEach(button => {
           button.addEventListener('click', function (event) {
             // Prevent the default action
             event.preventDefault();
-
+          
             // Get the name of the file
-            let fileName = this.parentElement.previousElementSibling.querySelector('.collection-name').textContent;
+            let fileName = this.closest('.collection-item').querySelector('.collection-name').textContent;
 
             // Get the action (the button's text content)
             let action = this.textContent;
+
+            // You can now use fileName and action for whatever you need
+            console.log(`Action: ${action}, File Name: ${fileName}`);
 
             // Handle the action
             switch (action) {
@@ -753,6 +767,7 @@ function duplicateAndCategorizeChats() {
   // Create a new div for the categorized chats
   var collectionItems = document.createElement('div');
   collectionItems.id = 'collectionItems';
+  // add class 'list-group' to the div
 
   // Get the chat items
   var chatItems = historySelect.querySelectorAll('.collection-item');
@@ -787,6 +802,7 @@ function duplicateAndCategorizeChats() {
 
   // Add the collection select div to the body
   document.getElementById('collectionItems').innerHTML = collectionItems.innerHTML;
+  document.getElementById('collectionItems').classList.add('list-group');
 }
 
 // Function to load the selected chat history file
@@ -878,15 +894,52 @@ function initTabs() {
   });
 }
 
-// Initialize the tabs when the document is loaded
-document.addEventListener('DOMContentLoaded', () => {
-  initTabs();
-  // Set the first tab and section as active by default
-  tabs[0].classList.add('active');
-  sections[0].style.display = 'block';
+var firstNavSidebar = document.getElementsByClassName('nav-link')[0];
+var secondNavSidebar = document.getElementsByClassName('nav-link')[1];
+var thirdNavSidebar = document.getElementsByClassName('nav-link')[2];
+var fourthNavSidebar = document.getElementsByClassName('nav-link')[3];
+
+if (window.matchMedia("(max-width: 428px)").matches) {
+  document.getElementsByClassName('scroll-to-top')[0].style.display = 'none';
+}
+
+// add "selected" class to which is clicked and remove from other tabs
+firstNavSidebar.addEventListener('click', function () {
+  document.getElementsByClassName('scroll-to-top')[0].style.display = 'none';
+  firstNavSidebar.classList.add('active');
+  secondNavSidebar.classList.remove('active');
+  thirdNavSidebar.classList.remove('active');
+  fourthNavSidebar.classList.remove('active');
 });
 
-// run tabs[0].click(); with delay of 1 second
-setTimeout(function () {
-  tabs[0].click();
-}, 100);
+secondNavSidebar.addEventListener('click', function () {
+  document.getElementsByClassName('scroll-to-top')[0].style.display = 'flex';
+  firstNavSidebar.classList.remove('active');
+  secondNavSidebar.classList.add('active');
+  thirdNavSidebar.classList.remove('active');
+  fourthNavSidebar.classList.remove('active');
+});
+
+thirdNavSidebar.addEventListener('click', function () {
+  document.getElementsByClassName('scroll-to-top')[0].style.display = 'flex';
+  firstNavSidebar.classList.remove('active');
+  secondNavSidebar.classList.remove('active');
+  thirdNavSidebar.classList.add('active');
+  fourthNavSidebar.classList.remove('active');
+});
+
+fourthNavSidebar.addEventListener('click', function () {
+  document.getElementsByClassName('scroll-to-top')[0].style.display = 'flex';
+  firstNavSidebar.classList.remove('active');
+  secondNavSidebar.classList.remove('active');
+  thirdNavSidebar.classList.remove('active');
+  fourthNavSidebar.classList.add('active');
+});
+
+document.getElementById('sidebarToggle').addEventListener('click', function () {
+  kawaiAutoScale();
+});
+
+document.getElementById('sidebarToggleTop').addEventListener('click', function () {
+  kawaiAutoScale();
+});

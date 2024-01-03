@@ -1,8 +1,8 @@
 {
     "ai": {
         "names": ["Yuki", "Yuna"],
-        "emotions": false,
-        "art": false,
+        "emotions": true,
+        "art": true,
         "max_new_tokens": 128,
         "context_length": 1024,
         "temperature": 0.65,

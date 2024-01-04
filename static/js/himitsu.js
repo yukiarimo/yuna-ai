@@ -314,5 +314,3 @@ function sendGeneratedTextToServer(generatedText) {
       playAudio(audioType = 'error');
     });
 }
-
-applyDarkModeStyles();

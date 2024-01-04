@@ -594,13 +594,8 @@ function populateHistorySelect() {
       .then(response => response.json())
       .then(data => {
 
-        console.log(data) // Prints result from `response.json()` in getRequest
-        // ["history_template.json", "date.json", "history.json", "history:general:.json"]
-
         // Populate the <select> with the available options 
         historySelect.insertAdjacentHTML('beforeend', data.map(filename => ` 
-          
-          
           <li class="collection-item list-group-item d-flex justify-content-between align-items-center">
           <div class="collection-info"> 
               <span class="collection-name">${filename}</span> 
@@ -628,7 +623,7 @@ function populateHistorySelect() {
           button.addEventListener('click', function (event) {
             // Prevent the default action
             event.preventDefault();
-          
+
             // Get the name of the file
             let fileName = this.closest('.collection-item').querySelector('.collection-name').textContent;
 
@@ -942,4 +937,38 @@ document.getElementById('sidebarToggle').addEventListener('click', function () {
 
 document.getElementById('sidebarToggleTop').addEventListener('click', function () {
   kawaiAutoScale();
+});
+
+kawaiAutoScale();
+
+var myDefaultAllowList = bootstrap.Tooltip.Default.allowList;
+myDefaultAllowList['a'] = myDefaultAllowList['a'] || [];
+myDefaultAllowList['a'].push('onclick');
+
+var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+  return new bootstrap.Popover(popoverTriggerEl, {
+    sanitize: false,
+    allowList: myDefaultAllowList
+  });
+});
+
+function handleTextFileClick() {
+  console.log('Text file option clicked');
+  // Add your code here to handle text file selection
+}
+
+function handleImageFileClick() {
+  console.log('Image file option clicked');
+  // Add your code here to handle image file selection
+}
+
+document.addEventListener('DOMContentLoaded', (event) => {
+  const switchInput = document.getElementById('customSwitch');
+  const toastElement = document.getElementById('toggleToast');
+  const toast = new bootstrap.Toast(toastElement);
+
+  switchInput.addEventListener('change', () => {
+    toast.show();
+  });
 });

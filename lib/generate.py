@@ -53,7 +53,6 @@ class ChatGenerator:
             # Calculate the maximum length for the history in tokens
             max_length_tokens = self.config["ai"]["context_length"] - self.config["ai"]["max_new_tokens"]
 
-            # Crop the tokenized history to fit within the max_length_tokens
             # Ensure we are cropping tokens, not characters
             if len(tokenized_history) > max_length_tokens:
                 tokenized_history = tokenized_history[-max_length_tokens:]
@@ -87,6 +86,14 @@ class ChatGenerator:
 
         elif template == None:
             print('template is none')
+
+        elif template == "summary":
+
+            import article_parser
+
+            title, content = article_parser.parse(url="https://www.iphones.ru/iNotes/vyshla-ios-173-beta-2-no-ne-speshite-eyo-ustanavlivat-01-03-2024", output='markdown', timeout=50)
+
+            print(title, content)
 
         print(len(self.model.tokenize(response)), '<- response length')
         print('------\n\n\n', response, '------\n\n\n')

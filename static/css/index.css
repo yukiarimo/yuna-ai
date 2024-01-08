@@ -1,5 +1,10 @@
 .sidebar-o {
-    scrollbar-width: none;
+    scrollbar-width: none !important;
+    transition: none !important;
+}
+
+img {
+    width: auto !important;
 }
 
 #parameter-container {
@@ -20,11 +25,6 @@
 
 .tab-o {
     width: 100%;
-}
-
-img {
-    height: 50px;
-    width: 50px !important;
 }
 
 .el-9 {
@@ -140,6 +140,8 @@ body {
     scrollbar-width: none;
     display: flex;
     flex-direction: column;
+    background: none !important;
+    background-color: transparent !important;
 }
 
 .coll-lo {
@@ -268,7 +270,6 @@ button {
 }
 
 .settings-container {
-    max-width: 600px;
     margin: 50px auto;
     background-color: #1f1f1f;
     padding: 20px;
@@ -448,7 +449,7 @@ input:checked~.slider .off-label {
     display: flex;
     align-items: center;
     background-color: #333;
-    border-radius: 22px;
+    border-radius: 40px;
     padding: 10px;
 }
 
@@ -513,72 +514,6 @@ input:checked~.slider .off-label {
     color: white;
     cursor: pointer;
     font-size: 16px;
-}
-
-.collection-list {
-    list-style: none;
-    display: flex;
-    flex-wrap: wrap; /* Enable wrapping of items */
-    gap: 20px; /* Space between cards */
-    justify-content: center; /* Align items to the start */
-    flex-direction: row;
-}
-
-.collection-item {
-    background-color: #8BC34A; /* Card background color */
-    border-radius: 16px; /* Rounded corners for the card */
-    padding: 2%;
-    margin-bottom: 20px; /* Space below each card */
-    flex-basis: calc(33.333% - 20px); /* Width for 3 cards per row minus the gap */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Shadow for depth */
-    display: flex;
-    flex-direction: column; /* Stack elements vertically */
-    justify-content: space-between; /* Distribute space between content */
-}
-
-.collection-info {
-    display: flex;
-    flex-direction: column; /* Stack info vertically */
-    align-items: flex-start; /* Align items to the start */
-    margin-bottom: 20px; /* Space between info and actions */
-}
-
-.collection-info img {
-    border-radius: 8px; /* Match the card's border radius */
-    margin-bottom: 10px; /* Space between image and text */
-}
-
-.collection-info h2 {
-    font-size: 1.5em; /* Larger heading font size */
-    margin: 0 0 10px 0; /* Space between heading and description */
-}
-
-.collection-info p {
-    font-size: 1em; /* Standard text size */
-    color: #666; /* Lighter text color for contrast */
-    margin: 0; /* Remove default margins */
-}
-
-.collection-actions {
-    display: flex;
-    justify-content: flex-start; /* Align buttons to the start */
-    width: 100%; /* Full width to contain buttons */
-    flex-direction: column; /* Stack buttons vertically */
-}
-
-.collection-actions button {
-    background-color: #2196F3; /* Adjusted to match the button color in the image */
-    border: none;
-    border-radius: 8px; /* Rounded corners for the button */
-    padding: 15px 30px; /* Larger padding for a bigger button */
-    margin-bottom: 10px; /* Space between buttons */
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.3s ease; /* Smooth background color transition */
-}
-
-.collection-actions button:hover {
-    background-color: #1976D2; /* Darker shade on hover */
 }
 
 .pricing-container {
@@ -649,16 +584,6 @@ input:checked~.slider .off-label {
     /* Darker shade for hover effect */
 }
 
-#templateSelect {
-    background: transparent !important;
-    border: none !important;
-    scrollbar-width: none;
-}
-
-#templateSelect::-webkit-scrollbar {
-    display: none;
-}
-
 body {
     scrollbar-width: none;
 }
@@ -672,6 +597,10 @@ body::-webkit-scrollbar {
     flex-direction: column;
 }
 
+.container-fluid {
+    padding: 0 !important;
+}
+
 @media (max-width : 428px) {
     .topbar-o {
         margin-bottom: 0 !important;
@@ -680,19 +609,38 @@ body::-webkit-scrollbar {
     }
 
     .collection-actions button {
-        padding: 10px 20px; /* Smaller padding on mobile */
-        margin-right: 10px; /* Space between buttons on mobile */
+        padding: 10px 20px;
+        /* Smaller padding on mobile */
+        margin-right: 10px;
+        /* Space between buttons on mobile */
     }
 
-    ..collection-list {
-        flex-direction: row; /* Stack cards horizontally on mobile */
-        flex-wrap: wrap; /* Enable wrapping of items */
-        justify-content: center; /* Align items to the center */
+    .collection-list {
+        flex-direction: row;
+        /* Stack cards horizontally on mobile */
+        flex-wrap: wrap;
+        /* Enable wrapping of items */
+        justify-content: center;
+        /* Align items to the center */
+    }
+
+    .sidebar-o {
+        width: auto;
+        display: flex;
+        flex-direction: column;
+        /* background-color: #1e1e1e; */
+        /* color: #ffffff; */
+        height: 100vh;
+        /* padding: 20px; */
+        /* box-sizing: border-box; */
+        position: fixed;
+        bottom: 0;
+        /* overflow-y: auto; */
+        z-index: 999;
+        /* transition: all 0.5s ease; */
     }
 }
 
-@media (min-width : 428px) {
-    .sidebar-o {
-        border-right: 1px dashed white;
-    }
+#wrapper #content-wrapper {
+    background-color: transparent !important;
 }

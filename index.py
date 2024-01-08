@@ -101,6 +101,14 @@ class YunaServer:
         text = data.get('text')
         template = data.get('template')
 
+        # Print all the data received from the client in the terminal for debugging in the table format
+        print(f"""
+        chat_id: {chat_id}
+        speech: {speech}
+        text: {text}
+        template: {template}
+        """)
+
         response = self.chat_generator.generate(chat_id, speech, text, template)
 
         return jsonify({'response': response})
@@ -125,8 +133,6 @@ class YunaServer:
             return jsonify({'message': result["text"]})
         except Exception as e:
             return jsonify({'error': str(e)}), 500
-
-
 
     def handle_register(self):
         data = request.get_json()

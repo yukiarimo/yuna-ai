@@ -4,8 +4,16 @@ var config_data;
 var selectedFilename = '';
 var backgroundMusic = document.getElementById('backgroundMusic');
 var isTTS = false;
+var isHimitsu = false;
 var messageContainer = document.getElementById('message-container');
 const typingBubble = `<div class="block-message-1" id="circle-loader"><div class="circle-loader"></div></div>`;
+var himitsuCopilot;
+
+function checkHimitsuCopilotState() {
+  var toggleSwitch = document.getElementById('customSwitch');
+  var isOn = toggleSwitch.checked;
+  return isOn // This will log 'true' if the switch is on, 'false' if it's off
+}
 
 // Class and functions to add and removed <br>s from the message container
 class messageManager {
@@ -72,6 +80,94 @@ function sendMessage(message, imageName = false) {
     message = document.getElementById('input_text').value;
   }
 
+  if (checkHimitsuCopilotState()) {
+    fetch(`${server_url + server_port}/message`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          chat: selectedFilename,
+          text: message,
+          template: "himitsuCopilot",
+        }),
+      })
+      .then(response => response.json())
+      .then(data => {
+        messageManager.removeBr();
+        messageManager.removeTypingBubble();
+
+        // Split the response data into three parts in an array by the "\n" character
+        var splitData = data.response.split('\n');
+        console.log(splitData);
+
+        himitsuCopilot = new PromptTemplate(
+          [],
+          [{
+              id: 'text',
+              label: 'Input',
+              type: 'text'
+            },
+            {
+              id: 'q1',
+              label: `${splitData[0]}`,
+              type: 'text'
+            },
+            {
+              id: 'q2',
+              label: `${splitData[1]}`,
+              type: 'text'
+            },
+            {
+              id: 'q3',
+              label: `${splitData[2]}`,
+              type: 'text'
+            },
+          ]
+        );
+
+        var messageDiv = document.createElement('div');
+
+        // create #Himitsu element into messageDiv
+        const form = document.createElement('form');
+        form.setAttribute("id", "Himitsu");
+        messageDiv.appendChild(form);
+
+        // Append the button
+        const buttonDiv = document.createElement('div');
+        buttonDiv.className = 'block-button';
+        buttonDiv.setAttribute('type', 'button');
+        buttonDiv.setAttribute('onclick', 'generateText();');
+        buttonDiv.innerText = 'Gen';
+        messageDiv.appendChild(buttonDiv);
+
+        messageData = {
+          name: 'Yuki',
+          message: messageDiv.innerHTML,
+        };
+
+        messageManager.createMessage(messageData.name, messageData.message);
+
+        himitsuCopilot.generateElements();
+
+        isHimitsu = true;
+      })
+      .catch(error => {
+        console.error('Error:', error);
+
+        messageManager.removeTypingBubble();
+
+        const messageData = {
+          name: 'Yuna',
+          message: error,
+        };
+
+        messageManager.createMessage(messageData.name, messageData.message);
+        playAudio(audioType = 'error');
+      });
+    return
+  }
+
   document.getElementById('input_text').value = ''
 
   messageManager.removeBr();
@@ -123,20 +219,7 @@ function sendMessage(message, imageName = false) {
     messageManager.createMessage(messageData.name, messageData.message);
 
     if (currentPromptName == 'himitsu') {
-      const himitsu = new PromptTemplate([{
-          id: 'text',
-          label: 'Question',
-          type: 'input'
-        },
-        {
-          id: 'clarification',
-          label: 'Clarification',
-          type: 'input'
-        }
-      ])
-
-      himitsu.generateSelectElements();
-      himitsu.generateTemplateInputs();
+      himitsu.generateElements();
     } else if (currentPromptName == 'writer') {
       writer.generateSelectElements();
       writer.generateTemplateInputs();
@@ -566,10 +649,73 @@ function captureImage() {
     });
 }
 
+// Modify the captureImage function to handle file uploads
+function captureImageViaFile() {
+  var imageUpload = document.getElementById('imageUpload');
+  var messageContainer = document.getElementById('message-container');
+
+  if (imageUpload.files.length > 0) {
+    var file = imageUpload.files[0];
+    var reader = new FileReader();
+
+    reader.onloadend = function () {
+      // Convert the image file to a base64 data URL
+      var imageDataURL = reader.result;
+
+      var messageForImage = '';
+      if (isTTS.toString() == 'false') {
+        messageForImage = prompt('Enter a message for the image:');
+      }
+
+      // Generate a random image name using current timestamp
+      var imageName = new Date().getTime().toString();
+
+      closePopupsAll();
+
+      // Send the uploaded image to the Flask server
+      fetch(`${server_url+server_port}/image`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            image: imageDataURL,
+            name: imageName,
+            task: 'caption',
+          })
+        })
+        .then(response => {
+          if (response.ok) {
+            // Parse the JSON data from the response
+            return response.json();
+          } else {
+            throw new Error('Error sending uploaded image.');
+          }
+        })
+        .then(data => {
+          // Access the image caption from the server response
+          const imageCaption = data.message;
+          var askYunaImage = `*You can see ${imageCaption} in the image* ${messageForImage}`;
+
+          sendMessage(askYunaImage, imageName);
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Error sending uploaded image.');
+        });
+    };
+
+    // Read the image file as a data URL
+    reader.readAsDataURL(file);
+  } else {
+    alert('No file selected.');
+  }
+}
+
 // Function to fetch and populate chat history file options
 function populateHistorySelect() {
   return new Promise((resolve, reject) => {
-    var historySelect = document.getElementById('collection-items');
+    var historySelect = document.getElementById('chat-items');
 
     if (localStorage.getItem('config') == null) {
       // reload the page with delay of 1 second if config is not available
@@ -593,24 +739,30 @@ function populateHistorySelect() {
       })
       .then(response => response.json())
       .then(data => {
+
         // Populate the <select> with the available options 
         historySelect.insertAdjacentHTML('beforeend', data.map(filename => ` 
-          <li class="collection-item"> 
-            <div class="collection-info"> 
+          <li class="collection-item list-group-item d-flex justify-content-between align-items-center">
+          <div class="collection-info"> 
               <span class="collection-name">${filename}</span> 
-            </div> 
-            <div class="collection-actions"> 
-              <button>Open</button>
-              <button>Edit</button>
-              <button>Delete</button>
-              <button>Download</button>
-              <button>Rename</button>
             </div>
-          </li>`).join(''));
+              <div class="btn-group">
+                  <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Action</button>
+                  <ul class="dropdown-menu collection-actions">
+                      <li><button class="dropdown-item" type="button">Open</button></li>
+                      <li><button class="dropdown-item" type="button">Edit</button></li>
+                      <li><button class="dropdown-item" type="button">Delete</button></li>
+                      <li><button class="dropdown-item" type="button">Download</button></li>
+                      <li><button class="dropdown-item" type="button">Rename</button></li>
+                  </ul>
+              </div>
+          </li>
+          
+          `).join(''));
 
-        // Add event listeners to the buttons
+        duplicateAndCategorizeChats()
         // Select all the buttons in the list
-        let buttons = document.querySelectorAll('.collection-item .collection-actions button');
+        let buttons = document.querySelectorAll('.collection-item .collection-actions li button');
 
         // Add an event listener to each button
         buttons.forEach(button => {
@@ -619,10 +771,13 @@ function populateHistorySelect() {
             event.preventDefault();
 
             // Get the name of the file
-            let fileName = this.parentElement.previousElementSibling.querySelector('.collection-name').textContent;
+            let fileName = this.closest('.collection-item').querySelector('.collection-name').textContent;
 
             // Get the action (the button's text content)
             let action = this.textContent;
+
+            // You can now use fileName and action for whatever you need
+            console.log(`Action: ${action}, File Name: ${fileName}`);
 
             // Handle the action
             switch (action) {
@@ -746,6 +901,51 @@ function populateHistorySelect() {
   });
 }
 
+function duplicateAndCategorizeChats() {
+  // Get the history select element
+  var historySelect = document.getElementById('chat-items');
+
+  // Create a new div for the categorized chats
+  var collectionItems = document.createElement('div');
+  collectionItems.id = 'collectionItems';
+  // add class 'list-group' to the div
+
+  // Get the chat items
+  var chatItems = historySelect.querySelectorAll('.collection-item');
+
+  // Create divs for the general and other chats
+  var generalChatsDiv = document.createElement('div');
+  generalChatsDiv.className = 'general-chats';
+  var otherChatsDiv = document.createElement('div');
+  otherChatsDiv.className = 'other-chats';
+
+  // Iterate over the chat items
+  chatItems.forEach(item => {
+    // Clone the item
+    var clonedItem = item.cloneNode(true);
+
+    // Get the collection name
+    var collectionName = clonedItem.querySelector('.collection-name').textContent;
+
+    // Check if the collection name contains ':general:'
+    if (collectionName.includes(':general:')) {
+      // Add the cloned item to the general chats div
+      generalChatsDiv.appendChild(clonedItem);
+    } else {
+      // Add the cloned item to the other chats div
+      otherChatsDiv.appendChild(clonedItem);
+    }
+  });
+
+  // Add the general and other chats divs to the collection select div
+  collectionItems.appendChild(generalChatsDiv);
+  collectionItems.appendChild(otherChatsDiv);
+
+  // Add the collection select div to the body
+  document.getElementById('collectionItems').innerHTML = collectionItems.innerHTML;
+  document.getElementById('collectionItems').classList.add('list-group');
+}
+
 // Function to load the selected chat history file
 function loadSelectedHistory(selectedFilename) {
   messageContainer = document.getElementById('message-container');
@@ -835,15 +1035,90 @@ function initTabs() {
   });
 }
 
-// Initialize the tabs when the document is loaded
-document.addEventListener('DOMContentLoaded', () => {
-  initTabs();
-  // Set the first tab and section as active by default
-  tabs[0].classList.add('active');
-  sections[0].style.display = 'block';
+var firstNavSidebar = document.getElementsByClassName('nav-link')[0];
+var secondNavSidebar = document.getElementsByClassName('nav-link')[1];
+var thirdNavSidebar = document.getElementsByClassName('nav-link')[2];
+var fourthNavSidebar = document.getElementsByClassName('nav-link')[3];
+
+if (window.matchMedia("(max-width: 428px)").matches) {
+  document.getElementsByClassName('scroll-to-top')[0].style.display = 'none';
+}
+
+// add "selected" class to which is clicked and remove from other tabs
+firstNavSidebar.addEventListener('click', function () {
+  document.getElementsByClassName('scroll-to-top')[0].style.display = 'none';
+  firstNavSidebar.classList.add('active');
+  secondNavSidebar.classList.remove('active');
+  thirdNavSidebar.classList.remove('active');
+  fourthNavSidebar.classList.remove('active');
 });
 
-// run tabs[0].click(); with delay of 1 second
-setTimeout(function () {
-  tabs[0].click();
-}, 100);
+secondNavSidebar.addEventListener('click', function () {
+  document.getElementsByClassName('scroll-to-top')[0].style.display = 'flex';
+  firstNavSidebar.classList.remove('active');
+  secondNavSidebar.classList.add('active');
+  thirdNavSidebar.classList.remove('active');
+  fourthNavSidebar.classList.remove('active');
+});
+
+thirdNavSidebar.addEventListener('click', function () {
+  document.getElementsByClassName('scroll-to-top')[0].style.display = 'flex';
+  firstNavSidebar.classList.remove('active');
+  secondNavSidebar.classList.remove('active');
+  thirdNavSidebar.classList.add('active');
+  fourthNavSidebar.classList.remove('active');
+});
+
+fourthNavSidebar.addEventListener('click', function () {
+  document.getElementsByClassName('scroll-to-top')[0].style.display = 'flex';
+  firstNavSidebar.classList.remove('active');
+  secondNavSidebar.classList.remove('active');
+  thirdNavSidebar.classList.remove('active');
+  fourthNavSidebar.classList.add('active');
+});
+
+document.getElementById('sidebarToggle').addEventListener('click', function () {
+  kawaiAutoScale();
+});
+
+document.getElementById('sidebarToggleTop').addEventListener('click', function () {
+  kawaiAutoScale();
+});
+
+kawaiAutoScale();
+
+var myDefaultAllowList = bootstrap.Tooltip.Default.allowList;
+myDefaultAllowList['a'] = myDefaultAllowList['a'] || [];
+myDefaultAllowList['a'].push('onclick');
+
+var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+  return new bootstrap.Popover(popoverTriggerEl, {
+    sanitize: false,
+    allowList: myDefaultAllowList
+  });
+});
+
+function handleTextFileClick() {
+  console.log('Text file option clicked');
+  // Add your code here to handle text file selection
+}
+
+function handleImageFileClick() {
+  document.getElementById('imageUpload').click();
+}
+
+document.addEventListener('DOMContentLoaded', (event) => {
+  const switchInput = document.getElementById('customSwitch');
+  const toastElement = document.getElementById('toggleToast');
+  const toast = new bootstrap.Toast(toastElement);
+
+  switchInput.addEventListener('change', () => {
+    toast.show();
+  });
+});
+
+// Assuming you have a modal with the ID 'videoCallModal'
+var callYuna = new bootstrap.Modal(document.getElementById('videoCallModal'), {
+  keyboard: false
+});

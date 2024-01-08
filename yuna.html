@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html data-bs-theme="dark" lang="en">
+
+<head data-bs-theme="dark">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Blank Page - Yuna AI</title>
+    <meta name="theme-color" content="#000000">
+    <link rel="canonical" href="http://www.yuna-ai.live/blank.html">
+    <meta property="og:url" content="http://www.yuna-ai.live/blank.html">
+    <meta property="og:description" content="Your virtual AI girlfriend">
+    <meta name="twitter:image" content="http://www.yuna-ai.live/static/img/yuna-ai.png">
+    <meta name="twitter:title" content="Yuna AI">
+    <meta property="og:image" content="http://www.yuna-ai.live/static/img/yuna-ai.png">
+    <meta name="description" content="Your virtual AI girlfriend">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Yuna AI">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:description" content="Your virtual AI girlfriend">
+    <script type="application/ld+json">
+        {
+            "@context": "http://schema.org",
+            "@type": "WebSite",
+            "name": "Yuna AI",
+            "url": "http://www.yuna-ai.live"
+        }
+    </script>
+    <link rel="icon" type="image/jpeg" sizes="60x60" href="static/img/yuna-ai.png?h=c5166867f10a4e454b5b2ae8d63268b3">
+    <link rel="icon" type="image/jpeg" sizes="60x60" href="static/img/yuna-ai.png?h=c5166867f10a4e454b5b2ae8d63268b3"
+        media="(prefers-color-scheme: dark)">
+    <link rel="icon" type="image/jpeg" sizes="60x60" href="static/img/yuna-ai.png?h=c5166867f10a4e454b5b2ae8d63268b3">
+    <link rel="icon" type="image/jpeg" sizes="60x60" href="static/img/yuna-ai.png?h=c5166867f10a4e454b5b2ae8d63268b3"
+        media="(prefers-color-scheme: dark)">
+    <link rel="icon" type="image/jpeg" sizes="60x60" href="static/img/yuna-ai.png?h=c5166867f10a4e454b5b2ae8d63268b3">
+    <link rel="icon" type="image/jpeg" sizes="60x60" href="static/img/yuna-ai.png?h=c5166867f10a4e454b5b2ae8d63268b3">
+    <link rel="icon" type="image/jpeg" sizes="60x60" href="static/img/yuna-ai.png?h=c5166867f10a4e454b5b2ae8d63268b3">
+    <link rel="stylesheet" href="static/bootstrap/css/bootstrap.min.css?h=97380e22c8933e9aa79cbc2390b9f15a">
+    <link rel="manifest" href="manifest.json?h=cac48232b1fc5fc8e026cf1e7b7ef587">
+    <link rel="stylesheet" href="static/css/Nunito.css?h=65e1aae7ce6f6cb9d0e4a95da536c5c9">
+    <link rel="stylesheet" href="static/fonts/fontawesome-all.min.css?h=d98553506d4393860db8a633e4842ead">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="static/css/kawai-v11-2.css">
+    <link rel="stylesheet" href="static/css/index.css">
+    <script src="static/js/kawai-v11-2.js" defer></script>
+    <script src="static/js/index.js" defer></script>
+    <script src="static/js/himitsu.js" defer></script>
+    <script src="static/js/setup.js" defer></script>
+
+    <style>
+        /* Custom styles for the modal to make it almost full-screen */
+        .modal-dialog {
+            max-width: 90vw;
+            height: 90vh;
+            margin: 5vh auto;
+        }
+
+        .modal-content {
+            height: 100%;
+            width: auto !important;
+        }
+
+        .modal-body {
+            overflow-y: auto;
+        }
+
+        /* Styles for the video blocks to ensure they take up equal space */
+        .video-block {
+            flex: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Ensure the last video block has no margin at the bottom */
+        .video-block:last-child {
+            margin-bottom: 0;
+        }
+    </style>
+
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('/sw.js').then(
+                    function (registration) {
+                        // Registration was successful
+                        console.log('ServiceWorker registration successful with scope: ', registration
+                            .scope);
+                    },
+                    function (err) {
+                        // registration failed :(
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
+</head>
+
+<body id="page-top">
+    <div id="wrapper">
+        <nav class="navbar sidebar-o align-items-start sidebar sidebar-dark accordion p-0 navbar-dark">
+            <div class="container-fluid d-flex flex-column p-0"><a
+                    class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
+                    <div class="sidebar-brand-icon">
+                        <img src="static/img/yuna-ai.png" alt="Yuna AI" style="width: 30px; height: 30px;">
+                    </div>
+                    <div class="sidebar-brand-text mx-3"><span>Yuna AI</span></div>
+                </a>
+                <hr class="sidebar-divider my-0">
+                <ul class="navbar-nav text-light" id="accordionSidebar">
+                    <li class="nav-item"><a class="nav-link active" onclick="OpenTab('1')"><i
+                                class="fas fa-window-maximize"></i><span>Home</span></a></li>
+                    <li class="nav-item"><a class="nav-link" onclick="OpenTab('2')"><i
+                                class="fas fa-table"></i><span>Library</span></a></li>
+                    <li class="nav-item"><a class="nav-link" onclick="OpenTab('3')"><i
+                                class="fas fa-table"></i><span>Settings</span></a></li>
+                    <li class="nav-item"><a class="nav-link" onclick="OpenTab('4')"><i
+                                class="fas fa-user"></i><span>Profile</span></a></li>
+                    <div class="input-group">
+                        <select class="form-select" id="templateSelect" aria-label="Templates"
+                            onchange="changeTemplate()">
+                            <option selected class="block-list-e" value="dialog">Default</option>
+                            <option class="block-list-e" value="writer">Writer</option>
+                            <option class="block-list-e" value="paraphrase">Paraphrase</option>
+                            <option class="block-list-e" value="decisionMaking">Decision</option>
+                            <option class="block-list-e" value="himitsu">Himitsu</option>
+                            <option class="block-list-e" value="search">Search</option>
+                        </select>
+                    </div>
+                </ul>
+                <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0"
+                        id="sidebarToggle" type="button"></button></div>
+            </div>
+        </nav>
+        <div class="d-flex flex-column" id="content-wrapper" style="background-color: none !important;">
+            <div id="content">
+                <nav class="navbar navbar-expand shadow mb-4 topbar static-top navbar-light topbar-o fixed-top">
+                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle me-3"
+                            id="sidebarToggleTop" type="button"><i class="fas fa-bars"></i></button>
+                        <ul class="navbar-nav flex-nowrap ms-auto">
+                            <li class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
+                                    aria-expanded="false" data-bs-toggle="dropdown" href="#"><i
+                                        class="fas fa-search"></i></a>
+                                <div class="dropdown-menu dropdown-menu-end p-3 animated--grow-in"
+                                    aria-labelledby="searchDropdown">
+                                    <form class="me-auto navbar-search w-100">
+                                        <div class="input-group"><input class="bg-light form-control border-0 small"
+                                                type="text" placeholder="Search for ...">
+                                            <div class="input-group-append"><button class="btn btn-primary py-0"
+                                                    type="button"><i class="fas fa-search"></i></button></div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </li>
+                            <li class="nav-item dropdown no-arrow mx-1">
+                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
+                                        aria-expanded="false" data-bs-toggle="dropdown" href="#"><span
+                                            class="badge bg-danger badge-counter">3+</span><i
+                                            class="fas fa-bell fa-fw"></i></a>
+                                    <div class="dropdown-menu dropdown-menu-end dropdown-list animated--grow-in">
+                                        <h6 class="dropdown-header">alerts center</h6><a
+                                            class="dropdown-item d-flex align-items-center" href="#">
+                                            <div class="me-3">
+                                                <div class="bg-primary icon-circle"><i
+                                                        class="fas fa-file-alt text-white"></i></div>
+                                            </div>
+                                            <div><span class="small text-gray-500">December 12, 2019</span>
+                                                <p>A new monthly report is ready to download!</p>
+                                            </div>
+                                        </a><a class="dropdown-item d-flex align-items-center" href="#">
+                                            <div class="me-3">
+                                                <div class="bg-warning icon-circle"><i
+                                                        class="fas fa-exclamation-triangle text-white"></i></div>
+                                            </div>
+                                            <div><span class="small text-gray-500">December 2, 2019</span>
+                                                <p>Spending Alert: We've noticed unusually high spending for your
+                                                    account.</p>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                            </li>
+                            <div class="d-none d-sm-block topbar-divider"></div>
+                            <li class="nav-item dropdown no-arrow">
+                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
+                                        aria-expanded="false" data-bs-toggle="dropdown" href="#"><img
+                                            class="border rounded-circle img-profile"
+                                            src="static/img/yuna-girl-head.png?h=0ecc82101fb9a10ca459432faa8c0656"></a>
+                                    <div class="dropdown-menu shadow dropdown-menu-end animated--grow-in"><a
+                                            class="dropdown-item" onclick="callYuna.show();"><i
+                                                class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Call</a><a
+                                            class="dropdown-item" onclick="OpenTab('4')" href="#"><i
+                                                class="fas fa-cogs fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Profile</a><a
+                                            class="dropdown-item" href="#"><i
+                                                class="fas fa-list fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Activity</a>
+                                        <div class="dropdown-divider"></div><a class="dropdown-item" href="#"><i
+                                                class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Logout</a>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+                <div class="container-fluid">
+                    <div class="block-o">
+                        <div class="tab-o tab-o-default" id="1">
+                            <div class="coll-lo">
+                                <div class="block-card block-scroll" id="message-container">
+                                    <!-- Dynamic HTML elements will be added here -->
+                                </div>
+                            </div>
+
+                            <div class="input-wrapper ui-container">
+                                <div class="input-container">
+                                    <button class="attach-button btn btn-secondary" data-bs-toggle="popover"
+                                        data-bs-placement="bottom" data-bs-html="true"
+                                        data-bs-content="<a href='#' class='dropdown-item' onclick='handleTextFileClick()'>Text File</a><a href='#' class='dropdown-item' onclick='handleImageFileClick()'>Image File</a>">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                                        </svg>
+                                    </button>
+                                    <input type="file" id="imageUpload" accept="image/*" style="display: none;" onchange="captureImageViaFile()">
+                                    <input id="input_text" type="text" class="input-field" placeholder="Ask Yuna...">
+
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="customSwitch">
+                                        <label class="form-check-label" for="customSwitch"></label>
+                                    </div>
+
+                                    <button id="sendMessage" onclick="sendMessage('')"
+                                        class="btn btn-primary rounded-circle"
+                                        style="width: 50px; height: 50px; padding: 0;">
+                                        <i class="bi bi-arrow-up-circle" style="font-size: 2em;"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-o" id="2">
+                            <div class="coll-lo">
+                                <div class="block-card settings-container el-9">
+                                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link active" id="chats-tab" data-bs-toggle="tab"
+                                                data-bs-target="#chats" type="button" role="tab" aria-controls="chats"
+                                                aria-selected="true">Chats</button>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link" id="collections-tab" data-bs-toggle="tab"
+                                                data-bs-target="#collections" type="button" role="tab"
+                                                aria-controls="collections" aria-selected="false">Collections</button>
+                                        </li>
+                                    </ul>
+                                    <div class="tab-content" id="myTabContent">
+                                        <div class="tab-pane fade show active" id="chats" role="tabpanel"
+                                            aria-labelledby="chats-tab">
+                                            <div class="header">
+                                                <h1>Chats</h1>
+                                                <button class="add-button">+</button>
+                                            </div>
+                                            <ul class="list-group" id="chat-items">
+                                                <!-- Will be added dynamically -->
+                                            </ul>
+                                        </div>
+                                        <div class="tab-pane fade" id="collections" role="tabpanel"
+                                            aria-labelledby="collections-tab">
+                                            <div class="header">Collections</div>
+                                            <ul class="collection-list" id="collectionItems">
+                                                <!-- Collections content -->
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-o" id="3">
+                            <div class="coll-lo">
+                                <div class="block-card settings-container el-9">
+                                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link active" id="account-tab" data-bs-toggle="tab"
+                                                data-bs-target="#account" type="button" role="tab"
+                                                aria-controls="account" aria-selected="true">Setup</button>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link" id="params-tab" data-bs-toggle="tab"
+                                                data-bs-target="#params" type="button" role="tab" aria-controls="params"
+                                                aria-selected="false">Params</button>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link" id="api-tab" data-bs-toggle="tab"
+                                                data-bs-target="#api" type="button" role="tab" aria-controls="api"
+                                                aria-selected="false">API</button>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link" onclick="OpenLink('pricing.html')" id="yuna-tab"
+                                                data-bs-toggle="tab" data-bs-target="#yuna" type="button" role="tab"
+                                                aria-controls="yuna" aria-selected="false">Yuna +</button>
+                                        </li>
+                                    </ul>
+                                    <div class="tab-content" id="myTabContent">
+                                        <div class="tab-pane fade show active" id="account" role="tabpanel"
+                                            aria-labelledby="account-tab">
+                                            <h3 class="section-heading">Dark Mode</h3>
+                                            <div class="input-group">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" id="darkModeSwitch"
+                                                        onclick="toggleTheme()" checked>
+                                                    <label class="form-check-label" for="darkModeSwitch"></label>
+                                                </div>
+                                            </div>
+
+                                            <div class="list-group">
+                                                <button type="button" class="list-group-item list-group-item-action"
+                                                    onclick="checkConfigData()">⚙️ Auto Fix</button>
+                                                <button type="button" class="list-group-item list-group-item-action"
+                                                    onclick="fixDialogData()">⚙️ Auto Build</button>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" id="params" role="tabpanel"
+                                            aria-labelledby="params-tab">
+                                            <div class="section-heading">Params</div>
+                                            <div id="parameter-container">
+                                                <!-- Dynamic HTML elements will be added here -->
+                                            </div>
+
+                                            <button class="btn" onclick="localStorage.clear()">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                            <button class="btn">
+                                                <i class="bi bi-x"></i>
+                                            </button>
+                                            <button class="btn" onclick="saveConfigParams()">
+                                                <i class="bi bi-check"></i>
+                                            </button>
+
+                                        </div>
+                                        <div class="tab-pane fade" id="api" role="tabpanel" aria-labelledby="api-tab">
+                                            <h3 class="section-heading">AI Data Usage</h3>
+
+                                            <div class="list-group">
+                                                <span class="list-group-item list-group-item-action">This feature allows
+                                                    us to use your search data to improve our AI models.</span>
+                                            </div>
+
+                                            <div class="input-group">
+                                                <div class="form-check form-switch">
+                                                    <div class="form-check form-switch">
+                                                        <input class="form-check-input" type="checkbox"
+                                                            id="aiDataUsageSwitch" checked>
+                                                        <label class="form-check-label" for="aiDataUsageSwitch"></label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" id="yuna" role="tabpanel" aria-labelledby="yuna-tab">
+                                            <div class="section-heading">Yuna +</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-o" id="4">
+                            <div class="coll-lo">
+                                <div class="row mb-3">
+                                    <div class="col-lg-4">
+                                        <div class="card mb-3">
+                                            <div class="card-body text-center shadow"><img
+                                                    class="rounded-circle mb-3 mt-4"
+                                                    src="static/img/yuna-girl-head.png?h=a0a7d00bcd8e4f84f4d8ce636a8f94d4"
+                                                    width="160" height="160">
+                                                <div class="mb-3"><button class="btn btn-primary btn-sm"
+                                                        type="button">Change
+                                                        Photo</button></div>
+                                            </div>
+                                        </div>
+                                        <div class="card shadow mb-4">
+                                            <div class="card-header py-3">
+                                                <h6 class="text-primary fw-bold m-0">Projects</h6>
+                                            </div>
+                                            <div class="card-body">
+                                                <h4 class="small fw-bold">Server migration<span
+                                                        class="float-end">20%</span>
+                                                </h4>
+                                                <div class="progress progress-sm mb-3">
+                                                    <div class="progress-bar bg-danger" aria-valuenow="20"
+                                                        aria-valuemin="0" aria-valuemax="100" style="width: 20%;"><span
+                                                            class="visually-hidden">20%</span></div>
+                                                </div>
+                                                <h4 class="small fw-bold">Sales tracking<span
+                                                        class="float-end">40%</span></h4>
+                                                <div class="progress progress-sm mb-3">
+                                                    <div class="progress-bar bg-warning" aria-valuenow="40"
+                                                        aria-valuemin="0" aria-valuemax="100" style="width: 40%;"><span
+                                                            class="visually-hidden">40%</span></div>
+                                                </div>
+                                                <h4 class="small fw-bold">Customer Database<span
+                                                        class="float-end">60%</span>
+                                                </h4>
+                                                <div class="progress progress-sm mb-3">
+                                                    <div class="progress-bar bg-primary" aria-valuenow="60"
+                                                        aria-valuemin="0" aria-valuemax="100" style="width: 60%;"><span
+                                                            class="visually-hidden">60%</span></div>
+                                                </div>
+                                                <h4 class="small fw-bold">Payout Details<span
+                                                        class="float-end">80%</span></h4>
+                                                <div class="progress progress-sm mb-3">
+                                                    <div class="progress-bar bg-info" aria-valuenow="80"
+                                                        aria-valuemin="0" aria-valuemax="100" style="width: 80%;"><span
+                                                            class="visually-hidden">80%</span></div>
+                                                </div>
+                                                <h4 class="small fw-bold">Account setup<span
+                                                        class="float-end">Complete!</span>
+                                                </h4>
+                                                <div class="progress progress-sm mb-3">
+                                                    <div class="progress-bar bg-success" aria-valuenow="100"
+                                                        aria-valuemin="0" aria-valuemax="100" style="width: 100%;"><span
+                                                            class="visually-hidden">100%</span></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-8">
+                                        <div class="row mb-3 d-none">
+                                            <div class="col">
+                                                <div class="card text-white bg-primary shadow">
+                                                    <div class="card-body">
+                                                        <div class="row mb-2">
+                                                            <div class="col">
+                                                                <p class="m-0">Peformance</p>
+                                                                <p class="m-0"><strong>65.2%</strong></p>
+                                                            </div>
+                                                            <div class="col-auto"><i class="fas fa-rocket fa-2x"></i>
+                                                            </div>
+                                                        </div>
+                                                        <p class="text-white-50 small m-0"><i
+                                                                class="fas fa-arrow-up"></i>&nbsp;5% since last month
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="card text-white bg-success shadow">
+                                                    <div class="card-body">
+                                                        <div class="row mb-2">
+                                                            <div class="col">
+                                                                <p class="m-0">Peformance</p>
+                                                                <p class="m-0"><strong>65.2%</strong></p>
+                                                            </div>
+                                                            <div class="col-auto"><i class="fas fa-rocket fa-2x"></i>
+                                                            </div>
+                                                        </div>
+                                                        <p class="text-white-50 small m-0"><i
+                                                                class="fas fa-arrow-up"></i>&nbsp;5% since last month
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col">
+                                                <div class="card shadow mb-3">
+                                                    <div class="card-header py-3">
+                                                        <p class="text-primary m-0 fw-bold">User Settings</p>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <form>
+                                                            <div class="row">
+                                                                <div class="col">
+                                                                    <div class="mb-3"><label class="form-label"
+                                                                            for="username"><strong>Username</strong></label><input
+                                                                            class="form-control" type="text"
+                                                                            id="username" placeholder="user.name"
+                                                                            name="username"></div>
+                                                                </div>
+                                                                <div class="col">
+                                                                    <div class="mb-3"><label class="form-label"
+                                                                            for="email"><strong>Email
+                                                                                Address</strong></label><input
+                                                                            class="form-control" type="email" id="email"
+                                                                            placeholder="user@example.com" name="email">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col">
+                                                                    <div class="mb-3"><label class="form-label"
+                                                                            for="first_name"><strong>First
+                                                                                Name</strong></label><input
+                                                                            class="form-control" type="text"
+                                                                            id="first_name" placeholder="John"
+                                                                            name="first_name"></div>
+                                                                </div>
+                                                                <div class="col">
+                                                                    <div class="mb-3"><label class="form-label"
+                                                                            for="last_name"><strong>Last
+                                                                                Name</strong></label><input
+                                                                            class="form-control" type="text"
+                                                                            id="last_name" placeholder="Doe"
+                                                                            name="last_name"></div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="mb-3"><button class="btn btn-primary btn-sm"
+                                                                    type="submit">Save Settings</button></div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                                <div class="card shadow">
+                                                    <div class="card-header py-3">
+                                                        <p class="text-primary m-0 fw-bold">Contact Settings</p>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <form>
+                                                            <div class="mb-3"><label class="form-label"
+                                                                    for="address"><strong>Address</strong></label><input
+                                                                    class="form-control" type="text" id="address"
+                                                                    placeholder="Sunset Blvd, 38" name="address"></div>
+                                                            <div class="row">
+                                                                <div class="col">
+                                                                    <div class="mb-3"><label class="form-label"
+                                                                            for="city"><strong>City</strong></label><input
+                                                                            class="form-control" type="text" id="city"
+                                                                            placeholder="Los Angeles" name="city"></div>
+                                                                </div>
+                                                                <div class="col">
+                                                                    <div class="mb-3"><label class="form-label"
+                                                                            for="country"><strong>Country</strong></label><input
+                                                                            class="form-control" type="text"
+                                                                            id="country" placeholder="USA"
+                                                                            name="country"></div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="mb-3"><button class="btn btn-primary btn-sm"
+                                                                    type="submit">Save&nbsp;Settings</button></div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="videoCallModal" tabindex="-1" aria-labelledby="videoCallModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="videoCallModalLabel">Video Call</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Video blocks in vertical orientation -->
+                    <div class="d-flex flex-column flex-md-row h-100">
+                        <div class="video-block ratio ratio-16x9">
+                            <img src="static/img/yuna-full.png" class="w-100" alt="Static Image">
+                        </div>
+                        <div class="video-block ratio ratio-16x9">
+                            <video id="localVideo" playsinline class="w-100" autoplay muted></video>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <!-- Control buttons -->
+                    <button type="button" class="btn btn-secondary" onclick="captureImage()"><i
+                            class="bi bi-camera-video"></i></button>
+                    <button type="button" class="btn btn-secondary" onclick="muteAudio();"><i
+                            class="bi bi-mic"></i></button>
+                    <button type="button" class="btn btn-secondary" onclick="drawArt();"><i
+                            class="bi bi-pencil"></i></button>
+                    <button type="button" class="btn btn-danger" onclick="closePopupsAll();"><i
+                            class="bi bi-telephone-x"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="toggleToast" class="toast align-items-center text-white bg-primary border-0" role="alert"
+            aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    ひみつ toggled.
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                    aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="static/bootstrap/js/bootstrap.min.js?h=e55bde7d6e36ebf17ba0b8c1e80e4065"></script>
+    <script src="static/js/theme.js?h=79f403485707cf2617c5bc5a2d386bb0"></script>
+</body>
+
+</html>

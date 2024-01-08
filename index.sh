@@ -19,8 +19,46 @@ start_yuna() {
 
 # Function to install or update dependencies
 install_update_dependencies() {
-    echo "========== Updating dependencies... =========="
+    clear
+    while true; do
+    echo "========== Installation... =========="
+    echo "1. CPU"
+    echo "2. NVIDIA GPU"
+    echo "3. AMD GPU"
+    echo "4. Go back" 
+
+    read -p "> " install_choice
+
+    case $install_choice in
+        1) install_cpu;;
+        2) install_nvidia;;
+        3) install_amd;;
+        4) return;;
+        *) echo "Invalid choice. Please enter a number between 1 and 4.";;
+    esac
+    done
+}
+
+install_cpu() {
+    echo "Installing CPU dependencies..."
     pip install -r requirements.txt
+    echo "CPU dependencies installed."
+    
+}
+
+install_nvidia() {
+    echo "Installing NVIDIA dependencies..."
+    pip install -r requirements-nvidia.txt
+    echo "NVIDIA dependencies installed."
+    
+}
+
+install_amd() {
+    echo "Installing AMD dependencies..."
+    CT_HIPBLAS=1 pip install ctransformers --no-binary ctransformers
+    pip install -r requirements-amd.txt
+    echo "AMD dependencies installed."
+    
 }
 
 # Submenu for configure()
@@ -112,7 +150,7 @@ install_vision_model() {
 # Function to install Art model
 install_art_model() {
     echo "Installing Art model..."
-    wget https://huggingface.co/hakurei/waifu-diffusion-v1-4/resolve/main/wd-1-4-anime_e2.ckpt -P lib/models/agi/art/
+    wget https://huggingface.co/yukiarimo/anyloli/resolve/main/any_loli.safetensors -P lib/models/agi/art/
 }
 
 # Function to install Vision model
@@ -124,7 +162,7 @@ install_emotion_model() {
 # Function to install Yuna model
 install_yuna_model() {
     echo "Installing Yuna model..."
-    wget https://huggingface.co/TheBloke/Pygmalion-2-7B-GGUF/resolve/main/pygmalion-2-7b.Q5_K_M.gguf -P lib/models/yuna/
+    wget https://huggingface.co/yukiarimo/yuna-ai/resolve/main/yuna-ggml-q5.gguf -P lib/models/yuna/
 }
 
 # Function to clear models
@@ -210,6 +248,6 @@ while true; do
         *) echo "Invalid choice. Please enter a number between 1 and 5.";;
     esac
 
-    # Add a newline for better readability
+    # Add a newline for better readability.
     echo
 done

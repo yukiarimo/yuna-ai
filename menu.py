@@ -10,13 +10,23 @@ except ImportError:
 
 def _define_layout() -> ptg.Layout:
     layout = ptg.Layout()
-    layout.add_slot("Body")
+    layout.add_slot(name='Header', height=1)
+    layout.add_break()
+    layout.add_slot(name='Body')
+    layout.add_slot(name='Body right', width=0.4)
+    layout.add_break()
+    layout.add_slot(name='Footer', height=1)
     return layout
 
 windows = {}
 manager = ptg.WindowManager()
-title_label = ptg.Label("[210 bold]========== Menu ==========")
+header = ptg.Window(
+            "[210 bold] Yuna Management Script",
+            box="EMPTY",
+        )
+footer = ptg.Window(ptg.Button("Quit", lambda *_: manager.stop()), box="EMPTY")
 layout_ = _define_layout()
+manager.layout = layout_
 
 def info(event):
     os.system('clear')
@@ -158,7 +168,7 @@ def OneClickInstall(event):
     install_models(event)
 
 main_menu = ptg.Window(
-    title_label,
+    ptg.Label("[210 bold]========== Menu =========="),
     ptg.Button("Start Yuna", onclick=start_yuna),
     ptg.Button("Install or Update dependencies", onclick=install_update_dependencies),
     ptg.Button("One Click Install", onclick=OneClickInstall),
@@ -167,6 +177,7 @@ main_menu = ptg.Window(
     ptg.Button("Exit", onclick=goodbye),
     ptg.Button("Info", onclick=info),
 )
-manager.layout = layout_
+manager.add(header)
 manager.add(main_menu)
+manager.add(footer, assign="Footer")
 manager.run()

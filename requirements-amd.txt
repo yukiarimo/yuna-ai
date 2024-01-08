@@ -1,0 +1,10 @@
+flask
+flask_cors
+transformers
+diffusers
+html2text
+bs4
+--extra-index-url https://download.pytorch.org/whl/rocm5.6
+torch
+torchvision
+torchaudio

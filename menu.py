@@ -8,9 +8,16 @@ except ImportError:
     subprocess.check_call([sys.executable, "-m", "pip", "install", "pytermgui"])
     import pytermgui as ptg
 
+def _define_layout() -> ptg.Layout:
+    layout = ptg.Layout()
+    layout.add_slot("Body")
+    return layout
+
 windows = {}
-#title_label = ptg.Label(ptg.markup("[210 bold]========== Menu =========="))
+manager = ptg.WindowManager()
 title_label = ptg.Label("[210 bold]========== Menu ==========")
+layout_ = _define_layout()
+
 def info(event):
     os.system('clear')
     print("Welcome to Yuna Management Script!")
@@ -30,7 +37,7 @@ def start_yuna(event):
 
 def install_update_dependencies(event):
     windows['configure_gpu'] = ptg.Window(
-        ptg.Label("========== Installation... =========="),
+        ptg.Label("[210 bold]========== Install =========="),
         ptg.Button("CPU", onclick=install_cpu),
         ptg.Button("NVIDIA GPU", onclick=install_nvidia),
         ptg.Button("AMD GPU", onclick=install_amd),
@@ -57,6 +64,7 @@ def install_nvidia(event):
 
 def install_amd(event):
     print("Installing AMD dependencies...")
+    subprocess.check_call("CT_HIPBLAS=1", [sys.executable, "-m", "pip", "install", "ctransformers", "--no-binary", "ctransformers"])
     subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements-amd.txt"])
     print("AMD dependencies installed!")
     if 'configure_gpu' in windows:
@@ -65,7 +73,7 @@ def install_amd(event):
 
 def configure_submenu(event):
     windows['configure_menu'] = ptg.Window(
-        ptg.Label("========== Menu =========="),
+        ptg.Label("[210 bold]========== Install =========="),
         ptg.Button("Install models", onclick=install_models),
         ptg.Button("Clear models", onclick=clear_models),
         ptg.Button("Backup", onclick=backup),
@@ -77,7 +85,7 @@ def configure_submenu(event):
 
 def install_models(event):
     windows['configure_model'] = ptg.Window(
-        ptg.Label("========== Install Models Menu =========="),
+        ptg.Label("[210 bold]========== Install =========="),
         ptg.Button("All Models", onclick=install_all_models),
         ptg.Button("All AGI Models", onclick=install_agi),
         ptg.Button("Vision", onclick=install_vision),
@@ -86,6 +94,7 @@ def install_models(event):
         ptg.Button("Yuna", onclick=install_yuna),
         ptg.Button("Back", onclick=lambda event: manager.remove(windows['configure_model']))
     )
+
     manager.add(windows['configure_model'])
     manager.focus(windows['configure_model'])
     
@@ -117,7 +126,7 @@ def install_yuna(event):
 
 def clear_models(event):
     windows['clear_models'] = ptg.Window(
-        ptg.Label("========== Clear Models Menu =========="),
+        ptg.Label("[210 bold]========== Clear =========="),
         ptg.Label("This will delete all models inside 'lib/models/'."),
         ptg.Label("Do you want to proceed?"),
         ptg.Button("Yes", onclick=clear_models_confirm),
@@ -156,8 +165,8 @@ main_menu = ptg.Window(
     ptg.Button("Configure", onclick=configure_submenu),
     ptg.Button("Reset", onclick=clear_models),
     ptg.Button("Exit", onclick=goodbye),
-    ptg.Button("Info", onclick=info)
+    ptg.Button("Info", onclick=info),
 )
-manager = ptg.WindowManager()
+manager.layout = layout_
 manager.add(main_menu)
 manager.run()

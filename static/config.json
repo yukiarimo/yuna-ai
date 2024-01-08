@@ -1,6 +1,9 @@
 {
     "ai": {
-        "names": ["Yuki", "Yuna"],
+        "names": [
+            "Yuki",
+            "Yuna"
+        ],
         "emotions": false,
         "art": false,
         "max_new_tokens": 128,
@@ -11,11 +14,22 @@
         "seed": -1,
         "top_k": 40,
         "top_p": 0.92,
-        "stop": ["Yuki:", "\nYuki: ", "\nYou:", "\nYou: ", "\nYuna: ", "\nYuna:", "Yuuki: ", "<|user|>", "<|system|>", "<|model|>"],
+        "stop": [
+            "Yuki:",
+            "\nYuki: ",
+            "\nYou:",
+            "\nYou: ",
+            "\nYuna: ",
+            "\nYuna:",
+            "Yuuki: ",
+            "<|user|>",
+            "<|system|>",
+            "<|model|>"
+        ],
         "stream": false,
         "batch_size": 128,
         "threads": -1,
-        "gpu_layers": 1
+        "gpu_layers": 50
     },
     "server": {
         "port": 4848,
@@ -26,8 +40,12 @@
         "yuna_model_dir": "lib/models/yuna/",
         "yuna_default_model": "yuna-ai-q5.gguf",
         "agi_model_dir": "lib/models/agi/",
-        "art_default_model": "any_loli.safetensors",
+        "art_default_model": "wd-1-4-anime_e2.ckpt",
         "prompts": "static/db/prompts/",
+        "default_prompt_file": "dialog.txt"
+    },
+    "security": {
+        "secret_key": "YourSecretKeyHere123!"
         "default_prompt_file": "dialog.txt",
         "device": "mps"
     }

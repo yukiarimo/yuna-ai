@@ -3,7 +3,8 @@ import os
 import sys
 import pytermgui as ptg
 windows = {}
-
+#title_label = ptg.Label(ptg.markup("[210 bold]========== Menu =========="))
+title_label = ptg.Label("[210 bold]========== Menu ==========")
 def info(event):
     os.system('clear')
     print("Welcome to Yuna Management Script!")
@@ -142,7 +143,7 @@ def OneClickInstall(event):
     install_models(event)
 
 main_menu = ptg.Window(
-    ptg.Label("========== Menu =========="),
+    title_label,
     ptg.Button("Start Yuna", onclick=start_yuna),
     ptg.Button("Install or Update dependencies", onclick=install_update_dependencies),
     ptg.Button("One Click Install", onclick=OneClickInstall),
@@ -151,8 +152,6 @@ main_menu = ptg.Window(
     ptg.Button("Exit", onclick=goodbye),
     ptg.Button("Info", onclick=info)
 )
-
 manager = ptg.WindowManager()
 manager.add(main_menu)
-
 manager.run()

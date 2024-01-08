@@ -25,84 +25,75 @@ function openConfigParams() {
 function createAIBlockList(aiConfig) {
   // Create the AI block list element
   const aiBlockList = document.createElement('div');
-  aiBlockList.classList.add('block-list', 'el-9', 'v-coll', 'ai-block-list');
+  aiBlockList.classList.add('block-list', 'el-9', 'v-coll', 'ai-block-list', 'list-group', 'list-group-flush');
 
   // Create the HTML for the AI-related predefined blocks
   const aiHtml = `
-      <div class="block-list-e">
-        <label>Names</label>
-        <input class="block-input" type="text" id="names" value="${aiConfig.names.join(',')}">
-      </div>
-      <div class="block-list-e">
-        <label>Emotions</label>
-        <label class="toggle-switch">
-          <input type="checkbox" id="emotions" ${aiConfig.emotions ? 'checked' : ''}>
-          <span class="slider"></span>
-        </label>
-      </div>
-      <div class="block-list-e">
-        <label>Art</label>
-        <label class="toggle-switch">
-          <input type="checkbox" id="art" ${aiConfig.art ? 'checked' : ''}>
-          <span class="slider"></span>
-        </label>
-      </div>
-      <div class="block-list-e">
-        <label>Max New Tokens</label>
-        <input class="block-input" type="number" id="max-new-tokens" value="${aiConfig.max_new_tokens}">
-      </div>
-      <div class="block-list-e">
-        <label>Context Length</label>
-        <input class="block-input" type="number" id="context-length" value="${aiConfig.context_length}">
-      </div>
-      <div class="block-list-e">
-        <label>Temperature</label>
-        <input class="block-input" type="number" id="temperature" value="${aiConfig.temperature}">
-      </div>
-      <div class="block-list-e">
-        <label>Repetition Penalty</label>
-        <input class="block-input" type="number" id="repetition-penalty" value="${aiConfig.repetition_penalty}">
-      </div>
-      <div class="block-list-e">
-        <label>Last N Tokens</label>
-        <input class="block-input" type="number" id="last-n-tokens" value="${aiConfig.last_n_tokens}">
-      </div>
-      <div class="block-list-e">
-        <label>Seed</label>
-        <input class="block-input" type="number" id="seed" value="${aiConfig.seed}">
-      </div>
-      <div class="block-list-e">
-        <label>Top K</label>
-        <input class="block-input" type="number" id="top-k" value="${aiConfig.top_k}">
-      </div>
-      <div class="block-list-e">
-        <label>Top P</label>
-        <input class="block-input" type="number" id="top-p" value="${aiConfig.top_p}">
-      </div>
-      <div class="block-list-e">
-        <label>Stop</label>
-        <input class="block-input" type="text" id="stop" value="${aiConfig.stop.join(',')}">
-      </div>
-      <div class="block-list-e">
-        <label>Stream</label>
-        <label class="toggle-switch">
-          <input type="checkbox" id="stream" ${aiConfig.stream ? 'checked' : ''}>
-          <span class="slider"></span>
-        </label>
-      </div>
-      <div class="block-list-e">
-        <label>Batch Size</label>
-        <input class="block-input" type="number" id="batch-size" value="${aiConfig.batch_size}">
-      </div>
-      <div class="block-list-e">
-        <label>Threads</label>
-        <input class="block-input" type="number" id="threads" value="${aiConfig.threads}">
-      </div>
-      <div class="block-list-e">
-        <label>GPU Layers</label>
-        <input class="block-input" type="number" id="gpu-layers" value="${aiConfig.gpu_layers}">
-      </div>
-    `;
+  <div class="form-group" style="width: 100%;">
+    <label for="names">Names</label>
+    <input type="text" class="form-control" id="names" value="${aiConfig.names.join(',')}">
+  </div>
+  <div class="form-check" style="width: 100%;">
+    <input class="form-check-input" type="checkbox" id="emotions" ${aiConfig.emotions ? 'checked' : ''}>
+    <label class="form-check-label" for="emotions">Emotions</label>
+  </div>
+  <div class="form-check" style="width: 100%;">
+    <input class="form-check-input" type="checkbox" id="art" ${aiConfig.art ? 'checked' : ''}>
+    <label class="form-check-label" for="art">Art</label>
+  </div>
+  <div class="form-group" style="width: 100%;">
+    <label for="max-new-tokens">Max New Tokens</label>
+    <input type="number" class="form-control" id="max-new-tokens" value="${aiConfig.max_new_tokens}">
+  </div>
+  <div class="form-group" style="width: 100%;">
+    <label for="context-length">Context Length</label>
+    <input type="number" class="form-control" id="context-length" value="${aiConfig.context_length}">
+  </div>
+  <div class="form-group" style="width: 100%;">
+    <label for="temperature">Temperature</label>
+    <input type="number" class="form-control" id="temperature" value="${aiConfig.temperature}">
+  </div>
+  <div class="form-group" style="width: 100%;">
+    <label for="repetition-penalty">Repetition Penalty</label>
+    <input type="number" class="form-control" id="repetition-penalty" value="${aiConfig.repetition_penalty}">
+  </div>
+  <div class="form-group" style="width: 100%;">
+    <label for="last-n-tokens">Last N Tokens</label>
+    <input type="number" class="form-control" id="last-n-tokens" value="${aiConfig.last_n_tokens}">
+  </div>
+  <div class="form-group" style="width: 100%;">
+    <label for="seed">Seed</label>
+    <input type="number" class="form-control" id="seed" value="${aiConfig.seed}">
+  </div>
+  <div class="form-group" style="width: 100%;">
+    <label for="top-k">Top K</label>
+    <input type="number" class="form-control" id="top-k" value="${aiConfig.top_k}">
+  </div>
+  <div class="form-group" style="width: 100%;">
+    <label for="top-p">Top P</label>
+    <input type="number" class="form-control" id="top-p" value="${aiConfig.top_p}">
+  </div>
+  <div class="form-group" style="width: 100%;">
+    <label for="stop">Stop</label>
+    <input type="text" class="form-control" id="stop" value="${aiConfig.stop.join(',')}">
+  </div>
+  <div class="form-check" style="width: 100%;">
+    <input class="form-check-input" type="checkbox" id="stream" ${aiConfig.stream ? 'checked' : ''}>
+    <label class="form-check-label" for="stream">Stream</label>
+  </div>
+  <div class="form-group" style="width: 100%;">
+    <label for="batch-size">Batch Size</label>
+    <input type="number" class="form-control" id="batch-size" value="${aiConfig.batch_size}">
+  </div>
+  <div class="form-group" style="width: 100%;">
+    <label for="threads">Threads</label>
+    <input type="number" class="form-control" id="threads" value="${aiConfig.threads}">
+  </div>
+  <div class="form-group" style="width: 100%;">
+    <label for="gpu-layers">GPU Layers</label>
+    <input type="number" class="form-control" id="gpu-layers" value="${aiConfig.gpu_layers}">
+  </div>
+`
 
   // Set the HTML of the AI block list
   aiBlockList.innerHTML = aiHtml;
@@ -113,47 +104,47 @@ function createAIBlockList(aiConfig) {
 function createServerBlockList(serverConfig) {
   // Create the Server block list element
   const serverBlockList = document.createElement('div');
-  serverBlockList.classList.add('block-list', 'el-9', 'v-coll', 'server-block-list');
+  serverBlockList.classList.add('block-list', 'el-9', 'v-coll', 'server-block-list', 'list-group', 'list-group-flush');
 
   // Create the HTML for the Server-related predefined blocks
   const serverHtml = `
-      <div class="block-list-e">
-        <label>Port</label>
-        <input class="block-input" type="number" id="port" value="${serverConfig.port}">
-      </div>
-      <div class="block-list-e">
-        <label>Server URL</label>
-        <input class="block-input" type="text" id="url" value="${serverConfig.url}">
-      </div>
-      <div class="block-list-e">
-        <label>History</label>
-        <input class="block-input" type="text" id="history" value="${serverConfig.history}">
-      </div>
-      <div class="block-list-e">
-        <label>Default History</label>
-        <input class="block-input" type="text" id="default-history-file" value="${serverConfig.default_history_file}">
-      </div>
-      <div class="block-list-e">
-        <label>Default History</label>
-        <input class="block-input" type="text" id="images" value="${serverConfig.images}">
-      </div>
-      <div class="block-list-e">
-        <label>Default History</label>
-        <input class="block-input" type="text" id="yuna-model-dir" value="${serverConfig.yuna_model_dir}">
-      </div>
-      <div class="block-list-e">
-        <label>Default History</label>
-        <input class="block-input" type="text" id="yuna-default-model" value="${serverConfig.yuna_default_model}">
-      </div>
-      <div class="block-list-e">
-        <label>Default History</label>
-        <input class="block-input" type="text" id="agi-model-dir" value="${serverConfig.agi_model_dir}">
-      </div>
-      <div class="block-list-e">
-        <label>Default History</label>
-        <input class="block-input" type="text" id="art-default-model" value="${serverConfig.art_default_model}">
-      </div>
-    `;
+  <div class="form-group" style="width: 100%;">
+    <label for="port">Port</label>
+    <input type="number" class="form-control" id="port" value="${serverConfig.port}">
+  </div>
+  <div class="form-group" style="width: 100%;">
+    <label for="url">Server URL</label>
+    <input type="text" class="form-control" id="url" value="${serverConfig.url}">
+  </div>
+  <div class="form-group" style="width: 100%;">
+    <label for="history">History</label>
+    <input type="text" class="form-control" id="history" value="${serverConfig.history}">
+  </div>
+  <div class="form-group" style="width: 100%;">
+    <label for="default-history-file">Default History</label>
+    <input type="text" class="form-control" id="default-history-file" value="${serverConfig.default_history_file}">
+  </div>
+  <div class="form-group" style="width: 100%;">
+    <label for="images">Images</label>
+    <input type="text" class="form-control" id="images" value="${serverConfig.images}">
+  </div>
+  <div class="form-group" style="width: 100%;">
+    <label for="yuna-model-dir">Yuna Model Directory</label>
+    <input type="text" class="form-control" id="yuna-model-dir" value="${serverConfig.yuna_model_dir}">
+  </div>
+  <div class="form-group" style="width: 100%;">
+    <label for="yuna-default-model">Yuna Default Model</label>
+    <input type="text" class="form-control" id="yuna-default-model" value="${serverConfig.yuna_default_model}">
+  </div>
+  <div class="form-group" style="width: 100%;">
+    <label for="agi-model-dir">AGI Model Directory</label>
+    <input type="text" class="form-control" id="agi-model-dir" value="${serverConfig.agi_model_dir}">
+  </div>
+  <div class="form-group" style="width: 100%;">
+    <label for="art-default-model">Art Default Model</label>
+    <input type="text" class="form-control" id="art-default-model" value="${serverConfig.art_default_model}">
+  </div>
+`
 
   // Set the HTML of the Server block list
   serverBlockList.innerHTML = serverHtml;
@@ -212,8 +203,6 @@ async function delay(ms) {
 async function checkConfigData() {
   await delay(100);
   if (typeof config_data === 'undefined') {
-    console.log('You messed up production. Trying to load config.json again');
-
     if (localStorage.getItem('config')) {
       // reload the page with delay of 1 second if config is not available
       setTimeout(function () {
@@ -265,7 +254,7 @@ document.addEventListener('keydown', function (event) {
       case 'C':
         // check if popup with id call has css display none
         if (document.getElementById('call').style.display == 'none') {
-          OpenPopup('call');
+          callYuna.show();
         } else {
           closePopupsAll();
         }

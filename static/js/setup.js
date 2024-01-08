@@ -254,7 +254,7 @@ document.addEventListener('keydown', function (event) {
       case 'C':
         // check if popup with id call has css display none
         if (document.getElementById('call').style.display == 'none') {
-          OpenPopup('call');
+          callYuna.show();
         } else {
           closePopupsAll();
         }

@@ -5,40 +5,16 @@ class PromptTemplate {
     this.templateInputs = templateInputs;
   }
 
-  generateSelectElements() {
+  generateElements() {
     const form = document.getElementById("Himitsu");
     form.innerHTML = '';
-
-    this.fields.forEach(field => {
-      const label = document.createElement("label");
-      label.setAttribute("for", field.id);
-      label.textContent = `${field.id.charAt(0).toUpperCase() + field.id.slice(1)}:`;
-
-      const select = document.createElement("select");
-      select.setAttribute("id", field.id);
-      select.setAttribute("name", field.id);
-
-      field.options.forEach(option => {
-        const optionElement = document.createElement("option");
-        optionElement.value = option.toLowerCase().replace(/\s+/g, '_');
-        optionElement.textContent = option;
-        select.appendChild(optionElement);
-      });
-
-      form.appendChild(label);
-      form.appendChild(select);
-    });
-  }
-
-  generateTemplateInputs() {
-    const form = document.getElementById("Himitsu");
 
     this.templateInputs.forEach(input => {
       const label = document.createElement("label");
       label.setAttribute("for", input.id);
       label.textContent = `${input.label}:`;
 
-      const newElement = input.type === 'select' ? document.createElement("select") : document.createElement("input");
+      const newElement = document.createElement(input.type === 'select' ? "select" : "input");
       newElement.setAttribute("id", input.id);
       newElement.setAttribute("name", input.id);
 
@@ -49,6 +25,9 @@ class PromptTemplate {
           optionElement.textContent = option;
           newElement.appendChild(optionElement);
         });
+      } else if (input.type === 'text') {
+        newElement.setAttribute("type", "text");
+        newElement.setAttribute("placeholder", input.placeholder || '');
       }
 
       form.appendChild(label);
@@ -105,10 +84,6 @@ const paraphrase = new PromptTemplate(
       options: ['Informal', 'Neutral', 'Formal', 'Other']
     },
     {
-      id: 'domain',
-      options: ['Academic', 'Business', 'General', 'Email', 'Casual', 'Creative', 'Other']
-    },
-    {
       id: 'tone',
       options: ['Neutral', 'Friendly', 'Confident', 'Urgent', 'Joyful', 'Analytical', 'Optimistic', 'Other']
     },
@@ -126,81 +101,49 @@ const paraphrase = new PromptTemplate(
 
 const decisionMaking = new PromptTemplate(
   [{
-      id: 'environment',
-      options: ['Option 1', 'Option 2', 'Option 3', 'Other']
-    },
-    {
-      id: 'constraints',
-      options: ['Constraint 1', 'Constraint 2', 'Other']
-    },
-    {
-      id: 'focus',
-      options: ['Main Objective 1', 'Main Objective 2', 'Other']
-    },
-    {
-      id: 'actions',
-      options: ['Action 1', 'Action 2', 'Action 3', 'Other']
-    }
-  ],
+    id: 'Mood',
+    options: ['Good', 'Bad', 'Neutral']
+  }],
   [{
-      id: 'location',
-      label: 'Location',
-      type: 'input'
-    },
-    {
-      id: 'time',
-      label: 'Time',
-      type: 'input'
-    },
-    {
-      id: 'context',
-      label: 'Context',
-      type: 'input'
-    },
-    {
-      id: 'constraint1',
-      label: 'Constraint 1',
-      type: 'input'
-    },
-    {
-      id: 'constraint2',
-      label: 'Constraint 2',
-      type: 'input'
-    },
-    {
-      id: 'mainObjective',
-      label: 'Main Objective',
-      type: 'input'
-    },
-    {
-      id: 'action1',
-      label: 'Action 1',
-      type: 'input'
-    },
-    {
-      id: 'action2',
-      label: 'Action 2',
-      type: 'input'
-    },
-    {
-      id: 'action3',
-      label: 'Action 3',
-      type: 'input'
-    }
-  ]
+    id: 'text',
+    label: 'Text',
+    type: 'input'
+  }]
+);
+
+const himitsu = new PromptTemplate(
+  [{
+    id: 'question_type',
+    options: ['Curiosity', 'Confusion', 'Research', 'Other']
+  }],
+  [{
+    id: 'text',
+    label: 'Text',
+    type: 'text' // Changed from 'input' to 'text'
+  }]
 );
 
 const dialog = new PromptTemplate([{
     id: 'text',
     label: 'Question',
     type: 'input'
-  },
-  {
-    id: 'clarification',
-    label: 'Clarification',
+  }],
+  [{
+    id: 'text',
+    label: 'Text',
     type: 'input'
-  }
-])
+  }])
+
+const search = new PromptTemplate([{
+    id: 'text',
+    label: 'Question',
+    type: 'input'
+  }],
+  [{
+    id: 'text',
+    label: 'Text',
+    type: 'input'
+  }])
 
 let currentPrompt = 'dialog';
 let currentPromptName = 'dialog';
@@ -215,21 +158,21 @@ function changeTemplate() {
       prompt: writer,
       name: 'writer'
     },
-    'decisionMaking': {
-      prompt: decisionMaking,
-      name: 'decisionMaking'
-    },
     'paraphrase': {
       prompt: paraphrase,
       name: 'paraphrase'
+    },
+    'decisionMaking': {
+      prompt: decisionMaking,
+      name: 'decisionMaking'
     },
     'himitsu': {
       prompt: himitsu,
       name: 'himitsu'
     },
-    "dialog": {
-      prompt: dialog,
-      name: 'dialog'
+    "search": {
+      prompt: search,
+      name: 'search'
     }
   };
 
@@ -244,15 +187,24 @@ function changeTemplate() {
 function generateText() {
   const selectedValues = {};
 
-  // Handle select fields
-  currentPrompt.fields.forEach((field) => {
-    selectedValues[field.id] = document.getElementById(field.id).value;
-  });
+  if (isHimitsu.toString() == 'true') {
+    // Handle template inputs
+    himitsuCopilot.templateInputs.forEach((input) => {
+      const element = document.getElementById(input.id);
+      if (element) {
+        selectedValues[input.id] = element.value;
+      }
+    })
 
-  // Handle template inputs
-  currentPrompt.templateInputs.forEach((input) => {
-    selectedValues[input.id] = document.getElementById(input.id).value;
-  });
+  } else {
+    // Handle template inputs
+    currentPrompt.templateInputs.forEach((input) => {
+      const element = document.getElementById(input.id);
+      if (element) {
+        selectedValues[input.id] = element.value;
+      }
+    })
+  }
 
   const generatedText = Object.entries(selectedValues)
     .map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`)
@@ -268,6 +220,8 @@ function sendGeneratedTextToServer(generatedText) {
   const templateSelect = document.getElementById("templateSelect");
   const selectedTemplate = templateSelect.value;
 
+  removeHimitsu(generatedText);
+
   // Send a POST request to /message endpoint
   fetch(`${server_url + server_port}/message`, {
       method: 'POST',
@@ -277,29 +231,71 @@ function sendGeneratedTextToServer(generatedText) {
       body: JSON.stringify({
         chat: selectedFilename,
         text: generatedText,
-        template: currentPromptName,
+        template: isHimitsu ? "himitsuCopilotGen" : currentPromptName,
       }),
     })
     .then((response) => response.json())
     .then((data) => {
-      // Handle the response from the server
-      console.log(data);
+      if (isHimitsu.toString() == 'true') {
+        fetch(`${server_url + server_port}/message`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              chat: selectedFilename,
+              text: data.response,
+              template: currentPromptName,
+            }),
+          })
+          .then((response) => response.json())
+          .then((data) => {
+            messageManager.removeBr();
+            messageManager.removeTypingBubble();
 
-      messageManager.removeBr();
-      messageManager.removeTypingBubble();
+            const messageData = {
+              name: 'Yuna',
+              message: data.response,
+            };
 
-      const messageData = {
-        name: 'Yuna',
-        message: data.response,
-      };
+            messageManager.createMessage(messageData.name, messageData.message);
+            messageManager.addBr();
 
-      messageManager.createMessage(messageData.name, messageData.message);
-      messageManager.addBr();
+            playAudio(audioType = 'message');
 
-      playAudio(audioType = 'message');
+            if (isTTS.toString() == 'true') {
+              playAudio();
+            }
+          })
+          .catch((error) => {
+            messageManager.removeTypingBubble();
 
-      if (isTTS.toString() == 'true') {
-        playAudio();
+            const messageData = {
+              name: 'Yuna',
+              message: error,
+            };
+
+            messageManager.createMessage(messageData.name, messageData.message);
+            playAudio(audioType = 'error');
+          });
+
+      } else {
+        messageManager.removeBr();
+        messageManager.removeTypingBubble();
+
+        const messageData = {
+          name: 'Yuna',
+          message: data.response,
+        };
+
+        messageManager.createMessage(messageData.name, messageData.message);
+        messageManager.addBr();
+
+        playAudio(audioType = 'message');
+
+        if (isTTS.toString() == 'true') {
+          playAudio();
+        }
       }
     })
     .catch((error) => {
@@ -313,4 +309,18 @@ function sendGeneratedTextToServer(generatedText) {
       messageManager.createMessage(messageData.name, messageData.message);
       playAudio(audioType = 'error');
     });
+}
+
+function removeHimitsu(msg) {
+  // Select the form element with the ID 'Himitsu'
+  var formElement = document.getElementById('Himitsu');
+
+  // Get the parent 'pre' element of the form
+  var preElement = formElement.parentNode;
+
+  // Clear the contents of the 'pre' element
+  preElement.innerHTML = '';
+
+  // Set the text content of the 'pre' element to 'Hello World'
+  preElement.innerHTML = msg;
 }

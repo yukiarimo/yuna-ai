@@ -67,7 +67,46 @@ class ChatGenerator:
             print(response)
 
             # inject prompt variable from dialog into new_history
-        elif template != "dialog" and template != None:
+        elif template != "dialog" and template != "himitsuCopilot" and template != "himitsuCopilotGen" and template != "summary" and template != None:
+            prompt_dir = os.path.join(self.config["server"]["prompts"] + f'{template}.txt')
+            with open(prompt_dir, 'r') as file:
+                prompt = file.read()
+
+            # calculate the length of the prompt variable
+            prompt_length = len(self.model.tokenize(prompt))
+
+            # Calculate the maximum length for the history
+            max_length = self.config["ai"]["context_length"] - self.config["ai"]["max_new_tokens"]
+
+            # Crop the history to fit within the max_length and prompt_length combined, counting from the end of the text
+            cropped_history = text[:(max_length - prompt_length)]
+
+            # replace string {user_msg} in the prompt with the history
+            response = prompt.replace('{user_msg}', cropped_history)
+
+        elif template == "summary":
+            import article_parser
+            title, content = article_parser.parse(url="https://www.iphones.ru/iNotes/vyshla-ios-173-beta-2-no-ne-speshite-eyo-ustanavlivat-01-03-2024", output='markdown', timeout=50)
+            print(title, content)
+        
+        elif template == "himitsuCopilot":
+            prompt_dir = os.path.join(self.config["server"]["prompts"] + f'{template}.txt')
+            with open(prompt_dir, 'r') as file:
+                prompt = file.read()
+
+            # calculate the length of the prompt variable
+            prompt_length = len(self.model.tokenize(prompt))
+
+            # Calculate the maximum length for the history
+            max_length = self.config["ai"]["context_length"] - self.config["ai"]["max_new_tokens"]
+
+            # Crop the history to fit within the max_length and prompt_length combined, counting from the end of the text
+            cropped_history = text[:(max_length - prompt_length)]
+
+            # replace string {user_msg} in the prompt with the history
+            response = prompt.replace('{user_msg}', cropped_history)
+
+        elif template == "himitsuCopilotGen":
             prompt_dir = os.path.join(self.config["server"]["prompts"] + f'{template}.txt')
             with open(prompt_dir, 'r') as file:
                 prompt = file.read()
@@ -86,17 +125,6 @@ class ChatGenerator:
 
         elif template == None:
             print('template is none')
-
-        elif template == "summary":
-
-            import article_parser
-
-            title, content = article_parser.parse(url="https://www.iphones.ru/iNotes/vyshla-ios-173-beta-2-no-ne-speshite-eyo-ustanavlivat-01-03-2024", output='markdown', timeout=50)
-
-            print(title, content)
-
-        print(len(self.model.tokenize(response)), '<- response length')
-        print('------\n\n\n', response, '------\n\n\n')
 
         response = self.model(response, stream=False)
         response = self.clearText(str(response))
@@ -120,10 +148,11 @@ class ChatGenerator:
 
             response = response + f" {response_add}"
 
-        chat_history = ChatHistoryManager.load_chat_history(self, chat_id)
-        chat_history.append({"name": "Yuki", "message": text})
-        chat_history.append({"name": "Yuna", "message": response})
-        ChatHistoryManager.save_chat_history(self, chat_history, chat_id)
+        if template != "himitsuCopilot" and template != "himitsuCopilotGen" and template != "summary" and template != None:
+            chat_history = ChatHistoryManager.load_chat_history(self, chat_id)
+            chat_history.append({"name": "Yuki", "message": text})
+            chat_history.append({"name": "Yuna", "message": response})
+            ChatHistoryManager.save_chat_history(self, chat_history, chat_id)
 
         if speech==True:
             self.generate_speech(response)

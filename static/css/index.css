@@ -3,6 +3,10 @@
     transition: none !important;
 }
 
+img {
+    width: auto !important;
+}
+
 #parameter-container {
     display: flex;
     flex-direction: column;
@@ -445,7 +449,7 @@ input:checked~.slider .off-label {
     display: flex;
     align-items: center;
     background-color: #333;
-    border-radius: 22px;
+    border-radius: 40px;
     padding: 10px;
 }
 

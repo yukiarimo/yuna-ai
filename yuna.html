@@ -9,9 +9,9 @@
     <link rel="canonical" href="http://www.yuna-ai.live/blank.html">
     <meta property="og:url" content="http://www.yuna-ai.live/blank.html">
     <meta property="og:description" content="Your virtual AI girlfriend">
-    <meta name="twitter:image" content="http://www.yuna-ai.live/static/img/avatars/avatar3.jpeg">
+    <meta name="twitter:image" content="http://www.yuna-ai.live/static/img/yuna-ai.png">
     <meta name="twitter:title" content="Yuna AI">
-    <meta property="og:image" content="http://www.yuna-ai.live/static/img/avatars/avatar3.jpeg">
+    <meta property="og:image" content="http://www.yuna-ai.live/static/img/yuna-ai.png">
     <meta name="description" content="Your virtual AI girlfriend">
     <meta property="og:type" content="website">
     <meta property="og:title" content="Yuna AI">
@@ -25,24 +25,20 @@
             "url": "http://www.yuna-ai.live"
         }
     </script>
-    <link rel="icon" type="image/jpeg" sizes="60x60"
-        href="static/img/avatars/avatar3.jpeg?h=c5166867f10a4e454b5b2ae8d63268b3">
-    <link rel="icon" type="image/jpeg" sizes="60x60"
-        href="static/img/avatars/avatar3.jpeg?h=c5166867f10a4e454b5b2ae8d63268b3" media="(prefers-color-scheme: dark)">
-    <link rel="icon" type="image/jpeg" sizes="60x60"
-        href="static/img/avatars/avatar3.jpeg?h=c5166867f10a4e454b5b2ae8d63268b3">
-    <link rel="icon" type="image/jpeg" sizes="60x60"
-        href="static/img/avatars/avatar3.jpeg?h=c5166867f10a4e454b5b2ae8d63268b3" media="(prefers-color-scheme: dark)">
-    <link rel="icon" type="image/jpeg" sizes="60x60"
-        href="static/img/avatars/avatar3.jpeg?h=c5166867f10a4e454b5b2ae8d63268b3">
-    <link rel="icon" type="image/jpeg" sizes="60x60"
-        href="static/img/avatars/avatar3.jpeg?h=c5166867f10a4e454b5b2ae8d63268b3">
-    <link rel="icon" type="image/jpeg" sizes="60x60"
-        href="static/img/avatars/avatar3.jpeg?h=c5166867f10a4e454b5b2ae8d63268b3">
+    <link rel="icon" type="image/jpeg" sizes="60x60" href="static/img/yuna-ai.png?h=c5166867f10a4e454b5b2ae8d63268b3">
+    <link rel="icon" type="image/jpeg" sizes="60x60" href="static/img/yuna-ai.png?h=c5166867f10a4e454b5b2ae8d63268b3"
+        media="(prefers-color-scheme: dark)">
+    <link rel="icon" type="image/jpeg" sizes="60x60" href="static/img/yuna-ai.png?h=c5166867f10a4e454b5b2ae8d63268b3">
+    <link rel="icon" type="image/jpeg" sizes="60x60" href="static/img/yuna-ai.png?h=c5166867f10a4e454b5b2ae8d63268b3"
+        media="(prefers-color-scheme: dark)">
+    <link rel="icon" type="image/jpeg" sizes="60x60" href="static/img/yuna-ai.png?h=c5166867f10a4e454b5b2ae8d63268b3">
+    <link rel="icon" type="image/jpeg" sizes="60x60" href="static/img/yuna-ai.png?h=c5166867f10a4e454b5b2ae8d63268b3">
+    <link rel="icon" type="image/jpeg" sizes="60x60" href="static/img/yuna-ai.png?h=c5166867f10a4e454b5b2ae8d63268b3">
     <link rel="stylesheet" href="static/bootstrap/css/bootstrap.min.css?h=97380e22c8933e9aa79cbc2390b9f15a">
     <link rel="manifest" href="manifest.json?h=cac48232b1fc5fc8e026cf1e7b7ef587">
     <link rel="stylesheet" href="static/css/Nunito.css?h=65e1aae7ce6f6cb9d0e4a95da536c5c9">
     <link rel="stylesheet" href="static/fonts/fontawesome-all.min.css?h=d98553506d4393860db8a633e4842ead">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
     <link rel="stylesheet" href="static/css/kawai-v11-2.css">
     <link rel="stylesheet" href="static/css/index.css">
@@ -50,6 +46,36 @@
     <script src="static/js/index.js" defer></script>
     <script src="static/js/himitsu.js" defer></script>
     <script src="static/js/setup.js" defer></script>
+
+    <style>
+        /* Custom styles for the modal to make it almost full-screen */
+        .modal-dialog {
+            max-width: 90vw;
+            height: 90vh;
+            margin: 5vh auto;
+        }
+
+        .modal-content {
+            height: 100%;
+            width: auto !important;
+        }
+
+        .modal-body {
+            overflow-y: auto;
+        }
+
+        /* Styles for the video blocks to ensure they take up equal space */
+        .video-block {
+            flex: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Ensure the last video block has no margin at the bottom */
+        .video-block:last-child {
+            margin-bottom: 0;
+        }
+    </style>
+
 
     <script>
         if ('serviceWorker' in navigator) {
@@ -160,7 +186,7 @@
                                             class="border rounded-circle img-profile"
                                             src="static/img/yuna-girl-head.png?h=0ecc82101fb9a10ca459432faa8c0656"></a>
                                     <div class="dropdown-menu shadow dropdown-menu-end animated--grow-in"><a
-                                            class="dropdown-item" onclick="OpenPopup('call')"><i
+                                            class="dropdown-item" onclick="callYuna.show();"><i
                                                 class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Call</a><a
                                             class="dropdown-item" onclick="OpenTab('4')" href="#"><i
                                                 class="fas fa-cogs fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Profile</a><a
@@ -195,21 +221,19 @@
                                             <line x1="5" y1="12" x2="19" y2="12"></line>
                                         </svg>
                                     </button>
+                                    <input type="file" id="imageUpload" accept="image/*" style="display: none;" onchange="captureImageViaFile()">
                                     <input id="input_text" type="text" class="input-field" placeholder="Ask Yuna...">
 
                                     <div class="form-check form-switch">
-                                        <input class="form-check-input" type="checkbox" id="customSwitch" checked>
+                                        <input class="form-check-input" type="checkbox" id="customSwitch">
                                         <label class="form-check-label" for="customSwitch"></label>
                                     </div>
 
-                                    <svg id="sendMessage" onclick="sendMessage('')" xmlns="http://www.w3.org/2000/svg"
-                                        width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                        style="color: white;">
-                                        <circle cx="12" cy="12" r="10" fill="#00BFFF"></circle>
-                                        <!-- Tint color circle -->
-                                        <path d="M12 8l-4 4h8l-4-4z" fill="white"></path> <!-- Arrow up -->
-                                    </svg>
+                                    <button id="sendMessage" onclick="sendMessage('')"
+                                        class="btn btn-primary rounded-circle"
+                                        style="width: 50px; height: 50px; padding: 0;">
+                                        <i class="bi bi-arrow-up-circle" style="font-size: 2em;"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -522,51 +546,55 @@
                             </div>
                         </div>
                     </div>
-
-                    <div class="block-popup" id="call">
-                        <audio id="backgroundMusic">
-                            <source src="static/audio/output.mp3" type="audio/mp3">
-                        </audio>
-
-                        <canvas id="capture-canvas" style="display: none;"></canvas>
-
-                        <div class="video-call-container">
-                            <div class="participant participant-1"><img src="static/img/yuna-full.png"
-                                    alt="Yuna Participant"></div>
-                            <div class="participant participant-2"><video id="localVideo" playsinline autoplay muted
-                                    class="draggable-video"></video></div>
-                        </div>
-
-                        <div class="controls">
-                            <div class="control">
-                                <img src="static/img/icons/camera.png" id="capture-image" onclick="captureImage()"
-                                    alt="Camera">
-                            </div>
-                            <div class="control">
-                                <img src="static/img/icons/microphone.png" onclick="muteAudio();" alt="Microphone">
-                            </div>
-                            <div class="control">
-                                <img src="static/img/icons/art.png" id="draw-art" onclick="drawArt()"
-                                    alt="Other Control">
-                            </div>
-                            <div class="control">
-                                <img src="static/img/icons/end.png" alt="Hang Up" onclick="closePopupsAll();">
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
     </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
 
+    <!-- Modal -->
+    <div class="modal fade" id="videoCallModal" tabindex="-1" aria-labelledby="videoCallModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="videoCallModalLabel">Video Call</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Video blocks in vertical orientation -->
+                    <div class="d-flex flex-column flex-md-row h-100">
+                        <div class="video-block ratio ratio-16x9">
+                            <img src="static/img/yuna-full.png" class="w-100" alt="Static Image">
+                        </div>
+                        <div class="video-block ratio ratio-16x9">
+                            <video id="localVideo" playsinline class="w-100" autoplay muted></video>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <!-- Control buttons -->
+                    <button type="button" class="btn btn-secondary" onclick="captureImage()"><i
+                            class="bi bi-camera-video"></i></button>
+                    <button type="button" class="btn btn-secondary" onclick="muteAudio();"><i
+                            class="bi bi-mic"></i></button>
+                    <button type="button" class="btn btn-secondary" onclick="drawArt();"><i
+                            class="bi bi-pencil"></i></button>
+                    <button type="button" class="btn btn-danger" onclick="closePopupsAll();"><i
+                            class="bi bi-telephone-x"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-        <div id="toggleToast" class="toast align-items-center text-white bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div id="toggleToast" class="toast align-items-center text-white bg-primary border-0" role="alert"
+            aria-live="assertive" aria-atomic="true">
             <div class="d-flex">
                 <div class="toast-body">
                     ひみつ toggled.
                 </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                    aria-label="Close"></button>
             </div>
         </div>
     </div>

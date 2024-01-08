@@ -4,8 +4,16 @@ var config_data;
 var selectedFilename = '';
 var backgroundMusic = document.getElementById('backgroundMusic');
 var isTTS = false;
+var isHimitsu = false;
 var messageContainer = document.getElementById('message-container');
 const typingBubble = `<div class="block-message-1" id="circle-loader"><div class="circle-loader"></div></div>`;
+var himitsuCopilot;
+
+function checkHimitsuCopilotState() {
+  var toggleSwitch = document.getElementById('customSwitch');
+  var isOn = toggleSwitch.checked;
+  return isOn // This will log 'true' if the switch is on, 'false' if it's off
+}
 
 // Class and functions to add and removed <br>s from the message container
 class messageManager {
@@ -72,6 +80,94 @@ function sendMessage(message, imageName = false) {
     message = document.getElementById('input_text').value;
   }
 
+  if (checkHimitsuCopilotState()) {
+    fetch(`${server_url + server_port}/message`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          chat: selectedFilename,
+          text: message,
+          template: "himitsuCopilot",
+        }),
+      })
+      .then(response => response.json())
+      .then(data => {
+        messageManager.removeBr();
+        messageManager.removeTypingBubble();
+
+        // Split the response data into three parts in an array by the "\n" character
+        var splitData = data.response.split('\n');
+        console.log(splitData);
+
+        himitsuCopilot = new PromptTemplate(
+          [],
+          [{
+              id: 'text',
+              label: 'Input',
+              type: 'text'
+            },
+            {
+              id: 'q1',
+              label: `${splitData[0]}`,
+              type: 'text'
+            },
+            {
+              id: 'q2',
+              label: `${splitData[1]}`,
+              type: 'text'
+            },
+            {
+              id: 'q3',
+              label: `${splitData[2]}`,
+              type: 'text'
+            },
+          ]
+        );
+
+        var messageDiv = document.createElement('div');
+
+        // create #Himitsu element into messageDiv
+        const form = document.createElement('form');
+        form.setAttribute("id", "Himitsu");
+        messageDiv.appendChild(form);
+
+        // Append the button
+        const buttonDiv = document.createElement('div');
+        buttonDiv.className = 'block-button';
+        buttonDiv.setAttribute('type', 'button');
+        buttonDiv.setAttribute('onclick', 'generateText();');
+        buttonDiv.innerText = 'Gen';
+        messageDiv.appendChild(buttonDiv);
+
+        messageData = {
+          name: 'Yuki',
+          message: messageDiv.innerHTML,
+        };
+
+        messageManager.createMessage(messageData.name, messageData.message);
+
+        himitsuCopilot.generateElements();
+
+        isHimitsu = true;
+      })
+      .catch(error => {
+        console.error('Error:', error);
+
+        messageManager.removeTypingBubble();
+
+        const messageData = {
+          name: 'Yuna',
+          message: error,
+        };
+
+        messageManager.createMessage(messageData.name, messageData.message);
+        playAudio(audioType = 'error');
+      });
+    return
+  }
+
   document.getElementById('input_text').value = ''
 
   messageManager.removeBr();
@@ -123,20 +219,7 @@ function sendMessage(message, imageName = false) {
     messageManager.createMessage(messageData.name, messageData.message);
 
     if (currentPromptName == 'himitsu') {
-      const himitsu = new PromptTemplate([{
-          id: 'text',
-          label: 'Question',
-          type: 'input'
-        },
-        {
-          id: 'clarification',
-          label: 'Clarification',
-          type: 'input'
-        }
-      ])
-
-      himitsu.generateSelectElements();
-      himitsu.generateTemplateInputs();
+      himitsu.generateElements();
     } else if (currentPromptName == 'writer') {
       writer.generateSelectElements();
       writer.generateTemplateInputs();
@@ -566,6 +649,69 @@ function captureImage() {
     });
 }
 
+// Modify the captureImage function to handle file uploads
+function captureImageViaFile() {
+  var imageUpload = document.getElementById('imageUpload');
+  var messageContainer = document.getElementById('message-container');
+
+  if (imageUpload.files.length > 0) {
+    var file = imageUpload.files[0];
+    var reader = new FileReader();
+
+    reader.onloadend = function () {
+      // Convert the image file to a base64 data URL
+      var imageDataURL = reader.result;
+
+      var messageForImage = '';
+      if (isTTS.toString() == 'false') {
+        messageForImage = prompt('Enter a message for the image:');
+      }
+
+      // Generate a random image name using current timestamp
+      var imageName = new Date().getTime().toString();
+
+      closePopupsAll();
+
+      // Send the uploaded image to the Flask server
+      fetch(`${server_url+server_port}/image`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            image: imageDataURL,
+            name: imageName,
+            task: 'caption',
+          })
+        })
+        .then(response => {
+          if (response.ok) {
+            // Parse the JSON data from the response
+            return response.json();
+          } else {
+            throw new Error('Error sending uploaded image.');
+          }
+        })
+        .then(data => {
+          // Access the image caption from the server response
+          const imageCaption = data.message;
+          var askYunaImage = `*You can see ${imageCaption} in the image* ${messageForImage}`;
+
+          sendMessage(askYunaImage, imageName);
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Error sending uploaded image.');
+        });
+    };
+
+    // Read the image file as a data URL
+    reader.readAsDataURL(file);
+  } else {
+    alert('No file selected.');
+  }
+}
+
 // Function to fetch and populate chat history file options
 function populateHistorySelect() {
   return new Promise((resolve, reject) => {
@@ -959,8 +1105,7 @@ function handleTextFileClick() {
 }
 
 function handleImageFileClick() {
-  console.log('Image file option clicked');
-  // Add your code here to handle image file selection
+  document.getElementById('imageUpload').click();
 }
 
 document.addEventListener('DOMContentLoaded', (event) => {
@@ -971,4 +1116,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
   switchInput.addEventListener('change', () => {
     toast.show();
   });
+});
+
+// Assuming you have a modal with the ID 'videoCallModal'
+var callYuna = new bootstrap.Modal(document.getElementById('videoCallModal'), {
+  keyboard: false
 });

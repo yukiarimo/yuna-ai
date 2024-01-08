@@ -1,8 +1,8 @@
 {
     "ai": {
         "names": ["Yuki", "Yuna"],
-        "emotions": true,
-        "art": true,
+        "emotions": false,
+        "art": false,
         "max_new_tokens": 128,
         "context_length": 1024,
         "temperature": 0.65,
@@ -24,7 +24,7 @@
         "default_history_file": "history_template.json",
         "images": "static/images/",
         "yuna_model_dir": "lib/models/yuna/",
-        "yuna_default_model": "yuna-ai-2-7b-role-play.gguf",
+        "yuna_default_model": "yuna-ai-q5.gguf",
         "agi_model_dir": "lib/models/agi/",
         "art_default_model": "any_loli.safetensors",
         "prompts": "static/db/prompts/",

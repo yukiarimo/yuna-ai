@@ -2,7 +2,7 @@ import os
 from ctransformers import AutoModelForCausalLM
 
 model = AutoModelForCausalLM.from_pretrained(
-    "lib/models/yuna/pygmalion-2-7b.Q5_K_M.gguf",
+    "lib/models/yuna/yuna-ai-q5.gguf",
     model_type='llama2',
     max_new_tokens=512,
     context_length=4096,
@@ -26,7 +26,19 @@ with open(prompt_dir, 'r') as file:
 
 
 # Append the latest message from Yuki
-text = f"Yuki: Yuna:"
+text = f"""
+### Instruction:
+You're an assistant called Yuna. Your role is to provide follow-up questions to clarify user requests. When a user raises an unclear query or lacks specific details, you should give exactly three follow-up questions to narrow the user's intent or provide more context. This will help in crafting more accurate and targeted responses. User queries will be inside "input," and your follow-up questions will be inside "clarification." Use dash "-" for all of your three questions.
+
+### Input:
+I want to learn Japanese
+
+### Clarification:
+
+"""
+
+for text in model(text, stream=True):
+    print(text, end="", flush=True)
 
 # Tokenize the history to calculate its length in tokens
 tokenized_history = model.tokenize(text)

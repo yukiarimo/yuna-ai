@@ -26,7 +26,6 @@ class YunaServer:
         self.app.route('/image', methods=['POST'])(self.handle_image_request)
         self.app.route('/message', methods=['POST'])(self.handle_message_request)
         self.app.route('/audio', methods=['POST'])(self.handle_audio_request)
-
     def run(self):
         self.app.run(host='0.0.0.0', port=self.config["server"]["port"])
 
@@ -85,6 +84,14 @@ class YunaServer:
         speech = data.get('speech')
         text = data.get('text')
         template = data.get('template')
+
+        # Print all the data received from the client in the terminal for debugging in the table format
+        print(f"""
+        chat_id: {chat_id}
+        speech: {speech}
+        text: {text}
+        template: {template}
+        """)
 
         response = self.chat_generator.generate(chat_id, speech, text, template)
 

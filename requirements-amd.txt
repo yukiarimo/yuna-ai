@@ -5,7 +5,6 @@ transformers
 diffusers
 html2text
 bs4
-openai-whisper
 pytermgui
 --extra-index-url https://download.pytorch.org/whl/rocm5.6
 torch

@@ -248,6 +248,6 @@ while true; do
         *) echo "Invalid choice. Please enter a number between 1 and 5.";;
     esac
 
-    # Add a newline for better readability
+    # Add a newline for better readability.
     echo
 done

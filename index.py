@@ -48,7 +48,7 @@ class YunaServer:
     def handle_history_request(self):
         data = request.get_json()
         chat_id = data.get('chat')
-        task = data.get('task')
+        task = data.get('task') 
 
         if task == 'load':
             return jsonify(self.chat_history_manager.load_chat_history(chat_id))

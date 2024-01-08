@@ -45,8 +45,7 @@
         "default_prompt_file": "dialog.txt"
     },
     "security": {
-        "secret_key": "YourSecretKeyHere123!"
-        "default_prompt_file": "dialog.txt",
+        "secret_key": "YourSecretKeyHere123!",
         "device": "mps"
     }
 }

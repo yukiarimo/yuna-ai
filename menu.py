@@ -1,7 +1,13 @@
 import subprocess
 import os
 import sys
-import pytermgui as ptg
+
+try:
+    import pytermgui as ptg
+except ImportError:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "pytermgui"])
+    import pytermgui as ptg
+
 windows = {}
 #title_label = ptg.Label(ptg.markup("[210 bold]========== Menu =========="))
 title_label = ptg.Label("[210 bold]========== Menu ==========")

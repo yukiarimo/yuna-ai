@@ -14,7 +14,9 @@ def _define_layout() -> ptg.Layout:
     return layout
 
 windows = {}
+manager = ptg.WindowManager()
 title_label = ptg.Label("[210 bold]========== Menu ==========")
+layout_ = _define_layout()
 
 def info(event):
     os.system('clear')
@@ -41,10 +43,8 @@ def install_update_dependencies(event):
         ptg.Button("AMD GPU", onclick=install_amd),
         ptg.Button("Back", onclick=lambda event: manager.remove(windows['configure_gpu']))
     )
-    with ptg.WindowManager() as manager:
-        manager.layout = _define_layout()
-        manager.add(windows['configure_gpu'])
-        manager.focus(windows['configure_gpu'])
+    manager.add(windows['configure_gpu'])
+    manager.focus(windows['configure_gpu'])
 
 def install_cpu(event):
     print("Installing CPU dependencies...")
@@ -80,10 +80,8 @@ def configure_submenu(event):
         ptg.Button("Restore", onclick=restore),
         ptg.Button("Back", onclick=lambda event: manager.remove(windows['configure_menu']))
     )
-    with ptg.WindowManager() as manager:
-        manager.layout = _define_layout()
-        manager.add(windows['configure_menu'])
-        manager.focus(windows['configure_menu'])
+    manager.add(windows['configure_menu'])
+    manager.focus(windows['configure_menu'])
 
 def install_models(event):
     windows['configure_model'] = ptg.Window(
@@ -96,10 +94,9 @@ def install_models(event):
         ptg.Button("Yuna", onclick=install_yuna),
         ptg.Button("Back", onclick=lambda event: manager.remove(windows['configure_model']))
     )
-    with ptg.WindowManager() as manager:
-        manager.layout = _define_layout()
-        manager.add(windows['configure_model'])
-        manager.focus(windows['configure_model'])
+
+    manager.add(windows['configure_model'])
+    manager.focus(windows['configure_model'])
     
 def install_all_models(event):
     install_agi(event)
@@ -129,16 +126,14 @@ def install_yuna(event):
 
 def clear_models(event):
     windows['clear_models'] = ptg.Window(
-        ptg.Label("========== Clear Models Menu =========="),
+        ptg.Label("[210 bold]========== Clear =========="),
         ptg.Label("This will delete all models inside 'lib/models/'."),
         ptg.Label("Do you want to proceed?"),
         ptg.Button("Yes", onclick=clear_models_confirm),
         ptg.Button("No", onclick=lambda event: manager.remove(windows['clear_models'])),
     )
-    with ptg.WindowManager() as manager:
-        manager.layout = _define_layout()
-        manager.add(windows['clear_models'])
-        manager.focus(windows['clear_models'])
+    manager.add(windows['clear_models'])
+    manager.focus(windows['clear_models'])
 
 def clear_models_confirm(event):
     print("Clearing models...")
@@ -172,7 +167,6 @@ main_menu = ptg.Window(
     ptg.Button("Exit", onclick=goodbye),
     ptg.Button("Info", onclick=info),
 )
-with ptg.WindowManager() as manager:
-    manager.layout = _define_layout()
-    manager.add(main_menu)
-    manager.run()
+manager.layout = layout_
+manager.add(main_menu)
+manager.run()

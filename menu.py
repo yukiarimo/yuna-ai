@@ -53,7 +53,7 @@ def install_update_dependencies(event):
         ptg.Button("AMD GPU", onclick=install_amd),
         ptg.Button("Back", onclick=lambda event: manager.remove(windows['configure_gpu']))
     )
-    manager.add(windows['configure_gpu'])
+    manager.add(windows['configure_gpu'], assign=True)
     manager.focus(windows['configure_gpu'])
 
 def install_cpu(event):
@@ -90,7 +90,7 @@ def configure_submenu(event):
         ptg.Button("Restore", onclick=restore),
         ptg.Button("Back", onclick=lambda event: manager.remove(windows['configure_menu']))
     )
-    manager.add(windows['configure_menu'])
+    manager.add(windows['configure_menu'], assign=True)
     manager.focus(windows['configure_menu'])
 
 def install_models(event):
@@ -105,7 +105,7 @@ def install_models(event):
         ptg.Button("Back", onclick=lambda event: manager.remove(windows['configure_model']))
     )
 
-    manager.add(windows['configure_model'])
+    manager.add(windows['configure_model'], assign=True)
     manager.focus(windows['configure_model'])
     
 def install_all_models(event):
@@ -142,7 +142,7 @@ def clear_models(event):
         ptg.Button("Yes", onclick=clear_models_confirm),
         ptg.Button("No", onclick=lambda event: manager.remove(windows['clear_models'])),
     )
-    manager.add(windows['clear_models'])
+    manager.add(windows['clear_models'], assign=True)
     manager.focus(windows['clear_models'])
 
 def clear_models_confirm(event):
@@ -179,5 +179,5 @@ main_menu = ptg.Window(
 )
 manager.add(header)
 manager.add(main_menu)
-manager.add(footer, assign="Footer")
+#manager.add(footer)
 manager.run()

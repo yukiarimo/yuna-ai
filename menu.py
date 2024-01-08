@@ -1,208 +1,158 @@
 import subprocess
 import os
 import sys
+import pytermgui as ptg
+windows = {}
 
-def info():
+def info(event):
     os.system('clear')
     print("Welcome to Yuna Management Script!")
+    print("This script is used to manage Yuna.")
+    print("You can install or update dependencies, install models, configure Yuna, and more.")
+    print("This script is still under development.")
+    pass
 
-def goodbye():
+def goodbye(event):
     os.system('clear')
     print("Thank you for using Yuna Management Script. Goodbye!")
+    exit()
 
-def start_yuna():
+def start_yuna(event):
     print("Starting Yuna...")
-    if os.path.exists('index.py'):
-        subprocess.check_call([sys.executable, 'index.py'])
-    else:
-        print("Yuna not found!")
-    return
+    subprocess.check_call([sys.executable, 'index.py'])
 
-def install_update_dependencies():
-    while True:
-        os.system('clear')
+def install_update_dependencies(event):
+    windows['configure_gpu'] = ptg.Window(
+        ptg.Label("========== Installation... =========="),
+        ptg.Button("CPU", onclick=install_cpu),
+        ptg.Button("NVIDIA GPU", onclick=install_nvidia),
+        ptg.Button("AMD GPU", onclick=install_amd),
+        ptg.Button("Back", onclick=lambda event: manager.remove(windows['configure_gpu']))
+    )
+    manager.add(windows['configure_gpu'])
+    manager.focus(windows['configure_gpu'])
 
-        print("========== Installation... ==========")
-        print("1. CPU")
-        print("2. NVIDIA GPU")
-        print("3. AMD GPU")
-        print("4. Back")
-
-        platform = input("> ")
-
-        if platform == '1':
-            install_cpu()
-        elif platform == '2':
-            install_nvidia()
-        elif platform == '3':
-            install_amd()
-        elif platform == '4':
-            return
-        else: 
-            print("Invalid option!")
-
-def install_cpu():
+def install_cpu(event):
     print("Installing CPU dependencies...")
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements-cpu.txt"])
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"])
     print("CPU dependencies installed!")
+    if 'configure_gpu' in windows:
+        manager.remove(windows['configure_gpu'])
+    manager.focus(main_menu)
 
-def install_nvidia():
+def install_nvidia(event):
     print("Installing NVIDIA dependencies...")
     subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements-nvidia.txt"])
     print("NVIDIA dependencies installed!")
+    if 'configure_gpu' in windows:
+        manager.remove(windows['configure_gpu'])
+    manager.focus(main_menu)
 
-def install_amd():
+def install_amd(event):
     print("Installing AMD dependencies...")
     subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements-amd.txt"])
     print("AMD dependencies installed!")
+    if 'configure_gpu' in windows:
+        manager.remove(windows['configure_gpu'])
+    manager.focus(main_menu)
 
-def configure_submenu():
-    while True:
-        os.system('clear')
+def configure_submenu(event):
+    windows['configure_menu'] = ptg.Window(
+        ptg.Label("========== Menu =========="),
+        ptg.Button("Install models", onclick=install_models),
+        ptg.Button("Clear models", onclick=clear_models),
+        ptg.Button("Backup", onclick=backup),
+        ptg.Button("Restore", onclick=restore),
+        ptg.Button("Back", onclick=lambda event: manager.remove(windows['configure_menu']))
+    )
+    manager.add(windows['configure_menu'])
+    manager.focus(windows['configure_menu'])
 
-        print("========== Menu ==========")
-        print("1. Install models")
-        print("2. Clear models")
-        print("3. Backup")
-        print("4. Restore")
-        print("5. Back")
+def install_models(event):
+    windows['configure_model'] = ptg.Window(
+        ptg.Label("========== Install Models Menu =========="),
+        ptg.Button("All Models", onclick=install_all_models),
+        ptg.Button("All AGI Models", onclick=install_agi),
+        ptg.Button("Vision", onclick=install_vision),
+        ptg.Button("Art", onclick=install_art),
+        ptg.Button("Emotion", onclick=install_emotion),
+        ptg.Button("Yuna", onclick=install_yuna),
+        ptg.Button("Back", onclick=lambda event: manager.remove(windows['configure_model']))
+    )
+    manager.add(windows['configure_model'])
+    manager.focus(windows['configure_model'])
+    
+def install_all_models(event):
+    install_agi(event)
+    install_yuna(event)
 
-
-        choice = input("> ")
-
-        if choice == '1':
-            install_models()
-        elif choice == '2':
-            clear_models()
-        elif choice == '3':
-            backup()
-        elif choice == '4':
-            restore()
-        elif choice == '5':
-            return
-        else: 
-            print("Invalid option!")
-
-def configure():
-    configure_submenu()
-
-def install_models():
-    print("========== Install Models Menu ==========")
-    print("1. All models")
-    print("2. All AGI")
-    print("3. Vision")
-    print("4. Art")
-    print("5. Emotion")
-    print("6. Yuna")
-    print("7. Back")
-
-    model = input("> ")
-
-    if model == '1':
-        install_all_models()
-    elif model == '2':
-        install_agi()
-    elif model == '3':
-        install_vision()
-    elif model == '4':
-        install_art()
-    elif model == '5':
-        install_emotion()
-    elif model == '6':
-        install_yuna()
-    elif model == '7':
-        return
-    else:
-        print("Invalid option!")
-
-def install_all_models():
-    install_agi()
-    install_yuna()
-
-def install_agi():
+def install_agi(event):
     print("Installing AGI models...")
-    install_vision()
-    install_art()
-    install_emotion()
+    install_vision(event)
+    install_art(event)
+    install_emotion(event)
 
-def install_vision():
+def install_vision(event):
     print("Installing Vision models...")
     subprocess.check_call(["git", "clone", "https://huggingface.co/yukiarimo/yuna-vision", "lib/models/agi/yuna-vision/"])
 
-def install_art():
+def install_art(event):
     print("Installing Art models...")
     subprocess.check_call(["wget", "https://huggingface.co/yukiarimo/anyloli/resolve/main/any_loli.safetensors", "-P", "lib/models/agi/art/"])
 
-def install_emotion():
+def install_emotion(event):
     print("Installing Vision model...")
     subprocess.check_call(["git", "clone", "https://huggingface.co/yukiarimo/yuna-emotion", "lib/models/agi/yuna-emotion/"])
 
-def install_yuna():
+def install_yuna(event):
     print("Installing Yuna model...")
     subprocess.check_call(["wget", "https://huggingface.co/yukiarimo/yuna-ai/resolve/main/yuna-ggml-q5.gguf", "-P", "lib/models/yuna/"])
 
-def clear_models():
-    print("========== Clear Models Menu ==========")
-    print("This will delete all models inside 'lib/models/'.")
-    print("Do you want to proceed? (y/n): ")
+def clear_models(event):
+    windows['clear_models'] = ptg.Window(
+        ptg.Label("========== Clear Models Menu =========="),
+        ptg.Label("This will delete all models inside 'lib/models/'."),
+        ptg.Label("Do you want to proceed?"),
+        ptg.Button("Yes", onclick=clear_models_confirm),
+        ptg.Button("No", onclick=lambda event: manager.remove(windows['clear_models'])),
+    )
+    manager.add(windows['clear_models'])
+    manager.focus(windows['clear_models'])
 
-    delete = input("> ")
-    if delete == 'y':
-        print("Clearing models...")
-        subprocess.check_call(["rm", "-rf", "lib/models/*"])
-        print("Models cleared")
-    if delete == 'no':
-        return
+def clear_models_confirm(event):
+    print("Clearing models...")
+    subprocess.check_call(["rm", "-rf", "lib/models/*"])
+    print("Models cleared")
+    manager.remove(windows['clear_models'])
+    if 'configure_model' in windows:
+        manager.focus(windows['configure_model'])
+    else:
+        manager.focus(main_menu)
 
-def backup():
+def backup(event):
     print("Coming Soon...")
     return
 
-def restore():
+def restore(event):
     print("Coming Soon...")
     return
         
-def OneClickInstall():
-    install_update_dependencies()
-    install_models()
+def OneClickInstall(event):
+    install_update_dependencies(event)
+    install_models(event)
 
-    print("Do you want to start Yuna? (y/n): ")
-    start = input("> ")
-    if start == 'y':
-        start_yuna()
-    elif start == 'n':
-        return
-    else :
-        print("Invalid option!")
-    
-while True:
-    os.system('clear')
+main_menu = ptg.Window(
+    ptg.Label("========== Menu =========="),
+    ptg.Button("Start Yuna", onclick=start_yuna),
+    ptg.Button("Install or Update dependencies", onclick=install_update_dependencies),
+    ptg.Button("One Click Install", onclick=OneClickInstall),
+    ptg.Button("Configure", onclick=configure_submenu),
+    ptg.Button("Reset", onclick=clear_models),
+    ptg.Button("Exit", onclick=goodbye),
+    ptg.Button("Info", onclick=info)
+)
 
-    print("========== Menu ==========")
-    print("1. Start Yuna")
-    print("2. Install or Update dependencies")
-    print("3. One Click Install")
-    print("4. Configure")
-    print("5. Reset")
-    print("6. Exit")
-    print("7. Info")
+manager = ptg.WindowManager()
+manager.add(main_menu)
 
-    mainmenu = input("> ")
-
-    if mainmenu == '1':
-        start_yuna()
-    elif mainmenu == '2':
-        install_update_dependencies()
-    elif mainmenu == '3':
-        OneClickInstall()
-    elif mainmenu == '4':
-        configure()
-    elif mainmenu == '5':
-        clear_models()
-    elif mainmenu == '6':
-        goodbye()
-        break
-    elif mainmenu == '7':
-        info()
-    else: 
-        print("Invalid option!")
+manager.run()

@@ -8,13 +8,13 @@
     "background_color": "#99c189",
     "theme_color": "#99c189",
     "icons": [{
-            "src": "static/img/yuna.png",
+            "src": "static/img/yuna-ai.png",
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "maskable"
         },
         {
-            "src": "static/img/yuna.png",
+            "src": "static/img/yuna-ai.png",
             "sizes": "512x512",
             "type": "image/png"
         },

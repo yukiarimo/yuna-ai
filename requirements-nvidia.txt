@@ -1,10 +1,12 @@
 flask
 flask_cors
+openai-whisper
 ctransformers[cuda]
 transformers
 diffusers
 html2text
 bs4
+pytermgui
 --extra-index-url https://download.pytorch.org/whl/cu118
 torch
 torchvision

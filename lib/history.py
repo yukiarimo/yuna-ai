@@ -3,6 +3,7 @@ import os
 import shutil
 import subprocess
 from cryptography.fernet import Fernet
+from cryptography.fernet import InvalidToken
 
 class ChatHistoryManager:
     def __init__(self, config):
@@ -34,8 +35,8 @@ class ChatHistoryManager:
 
     def generate_speech(self, response):
         subprocess.run(f'say "{response}" -o output', shell=True)
-        shutil.move("output.aiff", "static/audio/output.aiff")
-        subprocess.run(f"ffmpeg -y -i 'static/audio/output.aiff' -b:a 192K -f mp3 static/audio/output.mp3", shell=True)
+        shutil.move("output.aiff", "/audio/output.aiff")
+        subprocess.run(f"ffmpeg -y -i '/audio/output.aiff' -b:a 192K -f mp3 static/audio/output.mp3", shell=True)
 
     def get_encryption_key(self):
         if 'encryption_key' not in self.config['security'] or not self.config['security']['encryption_key']:

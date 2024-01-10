@@ -1,0 +1,41 @@
+{
+    "manifest_version": 3,
+    "name": "Yuna AI",
+    "version": "1.0",
+    "description": "Your Virtual AI Girlfriend",
+    "icons": {
+        "16": "yuna-ai-16.png",
+        "48": "yuna-ai-48.png",
+        "128": "yuna-ai-128.png"
+    },
+    "action": {
+        "default_popup": "index.html",
+        "default_icon": {
+            "16": "yuna-ai-16.png",
+            "48": "yuna-ai-48.png",
+            "128": "yuna-ai-128.png"
+        },
+        "default_title": "Click to open the popup"
+    },
+    "permissions": [
+        "storage",
+        "tabs",
+        "activeTab"
+    ],
+    "chrome_url_overrides": {
+        "newtab": "index.html"
+    },
+    "background": {
+        "service_worker": "background.js"
+    },
+    "web_accessible_resources": [{
+        "resources": ["index.js", "index.css", "yuna-ai-16.png", "yuna-ai-48.png", "yuna-ai-128.png"],
+        "matches": ["<all_urls>"]
+    }],
+    "content_scripts": [{
+        "matches": ["<all_urls>"],
+        "js": ["index.js"],
+        "/css": ["index.css"],
+        "images": ["yuna-ai-16.png", "yuna-ai-48.png", "yuna-ai-128.png"]
+    }]
+}

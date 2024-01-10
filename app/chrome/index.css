@@ -1,0 +1,34 @@
+/* Additional styles to position the popover */
+#floatingImage {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    z-index: 1000;
+    /* Ensure the image is above other elements */
+    border: none;
+    /* Remove button border */
+    background: none;
+    /* Remove button background */
+    padding: 0;
+    /* Remove button padding */
+    outline: none;
+    /* Remove focus outline */
+}
+
+#popoverContainer {
+    position: fixed;
+    bottom: 60px;
+    /* Adjust this value to position the popover above the image */
+    right: 10px;
+    /* Align the popover with the right side of the image */
+    display: none;
+    z-index: 1001;
+    /* Ensure the popover is above the image */
+    width: 250px;
+    /* Set a fixed width for the popover */
+    transition: opacity 0.2s;
+    /* Smooth transition for popover appearance */
+}

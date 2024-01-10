@@ -1,5 +1,6 @@
 import base64
-from flask import Flask, request, jsonify, send_from_directory, make_response
+from flask import Flask, make_response, request, jsonify, send_from_directory, redirect, url_for, flash
+from flask_login import LoginManager, UserMixin, login_required, logout_user, current_user, login_user
 from lib.generate import ChatGenerator, ChatHistoryManager
 from lib.vision import capture_image, create_image
 from pydub import AudioSegment
@@ -9,21 +10,55 @@ import json
 import os
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
+from flask_login import login_manager
 
 with open('static/config.json', 'r') as config_file:
     config = json.load(config_file)
 secret_key = config['security']['secret_key']
 serializer = URLSafeTimedSerializer(secret_key)
+login_manager = LoginManager()
 
 class YunaServer:
     def __init__(self):
-        self.app = Flask(__name__)
+        self.app = Flask(__name__, static_folder='static')
+        self.app.secret_key = 'Yuna_AI_Secret_Key'
+        login_manager.init_app(self.app)
+        login_manager.login_view = 'main'
+        login_manager.user_loader(self.user_loader)
         CORS(self.app, resources={r"/*": {"origins": "*"}})
         self.configure_routes()
         self.load_config()
         self.chat_generator = ChatGenerator(self.config)
         self.chat_history_manager = ChatHistoryManager(self.config)
 
+    # User model
+    class User(UserMixin):
+        pass
+
+    # User loader function
+    @login_manager.user_loader
+    def user_loader(self, user_id):
+        users = self.read_users()
+        if user_id in users:
+            user = self.User()
+            user.id = user_id
+            return user
+        return None
+
+    # Read users from JSON file
+    def read_users(self):
+        if os.path.exists('assets/db/admin/users.json'):
+            with open('assets/db/admin/users.json', 'r') as f:
+                users = json.load(f)
+        else:
+            users = {}
+        return users
+
+    # Write users to JSON file
+    def write_users(self, users):
+        with open('assets/db/admin/users.json', 'w') as f:
+            json.dump(users, f)
+            
     def load_config(self):
         if os.path.exists("static/config.json"):
             with open("static/config.json", 'r') as file:
@@ -31,6 +66,9 @@ class YunaServer:
 
     def configure_routes(self):
         self.app.route('/')(self.render_index)
+        self.app.route('/<path:filename>')(self.custom_static)
+        self.app.route('/yuna')(self.yuna_server)
+        self.app.route('/main', methods=['GET', 'POST'])(self.main)
         self.app.route('/history', methods=['POST'])(self.handle_history_request)
         self.app.route('/image', methods=['POST'])(self.handle_image_request)
         self.app.route('/message', methods=['POST'])(self.handle_message_request)
@@ -38,9 +76,79 @@ class YunaServer:
         self.app.route('/login', methods=['POST'])(self.handle_login)
         self.app.route('/register', methods=['POST'])(self.handle_register)
         self.app.route('/check_login', methods=['GET'])(self.check_login)
+        self.app.route('/services', methods=['GET'])(self.services)
+        self.app.route('/pricing', methods=['GET'])(self.pricing)
+
+    def custom_static(self, filename):
+        print(app.static_folder, "---", filename)
+        return send_from_directory(app.static_folder, filename)
+
+    @login_required
+    def logout():
+        logout_user()
+        return redirect(url_for('main'))
+    
+    def services(self):
+        return send_from_directory('.', 'services.html')
+    
+    def pricing(self):
+        return send_from_directory('.', 'pricing.html')
+
+    def main(self):
+        if request.method == 'POST':
+            action = request.form['action']
+            username = request.form['username']
+            password = request.form['password']
+            users = self.read_users()
+            if action == 'register':
+                if username in users:
+                    flash('Username already exists')
+                else:
+                    users[username] = password
+                    self.write_users(users)
+                    flash('Registered successfully')
+            elif action == 'login':
+                if users.get(username) == password:
+                    user = self.User()
+                    user.id = username
+                    login_user(user)
+                    return redirect(url_for('yuna_server'))
+                else:
+                    flash('Invalid username or password')
+            elif action == 'change_password':
+                new_password = request.form['new_password']
+                if users.get(username) == password:
+                    users[username] = new_password
+                    self.write_users(users)
+                    flash('Password changed successfully')
+                else:
+                    flash('Invalid username or password')
+            elif action == 'chane_username':
+                new_username = request.form['new_username']
+                if users.get(username) == password:
+                    users[new_username] = password
+                    del users[username]
+                    self.write_users(users)
+                    flash('Username changed successfully')
+                else:
+                    flash('Invalid username or password')
+            elif action == 'delete_account':
+                if users.get(username) == password:
+                    del users[username]
+                    self.write_users(users)
+                    flash('Account deleted successfully')
+                else:
+                    flash('Invalid username or password')
+
+        # return html from the file
+        return send_from_directory('.', 'login.html')
 
     def render_index(self):
         return send_from_directory('.', 'index.html')
+    
+    @login_required
+    def yuna_server(self):
+        return send_from_directory('.', 'yuna.html')
 
     def run(self):
         self.app.run(host='0.0.0.0', port=self.config["server"]["port"])
@@ -85,10 +193,10 @@ class YunaServer:
             chat_history.append({"name": "Yuki", "message": prompt})
 
             created_image = create_image(prompt)
-            chat_history.append({"name": "Yuna", "message": f"Sure, here you go! <img src='static/img/art/{created_image}' class='image-message'>"})
+            chat_history.append({"name": "Yuna", "message": f"Sure, here you go! <img src='img/art/{created_image}' class='image-message'>"})
 
             self.chat_history_manager.save_chat_history(chat_history, chat_id)
-            yuna_image_message = f"Sure, here you go! <img src='static/img/art/{created_image}' class='image-message'>"
+            yuna_image_message = f"Sure, here you go! <img src='img/art/{created_image}' class='image-message'>"
 
             return jsonify({'message': yuna_image_message})
         else:

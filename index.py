@@ -1,8 +1,9 @@
-import base64
-from flask import Flask, make_response, request, jsonify, send_from_directory, redirect, url_for, flash
-from flask_login import LoginManager, UserMixin, login_required, logout_user, current_user, login_user
+import random
+from flask import Flask, get_flashed_messages, make_response, request, jsonify, send_from_directory, redirect, url_for, flash
+from flask_login import LoginManager, UserMixin, login_required, logout_user, login_user, current_user
 from lib.generate import ChatGenerator, ChatHistoryManager
 from lib.vision import capture_image, create_image
+from lib.router import handle_history_request, handle_message_request
 from pydub import AudioSegment
 from flask_cors import CORS
 import whisper
@@ -30,6 +31,11 @@ class YunaServer:
         self.load_config()
         self.chat_generator = ChatGenerator(self.config)
         self.chat_history_manager = ChatHistoryManager(self.config)
+        self.app.errorhandler(404)(self.page_not_found)
+
+    @staticmethod
+    def page_not_found(self):
+        return f'This page does not exist.', 404
 
     # User model
     class User(UserMixin):
@@ -38,17 +44,20 @@ class YunaServer:
     # User loader function
     @login_manager.user_loader
     def user_loader(self, user_id):
+        print(f"User loader is running. User ID: {user_id}")  # Debugging line
         users = self.read_users()
         if user_id in users:
             user = self.User()
             user.id = user_id
+            print(f"User {user_id} found in users.")  # Debugging line
             return user
+        print(f"User {user_id} not found in users.")  # Debugging line
         return None
 
     # Read users from JSON file
     def read_users(self):
-        if os.path.exists('assets/db/admin/users.json'):
-            with open('assets/db/admin/users.json', 'r') as f:
+        if os.path.exists('static/db/admin/users.json'):
+            with open('static/db/admin/users.json', 'r') as f:
                 users = json.load(f)
         else:
             users = {}
@@ -56,7 +65,7 @@ class YunaServer:
 
     # Write users to JSON file
     def write_users(self, users):
-        with open('assets/db/admin/users.json', 'w') as f:
+        with open('static/db/admin/users.json', 'w') as f:
             json.dump(users, f)
             
     def load_config(self):
@@ -68,10 +77,12 @@ class YunaServer:
         self.app.route('/')(self.render_index)
         self.app.route('/<path:filename>')(self.custom_static)
         self.app.route('/yuna')(self.yuna_server)
+        self.app.route('/check_login_and_redirect')(self.check_login_and_redirect)
+        self.app.route('/flash-messages')(self.flash_messages)
         self.app.route('/main', methods=['GET', 'POST'])(self.main)
-        self.app.route('/history', methods=['POST'])(self.handle_history_request)
+        self.app.route('/history', methods=['POST'], endpoint='history')(lambda: handle_history_request(self.chat_history_manager))
+        self.app.route('/message', methods=['POST'], endpoint='message')(lambda: handle_message_request(self.chat_generator))
         self.app.route('/image', methods=['POST'])(self.handle_image_request)
-        self.app.route('/message', methods=['POST'])(self.handle_message_request)
         self.app.route('/audio', methods=['POST'])(self.handle_audio_request)
         self.app.route('/login', methods=['POST'])(self.handle_login)
         self.app.route('/register', methods=['POST'])(self.handle_register)
@@ -84,7 +95,7 @@ class YunaServer:
         return send_from_directory(app.static_folder, filename)
 
     @login_required
-    def logout():
+    def logout(self):
         logout_user()
         return redirect(url_for('main'))
     
@@ -99,6 +110,9 @@ class YunaServer:
             action = request.form['action']
             username = request.form['username']
             password = request.form['password']
+
+            print(action, username, password)
+
             users = self.read_users()
             if action == 'register':
                 if username in users:
@@ -108,6 +122,7 @@ class YunaServer:
                     self.write_users(users)
                     flash('Registered successfully')
             elif action == 'login':
+                print('login action triggered for')
                 if users.get(username) == password:
                     user = self.User()
                     user.id = username
@@ -146,38 +161,26 @@ class YunaServer:
     def render_index(self):
         return send_from_directory('.', 'index.html')
     
+    def check_login_and_redirect(self):
+        if current_user.is_authenticated:
+            print("User is logged in")
+            return redirect(url_for('yuna_server'))
+        else:
+            print("User is not logged in")
+            return redirect(url_for('main'))
+        
+    def flash_messages(self):
+        messages = get_flashed_messages()
+        return jsonify(messages)
+    
     @login_required
     def yuna_server(self):
+        # generate a random number and set it as a flash message
+        random_number = random.randint(1, 100)
+        flash(f'Random number: {random_number}')
+        
         return send_from_directory('.', 'yuna.html')
-
-    def run(self):
-        self.app.run(host='0.0.0.0', port=self.config["server"]["port"])
-
-    def handle_history_request(self):
-        data = request.get_json()
-        chat_id = data.get('chat')
-        task = data.get('task') 
-
-        if task == 'load':
-            return jsonify(self.chat_history_manager.load_chat_history(chat_id))
-        elif task == 'list':
-            return jsonify(self.chat_history_manager.list_history_files())
-        elif task == 'edit':
-            history = data.get('history')
-            self.chat_history_manager.save_chat_history(history, chat_id)
-            return jsonify({'response': 'History edited successfully'})
-        elif task == 'create':
-            self.chat_history_manager.create_chat_history_file(chat_id)
-            return jsonify({'response': 'History created successfully'})
-        elif task == 'delete':
-            self.chat_history_manager.delete_chat_history_file(chat_id)
-            return jsonify({'response': 'History deleted successfully'})
-        elif task == 'rename':
-            new_chat_id_name = data.get('name')
-            self.chat_history_manager.rename_chat_history_file(chat_id, new_chat_id_name)
-            return jsonify({'response': 'History renamed successfully'})
-        else:
-            return jsonify({'error': 'Invalid task parameter'}), 400
+        #return 'Hello, {}!'.format(current_user.get_id())
 
     def handle_image_request(self):
         data = request.get_json()
@@ -201,25 +204,7 @@ class YunaServer:
             return jsonify({'message': yuna_image_message})
         else:
             return jsonify({'error': 'Invalid task parameter'}), 400
-        
-    def handle_message_request(self):
-        data = request.get_json()
-        chat_id = data.get('chat')
-        speech = data.get('speech')
-        text = data.get('text')
-        template = data.get('template')
 
-        # Print all the data received from the client in the terminal for debugging in the table format
-        print(f"""
-        chat_id: {chat_id}
-        speech: {speech}
-        text: {text}
-        template: {template}
-        """)
-
-        response = self.chat_generator.generate(chat_id, speech, text, template)
-
-        return jsonify({'response': response})
     
     def handle_audio_request(self):
         audio_data = request.files['audio']
@@ -291,7 +276,6 @@ class YunaServer:
         with open(users_file_path, 'w') as file:
             json.dump(users, file, indent=4)
 
-
     def check_login(self):
         session_token = request.cookies.get('session_token')
         users_file_path = os.path.join('auth', 'auth.json')
@@ -318,12 +302,10 @@ class YunaServer:
         self.save_users(users)
         return jsonify({'response': 'Password changed successfully'})
 
-
     def handle_logout(self):
         resp = make_response(jsonify({'response': 'Logout successful'}))
         resp.set_cookie('session_token', '', expires=0)
         return resp
-
 
 yuna_server = YunaServer()
 app = yuna_server.app

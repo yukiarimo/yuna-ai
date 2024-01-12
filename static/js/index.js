@@ -311,19 +311,6 @@ function playAudio(audioType = 'tts') {
   } else if (audioType == 'ringtone') {
     audioSource.src = 'audio/sounds/ringtone.mp3';
   }
-
-  // Get the audio element and play it
-  audio = document.getElementById("backgroundMusic");
-  audio.load(); // Reload the audio element to apply the new source
-  audio.play()
-    .then(() => {
-      // Audio playback started successfully
-      console.log('Audio playback started.');
-    })
-    .catch(error => {
-      // Handle the error if audio playback fails
-      console.error('Error playing audio:', error);
-    });
 }
 
 // Other functions (clearHistory, loadHistory, downloadHistory) go here if needed.
@@ -1150,7 +1137,12 @@ document.addEventListener('DOMContentLoaded', (event) => {
   });
 });
 
-// Assuming you have a modal with the ID 'videoCallModal'
-var callYuna = new bootstrap.Modal(document.getElementById('videoCallModal'), {
-  keyboard: false
-});
+function checkMe() {
+  fetch('/flash-messages')
+    .then(response => response.json())
+    .then(messages => {
+        for (let message of messages) {
+            console.log(message);
+        }
+    });
+}

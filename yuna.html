@@ -25,19 +25,16 @@
             "url": "http://www.yuna-ai.live"
         }
     </script>
-    <link rel="icon" type="image/jpeg" sizes="60x60" href="img/yuna-ai.png?h=c5166867f10a4e454b5b2ae8d63268b3">
-    <link rel="icon" type="image/jpeg" sizes="60x60" href="img/yuna-ai.png?h=c5166867f10a4e454b5b2ae8d63268b3"
-        media="(prefers-color-scheme: dark)">
-    <link rel="icon" type="image/jpeg" sizes="60x60" href="img/yuna-ai.png?h=c5166867f10a4e454b5b2ae8d63268b3">
-    <link rel="icon" type="image/jpeg" sizes="60x60" href="img/yuna-ai.png?h=c5166867f10a4e454b5b2ae8d63268b3"
-        media="(prefers-color-scheme: dark)">
-    <link rel="icon" type="image/jpeg" sizes="60x60" href="img/yuna-ai.png?h=c5166867f10a4e454b5b2ae8d63268b3">
-    <link rel="icon" type="image/jpeg" sizes="60x60" href="img/yuna-ai.png?h=c5166867f10a4e454b5b2ae8d63268b3">
-    <link rel="icon" type="image/jpeg" sizes="60x60" href="img/yuna-ai.png?h=c5166867f10a4e454b5b2ae8d63268b3">
-    <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css?h=97380e22c8933e9aa79cbc2390b9f15a">
-    <link rel="manifest" href="manifest.json?h=cac48232b1fc5fc8e026cf1e7b7ef587">
-    <link rel="stylesheet" href="/css/Nunito.css?h=65e1aae7ce6f6cb9d0e4a95da536c5c9">
-    <link rel="stylesheet" href="fonts/fontawesome-all.min.css?h=d98553506d4393860db8a633e4842ead">
+    <link rel="icon" type="image/jpeg" sizes="60x60" href="img/yuna-ai.png">
+    <link rel="icon" type="image/jpeg" sizes="60x60" href="img/yuna-ai.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" type="image/jpeg" sizes="60x60" href="img/yuna-ai.png">
+    <link rel="icon" type="image/jpeg" sizes="60x60" href="img/yuna-ai.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" type="image/jpeg" sizes="60x60" href="img/yuna-ai.png">
+    <link rel="icon" type="image/jpeg" sizes="60x60" href="img/yuna-ai.png">
+    <link rel="icon" type="image/jpeg" sizes="60x60" href="img/yuna-ai.png">
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
     <link rel="stylesheet" href="/css/kawai-v11-2.css">
@@ -115,6 +112,8 @@
                                 class="fas fa-table"></i><span>Settings</span></a></li>
                     <li class="nav-item"><a class="nav-link" onclick="OpenTab('4')"><i
                                 class="fas fa-user"></i><span>Profile</span></a></li>
+                    <li class="nav-item"><a class="nav-link" onclick="OpenTab('5')"><i
+                                class="fas fa-table"></i><span>Search</span></a></li>
                     <div class="input-group">
                         <select class="form-select" id="templateSelect" aria-label="Templates"
                             onchange="changeTemplate()">
@@ -221,7 +220,8 @@
                                             <line x1="5" y1="12" x2="19" y2="12"></line>
                                         </svg>
                                     </button>
-                                    <input type="file" id="imageUpload" accept="image/*" style="display: none;" onchange="captureImageViaFile()">
+                                    <input type="file" id="imageUpload" accept="image/*" style="display: none;"
+                                        onchange="captureImageViaFile()">
                                     <input id="input_text" type="text" class="input-field" placeholder="Ask Yuna...">
 
                                     <div class="form-check form-switch">
@@ -545,6 +545,23 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="tab-o" id="5">
+                            <div class="coll-lo">
+                                <div class="block-card">
+                                    <h1 class="text-center text-primary mb-4">Search Results</h1>
+
+                                    <div class="input-group mb-3">
+                                        <input type="text" id="searchInput" class="form-control"
+                                            placeholder="Enter your search">
+                                        <button id="searchButton" class="btn btn-primary">Search</button>
+                                    </div>
+
+                                    <div id="requestResults" class="alert alert-info d-none"></div>
+                                    <div id="results" class="row row-cols-1 row-cols-md-3 g-4"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -601,6 +618,76 @@
         </div>
     </div>
 
+    <script>
+        var allHtmlContent = '';
+
+        document.getElementById('searchButton').addEventListener('click', function() {
+            var searchData = document.getElementById('searchInput').value;
+
+            // Display the request information
+            var requestResultsContainer = document.getElementById('requestResults');
+            requestResultsContainer.innerHTML = '<p><strong>Request:</strong> Sending search request for: ' + searchData + '</p>';
+
+            // Use Fetch API to send a POST request to your server
+            fetch('http://localhost:3003/search', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ json: searchData }),
+            })
+            .then(response => response.text()) // Note: Use text() instead of json() to get the HTML content
+            .then(htmlContent => {
+                // Store all the HTML content received from the server
+                allHtmlContent = htmlContent;
+
+                // Display the response information
+                var responseResultsContainer = document.getElementById('results');
+                responseResultsContainer.innerHTML = '<p><strong>Response:</strong> Received HTML content from the server.</p>';
+
+                // Process the received HTML content
+                var parser = new DOMParser();
+                var doc = parser.parseFromString(htmlContent, 'text/html');
+
+                // Example: Display the title of the parsed HTML
+                var titleElement = doc.querySelector('title');
+
+                // Get the element with class 'kno-rdesc'
+                var knoRdescElement = doc.querySelector('.kno-rdesc');
+
+                if (knoRdescElement == null) {
+                    // If the element is not found, try to get the element with class 'kno-rdesc c-wiz'
+                    knoRdescElement = doc.getElementsByClassName('hgKElc')[0];
+                }
+
+                // Extract text content from the element
+                var textContent = knoRdescElement ? knoRdescElement.textContent.trim() : '';
+
+                var resultsContainer = document.getElementById('results');
+                resultsContainer.innerHTML = '<p><strong>Page Title:</strong> ' + titleElement.innerText + '</p>';
+                resultsContainer.innerHTML += '<p><strong>Extracted Content:</strong> ' + textContent + '</p>';
+                
+                // Select all elements with class "N54PNb"
+                var resultElements = doc.querySelectorAll('.N54PNb');
+
+                // Loop through each result element
+                resultElements.forEach(function(resultElement) {
+                    // Get the title
+                    var titleElement = resultElement.querySelector('.LC20lb');
+                    var title = titleElement ? titleElement.textContent.trim() : '';
+
+                    // Get the URL
+                    var urlElement = resultElement.querySelector('a');
+                    var url = urlElement ? urlElement.href : '';
+
+                    // Display the information
+                    resultsContainer.innerHTML += '<p><strong>Title:</strong> ' + title + '</p>';
+                    resultsContainer.innerHTML += '<p><strong>URL:</strong> <a href="' + url + '" target="_blank">' + url + '</a></p>';
+                });
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
     <script src="/bootstrap/js/bootstrap.min.js?h=e55bde7d6e36ebf17ba0b8c1e80e4065"></script>
     <script src="/js/theme.js?h=79f403485707cf2617c5bc5a2d386bb0"></script>
 </body>

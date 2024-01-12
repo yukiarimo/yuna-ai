@@ -1,8 +1,6 @@
 import json
 import os
 import re
-import shutil
-import subprocess
 from transformers import pipeline
 from ctransformers import AutoModelForCausalLM
 from lib.history import ChatHistoryManager
@@ -46,6 +44,7 @@ class ChatGenerator:
 
             # Load the chat history
             text_of_history = ''
+            history = ''
 
             for item in chat_history:
                 name = item.get('name', '')

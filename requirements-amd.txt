@@ -1,12 +1,15 @@
 flask
 flask_cors
+flask_login
 openai-whisper
+pydub
+ctransformers
 transformers
 diffusers
 html2text
 bs4
-openai-whisper
-pytermgui
+itsdangerous
+cryptography
 --extra-index-url https://download.pytorch.org/whl/rocm5.6
 torch
 torchvision

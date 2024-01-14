@@ -10,13 +10,23 @@ except ImportError:
 
 def _define_layout() -> ptg.Layout:
     layout = ptg.Layout()
-    layout.add_slot("Body")
+    layout.add_slot(name='Header', height=1)
+    layout.add_break()
+    layout.add_slot(name='Body')
+    layout.add_slot(name='Body right', width=0.4)
+    layout.add_break()
+    layout.add_slot(name='Footer', height=1)
     return layout
 
 windows = {}
 manager = ptg.WindowManager()
-title_label = ptg.Label("[210 bold]========== Menu ==========")
+header = ptg.Window(
+            "[210 bold] Yuna Management Script",
+            box="EMPTY",
+        )
+footer = ptg.Window(ptg.Button("Quit", lambda *_: manager.stop()), box="EMPTY")
 layout_ = _define_layout()
+manager.layout = layout_
 
 def info(event):
     os.system('clear')
@@ -43,7 +53,7 @@ def install_update_dependencies(event):
         ptg.Button("AMD GPU", onclick=install_amd),
         ptg.Button("Back", onclick=lambda event: manager.remove(windows['configure_gpu']))
     )
-    manager.add(windows['configure_gpu'])
+    manager.add(windows['configure_gpu'], assign=True)
     manager.focus(windows['configure_gpu'])
 
 def install_cpu(event):
@@ -80,7 +90,7 @@ def configure_submenu(event):
         ptg.Button("Restore", onclick=restore),
         ptg.Button("Back", onclick=lambda event: manager.remove(windows['configure_menu']))
     )
-    manager.add(windows['configure_menu'])
+    manager.add(windows['configure_menu'], assign=True)
     manager.focus(windows['configure_menu'])
 
 def install_models(event):
@@ -95,7 +105,7 @@ def install_models(event):
         ptg.Button("Back", onclick=lambda event: manager.remove(windows['configure_model']))
     )
 
-    manager.add(windows['configure_model'])
+    manager.add(windows['configure_model'], assign=True)
     manager.focus(windows['configure_model'])
     
 def install_all_models(event):
@@ -132,7 +142,7 @@ def clear_models(event):
         ptg.Button("Yes", onclick=clear_models_confirm),
         ptg.Button("No", onclick=lambda event: manager.remove(windows['clear_models'])),
     )
-    manager.add(windows['clear_models'])
+    manager.add(windows['clear_models'], assign=True)
     manager.focus(windows['clear_models'])
 
 def clear_models_confirm(event):
@@ -158,7 +168,7 @@ def OneClickInstall(event):
     install_models(event)
 
 main_menu = ptg.Window(
-    title_label,
+    ptg.Label("[210 bold]========== Menu =========="),
     ptg.Button("Start Yuna", onclick=start_yuna),
     ptg.Button("Install or Update dependencies", onclick=install_update_dependencies),
     ptg.Button("One Click Install", onclick=OneClickInstall),
@@ -167,6 +177,7 @@ main_menu = ptg.Window(
     ptg.Button("Exit", onclick=goodbye),
     ptg.Button("Info", onclick=info),
 )
-manager.layout = layout_
+manager.add(header)
 manager.add(main_menu)
+#manager.add(footer)
 manager.run()

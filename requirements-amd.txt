@@ -10,6 +10,7 @@ html2text
 bs4
 itsdangerous
 cryptography
+pytermgui
 --extra-index-url https://download.pytorch.org/whl/rocm5.6
 torch
 torchvision

@@ -26,7 +26,7 @@ def handle_history_request(chat_history_manager):
     else:
         return jsonify({'error': 'Invalid task parameter'}), 400
         
-def handle_message_request(chat_generator):
+def handle_message_request(chat_generator, chat_history_manager):
     data = request.get_json()
     chat_id = data.get('chat')
     speech = data.get('speech')
@@ -41,6 +41,6 @@ def handle_message_request(chat_generator):
     template: {template}
     """)
 
-    response = chat_generator.generate(chat_id, speech, text, template)
+    response = chat_generator.generate(chat_id, speech, text, template, chat_history_manager)
 
     return jsonify({'response': response})

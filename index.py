@@ -81,7 +81,7 @@ class YunaServer:
         self.app.route('/flash-messages')(self.flash_messages)
         self.app.route('/main', methods=['GET', 'POST'])(self.main)
         self.app.route('/history', methods=['POST'], endpoint='history')(lambda: handle_history_request(self.chat_history_manager))
-        self.app.route('/message', methods=['POST'], endpoint='message')(lambda: handle_message_request(self.chat_generator))
+        self.app.route('/message', methods=['POST'], endpoint='message')(lambda: handle_message_request(self.chat_generator, self.chat_history_manager))
         self.app.route('/image', methods=['POST'])(self.handle_image_request)
         self.app.route('/audio', methods=['POST'])(self.handle_audio_request)
         self.app.route('/login', methods=['POST'])(self.handle_login)

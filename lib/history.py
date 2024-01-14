@@ -30,7 +30,6 @@ class ChatHistoryManager:
 
         # Place main_history_file first and then sort alphabetically
         history_files.sort(key=lambda x: (x != self.config["server"]["default_history_file"], x.lower()))
-
         return history_files
 
     def generate_speech(self, response):

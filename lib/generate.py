@@ -26,8 +26,7 @@ class ChatGenerator:
         )
         self.classifier = pipeline("text-classification", model=f"{config['server']['agi_model_dir']}yuna-emotion")
 
-    def generate(self, chat_id, speech=False, text="", template=None):
-        chat_history_manager = ChatHistoryManager(self.config)
+    def generate(self, chat_id, speech=False, text="", template=None, chat_history_manager=None):
         chat_history = chat_history_manager.load_chat_history(chat_id)
 
         if template == "dialog":
@@ -152,7 +151,6 @@ class ChatGenerator:
 
             response = response + f" {response_add}"
 
-        chat_history.append({"name": "Yuki", "message": text})
         # response = self.clearText(str(response))
 
         if template != "himitsuCopilot" and template != "himitsuCopilotGen" and template != "summary" and template != None:

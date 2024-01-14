@@ -180,7 +180,7 @@ function sendMessage(message, imageName = false) {
     if (imageName.toString() == 'false') {
       imageName = '';
     } else {
-      imageName = `<img src='static/img/call/${imageName}.jpg' class='image-message'>`;
+      imageName = `<img src='img/call/${imageName}.jpg' class='image-message'>`;
     }
 
     messageData = {
@@ -301,29 +301,16 @@ function playAudio(audioType = 'tts') {
 
   if (audioType == 'tts') {
     // Set the src attribute with the random query parameter
-    audioSource.src = `static/audio/output.mp3?v=${randomValue}`;
+    audioSource.src = `audio/output.mp3?v=${randomValue}`;
   } else if (audioType == 'message') {
-    audioSource.src = 'static/audio/sounds/message.mp3';
+    audioSource.src = 'audio/sounds/message.mp3';
   } else if (audioType == 'send') {
-    audioSource.src = 'static/audio/sounds/send.mp3';
+    audioSource.src = 'audio/sounds/send.mp3';
   } else if (audioType == 'error') {
-    audioSource.src = 'static/audio/sounds/error.mp3';
+    audioSource.src = 'audio/sounds/error.mp3';
   } else if (audioType == 'ringtone') {
-    audioSource.src = 'static/audio/sounds/ringtone.mp3';
+    audioSource.src = 'audio/sounds/ringtone.mp3';
   }
-
-  // Get the audio element and play it
-  audio = document.getElementById("backgroundMusic");
-  audio.load(); // Reload the audio element to apply the new source
-  audio.play()
-    .then(() => {
-      // Audio playback started successfully
-      console.log('Audio playback started.');
-    })
-    .catch(error => {
-      // Handle the error if audio playback fails
-      console.error('Error playing audio:', error);
-    });
 }
 
 // Other functions (clearHistory, loadHistory, downloadHistory) go here if needed.
@@ -901,6 +888,38 @@ function populateHistorySelect() {
   });
 }
 
+function createHistoryFile() {
+  var newFileName = prompt('Enter a name for the new file (with .json):');
+
+  fetch(`${server_url + server_port}/history`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        chat: newFileName,
+        task: "create"
+      })
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(responseData => {
+      console.log(responseData);
+    })
+    .catch(error => {
+      console.error('An error occurred:', error);
+    });
+
+  // reload the page with delay of 1 second
+  setTimeout(function () {
+    location.reload()
+  }, 100);
+}
+
 function duplicateAndCategorizeChats() {
   // Get the history select element
   var historySelect = document.getElementById('chat-items');
@@ -1118,7 +1137,12 @@ document.addEventListener('DOMContentLoaded', (event) => {
   });
 });
 
-// Assuming you have a modal with the ID 'videoCallModal'
-var callYuna = new bootstrap.Modal(document.getElementById('videoCallModal'), {
-  keyboard: false
-});
+function checkMe() {
+  fetch('/flash-messages')
+    .then(response => response.json())
+    .then(messages => {
+        for (let message of messages) {
+            console.log(message);
+        }
+    });
+}

@@ -11,3 +11,4 @@ static/img/call/*
 !static/img/call/image_template.jpg
 static/img/art/*
 !static/img/art/art_template.png
+auth/auth.json

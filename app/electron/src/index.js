@@ -33,7 +33,7 @@ const createWindow = () => {
     resizable: true,
     titleBarStyle: 'hidden',
     title: 'Yuna AI',
-    icon: `${currentPath}/static/img/yuna-ai.png`,
+    icon: `${currentPath}/img/yuna-ai.png`,
     openDevTools: false,
     vibrancy: 'appearance-based',
     darkTheme: true,

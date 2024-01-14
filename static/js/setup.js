@@ -214,7 +214,7 @@ async function checkConfigData() {
       }, 100);
     } else {
       // Fetch the JSON data
-      fetch('static/config.json')
+      fetch('/config.json')
         .then(response => response.json())
         .then((data) => {
           // Handle the JSON data

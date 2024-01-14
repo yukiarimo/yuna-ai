@@ -220,6 +220,39 @@ oneClickInstall() {
     esac
 }
 
+contribute() {
+    clear
+    echo "========== Contribute to Yuna =========="
+    echo "Yuna is an open source project. The following commands will help you to contribute to Yuna."
+    echo "git fetch origin main\ngit merge main\ngit push origin dev:main\n"
+    echo "Do you want to proceed? (y/n): " confirm_contribute
+
+    case $confirm_contribute in
+        [Yy])
+            echo "Contribute to Yuna..."
+            git fetch origin main
+            git merge main
+            git push origin dev:main
+            echo "Contribute to Yuna done."
+            ;;
+        [Nn])
+            echo "Operation canceled. No contribution was made."
+            ;;
+        *)
+            echo "Invalid choice. Please enter 'y' or 'n'."
+            ;;
+    esac
+}
+
+donate() {
+    clear
+    echo "========== Donate =========="
+    echo "Yuna is an open source project. You can support the development of Yuna by donating."
+    echo "https://www.patreon.com/YukiArimo"
+    
+    xdg-open https://www.patreon.com/YukiArimo
+}
+
 # Display the main menu
 while true; do
     clear
@@ -231,7 +264,10 @@ while true; do
     echo "4. Configure"
     echo "5. Reset"
     echo "6. Exit"
-    echo "7. Info"
+    echo "7. Contribute to Yuna"
+    echo "8. Info"
+    echo "9. Donate"
+    echo "10. Exit"
 
     # Read user input
     read -p "> " choice
@@ -244,7 +280,10 @@ while true; do
         4) configure;;
         5) reset;;
         6) goodbye; exit;;
-        7) info;;
+        7) contribute;;
+        8) info;;
+        9) donate;;
+        10) goodbye; exit;;
         *) echo "Invalid choice. Please enter a number between 1 and 5.";;
     esac
 

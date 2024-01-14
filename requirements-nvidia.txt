@@ -1,11 +1,15 @@
 flask
 flask_cors
+flask_login
 openai-whisper
-ctransformers[cuda]
+pydub
+ctransformers
 transformers
 diffusers
 html2text
 bs4
+itsdangerous
+cryptography
 pytermgui
 --extra-index-url https://download.pytorch.org/whl/cu118
 torch

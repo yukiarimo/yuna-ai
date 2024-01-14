@@ -22,8 +22,6 @@ Are you tired of feeling lonely and disconnected from the world? Do you long for
     - [Acknowledgments](#acknowledgments)
 
 ## Features
-Based on the files and symbols in your workspace, here's a possible way to rewrite the features list:
-
 Features Yuna AI offers the following features:
 - Video and Audio Calls Handling
 - Image Processing and Creation
@@ -95,7 +93,7 @@ To install Yuna AI, follow these steps:
 To start using AI, do the following:
 1. Go to the terminal
 2. Run the `python index.py` command in the main directory to start the WebUI.
-3. Double-click the `yuna.html` file in the directory or run it via Live Server (better).
+3. Go to the `locahost:4848`.
 4. Done!
 
 > Note: port and directory or file names can depend on your configuration.
@@ -104,47 +102,61 @@ To start using AI, do the following:
 The following is the file structure of the project:
 
 ```bash
-├── LICENSE
-├── README.html
-├── SECURITY.md
-├── yuna.html
-├── index.py
-├── index.sh
-├── lib
-│   ├── article.py
-│   ├── datasets
-│   │   ├── tasked
-│   │   └── yuna
-│   ├── generate.py
-│   ├── models
-│   │   ├── agi
-│   │   └── yuna
-│   ├── search.py
-│   ├── translate.py
-│   └── vision.py
-├── manifest.json
-├── requirements.txt
-├── search.html
-├── static
-│   ├── audio
-│   │   └── sounds
-│   ├── config.json
-│   ├── css
-│   │   ├── index.css
-│   │   └── kawai-v11-2.css
-│   ├── db
-│   │   ├── history
-│   │   └── prompts
-│   ├── fonts
-│   │   └── kawai-font.woff
-│   ├── img
-│   │   ├── art
-│   │   └── call
-│   └── js
-├── sw-toolbox.js
-├── sw.js
-├── test.py
-└── test.txt
+yuna-ai/
+├── .github/                     # Configuration files for GitHub
+│   └── FUNDING.yml              # Funding model platforms configuration
+├── .gitignore                   # Specifies intentionally untracked files to ignore
+├── CNAME                        # Custom domain configuration for GitHub Pages (not provided)
+├── LICENSE                      # GNU Affero General Public License version 3
+├── README.md                    # Documentation and instructions for Yuna AI
+├── SECURITY.md                  # Security policy and vulnerability reporting
+├── auth/                        # Authentication related files (empty directory)
+├── index.html                   # Main webpage for Yuna AI
+├── services.html                # Services webpage for Yuna AI
+├── pricing.html                 # Pricing webpage for Yuna AI
+├── login.html                   # Login webpage for Yuna AI
+├── index.py                     # Main web application file for YunaServer
+├── index.sh                     # Bash script for managing and configuring Yuna
+├── requirements.txt             # Python dependencies for YunaServer
+├── requirements-amd.txt         # Python dependencies for YunaServer (AMD)
+├── requirements-nvidia.txt      # Python dependencies for YunaServer (NVIDIA)
+├── static/                      # Static files for the web application
+│   ├── audio/                   # Audio files directory
+│   │   ├── output.aiff          # Sample AIFF audio file
+│   │   └── output.mp3           # Sample MP3 audio file
+│   ├── css/                     # CSS files for styling
+│   │   ├── bootstrap.min.css    # Minified Bootstrap CSS
+│   │   ├── index.css            # Main CSS for the index page
+│   │   └── kawai-v11-2.css      # Custom CSS file
+│   ├── db/                      # Database related files
+│   │   └── history/             # Chat history files
+│   │       └── history_template.json  # Template for chat history
+│   ├── fonts/                   # Fonts used in the web application
+│   │   └── kawai-font.woff      # Custom web font
+│   ├── img/                     # Image files directory
+│   │   ├── call/                # Images related to call functionality
+│   │   │   └── image_template.jpg  # Template image for calls
+│   │   ├── art/                 # Artwork images
+│   │   │   └── art_template.png    # Template image for artwork
+│   │   ├── yuna-ai.png          # Yuna AI logo image
+│   │   └── yuna-full.png        # Full image of Yuna
+│   ├── js/                      # JavaScript files for interactivity
+│   │   ├── bootstrap.min.js     # Minified Bootstrap JS
+│   │   ├── himitsu.js           # Custom JS file
+│   │   ├── index.js             # Main JS for the index page
+│   │   ├── kawai-v11-2.js       # Custom JS file
+│   │   ├── setup.js             # JS for setup
+│   │   └── theme.js             # JS for theme functionality
+│   │
+│   └── sw.js                    # Service worker for offline functionality
+└── lib/                         # Libraries and modules for Yuna AI
+│   ├── models/                  # Model files for AI functionality
+│   │   ├── agi/                 # Artificial General Intelligence models
+│   │   │   ├── README.md        # Information about AGI models (excluded from .gitignore)
+│   │   │   └── ...              # Other AGI model files
+│   │   └── yuna/                # Yuna specific model files
+│   │       └── README.md        # Information about Yuna models (excluded from .gitignore)
+└──
 ```
 
 ## Yuna Abilities Overview

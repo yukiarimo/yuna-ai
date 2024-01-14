@@ -4,6 +4,7 @@ import re
 from transformers import pipeline
 from ctransformers import AutoModelForCausalLM
 from lib.history import ChatHistoryManager
+from cryptography.fernet import Fernet
 
 class ChatGenerator:
     def __init__(self, config):
@@ -25,46 +26,48 @@ class ChatGenerator:
         )
         self.classifier = pipeline("text-classification", model=f"{config['server']['agi_model_dir']}yuna-emotion")
 
-    def generate(self, chat_id, speech=False, text="", template=None):
+    def generate(self, chat_id, speech=False, text="", template=None, chat_history_manager=None):
+        chat_history = chat_history_manager.load_chat_history(chat_id)
+
         if template == "dialog":
-            # Load the prompt template
+            max_length_all_input_and_output = self.config["ai"]["context_length"]
+            max_length_of_generated_tokens = self.config["ai"]["max_new_tokens"]
+            max_length_of_input_tokens = max_length_all_input_and_output - max_length_of_generated_tokens
+
             prompt_dir = os.path.join(self.config["server"]["prompts"], 'dialog.txt')
             with open(prompt_dir, 'r') as file:
                 prompt = file.read()
 
+            # Tokenize the history and prompt
+            tokenized_prompt = self.model.tokenize(prompt)
+
             # Load the chat history
+            text_of_history = ''
             history = ''
-            history_path = os.path.join(self.config["server"]["history"], chat_id)
-            if os.path.exists(history_path):
-                with open(history_path, 'r') as file:
-                    data = json.load(file)
-                    for item in data:
-                        name = item.get('name', '')
-                        message = item.get('message', '')
-                        if name and message:
-                            history += f'{name}: {message}\n'
 
-            # Append the latest message from Yuki
-            history += f"Yuki: {text}\nYuna:"
+            for item in chat_history:
+                name = item.get('name', '')
+                message = item.get('message', '')
+                if name and message:
+                    history += f'{name}: {message}\n'
 
-            # Tokenize the history to calculate its length in tokens
-            tokenized_history = self.model.tokenize(history)
+            text_of_history = f"{history}Yuki: {text}\nYuna:"
 
-            # Calculate the maximum length for the history in tokens
-            max_length_tokens = self.config["ai"]["context_length"] - self.config["ai"]["max_new_tokens"]
+            tokenized_history = self.model.tokenize(text_of_history)
 
-            # Ensure we are cropping tokens, not characters
-            if len(tokenized_history) > max_length_tokens:
-                tokenized_history = tokenized_history[-max_length_tokens:]
+            # Calculate the maximum length for the history
+            max_length_of_history_tokens = max_length_of_input_tokens - len(tokenized_prompt)
 
-            # Convert the cropped tokenized history back to a string
-            cropped_history = self.model.detokenize(tokenized_history)
+            # Crop the history to fit into the max_length_of_history_tokens counting from the end of the text
+            cropped_history = tokenized_history[-max_length_of_history_tokens:]
 
             # Replace the placeholder in the prompt with the cropped history
-            response = prompt.replace('{user_msg}', cropped_history)
+            inserted_history = prompt.replace('{user_msg}', self.model.detokenize(cropped_history))
 
-            # Output the combined prompt and history (for debugging or further processing)
-            print(response)
+            # Tokenize the everything_for_model_input to calculate its length in tokens
+            print("input size: ", len(self.model.tokenize(inserted_history)))
+
+            response = inserted_history
 
             # inject prompt variable from dialog into new_history
         elif template != "dialog" and template != "himitsuCopilot" and template != "himitsuCopilotGen" and template != "summary" and template != None:
@@ -148,15 +151,15 @@ class ChatGenerator:
 
             response = response + f" {response_add}"
 
+        # response = self.clearText(str(response))
+
         if template != "himitsuCopilot" and template != "himitsuCopilotGen" and template != "summary" and template != None:
-            chat_history = ChatHistoryManager.load_chat_history(self, chat_id)
             chat_history.append({"name": "Yuki", "message": text})
             chat_history.append({"name": "Yuna", "message": response})
-            ChatHistoryManager.save_chat_history(self, chat_history, chat_id)
+            chat_history_manager.save_chat_history(chat_history, chat_id)
 
         if speech==True:
-            self.generate_speech(response)
-
+            chat_history_manager.generate_speech(response)
         return response
     
     def clearText(self, text):
@@ -189,7 +192,7 @@ class ChatGenerator:
         return cleaned_string
 
 if __name__ == '__main__':
-    with open("static/config.json", 'r') as file:
+    with open("config.json", 'r') as file:
         config = json.load(file)
 
     chat_generator = ChatGenerator(config)

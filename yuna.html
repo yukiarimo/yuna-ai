@@ -9,9 +9,9 @@
     <link rel="canonical" href="http://www.yuna-ai.live/blank.html">
     <meta property="og:url" content="http://www.yuna-ai.live/blank.html">
     <meta property="og:description" content="Your virtual AI girlfriend">
-    <meta name="twitter:image" content="http://www.yuna-ai.live/static/img/yuna-ai.png">
+    <meta name="twitter:image" content="http://www.yuna-ai.live/img/yuna-ai.png">
     <meta name="twitter:title" content="Yuna AI">
-    <meta property="og:image" content="http://www.yuna-ai.live/static/img/yuna-ai.png">
+    <meta property="og:image" content="http://www.yuna-ai.live/img/yuna-ai.png">
     <meta name="description" content="Your virtual AI girlfriend">
     <meta property="og:type" content="website">
     <meta property="og:title" content="Yuna AI">
@@ -25,27 +25,24 @@
             "url": "http://www.yuna-ai.live"
         }
     </script>
-    <link rel="icon" type="image/jpeg" sizes="60x60" href="static/img/yuna-ai.png?h=c5166867f10a4e454b5b2ae8d63268b3">
-    <link rel="icon" type="image/jpeg" sizes="60x60" href="static/img/yuna-ai.png?h=c5166867f10a4e454b5b2ae8d63268b3"
-        media="(prefers-color-scheme: dark)">
-    <link rel="icon" type="image/jpeg" sizes="60x60" href="static/img/yuna-ai.png?h=c5166867f10a4e454b5b2ae8d63268b3">
-    <link rel="icon" type="image/jpeg" sizes="60x60" href="static/img/yuna-ai.png?h=c5166867f10a4e454b5b2ae8d63268b3"
-        media="(prefers-color-scheme: dark)">
-    <link rel="icon" type="image/jpeg" sizes="60x60" href="static/img/yuna-ai.png?h=c5166867f10a4e454b5b2ae8d63268b3">
-    <link rel="icon" type="image/jpeg" sizes="60x60" href="static/img/yuna-ai.png?h=c5166867f10a4e454b5b2ae8d63268b3">
-    <link rel="icon" type="image/jpeg" sizes="60x60" href="static/img/yuna-ai.png?h=c5166867f10a4e454b5b2ae8d63268b3">
-    <link rel="stylesheet" href="static/bootstrap/css/bootstrap.min.css?h=97380e22c8933e9aa79cbc2390b9f15a">
-    <link rel="manifest" href="manifest.json?h=cac48232b1fc5fc8e026cf1e7b7ef587">
-    <link rel="stylesheet" href="static/css/Nunito.css?h=65e1aae7ce6f6cb9d0e4a95da536c5c9">
-    <link rel="stylesheet" href="static/fonts/fontawesome-all.min.css?h=d98553506d4393860db8a633e4842ead">
+    <link rel="icon" type="image/jpeg" sizes="60x60" href="img/yuna-ai.png">
+    <link rel="icon" type="image/jpeg" sizes="60x60" href="img/yuna-ai.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" type="image/jpeg" sizes="60x60" href="img/yuna-ai.png">
+    <link rel="icon" type="image/jpeg" sizes="60x60" href="img/yuna-ai.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" type="image/jpeg" sizes="60x60" href="img/yuna-ai.png">
+    <link rel="icon" type="image/jpeg" sizes="60x60" href="img/yuna-ai.png">
+    <link rel="icon" type="image/jpeg" sizes="60x60" href="img/yuna-ai.png">
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
-    <link rel="stylesheet" href="static/css/kawai-v11-2.css">
-    <link rel="stylesheet" href="static/css/index.css">
-    <script src="static/js/kawai-v11-2.js" defer></script>
-    <script src="static/js/index.js" defer></script>
-    <script src="static/js/himitsu.js" defer></script>
-    <script src="static/js/setup.js" defer></script>
+    <link rel="stylesheet" href="/css/kawai-v11-2.css">
+    <link rel="stylesheet" href="/css/index.css">
+    <script src="/js/kawai-v11-2.js" defer></script>
+    <script src="/js/index.js" defer></script>
+    <script src="/js/himitsu.js" defer></script>
+    <script src="/js/setup.js" defer></script>
 
     <style>
         /* Custom styles for the modal to make it almost full-screen */
@@ -101,7 +98,7 @@
             <div class="container-fluid d-flex flex-column p-0"><a
                     class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
                     <div class="sidebar-brand-icon">
-                        <img src="static/img/yuna-ai.png" alt="Yuna AI" style="width: 30px; height: 30px;">
+                        <img src="img/yuna-ai.png" alt="Yuna AI" style="width: 30px; height: 30px;">
                     </div>
                     <div class="sidebar-brand-text mx-3"><span>Yuna AI</span></div>
                 </a>
@@ -115,6 +112,8 @@
                                 class="fas fa-table"></i><span>Settings</span></a></li>
                     <li class="nav-item"><a class="nav-link" onclick="OpenTab('4')"><i
                                 class="fas fa-user"></i><span>Profile</span></a></li>
+                    <li class="nav-item"><a class="nav-link" onclick="OpenTab('5')"><i
+                                class="fas fa-table"></i><span>Search</span></a></li>
                     <div class="input-group">
                         <select class="form-select" id="templateSelect" aria-label="Templates"
                             onchange="changeTemplate()">
@@ -184,7 +183,7 @@
                                 <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
                                         aria-expanded="false" data-bs-toggle="dropdown" href="#"><img
                                             class="border rounded-circle img-profile"
-                                            src="static/img/yuna-girl-head.png?h=0ecc82101fb9a10ca459432faa8c0656"></a>
+                                            src="img/yuna-girl-head.png?h=0ecc82101fb9a10ca459432faa8c0656"></a>
                                     <div class="dropdown-menu shadow dropdown-menu-end animated--grow-in"><a
                                             class="dropdown-item" onclick="callYuna.show();"><i
                                                 class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Call</a><a
@@ -221,7 +220,8 @@
                                             <line x1="5" y1="12" x2="19" y2="12"></line>
                                         </svg>
                                     </button>
-                                    <input type="file" id="imageUpload" accept="image/*" style="display: none;" onchange="captureImageViaFile()">
+                                    <input type="file" id="imageUpload" accept="image/*" style="display: none;"
+                                        onchange="captureImageViaFile()">
                                     <input id="input_text" type="text" class="input-field" placeholder="Ask Yuna...">
 
                                     <div class="form-check form-switch">
@@ -258,7 +258,7 @@
                                             aria-labelledby="chats-tab">
                                             <div class="header">
                                                 <h1>Chats</h1>
-                                                <button class="add-button">+</button>
+                                                <button class="add-button" onclick="createHistoryFile();">+</button>
                                             </div>
                                             <ul class="list-group" id="chat-items">
                                                 <!-- Will be added dynamically -->
@@ -296,7 +296,7 @@
                                                 aria-selected="false">API</button>
                                         </li>
                                         <li class="nav-item" role="presentation">
-                                            <button class="nav-link" onclick="OpenLink('pricing.html')" id="yuna-tab"
+                                            <button class="nav-link" onclick="OpenLink('/pricing')" id="yuna-tab"
                                                 data-bs-toggle="tab" data-bs-target="#yuna" type="button" role="tab"
                                                 aria-controls="yuna" aria-selected="false">Yuna +</button>
                                         </li>
@@ -371,7 +371,7 @@
                                         <div class="card mb-3">
                                             <div class="card-body text-center shadow"><img
                                                     class="rounded-circle mb-3 mt-4"
-                                                    src="static/img/yuna-girl-head.png?h=a0a7d00bcd8e4f84f4d8ce636a8f94d4"
+                                                    src="img/yuna-girl-head.png?h=a0a7d00bcd8e4f84f4d8ce636a8f94d4"
                                                     width="160" height="160">
                                                 <div class="mb-3"><button class="btn btn-primary btn-sm"
                                                         type="button">Change
@@ -545,12 +545,31 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="tab-o" id="5">
+                            <div class="coll-lo">
+                                <div class="block-card">
+                                    <h1 class="text-center text-primary mb-4">Search Results</h1>
+
+                                    <div class="input-group mb-3">
+                                        <input type="text" id="searchInput" class="form-control"
+                                            placeholder="Enter your search">
+                                        <button id="searchButton" class="btn btn-primary">Search</button>
+                                    </div>
+
+                                    <div id="requestResults" class="alert alert-info d-none"></div>
+                                    <div id="results" class="row row-cols-1 row-cols-md-3 g-4"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
+
+    <div id="backgroundMusic" style="display: none;"></div>
 
     <!-- Modal -->
     <div class="modal fade" id="videoCallModal" tabindex="-1" aria-labelledby="videoCallModalLabel" aria-hidden="true">
@@ -564,7 +583,7 @@
                     <!-- Video blocks in vertical orientation -->
                     <div class="d-flex flex-column flex-md-row h-100">
                         <div class="video-block ratio ratio-16x9">
-                            <img src="static/img/yuna-full.png" class="w-100" alt="Static Image">
+                            <img src="img/yuna-full.png" class="w-100" alt="Static Image">
                         </div>
                         <div class="video-block ratio ratio-16x9">
                             <video id="localVideo" playsinline class="w-100" autoplay muted></video>
@@ -599,8 +618,78 @@
         </div>
     </div>
 
-    <script src="static/bootstrap/js/bootstrap.min.js?h=e55bde7d6e36ebf17ba0b8c1e80e4065"></script>
-    <script src="static/js/theme.js?h=79f403485707cf2617c5bc5a2d386bb0"></script>
+    <script>
+        var allHtmlContent = '';
+
+        document.getElementById('searchButton').addEventListener('click', function() {
+            var searchData = document.getElementById('searchInput').value;
+
+            // Display the request information
+            var requestResultsContainer = document.getElementById('requestResults');
+            requestResultsContainer.innerHTML = '<p><strong>Request:</strong> Sending search request for: ' + searchData + '</p>';
+
+            // Use Fetch API to send a POST request to your server
+            fetch('http://localhost:3003/search', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ json: searchData }),
+            })
+            .then(response => response.text()) // Note: Use text() instead of json() to get the HTML content
+            .then(htmlContent => {
+                // Store all the HTML content received from the server
+                allHtmlContent = htmlContent;
+
+                // Display the response information
+                var responseResultsContainer = document.getElementById('results');
+                responseResultsContainer.innerHTML = '<p><strong>Response:</strong> Received HTML content from the server.</p>';
+
+                // Process the received HTML content
+                var parser = new DOMParser();
+                var doc = parser.parseFromString(htmlContent, 'text/html');
+
+                // Example: Display the title of the parsed HTML
+                var titleElement = doc.querySelector('title');
+
+                // Get the element with class 'kno-rdesc'
+                var knoRdescElement = doc.querySelector('.kno-rdesc');
+
+                if (knoRdescElement == null) {
+                    // If the element is not found, try to get the element with class 'kno-rdesc c-wiz'
+                    knoRdescElement = doc.getElementsByClassName('hgKElc')[0];
+                }
+
+                // Extract text content from the element
+                var textContent = knoRdescElement ? knoRdescElement.textContent.trim() : '';
+
+                var resultsContainer = document.getElementById('results');
+                resultsContainer.innerHTML = '<p><strong>Page Title:</strong> ' + titleElement.innerText + '</p>';
+                resultsContainer.innerHTML += '<p><strong>Extracted Content:</strong> ' + textContent + '</p>';
+                
+                // Select all elements with class "N54PNb"
+                var resultElements = doc.querySelectorAll('.N54PNb');
+
+                // Loop through each result element
+                resultElements.forEach(function(resultElement) {
+                    // Get the title
+                    var titleElement = resultElement.querySelector('.LC20lb');
+                    var title = titleElement ? titleElement.textContent.trim() : '';
+
+                    // Get the URL
+                    var urlElement = resultElement.querySelector('a');
+                    var url = urlElement ? urlElement.href : '';
+
+                    // Display the information
+                    resultsContainer.innerHTML += '<p><strong>Title:</strong> ' + title + '</p>';
+                    resultsContainer.innerHTML += '<p><strong>URL:</strong> <a href="' + url + '" target="_blank">' + url + '</a></p>';
+                });
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+    <script src="/bootstrap/js/bootstrap.min.js?h=e55bde7d6e36ebf17ba0b8c1e80e4065"></script>
+    <script src="/js/theme.js?h=79f403485707cf2617c5bc5a2d386bb0"></script>
 </body>
 
 </html>

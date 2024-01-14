@@ -4,4 +4,4 @@ You're an AI assistant named Yuna, a master of crafting precise and insightful q
 ### User Input:
 {user_msg}
 
-### Final refined question from user:
+### Final refined question from the user:

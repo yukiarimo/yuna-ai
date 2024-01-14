@@ -251,8 +251,6 @@ donate() {
     echo "https://www.patreon.com/YukiArimo"
     
     xdg-open https://www.patreon.com/YukiArimo
-
-    esac
 }
 
 # Display the main menu

@@ -154,10 +154,9 @@ class ChatGenerator:
         # response = self.clearText(str(response))
 
         if template != "himitsuCopilot" and template != "himitsuCopilotGen" and template != "summary" and template != None:
-            chat_history = ChatHistoryManager.load_chat_history(self, chat_id)
             chat_history.append({"name": "Yuki", "message": text})
             chat_history.append({"name": "Yuna", "message": response})
-            ChatHistoryManager.save_chat_history(self, chat_history, chat_id)
+            chat_history_manager.save_chat_history(chat_history, chat_id)
 
         if speech==True:
             chat_history_manager.generate_speech(response)

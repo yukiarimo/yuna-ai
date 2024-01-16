@@ -1,0 +1,15 @@
+flask
+flask_cors
+flask_login
+openai-whisper
+pydub
+torch
+torchvision
+torchaudio
+transformers
+diffusers
+html2text
+bs4
+itsdangerous
+cryptography
+CT_METAL=1 ctransformers --no-binary

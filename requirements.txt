@@ -13,7 +13,3 @@ html2text
 bs4
 itsdangerous
 cryptography
-CT_METAL=1 pip install ctransformers --no-binary ctransformers
-itsdangerous
-cryptography
-CT_METAL=1 pip install ctransformers --no-binary ctransformers

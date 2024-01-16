@@ -51,6 +51,7 @@ def install_update_dependencies(event):
         ptg.Button("CPU", onclick=install_cpu),
         ptg.Button("NVIDIA GPU", onclick=install_nvidia),
         ptg.Button("AMD GPU", onclick=install_amd),
+        ptg.Button("Metal", onclick=install_metal),
         ptg.Button("Back", onclick=lambda event: manager.remove(windows['configure_gpu']))
     )
     manager.add(windows['configure_gpu'], assign=True)
@@ -80,6 +81,16 @@ def install_amd(event):
     if 'configure_gpu' in windows:
         manager.remove(windows['configure_gpu'])
     manager.focus(main_menu)
+
+def install_metal(event):
+    print("Installing Metal dependencies...")
+    subprocess.check_call("CT_METAL=1", [sys.executable, "-m", "pip", "install", "ctransformers", "--no-binary", "ctransformers"])
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements-macos.txt"])
+    print("Metal dependencies installed!")
+    if 'configure_gpu' in windows:
+        manager.remove(windows['configure_gpu'])
+    manager.focus(main_menu)
+
 
 def configure_submenu(event):
     windows['configure_menu'] = ptg.Window(

@@ -12,4 +12,3 @@ html2text
 bs4
 itsdangerous
 cryptography
-CT_METAL=1 ctransformers --no-binary

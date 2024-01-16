@@ -25,7 +25,8 @@ install_update_dependencies() {
     echo "1. CPU"
     echo "2. NVIDIA GPU"
     echo "3. AMD GPU"
-    echo "4. Go back" 
+    echo "4. Metal"
+    echo "5. Go back" 
 
     read -p "> " install_choice
 
@@ -33,8 +34,9 @@ install_update_dependencies() {
         1) install_cpu;;
         2) install_nvidia;;
         3) install_amd;;
-        4) return;;
-        *) echo "Invalid choice. Please enter a number between 1 and 4.";;
+        4.) install_metal;;
+        5) return;;
+        *) echo "Invalid choice. Please enter a number between 1 and 5.";;
     esac
     done
 }
@@ -60,6 +62,15 @@ install_amd() {
     echo "AMD dependencies installed."
     
 }
+
+install_metal() {
+    echo "Installing Metal dependencies..."
+    CT_METAL=1 pip install ctransformers --no-binary ctransformers
+    pip install -r requirements-macos.txt
+    echo "Metal dependencies installed."
+    
+}
+
 
 # Submenu for configure()
 configure_submenu() {

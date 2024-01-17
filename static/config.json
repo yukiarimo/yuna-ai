@@ -29,7 +29,7 @@
         "stream": false,
         "batch_size": 128,
         "threads": -1,
-        "gpu_layers": 50
+        "gpu_layers": 0
     },
     "server": {
         "port": 4848,
@@ -43,7 +43,7 @@
         "art_default_model": "any_loli.safetensors",
         "prompts": "static/db/prompts/",
         "default_prompt_file": "dialog.txt",
-        "device": "mps"
+        "device": "cpu"
     },
     "security": {
         "secret_key": "YourSecretKeyHere123!",

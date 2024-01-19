@@ -1,4 +1,14 @@
-// Class constructor for different prompts
+var name1;
+var name2;
+
+async function loadConfig() {
+  const response = await fetch('../../config.json');
+  const data = await response.json();
+  name1 = data.ai.names[0];
+  name2 = data.ai.names[1];
+}
+
+
 class PromptTemplate {
   constructor(fields, templateInputs) {
     this.fields = fields;
@@ -252,9 +262,9 @@ function sendGeneratedTextToServer(generatedText) {
           .then((data) => {
             messageManager.removeBr();
             messageManager.removeTypingBubble();
-
+            loadConfig();
             const messageData = {
-              name: 'Yuna',
+              name: name2,
               message: data.response,
             };
 
@@ -269,9 +279,9 @@ function sendGeneratedTextToServer(generatedText) {
           })
           .catch((error) => {
             messageManager.removeTypingBubble();
-
+            loadConfig();
             const messageData = {
-              name: 'Yuna',
+              name: name2,
               message: error,
             };
 
@@ -282,9 +292,9 @@ function sendGeneratedTextToServer(generatedText) {
       } else {
         messageManager.removeBr();
         messageManager.removeTypingBubble();
-
+        loadConfig();
         const messageData = {
-          name: 'Yuna',
+          name: name2,
           message: data.response,
         };
 
@@ -300,9 +310,9 @@ function sendGeneratedTextToServer(generatedText) {
     })
     .catch((error) => {
       messageManager.removeTypingBubble();
-
+      loadConfig();
       const messageData = {
-        name: 'Yuna',
+        name: name2,
         message: error,
       };
 

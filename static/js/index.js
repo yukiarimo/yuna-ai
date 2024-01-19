@@ -15,6 +15,7 @@ async function loadConfig() {
   const data = await response.json();
   name1 = data.ai.names[0];
   name2 = data.ai.names[1];
+  document.getElementById('input_text').placeholder = `Ask ${name2}...`;
 }
     
 function checkHimitsuCopilotState() {
@@ -1155,3 +1156,4 @@ function checkMe() {
         }
     });
 }
+document.addEventListener('DOMContentLoaded', loadConfig);

@@ -178,7 +178,6 @@ class YunaServer:
         # generate a random number and set it as a flash message
         random_number = random.randint(1, 100)
         flash(f'Random number: {random_number}')
-        
         return send_from_directory('.', 'yuna.html')
         #return 'Hello, {}!'.format(current_user.get_id())
 

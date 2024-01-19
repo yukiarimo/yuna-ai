@@ -154,10 +154,10 @@ class ChatGenerator:
         # response = self.clearText(str(response))
 
         if template != "himitsuCopilot" and template != "himitsuCopilotGen" and template != "summary" and template != None:
-            chat_history.append({"name": {self.config['ai']['names'][0]}, "message": text})
-            chat_history.append({"name": {self.config['ai']['names'][1]}, "message": response})
+            chat_history.append({"name": self.config['ai']['names'][0], "message": text})
+            chat_history.append({"name": self.config['ai']['names'][1], "message": response})
             chat_history_manager.save_chat_history(chat_history, chat_id)
-
+            
         if speech==True:
             chat_history_manager.generate_speech(response)
         return response

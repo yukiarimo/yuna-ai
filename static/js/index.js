@@ -1,6 +1,5 @@
 var server_url = '';
 var server_port = '';
-var config_data;
 var selectedFilename = '';
 var backgroundMusic = document.getElementById('backgroundMusic');
 var isTTS = false;
@@ -8,7 +7,17 @@ var isHimitsu = false;
 var messageContainer = document.getElementById('message-container');
 const typingBubble = `<div class="block-message-1" id="circle-loader"><div class="circle-loader"></div></div>`;
 var himitsuCopilot;
+var name1;
+var name2;
 
+async function loadConfig() {
+  const response = await fetch('../../config.json');
+  const data = await response.json();
+  name1 = data.ai.names[0];
+  name2 = data.ai.names[1];
+  document.getElementById('input_text').placeholder = `Ask ${name2}...`;
+}
+    
 function checkHimitsuCopilotState() {
   var toggleSwitch = document.getElementById('customSwitch');
   var isOn = toggleSwitch.checked;
@@ -140,9 +149,9 @@ function sendMessage(message, imageName = false) {
         buttonDiv.setAttribute('onclick', 'generateText();');
         buttonDiv.innerText = 'Gen';
         messageDiv.appendChild(buttonDiv);
-
+        loadConfig();
         messageData = {
-          name: 'Yuki',
+          name: name1,
           message: messageDiv.innerHTML,
         };
 
@@ -158,7 +167,7 @@ function sendMessage(message, imageName = false) {
         messageManager.removeTypingBubble();
 
         const messageData = {
-          name: 'Yuna',
+          name: name2,
           message: error,
         };
 
@@ -182,9 +191,9 @@ function sendMessage(message, imageName = false) {
     } else {
       imageName = `<img src='img/call/${imageName}.jpg' class='image-message'>`;
     }
-
+    loadConfig();
     messageData = {
-      name: 'Yuki',
+      name: name1,
       message: message + imageName,
     };
 
@@ -209,9 +218,9 @@ function sendMessage(message, imageName = false) {
     buttonDiv.setAttribute('onclick', 'generateText();');
     buttonDiv.innerText = 'Gen';
     messageDiv.appendChild(buttonDiv);
-
+    loadConfig();
     messageData = {
-      name: 'Yuki',
+      name: name1,
       message: messageDiv.innerHTML,
       template: currentPromptName,
     };
@@ -266,7 +275,7 @@ function sendMessage(message, imageName = false) {
       messageManager.removeTypingBubble();
 
       const messageData = {
-        name: 'Yuna',
+        name: name2,
         message: data.response,
       };
 
@@ -283,7 +292,7 @@ function sendMessage(message, imageName = false) {
       messageManager.removeTypingBubble();
 
       const messageData = {
-        name: 'Yuna',
+        name: name2,
         message: error,
       };
 
@@ -317,11 +326,11 @@ function playAudio(audioType = 'tts') {
 function formatMessage(messageData) {
   // Create a div for the message
   var messageDiv = document.createElement('div');
-
+  loadConfig();
   // Set the CSS class based on the name
-  if (messageData.name === 'Yuki') {
+  if (messageData.name === name1) {
     messageDiv.classList.add('block-message-2'); // Yuki's messages on the right
-  } else if (messageData.name === 'Yuna') {
+  } else if (messageData.name === name2) {
     messageDiv.classList.add('block-message-1'); // Yuna's messages on the left
   }
 
@@ -504,9 +513,9 @@ function drawArt() {
 
   console.log(selectedFilename)
   var imagePrompt = prompt('Enter a prompt for the image:');
-
+  loadConfig();
   messageData = {
-    "name": "Yuki",
+    "name": name1,
     "message": imagePrompt
   }
 
@@ -551,7 +560,7 @@ function drawArt() {
       const imageCreated = data.message;
 
       messageData2 = {
-        "name": "Yuna",
+        "name": name2,
         "message": imageCreated
       }
 
@@ -701,6 +710,7 @@ function captureImageViaFile() {
 
 // Function to fetch and populate chat history file options
 function populateHistorySelect() {
+  loadConfig();
   return new Promise((resolve, reject) => {
     var historySelect = document.getElementById('chat-items');
 
@@ -1146,3 +1156,4 @@ function checkMe() {
         }
     });
 }
+document.addEventListener('DOMContentLoaded', loadConfig);

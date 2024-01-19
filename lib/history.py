@@ -10,7 +10,12 @@ class ChatHistoryManager:
         self.config = config
     
     def create_chat_history_file(self, chat_id):
-        history_starting_template = [{"name": "Yuki", "message": "Hi"}, {"name": "Yuna", "message": "Hello"},{"name": "Yuki", "message": "How are you doing?"}, {"name": "Yuna", "message": "I'm doing great! Thanks for asking!"}]
+        history_starting_template = [
+            {"name": self.config['ai']['names'][0], "message": "Hi"}, 
+            {"name": self.config['ai']['names'][1], "message": "Hello"},
+            {"name": self.config['ai']['names'][0], "message": "How are you doing?"}, 
+            {"name": self.config['ai']['names'][1], "message": "I'm doing great! Thanks for asking!"}
+        ]        
         chat_history_json = json.dumps(history_starting_template)
         encrypted_chat_history = self.encrypt_data(chat_history_json)
         with open(os.path.join(self.config["server"]["history"], chat_id), 'wb') as file:
@@ -66,6 +71,9 @@ class ChatHistoryManager:
 
     def save_chat_history(self, chat_history, chat):
         history_path = os.path.join(self.config["server"]["history"], chat)
+        #chat_history_json = json.dumps(chat_history)
+        if isinstance(chat_history, set):
+            chat_history = list(chat_history)
         chat_history_json = json.dumps(chat_history)
         encrypted_chat_history = self.encrypt_data(chat_history_json)
         with open(history_path, 'wb') as file:

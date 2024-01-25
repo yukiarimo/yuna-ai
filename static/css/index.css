@@ -644,3 +644,11 @@ body::-webkit-scrollbar {
 #wrapper #content-wrapper {
     background-color: transparent !important;
 }
+
+.sidebar-menu {
+    width: 100% !important;
+}
+
+.active {
+    border-radius: 10px !important;
+}

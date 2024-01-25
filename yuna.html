@@ -90,51 +90,137 @@
             });
         }
     </script>
+
+    <style>
+        body {
+            background-color: #121212;
+            color: #fff;
+        }
+
+        .sidebar {
+            width: 250px;
+            padding: 20px;
+        }
+
+        .sidebar-header {
+            font-size: 24px;
+            color: #4b6cff;
+            margin-bottom: 30px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar-menu li a {
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 15px;
+            display: block;
+        }
+
+        .sidebar-menu li a:hover {
+            background-color: #333;
+        }
+
+        .sidebar-menu .active {
+            background-color: #333;
+        }
+
+        .sidebar-menu li a .badge {
+            float: right;
+            background-color: #4b6cff;
+        }
+
+        .user-card {
+            background-color: #333;
+            padding: 15px;
+            margin-top: 30px;
+            border-radius: 10px;
+        }
+
+        .user-card img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+        }
+
+        .user-card .user-info {
+            display: inline-block;
+            vertical-align: middle;
+            margin-left: 10px;
+        }
+
+        .user-card .user-info .user-name {
+            font-size: 16px;
+        }
+
+        .user-card .user-info .user-email {
+            font-size: 14px;
+        }
+
+        .toggle-theme {
+            margin-top: 30px;
+        }
+
+        .toggle-theme button {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+    </style>
 </head>
 
 <body id="page-top">
     <div id="wrapper">
-        <nav class="navbar sidebar-o align-items-start sidebar sidebar-dark accordion p-0 navbar-dark">
-            <div class="container-fluid d-flex flex-column p-0"><a
-                    class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
-                    <div class="sidebar-brand-icon">
-                        <img src="img/yuna-ai.png" alt="Yuna AI" style="width: 30px; height: 30px;">
-                    </div>
-                    <div class="sidebar-brand-text mx-3"><span>Yuna AI</span></div>
-                </a>
-                <hr class="sidebar-divider my-0">
-                <ul class="navbar-nav text-light" id="accordionSidebar">
-                    <li class="nav-item"><a class="nav-link active" onclick="OpenTab('1')"><i
-                                class="fas fa-window-maximize"></i><span>Home</span></a></li>
-                    <li class="nav-item"><a class="nav-link" onclick="OpenTab('2')"><i
-                                class="fas fa-table"></i><span>Library</span></a></li>
-                    <li class="nav-item"><a class="nav-link" onclick="OpenTab('3')"><i
-                                class="fas fa-table"></i><span>Settings</span></a></li>
-                    <li class="nav-item"><a class="nav-link" onclick="OpenTab('4')"><i
-                                class="fas fa-user"></i><span>Profile</span></a></li>
-                    <li class="nav-item"><a class="nav-link" onclick="OpenTab('5')"><i
-                                class="fas fa-table"></i><span>Search</span></a></li>
-                    <div class="input-group">
-                        <select class="form-select" id="templateSelect" aria-label="Templates"
-                            onchange="changeTemplate()">
-                            <option selected class="block-list-e" value="dialog">Default</option>
-                            <option class="block-list-e" value="writer">Writer</option>
-                            <option class="block-list-e" value="paraphrase">Paraphrase</option>
-                            <option class="block-list-e" value="decisionMaking">Decision</option>
-                            <option class="block-list-e" value="himitsu">Himitsu</option>
-                            <option class="block-list-e" value="search">Search</option>
-                        </select>
-                    </div>
+        <nav class="navbar sidebar sidebar-o align-items-start sidebar sidebar-dark accordion p-0 navbar-dark">
+            <div class="container-fluid d-flex flex-column p-0">
+                <div class="sidebar-header">
+                    <a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
+                        <div class="sidebar-brand-icon">
+                            <img src="img/yuna-ai.png" alt="Yuna AI" style="width: 30px; height: 30px;">
+                            <button class="sidebarToggleIn btn btn-link d-md-none rounded-circle me-3" type="button"><i
+                                   onclick="togglesidebarBack()" class="fas fa-bars"></i></button>
+                        </div>
+                        <div class="sidebar-brand-text mx-3"><span>Yuna AI</span></div>
+                    </a>
+                </div>
+                <ul class="sidebar-menu">
+                    <li><a href="#" class="nav-link active" onclick="OpenTab('1')"><i class="fas fa-comments"></i> Chats
+                            <span class="badge badge-pill">5</span></a></li>
+                    <li><a href="#" class="nav-link" onclick="OpenTab('2')"><i class="fas fa-search"></i>Library</a>
+                    </li>
+                    <li><a href="#" class="nav-link" onclick="OpenTab('3')"><i class="fas fa-sync-alt"></i>Settings</a>
+                    </li>
+                    <li><a href="#" class="nav-link" onclick="OpenTab('4')"><i
+                                class="fas fa-question-circle"></i>Profile</a></li>
+                    <li><a href="#" class="nav-link" onclick="OpenTab('5')"><i class="fas fa-cog"></i>Search</a></li>
                 </ul>
-                <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0"
-                        id="sidebarToggle" type="button"></button></div>
+
+                <div class="user-card">
+                    <img src="img/yuna-girl-head.png" alt="User Image">
+                    <div class="user-info">
+                        <div class="user-name">Yuna Ai</div>
+                        <div class="user-email">tam@ui8.net</div>
+                    </div>
+                    <button class="btn btn-success btn-sm">Free</button>
+                </div>
+
+                <div class="toggle-theme">
+                    <button>Light</button>
+                    <button>Dark</button>
+                </div>
             </div>
         </nav>
         <div class="d-flex flex-column" id="content-wrapper" style="background-color: none !important;">
             <div id="content">
                 <nav class="navbar navbar-expand shadow mb-4 topbar static-top navbar-light topbar-o fixed-top">
-                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle me-3"
-                            id="sidebarToggleTop" type="button"><i class="fas fa-bars"></i></button>
+                    <div class="container-fluid"><button
+                            class="sidebarToggle btn btn-link d-md-none rounded-circle me-3" id="sidebarToggleTop"
+                            type="button"><i class="fas fa-bars"></i></button>
                         <ul class="navbar-nav flex-nowrap ms-auto">
                             <li class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
                                     aria-expanded="false" data-bs-toggle="dropdown" href="#"><i
@@ -152,8 +238,7 @@
                             </li>
                             <li class="nav-item dropdown no-arrow mx-1">
                                 <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
-                                        aria-expanded="false" data-bs-toggle="dropdown" href="#"><span
-                                            class="badge bg-danger badge-counter">3+</span><i
+                                        aria-expanded="false" data-bs-toggle="dropdown" href="#"><i
                                             class="fas fa-bell fa-fw"></i></a>
                                     <div class="dropdown-menu dropdown-menu-end dropdown-list animated--grow-in">
                                         <h6 class="dropdown-header">alerts center</h6><a
@@ -621,71 +706,79 @@
     <script>
         var allHtmlContent = '';
 
-        document.getElementById('searchButton').addEventListener('click', function() {
+        document.getElementById('searchButton').addEventListener('click', function () {
             var searchData = document.getElementById('searchInput').value;
 
             // Display the request information
             var requestResultsContainer = document.getElementById('requestResults');
-            requestResultsContainer.innerHTML = '<p><strong>Request:</strong> Sending search request for: ' + searchData + '</p>';
+            requestResultsContainer.innerHTML = '<p><strong>Request:</strong> Sending search request for: ' +
+                searchData + '</p>';
 
             // Use Fetch API to send a POST request to your server
             fetch('http://localhost:3003/search', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ json: searchData }),
-            })
-            .then(response => response.text()) // Note: Use text() instead of json() to get the HTML content
-            .then(htmlContent => {
-                // Store all the HTML content received from the server
-                allHtmlContent = htmlContent;
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        json: searchData
+                    }),
+                })
+                .then(response => response.text()) // Note: Use text() instead of json() to get the HTML content
+                .then(htmlContent => {
+                    // Store all the HTML content received from the server
+                    allHtmlContent = htmlContent;
 
-                // Display the response information
-                var responseResultsContainer = document.getElementById('results');
-                responseResultsContainer.innerHTML = '<p><strong>Response:</strong> Received HTML content from the server.</p>';
+                    // Display the response information
+                    var responseResultsContainer = document.getElementById('results');
+                    responseResultsContainer.innerHTML =
+                        '<p><strong>Response:</strong> Received HTML content from the server.</p>';
 
-                // Process the received HTML content
-                var parser = new DOMParser();
-                var doc = parser.parseFromString(htmlContent, 'text/html');
+                    // Process the received HTML content
+                    var parser = new DOMParser();
+                    var doc = parser.parseFromString(htmlContent, 'text/html');
 
-                // Example: Display the title of the parsed HTML
-                var titleElement = doc.querySelector('title');
+                    // Example: Display the title of the parsed HTML
+                    var titleElement = doc.querySelector('title');
 
-                // Get the element with class 'kno-rdesc'
-                var knoRdescElement = doc.querySelector('.kno-rdesc');
+                    // Get the element with class 'kno-rdesc'
+                    var knoRdescElement = doc.querySelector('.kno-rdesc');
 
-                if (knoRdescElement == null) {
-                    // If the element is not found, try to get the element with class 'kno-rdesc c-wiz'
-                    knoRdescElement = doc.getElementsByClassName('hgKElc')[0];
-                }
+                    if (knoRdescElement == null) {
+                        // If the element is not found, try to get the element with class 'kno-rdesc c-wiz'
+                        knoRdescElement = doc.getElementsByClassName('hgKElc')[0];
+                    }
 
-                // Extract text content from the element
-                var textContent = knoRdescElement ? knoRdescElement.textContent.trim() : '';
+                    // Extract text content from the element
+                    var textContent = knoRdescElement ? knoRdescElement.textContent.trim() : '';
 
-                var resultsContainer = document.getElementById('results');
-                resultsContainer.innerHTML = '<p><strong>Page Title:</strong> ' + titleElement.innerText + '</p>';
-                resultsContainer.innerHTML += '<p><strong>Extracted Content:</strong> ' + textContent + '</p>';
-                
-                // Select all elements with class "N54PNb"
-                var resultElements = doc.querySelectorAll('.N54PNb');
+                    var resultsContainer = document.getElementById('results');
+                    resultsContainer.innerHTML = '<p><strong>Page Title:</strong> ' + titleElement
+                        .innerText + '</p>';
+                    resultsContainer.innerHTML += '<p><strong>Extracted Content:</strong> ' + textContent +
+                        '</p>';
 
-                // Loop through each result element
-                resultElements.forEach(function(resultElement) {
-                    // Get the title
-                    var titleElement = resultElement.querySelector('.LC20lb');
-                    var title = titleElement ? titleElement.textContent.trim() : '';
+                    // Select all elements with class "N54PNb"
+                    var resultElements = doc.querySelectorAll('.N54PNb');
 
-                    // Get the URL
-                    var urlElement = resultElement.querySelector('a');
-                    var url = urlElement ? urlElement.href : '';
+                    // Loop through each result element
+                    resultElements.forEach(function (resultElement) {
+                        // Get the title
+                        var titleElement = resultElement.querySelector('.LC20lb');
+                        var title = titleElement ? titleElement.textContent.trim() : '';
 
-                    // Display the information
-                    resultsContainer.innerHTML += '<p><strong>Title:</strong> ' + title + '</p>';
-                    resultsContainer.innerHTML += '<p><strong>URL:</strong> <a href="' + url + '" target="_blank">' + url + '</a></p>';
-                });
-            })
-            .catch(error => console.error('Error:', error));
+                        // Get the URL
+                        var urlElement = resultElement.querySelector('a');
+                        var url = urlElement ? urlElement.href : '';
+
+                        // Display the information
+                        resultsContainer.innerHTML += '<p><strong>Title:</strong> ' + title +
+                            '</p>';
+                        resultsContainer.innerHTML += '<p><strong>URL:</strong> <a href="' + url +
+                            '" target="_blank">' + url + '</a></p>';
+                    });
+                })
+                .catch(error => console.error('Error:', error));
         });
     </script>
     <script src="/bootstrap/js/bootstrap.min.js?h=e55bde7d6e36ebf17ba0b8c1e80e4065"></script>

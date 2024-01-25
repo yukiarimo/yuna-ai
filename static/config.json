@@ -32,8 +32,8 @@
         "gpu_layers": 50
     },
     "server": {
-        "port": 4848,
-        "url": "http://localhost:",
+        "port": "",
+        "url": "",
         "history": "static/db/history/",
         "default_history_file": "history_template.json",
         "images": "images/",

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocket Counter</title>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const ws = new WebSocket(`ws://${window.location.host}/counter`);
+            ws.onmessage = function(event) {
+                console.log('Message from server:', event.data);
+            };
+            ws.onopen = function(event) {
+                console.log('WebSocket connection established');
+            };
+            ws.onclose = function(event) {
+                console.log('WebSocket connection closed');
+            };
+            ws.onerror = function(event) {
+                console.error('WebSocket error:', event);
+            };
+        });
+    </script>
+</head>
+<body>
+    <h1>WebSocket Counter</h1>
+    <p>Check the console for messages.</p>
+</body>
+</html>

@@ -179,6 +179,9 @@ class YunaServer:
         random_number = random.randint(1, 100)
         flash(f'Random number: {random_number}')
         
+        # send flash message "Hello, {username}!"
+        flash(f'Hello, {current_user.get_id()}!')
+
         return send_from_directory('.', 'yuna.html')
         #return 'Hello, {}!'.format(current_user.get_id())
 
@@ -311,4 +314,7 @@ yuna_server = YunaServer()
 app = yuna_server.app
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=yuna_server.config["server"]["port"])
+    if yuna_server.config["server"]["port"] != "":
+        app.run(host='0.0.0.0', port=yuna_server.config["server"]["port"])
+    else:
+        app.run(host='0.0.0.0', port=4848)

@@ -327,24 +327,28 @@ function formatMessage(messageData) {
   // Create a div for the message
   var messageDiv = document.createElement('div');
   loadConfig();
+  messageDiv.classList.add('p-2', 'mb-2'); // Bootstrap padding and margin classes
+
   // Set the CSS class based on the name
-  if (messageData.name === name1) {
-    messageDiv.classList.add('block-message-2'); // Yuki's messages on the right
-  } else if (messageData.name === name2) {
-    messageDiv.classList.add('block-message-1'); // Yuna's messages on the left
+  if (messageData.name === 'Yuki') {
+    messageDiv.classList.add('block-message-2', 'text-end', 'bg-primary', 'text-white'); // Yuki's messages on the right
+  } else if (messageData.name === 'Yuna') {
+    messageDiv.classList.add('block-message-1', 'text-start', 'bg-secondary', 'text-white'); // Yuna's messages on the left
   }
 
   // Create a paragraph for the message text
   var messageText = document.createElement('pre');
+  messageText.classList.add('m-0'); // Bootstrap margin class
   messageText.innerHTML = messageData.message;
 
   // Append the message text to the message div
   messageDiv.appendChild(messageText);
 
-  scrollMsg()
+  scrollMsg();
 
   return messageDiv;
 }
+
 
 function downloadHistory() {
   if (selectedFilename == "") {
@@ -1106,13 +1110,26 @@ fourthNavSidebar.addEventListener('click', function () {
   fourthNavSidebar.classList.add('active');
 });
 
-document.getElementById('sidebarToggle').addEventListener('click', function () {
+document.getElementsByClassName('sidebarToggle')[0].addEventListener('click', function () {
+  document.getElementsByClassName('sidebar-o')[0].style.width = '100%';
   kawaiAutoScale();
 });
 
-document.getElementById('sidebarToggleTop').addEventListener('click', function () {
+function togglesidebarBack() {
+  document.getElementsByClassName('sidebar-o')[0].classList.add('toggled');
+  document.getElementsByClassName('sidebar-o')[0].width = '';
+  kawaiAutoScale();
+}
+
+document.getElementsByClassName('sidebarToggleIn')[0].addEventListener('click', function () {
+  document.getElementsByClassName('sidebar-o')[0].style.width = '100%';
   kawaiAutoScale();
 });
+
+// if on mobile, run this function
+if (window.matchMedia("(max-width: 767px)").matches) {
+  togglesidebarBack()
+}
 
 kawaiAutoScale();
 
@@ -1148,12 +1165,45 @@ document.addEventListener('DOMContentLoaded', (event) => {
 });
 
 function checkMe() {
-  fetch('/flash-messages')
+  return fetch('/flash-messages')
     .then(response => response.json())
     .then(messages => {
-        for (let message of messages) {
-            console.log(message);
-        }
+      // messages is an array of strings, each containing a message
+      return messages;
     });
 }
 document.addEventListener('DOMContentLoaded', loadConfig);
+
+function importFlash(messages) {
+  console.log(messages);
+  const dropdownMenu = document.querySelector('.dropdown-menu.dropdown-menu-end.dropdown-list.animated--grow-in');
+  
+  // Clear the current contents of the dropdownMenu
+  dropdownMenu.innerHTML = '';
+
+  messages.forEach(message => {
+    const messageTemplate = `
+      <a class="dropdown-item d-flex align-items-center" href="#">
+        <div class="mr-3">
+          <div class="icon-circle bg-primary">
+            <i class="fas fa-file-alt text-white"></i>
+          </div>
+        </div>
+        <div>
+          <span class="font-weight-bold">${message}</span>
+        </div>
+      </a>
+    `;
+    
+    // Append the new message template to the dropdownMenu
+    dropdownMenu.innerHTML += messageTemplate;
+  });
+};
+
+checkMe().then(messages => {
+  // Do something with messages here
+  importFlash(messages)
+}).catch(error => {
+  // Handle any errors here
+  console.error(error);
+});

@@ -1,0 +1,14 @@
+__pycache__/
+static/db/history/*.json
+!static/db/history/history_template.json
+static/audio/output.aiff
+static/audio/output.mp3
+lib/models/agi/*
+lib/models/yuna/*
+!lib/models/agi/README.md
+!lib/models/yuna/README.md
+static/img/call/*
+!static/img/call/image_template.jpg
+static/img/art/*
+!static/img/art/art_template.png
+auth/auth.json

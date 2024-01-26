@@ -172,6 +172,18 @@
             border-radius: 10px;
         }
     </style>
+
+    <style>
+        .fixed-bottom {
+            background-color: #f8f9fa;
+            padding: 10px 15px;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .btn {
+            border-radius: 50%;
+        }
+    </style>
 </head>
 
 <body id="page-top">
@@ -183,7 +195,7 @@
                         <div class="sidebar-brand-icon">
                             <img src="img/yuna-ai.png" alt="Yuna AI" style="width: 30px; height: 30px;">
                             <button class="sidebarToggleIn btn btn-link d-md-none rounded-circle me-3" type="button"><i
-                                   onclick="togglesidebarBack()" class="fas fa-bars"></i></button>
+                                    onclick="togglesidebarBack()" class="fas fa-bars"></i></button>
                         </div>
                         <div class="sidebar-brand-text mx-3"><span>Yuna AI</span></div>
                     </a>
@@ -295,18 +307,7 @@
 
                             <div class="input-wrapper ui-container">
                                 <div class="input-container">
-                                    <button class="attach-button btn btn-secondary" data-bs-toggle="popover"
-                                        data-bs-placement="bottom" data-bs-html="true"
-                                        data-bs-content="<a href='#' class='dropdown-item' onclick='handleTextFileClick()'>Text File</a><a href='#' class='dropdown-item' onclick='handleImageFileClick()'>Image File</a>">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round">
-                                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                                        </svg>
-                                    </button>
-                                    <input type="file" id="imageUpload" accept="image/*" style="display: none;"
-                                        onchange="captureImageViaFile()">
+
                                     <input id="input_text" type="text" class="input-field" placeholder="Ask Yuna...">
 
                                     <div class="form-check form-switch">
@@ -319,6 +320,25 @@
                                         style="width: 50px; height: 50px; padding: 0;">
                                         <i class="bi bi-arrow-up-circle" style="font-size: 2em;"></i>
                                     </button>
+                                </div>
+                            </div>
+                            <div class="fixed-bottom p-3" id="sendMessageContainer" style="background-color: #f8f9fa;">
+                                <div class="container">
+                                    <div class="row align-items-center">
+                                        <div class="col">
+                                            <input type="text" class="form-control rounded-pill border-0 shadow-sm px-4" placeholder="Type a message...">
+                                        </div>
+                                        <div class="col-auto d-flex">
+                                            <button class="btn btn-light rounded-circle shadow-sm mr-2" data-bs-toggle="popover" data-bs-placement="bottom" data-bs-html="true" data-bs-content="<a href='#' class='dropdown-item' onclick='handleTextFileClick()'>Text File</a><a href='#' class='dropdown-item' onclick='handleImageFileClick()'>Image File</a>">
+                                                <i class="fas fa-paperclip"></i>
+                                            </button>
+                                            <input type="file" id="imageUpload" accept="image/*" style="display: none;" onchange="captureImageViaFile()">
+                                            <button class="btn btn-light rounded-circle shadow-sm mr-2"><i class="fas fa-ellipsis-h"></i></button>
+                                            <button class="btn btn-primary rounded-circle shadow-sm" style="width: 48px; height: 48px;">
+                                                <i class="fas fa-paper-plane"></i>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

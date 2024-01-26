@@ -1,28 +1,27 @@
-from flask import Flask, send_from_directory
-from flask_sock import Sock
-import time
-import os
+import asyncio
+import websockets
 
-app = Flask(__name__)
-sock = Sock(app)
+connected = set()
 
-@app.route('/')
-def index():
-    return send_from_directory('.', 'test.html')
+async def server(websocket, path):
+    # Register.
+    connected.add(websocket)
+    try:
+        async for message in websocket:
+            print(message)
+            for conn in connected:
+                await conn.send(f'Got a new MSG FOR YOU: {message}')
 
-@sock.route('/counter')
-def counter(ws):
-    print("Client connected, starting to count.")
-    ws.send("Welcome! Counting will start shortly.")
-    time.sleep(3)  # Welcome message delay
-    for number in range(1, 101):
-        if ws.closed:
-            print(f"Client disconnected, stopped counting at {number}")
-            break
-        ws.send(str(number))
-        print(f"Sent number {number}")
-        time.sleep(1)  # One second delay between numbers
-    print("Finished counting or client disconnected.")
+                # start sending messages to the client every 100ms continuously counting from 0 to 100
+                for i in range(100):
+                    await conn.send(str(i))
+                    await asyncio.sleep(0.1)
+    finally:
+        # Unregister.
+        connected.remove(websocket)
+    
 
-if __name__ == '__main__':
-    app.run(debug=True)
+start_server = websockets.serve(server, "localhost", 5000)
+
+asyncio.get_event_loop().run_until_complete(start_server)
+asyncio.get_event_loop().run_forever()

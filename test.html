@@ -2,27 +2,34 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>WebSocket Counter</title>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const ws = new WebSocket(`ws://${window.location.host}/counter`);
-            ws.onmessage = function(event) {
-                console.log('Message from server:', event.data);
-            };
-            ws.onopen = function(event) {
-                console.log('WebSocket connection established');
-            };
-            ws.onclose = function(event) {
-                console.log('WebSocket connection closed');
-            };
-            ws.onerror = function(event) {
-                console.error('WebSocket error:', event);
-            };
-        });
-    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socket Thing1</title>
 </head>
 <body>
-    <h1>WebSocket Counter</h1>
-    <p>Check the console for messages.</p>
+    Client1
+    <button onclick="sendMsg()">Send Msg</button>
 </body>
+<script>
+    // Create WebSocket connection.
+    const socket = new WebSocket('ws://localhost:5000');
+
+    // Connection opened
+    socket.addEventListener('open', function (event) {
+        console.log('Connected to the WS Server!')
+    });
+
+    // Connection closed
+    socket.addEventListener('close', function (event) {
+        console.log('Disconnected from the WS Server!')
+    });
+
+    // Listen for messages
+    socket.addEventListener('message', function (event) {
+        console.log('Message from server ', event.data);
+    });
+    // Send a msg to the websocket
+    const sendMsg = () => {
+        socket.send('Hello from Client1!');
+    }
+</script>
 </html>

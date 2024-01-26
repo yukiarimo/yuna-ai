@@ -198,6 +198,7 @@ function kawaiAutoScale() {
     var topbar = document.querySelector('.topbar-o');
     var sidebar = document.querySelector('.sidebar-o');
     var blocko = document.querySelector('.block-o');
+    var sendMessageContainer = document.getElementById('sendMessageContainer');
 
     if (topbar && sidebar && blocko) {
         var topbarHeight = topbar.offsetHeight;
@@ -211,6 +212,12 @@ function kawaiAutoScale() {
         blocko.style.marginLeft = `${sidebarWidth}px`;
         topbar.style.width = `calc(100% - ${sidebarWidth}px)`;
         topbar.style.marginLeft = `${sidebarWidth}px`;
+
+        // for sendMessageContainer make width 100% - sidebarWidth and margin-left sidebarWidth
+        if (sendMessageContainer) {
+            sendMessageContainer.style.width = `calc(100% - ${sidebarWidth}px)`;
+            sendMessageContainer.style.marginLeft = `${sidebarWidth}px`;
+        }
     }
 }
 

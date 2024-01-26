@@ -181,9 +181,7 @@ class YunaServer:
         
         # send flash message "Hello, {username}!"
         flash(f'Hello, {current_user.get_id()}!')
-
         return send_from_directory('.', 'yuna.html')
-        #return 'Hello, {}!'.format(current_user.get_id())
 
     def handle_image_request(self):
         data = request.get_json()
@@ -196,10 +194,10 @@ class YunaServer:
             chat_id = data['chat']
 
             chat_history = self.chat_history_manager.load_chat_history(chat_id)
-            chat_history.append({"name": "Yuki", "message": prompt})
+            chat_history.append({"name": self.config['ai']['names'][0], "message": prompt})
 
             created_image = create_image(prompt)
-            chat_history.append({"name": "Yuna", "message": f"Sure, here you go! <img src='img/art/{created_image}' class='image-message'>"})
+            chat_history.append({"name": self.config['ai']['names'][1], "message": f"Sure, here you go! <img src='img/art/{created_image}' class='image-message'>"})
 
             self.chat_history_manager.save_chat_history(chat_history, chat_id)
             yuna_image_message = f"Sure, here you go! <img src='img/art/{created_image}' class='image-message'>"

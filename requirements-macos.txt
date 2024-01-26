@@ -1,14 +1,12 @@
 flask
 flask_cors
 flask_login
-flask_login
 openai-whisper
 pydub
 torch
 torchvision
 torchaudio
 transformers
-ctransformers
 diffusers
 html2text
 bs4

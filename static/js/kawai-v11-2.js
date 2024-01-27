@@ -198,7 +198,7 @@ function kawaiAutoScale() {
     var topbar = document.querySelector('.topbar-o');
     var sidebar = document.querySelector('.sidebar-o');
     var blocko = document.querySelector('.block-o');
-    var sendMessageContainer = document.getElementById('sendMessageContainer');
+    var sendMessageContainer = document.getElementsByClassName('input-container')[0];
 
     if (topbar && sidebar && blocko) {
         var topbarHeight = topbar.offsetHeight;

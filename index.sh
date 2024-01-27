@@ -57,7 +57,6 @@ install_nvidia() {
 
 install_amd() {
     echo "Installing AMD dependencies..."
-    CT_HIPBLAS=1 pip install ctransformers --no-binary ctransformers
     pip install -r requirements-amd.txt
     echo "AMD dependencies installed."
     
@@ -65,7 +64,6 @@ install_amd() {
 
 install_metal() {
     echo "Installing Metal dependencies..."
-    CT_METAL=1 pip install ctransformers --no-binary ctransformers
     pip install -r requirements-macos.txt
     echo "Metal dependencies installed."
     

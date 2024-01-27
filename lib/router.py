@@ -1,4 +1,7 @@
-from flask import jsonify, request
+from flask import jsonify, request, send_from_directory
+from pydub import AudioSegment
+import whisper
+from lib.vision import capture_image, create_image
 
 def handle_history_request(chat_history_manager):
     data = request.get_json()
@@ -44,3 +47,53 @@ def handle_message_request(chat_generator, chat_history_manager):
     response = chat_generator.generate(chat_id, speech, text, template, chat_history_manager)
 
     return jsonify({'response': response})
+
+def handle_audio_request(self):
+    audio_data = request.files['audio']
+
+    try:
+        # Save the audio file
+        audio_path = 'audio.wav'
+        audio_data.save(audio_path)
+
+        # Convert the audio to MP3
+        mp3_path = 'audio.mp3'
+        sound = AudioSegment.from_wav(audio_path)
+        sound.export(mp3_path, format='mp3')
+
+        print('Audio saved')
+
+        result = whisper.transcribe("audio.mp3")
+
+        return jsonify({'message': result["text"]})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
+def handle_image_request(self):
+    data = request.get_json()
+
+    if 'image' in data and 'task' in data and data['task'] == 'caption':
+        image_caption = capture_image(data)
+        return jsonify({'message': f'{image_caption}'})
+    elif 'prompt' in data and 'chat' in data and data['task'] == 'generate':
+        prompt = data['prompt']
+        chat_id = data['chat']
+
+        chat_history = self.chat_history_manager.load_chat_history(chat_id)
+        chat_history.append({"name": self.config['ai']['names'][0], "message": prompt})
+
+        created_image = create_image(prompt)
+        chat_history.append({"name": self.config['ai']['names'][1], "message": f"Sure, here you go! <img src='img/art/{created_image}' class='image-message'>"})
+
+        self.chat_history_manager.save_chat_history(chat_history, chat_id)
+        yuna_image_message = f"Sure, here you go! <img src='img/art/{created_image}' class='image-message'>"
+
+        return jsonify({'message': yuna_image_message})
+    else:
+        return jsonify({'error': 'Invalid task parameter'}), 400
+    
+def services(self):
+    return send_from_directory('.', 'services.html')
+    
+def pricing(self):
+    return send_from_directory('.', 'pricing.html')

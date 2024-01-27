@@ -8,7 +8,7 @@ torch
 torchvision
 torchaudio
 transformers
-ctransformers
+llama-cpp-python
 diffusers
 html2text
 bs4

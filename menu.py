@@ -67,6 +67,7 @@ def install_cpu(event):
 
 def install_nvidia(event):
     print("Installing NVIDIA dependencies...")
+    os.environ["CMAKE_ARGS"] = "-DLLAMA_CUBLAS=on"
     subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements-nvidia.txt"])
     print("NVIDIA dependencies installed!")
     if 'configure_gpu' in windows:
@@ -75,7 +76,7 @@ def install_nvidia(event):
 
 def install_amd(event):
     print("Installing AMD dependencies...")
-    subprocess.check_call("CT_HIPBLAS=1", [sys.executable, "-m", "pip", "install", "ctransformers", "--no-binary", "ctransformers"])
+    os.environ["CMAKE_ARGS"] = "-DLLAMA_HIPBLAS=on"
     subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements-amd.txt"])
     print("AMD dependencies installed!")
     if 'configure_gpu' in windows:
@@ -84,7 +85,7 @@ def install_amd(event):
 
 def install_metal(event):
     print("Installing Metal dependencies...")
-    subprocess.check_call("CT_METAL=1", [sys.executable, "-m", "pip", "install", "ctransformers", "--no-binary", "ctransformers"])
+    os.environ["CMAKE_ARGS"] = "-DLLAMA_METAL=on"
     subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements-macos.txt"])
     print("Metal dependencies installed!")
     if 'configure_gpu' in windows:

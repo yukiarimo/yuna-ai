@@ -5,6 +5,8 @@ const {
 } = require('electron');
 const path = require('path');
 
+
+
 let currentPath = app.getAppPath();
 
 if (currentPath.includes('/yuna-ai')) {
@@ -37,10 +39,14 @@ const createWindow = () => {
     openDevTools: false,
     vibrancy: 'appearance-based',
     darkTheme: true,
+    show: false,
   });
 
-  // and load the yuna.html of the app.
-  mainWindow.loadFile(`${currentPath}/yuna.html`);
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show();
+  });
+
+  mainWindow.loadURL('http://localhost:4848/yuna');
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
@@ -53,6 +59,7 @@ app.on('ready', () => {
       label: 'Yuna',
       submenu: [{
           label: 'About',
+          accelerator: 'CmdOrCtrl+R',
           click: () => {
             mainWindow.webContents.executeJavaScript('OpenTab("3")');
           }

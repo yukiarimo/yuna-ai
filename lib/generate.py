@@ -2,27 +2,19 @@ import json
 import os
 import re
 from transformers import pipeline
-from ctransformers import AutoModelForCausalLM
+from llama_cpp import Llama
 from lib.history import ChatHistoryManager
 from cryptography.fernet import Fernet
 
 class ChatGenerator:
     def __init__(self, config):
         self.config = config
-        self.model = AutoModelForCausalLM.from_pretrained(
-            config["server"]["yuna_model_dir"] + config["server"]["yuna_default_model"],
-            model_type='llama2',
-            max_new_tokens=config["ai"]["max_new_tokens"],
-            context_length=config["ai"]["context_length"],
-            temperature=config["ai"]["temperature"],
-            repetition_penalty=config["ai"]["repetition_penalty"],
-            last_n_tokens=config["ai"]["last_n_tokens"],
+        self.model = Llama(
+            model_path=config["server"]["yuna_model_dir"] + config["server"]["yuna_default_model"],
+            n_ctx=config["ai"]["context_length"],
             seed=config["ai"]["seed"],
-            top_k=config["ai"]["top_k"],
-            top_p=config["ai"]["top_p"],
-            stop=config["ai"]["stop"],
-            batch_size=config["ai"]["batch_size"],
-            gpu_layers=config["ai"]["gpu_layers"]
+            n_batch=config["ai"]["batch_size"],
+            n_gpu_layers=1,
         )
         self.classifier = pipeline("text-classification", model=f"{config['server']['agi_model_dir']}yuna-emotion")
 
@@ -39,7 +31,7 @@ class ChatGenerator:
                 prompt = file.read()
 
             # Tokenize the history and prompt
-            tokenized_prompt = self.model.tokenize(prompt)
+            tokenized_prompt = self.model.tokenize(prompt.encode('utf-8'))
 
             # Load the chat history
             text_of_history = ''
@@ -51,9 +43,9 @@ class ChatGenerator:
                 if name and message:
                     history += f'{name}: {message}\n'
 
-            text_of_history = f"{history}{self.config['ai']['names'][0]}: {text}\{self.config['ai']['names'][1]}:"
+            text_of_history = f"{history}Yuki: {text}\nYuna:"
 
-            tokenized_history = self.model.tokenize(text_of_history)
+            tokenized_history = self.model.tokenize(text_of_history.encode('utf-8'))
 
             # Calculate the maximum length for the history
             max_length_of_history_tokens = max_length_of_input_tokens - len(tokenized_prompt)
@@ -62,10 +54,10 @@ class ChatGenerator:
             cropped_history = tokenized_history[-max_length_of_history_tokens:]
 
             # Replace the placeholder in the prompt with the cropped history
-            inserted_history = prompt.replace('{user_msg}', self.model.detokenize(cropped_history))
+            inserted_history = prompt.replace('{user_msg}', self.model.detokenize(cropped_history).decode('utf-8'))
 
             # Tokenize the everything_for_model_input to calculate its length in tokens
-            print("input size: ", len(self.model.tokenize(inserted_history)))
+            print("input size: ", len(self.model.tokenize(inserted_history.encode('utf-8'))))
 
             response = inserted_history
 
@@ -76,7 +68,7 @@ class ChatGenerator:
                 prompt = file.read()
 
             # calculate the length of the prompt variable
-            prompt_length = len(self.model.tokenize(prompt))
+            prompt_length = len(self.model.tokenize(prompt.encode('utf-8')))
 
             # Calculate the maximum length for the history
             max_length = self.config["ai"]["context_length"] - self.config["ai"]["max_new_tokens"]
@@ -98,7 +90,7 @@ class ChatGenerator:
                 prompt = file.read()
 
             # calculate the length of the prompt variable
-            prompt_length = len(self.model.tokenize(prompt))
+            prompt_length = len(self.model.tokenize(prompt.encode('utf-8')))
 
             # Calculate the maximum length for the history
             max_length = self.config["ai"]["context_length"] - self.config["ai"]["max_new_tokens"]
@@ -115,7 +107,7 @@ class ChatGenerator:
                 prompt = file.read()
 
             # calculate the length of the prompt variable
-            prompt_length = len(self.model.tokenize(prompt))
+            prompt_length = len(self.model.tokenize(prompt.encode('utf-8')))
 
             # Calculate the maximum length for the history
             max_length = self.config["ai"]["context_length"] - self.config["ai"]["max_new_tokens"]
@@ -129,7 +121,19 @@ class ChatGenerator:
         elif template == None:
             print('template is none')
 
-        response = self.model(response, stream=False)
+        response = self.model(
+            response,
+            stream=False,
+            top_k=self.config["ai"]["top_k"],
+            top_p=self.config["ai"]["top_p"],
+            temperature=self.config["ai"]["temperature"],
+            repeat_penalty=self.config["ai"]["repetition_penalty"],
+            max_tokens=self.config["ai"]["max_new_tokens"],
+            stop=self.config["ai"]["stop"],
+            )
+        
+        # Assuming the dictionary is stored in a variable named 'response'
+        response = response['choices'][0]['text']
         response = self.clearText(str(response))
 
         if self.config["ai"]["emotions"]:
@@ -154,10 +158,10 @@ class ChatGenerator:
         # response = self.clearText(str(response))
 
         if template != "himitsuCopilot" and template != "himitsuCopilotGen" and template != "summary" and template != None:
-            chat_history.append({"name": self.config['ai']['names'][0], "message": text})
-            chat_history.append({"name": self.config['ai']['names'][1], "message": response})
+            chat_history.append({"name": "Yuki", "message": text})
+            chat_history.append({"name": "Yuna", "message": response})
             chat_history_manager.save_chat_history(chat_history, chat_id)
-            
+
         if speech==True:
             chat_history_manager.generate_speech(response)
         return response

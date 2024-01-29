@@ -281,3 +281,10 @@ document.addEventListener('keydown', function (event) {
 function Test12() {
   console.log('Test12() called');
 }
+
+var callYuna = {
+  show: function() {
+      var myModal = new bootstrap.Modal(document.getElementById('videoCallModal'), {});
+      myModal.show();
+  }
+};

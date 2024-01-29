@@ -155,13 +155,18 @@ body {
 .input-wrapper {
     position: fixed;
     display: flex;
-    bottom: 5px;
+    bottom: 0;
     right: 0;
     left: 0;
     align-items: center;
     justify-content: center;
 }
 
+#himitsuToggle {
+    position: absolute !important;
+    right: 0 !important;
+    margin-right: 3% !important;
+}
 
 .block-icon:nth-of-type(1),
 .block-icon:nth-of-type(2) {
@@ -449,8 +454,11 @@ input:checked~.slider .off-label {
     display: flex;
     align-items: center;
     background-color: #333;
-    border-radius: 40px;
-    padding: 10px;
+    padding: 5px;
+}
+
+.scroll-to-top {
+    bottom: 9%;
 }
 
 .attach-button,
@@ -464,6 +472,10 @@ input:checked~.slider .off-label {
     font-size: 16px;
     padding: 10px;
     margin: 0 5px;
+}
+
+.ui-container {
+    max-width: 100% !important;
 }
 
 .attach-button {
@@ -482,8 +494,8 @@ input:checked~.slider .off-label {
 
 .input-field {
     flex: 1;
-    background-color: transparent;
     border: none;
+    border-radius: 16px;
     color: #fff;
     margin: 0 10px;
     padding: 10px;
@@ -639,6 +651,10 @@ body::-webkit-scrollbar {
         z-index: 999;
         /* transition: all 0.5s ease; */
     }
+
+    #himitsuToggle {
+        margin-right: 11% !important;
+    }
 }
 
 #wrapper #content-wrapper {
@@ -651,4 +667,116 @@ body::-webkit-scrollbar {
 
 .active {
     border-radius: 10px !important;
+}
+
+/* Custom styles for the modal to make it almost full-screen */
+.modal-dialog {
+    max-width: 90vw;
+    height: 90vh;
+    margin: 5vh auto;
+}
+
+.modal-content {
+    height: 100%;
+    width: auto !important;
+}
+
+.modal-body {
+    overflow-y: auto;
+}
+
+/* Styles for the video blocks to ensure they take up equal space */
+.video-block {
+    flex: 1;
+    margin-bottom: 0.5rem;
+}
+
+/* Ensure the last video block has no margin at the bottom */
+.video-block:last-child {
+    margin-bottom: 0;
+}
+
+body {
+    background-color: #121212;
+    color: #fff;
+}
+
+.sidebar {
+    width: 250px;
+    padding: 20px;
+}
+
+.sidebar-header {
+    font-size: 24px;
+    color: #4b6cff;
+    margin-bottom: 30px;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    width: 90% !important;
+    margin: 0 auto;
+}
+
+.sidebar-menu li a {
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 15px;
+    display: block;
+}
+
+.sidebar-menu li a:hover {
+    background-color: #333;
+    border-radius: 10px;
+}
+
+.sidebar-menu .active {
+    background-color: #333;
+}
+
+.sidebar-menu li a .badge {
+    float: right;
+    background-color: #4b6cff;
+}
+
+.user-card {
+    background-color: #333;
+    padding: 15px;
+    margin-top: 30px;
+    border-radius: 10px;
+}
+
+.user-card img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+.user-card .user-info {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 10px;
+}
+
+.user-card .user-info .user-name {
+    font-size: 16px;
+}
+
+.user-card .user-info .user-email {
+    font-size: 14px;
+}
+
+.toggle-theme {
+    margin-top: 30px;
+}
+
+.toggle-theme button {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
 }

@@ -3,7 +3,7 @@ flask_cors
 flask_login
 openai-whisper
 pydub
-ctransformers
+llama-cpp-python
 transformers
 diffusers
 html2text

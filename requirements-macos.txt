@@ -4,7 +4,6 @@ flask_login
 openai-whisper
 pydub
 torch
-llama-cpp-python
 torchvision
 torchaudio
 transformers

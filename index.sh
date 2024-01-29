@@ -50,6 +50,7 @@ install_cpu() {
 
 install_nvidia() {
     echo "Installing NVIDIA dependencies..."
+    CMAKE_ARGS="-DLLAMA_CUBLAS=on" pip install llama-cpp-python
     pip install -r requirements-nvidia.txt
     echo "NVIDIA dependencies installed."
     
@@ -57,6 +58,11 @@ install_nvidia() {
 
 install_amd() {
     echo "Installing AMD dependencies..."
+    # YOU NEED TO SPECIFY THE CORRECT GFX NUMBER FOR YOUR GPU
+    # THE DEFAULT IS GFX1100 - which was used since I have a  RX7600
+    # Check the Shader ISA Instruction Set for your GPU
+    CMAKE_ARGS="-DLLAMA_HIPBLAS=ON -DCMAKE_C_COMPILER=/opt/rocm/llvm/bin/clang -DCMAKE_CXX_COMPILER=/opt/rocm/llvm/bin/clang++ -DCMAKE_PREFIX_PATH=/opt/rocm -DAMDGPU_TARGETS=gfx1100" FORCE_CMAKE=1 pip install llama-cpp-python
+    CMAKE_ARGS="-DLLAMA_HIPBLAS=on" pip install llama-cpp-python
     pip install -r requirements-amd.txt
     echo "AMD dependencies installed."
     
@@ -64,6 +70,7 @@ install_amd() {
 
 install_metal() {
     echo "Installing Metal dependencies..."
+    CMAKE_ARGS="-DLLAMA_METAL=on" pip install llama-cpp-python
     pip install -r requirements-macos.txt
     echo "Metal dependencies installed."
     
@@ -257,9 +264,16 @@ donate() {
     clear
     echo "========== Donate =========="
     echo "Yuna is an open source project. You can support the development of Yuna by donating."
-    echo "https://www.patreon.com/YukiArimo"
-    
-    xdg-open https://www.patreon.com/YukiArimo
+    echo "1. https://www.patreon.com/YukiArimo"
+    echo "2. https://ko-fi.com/yukiarimo"
+
+    read -p "Enter your choice (1-2): " donate_choice
+
+    case $donate_choice in
+        1) xdg-open https://www.patreon.com/YukiArimo;;
+        2) xdg-open https://ko-fi.com/yukiarimo;;
+        *) echo "Invalid choice. Please enter a number between 1 and 2.";;
+    esac
 }
 
 # Display the main menu

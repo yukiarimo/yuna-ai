@@ -8,8 +8,8 @@
         "art": false,
         "max_new_tokens": 128,
         "context_length": 1024,
-        "temperature": 0.65,
-        "repetition_penalty": 1.5,
+        "temperature": 0.6,
+        "repetition_penalty": 1.2,
         "last_n_tokens": 128,
         "seed": -1,
         "top_k": 40,
@@ -24,7 +24,8 @@
             "Yuuki: ",
             "<|user|>",
             "<|system|>",
-            "<|model|>"
+            "<|model|>",
+            "Yuna:"
         ],
         "stream": false,
         "batch_size": 128,

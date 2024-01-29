@@ -31,7 +31,7 @@ class ChatGenerator:
                 prompt = file.read()
 
             # Tokenize the history and prompt
-            tokenized_prompt = self.model.tokenize(prompt)
+            tokenized_prompt = self.model.tokenize(prompt.encode('utf-8'))
 
             # Load the chat history
             text_of_history = ''
@@ -45,7 +45,7 @@ class ChatGenerator:
 
             text_of_history = f"{history}Yuki: {text}\nYuna:"
 
-            tokenized_history = self.model.tokenize(text_of_history)
+            tokenized_history = self.model.tokenize(text_of_history.encode('utf-8'))
 
             # Calculate the maximum length for the history
             max_length_of_history_tokens = max_length_of_input_tokens - len(tokenized_prompt)
@@ -54,10 +54,10 @@ class ChatGenerator:
             cropped_history = tokenized_history[-max_length_of_history_tokens:]
 
             # Replace the placeholder in the prompt with the cropped history
-            inserted_history = prompt.replace('{user_msg}', self.model.detokenize(cropped_history))
+            inserted_history = prompt.replace('{user_msg}', self.model.detokenize(cropped_history).decode('utf-8'))
 
             # Tokenize the everything_for_model_input to calculate its length in tokens
-            print("input size: ", len(self.model.tokenize(inserted_history)))
+            print("input size: ", len(self.model.tokenize(inserted_history.encode('utf-8'))))
 
             response = inserted_history
 
@@ -68,7 +68,7 @@ class ChatGenerator:
                 prompt = file.read()
 
             # calculate the length of the prompt variable
-            prompt_length = len(self.model.tokenize(prompt))
+            prompt_length = len(self.model.tokenize(prompt.encode('utf-8')))
 
             # Calculate the maximum length for the history
             max_length = self.config["ai"]["context_length"] - self.config["ai"]["max_new_tokens"]
@@ -90,7 +90,7 @@ class ChatGenerator:
                 prompt = file.read()
 
             # calculate the length of the prompt variable
-            prompt_length = len(self.model.tokenize(prompt))
+            prompt_length = len(self.model.tokenize(prompt.encode('utf-8')))
 
             # Calculate the maximum length for the history
             max_length = self.config["ai"]["context_length"] - self.config["ai"]["max_new_tokens"]
@@ -107,7 +107,7 @@ class ChatGenerator:
                 prompt = file.read()
 
             # calculate the length of the prompt variable
-            prompt_length = len(self.model.tokenize(prompt))
+            prompt_length = len(self.model.tokenize(prompt.encode('utf-8')))
 
             # Calculate the maximum length for the history
             max_length = self.config["ai"]["context_length"] - self.config["ai"]["max_new_tokens"]
@@ -127,10 +127,13 @@ class ChatGenerator:
             top_k=self.config["ai"]["top_k"],
             top_p=self.config["ai"]["top_p"],
             temperature=self.config["ai"]["temperature"],
-            repeat_penalty=self.config["ai"]["repeat_penalty"],
+            repeat_penalty=self.config["ai"]["repetition_penalty"],
             max_tokens=self.config["ai"]["max_new_tokens"],
             stop=self.config["ai"]["stop"],
             )
+        
+        # Assuming the dictionary is stored in a variable named 'response'
+        response = response['choices'][0]['text']
         response = self.clearText(str(response))
 
         if self.config["ai"]["emotions"]:

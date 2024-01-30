@@ -1072,6 +1072,7 @@ var firstNavSidebar = document.getElementsByClassName('nav-link')[0];
 var secondNavSidebar = document.getElementsByClassName('nav-link')[1];
 var thirdNavSidebar = document.getElementsByClassName('nav-link')[2];
 var fourthNavSidebar = document.getElementsByClassName('nav-link')[3];
+var fifthNavSidebar = document.getElementsByClassName('nav-link')[4];
 
 if (window.matchMedia("(max-width: 428px)").matches) {
   document.getElementsByClassName('scroll-to-top')[0].style.display = 'none';
@@ -1084,6 +1085,7 @@ firstNavSidebar.addEventListener('click', function () {
   secondNavSidebar.classList.remove('active');
   thirdNavSidebar.classList.remove('active');
   fourthNavSidebar.classList.remove('active');
+  fifthNavSidebar.classList.remove('active');
 });
 
 secondNavSidebar.addEventListener('click', function () {
@@ -1092,6 +1094,7 @@ secondNavSidebar.addEventListener('click', function () {
   secondNavSidebar.classList.add('active');
   thirdNavSidebar.classList.remove('active');
   fourthNavSidebar.classList.remove('active');
+  fifthNavSidebar.classList.remove('active');
 });
 
 thirdNavSidebar.addEventListener('click', function () {
@@ -1100,6 +1103,7 @@ thirdNavSidebar.addEventListener('click', function () {
   secondNavSidebar.classList.remove('active');
   thirdNavSidebar.classList.add('active');
   fourthNavSidebar.classList.remove('active');
+  fifthNavSidebar.classList.remove('active');
 });
 
 fourthNavSidebar.addEventListener('click', function () {
@@ -1108,6 +1112,16 @@ fourthNavSidebar.addEventListener('click', function () {
   secondNavSidebar.classList.remove('active');
   thirdNavSidebar.classList.remove('active');
   fourthNavSidebar.classList.add('active');
+  fifthNavSidebar.classList.remove('active');
+});
+
+fifthNavSidebar.addEventListener('click', function () {
+  document.getElementsByClassName('scroll-to-top')[0].style.display = 'flex';
+  firstNavSidebar.classList.remove('active');
+  secondNavSidebar.classList.remove('active');
+  thirdNavSidebar.classList.remove('active');
+  fourthNavSidebar.classList.remove('active');
+  fifthNavSidebar.classList.add('active');
 });
 
 document.getElementsByClassName('sidebarToggle')[0].addEventListener('click', function () {

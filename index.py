@@ -1,4 +1,5 @@
 import random
+import shutil
 from flask import Flask, get_flashed_messages, request, jsonify, send_from_directory, redirect, url_for, flash
 from flask_login import LoginManager, UserMixin, login_required, logout_user, login_user, current_user
 from lib.generate import ChatGenerator, ChatHistoryManager
@@ -107,6 +108,7 @@ class YunaServer:
                     users[username] = password
                     self.write_users(users)
                     flash('Registered successfully')
+                    os.makedirs(f'db/history/{username}', exist_ok=True)
             elif action == 'login':
                 print('login action triggered for')
                 if users.get(username) == password:
@@ -138,6 +140,8 @@ class YunaServer:
                     del users[username]
                     self.write_users(users)
                     flash('Account deleted successfully')
+                    logout_user()
+                    shutil.rmtree(f'db/history/{username}')
                 else:
                     flash('Invalid username or password')
 

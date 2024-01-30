@@ -1,4 +1,5 @@
 from flask import jsonify, request, send_from_directory
+from flask_login import current_user
 from pydub import AudioSegment
 import whisper
 from lib.vision import capture_image, create_image
@@ -9,22 +10,22 @@ def handle_history_request(chat_history_manager):
     task = data.get('task') 
 
     if task == 'load':
-        return jsonify(chat_history_manager.load_chat_history(chat_id))
+        return jsonify(chat_history_manager.load_chat_history(list({current_user.get_id()})[0], chat_id))
     elif task == 'list':
-        return jsonify(chat_history_manager.list_history_files())
+        return jsonify(chat_history_manager.list_history_files({current_user.get_id()}))
     elif task == 'edit':
         history = data.get('history')
-        chat_history_manager.save_chat_history(history, chat_id)
+        chat_history_manager.save_chat_history(history, list({current_user.get_id()})[0], chat_id)
         return jsonify({'response': 'History edited successfully'})
     elif task == 'create':
-        chat_history_manager.create_chat_history_file(chat_id)
+        chat_history_manager.create_chat_history_file(list({current_user.get_id()})[0], chat_id)
         return jsonify({'response': 'History created successfully'})
     elif task == 'delete':
-        chat_history_manager.delete_chat_history_file(chat_id)
+        chat_history_manager.delete_chat_history_file(list({current_user.get_id()})[0], chat_id)
         return jsonify({'response': 'History deleted successfully'})
     elif task == 'rename':
         new_chat_id_name = data.get('name')
-        chat_history_manager.rename_chat_history_file(chat_id, new_chat_id_name)
+        chat_history_manager.rename_chat_history_file(list({current_user.get_id()})[0], chat_id, new_chat_id_name)
         return jsonify({'response': 'History renamed successfully'})
     else:
         return jsonify({'error': 'Invalid task parameter'}), 400

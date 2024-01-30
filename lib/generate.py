@@ -1,6 +1,7 @@
 import json
 import os
 import re
+from flask_login import current_user
 from transformers import pipeline
 from llama_cpp import Llama
 from lib.history import ChatHistoryManager
@@ -160,7 +161,7 @@ class ChatGenerator:
         if template != "himitsuCopilot" and template != "himitsuCopilotGen" and template != "summary" and template != None:
             chat_history.append({"name": "Yuki", "message": text})
             chat_history.append({"name": "Yuna", "message": response})
-            chat_history_manager.save_chat_history(chat_history, chat_id)
+            chat_history_manager.save_chat_history(chat_history, list({current_user.get_id()})[0], chat_id)
 
         if speech==True:
             chat_history_manager.generate_speech(response)
@@ -194,15 +195,3 @@ class ChatGenerator:
         cleaned_string = cleaned_string.replace("  ", ' ').replace("  ", ' ')
 
         return cleaned_string
-
-if __name__ == '__main__':
-    with open("config.json", 'r') as file:
-        config = json.load(file)
-
-    chat_generator = ChatGenerator(config)
-    chat_history_manager = ChatHistoryManager(config)
-
-    # Example usage:
-    chat_id = "example_chat"
-    chat_history_manager.create_chat_history_file(chat_id)
-    chat_generator.generate(chat_id, speech=True, text="Hello, how are you?")

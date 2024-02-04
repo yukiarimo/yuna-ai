@@ -53,8 +53,8 @@ class YunaServer:
 
     # Read users from JSON file
     def read_users(self):
-        if os.path.exists('static/db/admin/users.json'):
-            with open('static/db/admin/users.json', 'r') as f:
+        if os.path.exists('db/admin/users.json'):
+            with open('db/admin/users.json', 'r') as f:
                 users = json.load(f)
         else:
             users = {}
@@ -62,7 +62,7 @@ class YunaServer:
 
     # Write users to JSON file
     def write_users(self, users):
-        with open('static/db/admin/users.json', 'w') as f:
+        with open('db/admin/users.json', 'w') as f:
             json.dump(users, f)
             
     def load_config(self):

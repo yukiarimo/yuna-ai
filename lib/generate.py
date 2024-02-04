@@ -1,11 +1,9 @@
-import json
 import os
 import re
 from flask_login import current_user
 from transformers import pipeline
 from llama_cpp import Llama
 from lib.history import ChatHistoryManager
-from cryptography.fernet import Fernet
 
 class ChatGenerator:
     def __init__(self, config):
@@ -20,7 +18,7 @@ class ChatGenerator:
         self.classifier = pipeline("text-classification", model=f"{config['server']['agi_model_dir']}yuna-emotion")
 
     def generate(self, chat_id, speech=False, text="", template=None, chat_history_manager=None):
-        chat_history = chat_history_manager.load_chat_history(chat_id)
+        chat_history = chat_history_manager.load_chat_history(list({current_user.get_id()})[0], chat_id)
 
         if template == "dialog":
             max_length_all_input_and_output = self.config["ai"]["context_length"]
@@ -170,28 +168,23 @@ class ChatGenerator:
     def clearText(self, text):
         text = self.remove_image_tags(text)
         text = self.remove_emojis(text)
-        return text
 
-    def remove_image_tags(self, text):
         pattern = r'<img.*?class="image-message">'
-        cleaned_text = re.sub(pattern, '', text)
-        return cleaned_text
+        text = re.sub(pattern, '', text)
 
-    def remove_emojis(self, input_string):
         emoji_pattern = re.compile("["
                                u"\U0001F600-\U0001F64F"  # Emojis in the emoticons block
                                u"\U0001F300-\U0001F5FF"  # Other symbols and pictographs
-                               # ... (other emoji ranges)
                                "]+", flags=re.UNICODE)
 
-        cleaned_string = emoji_pattern.sub('', input_string)
+        text = emoji_pattern.sub('', text)
 
         emoticon_pattern = r':-?\)|:-?\(|;-?\)|:-?D|:-?P'
-        cleaned_string = re.sub(emoticon_pattern, '', cleaned_string)
+        text = re.sub(emoticon_pattern, '', text)
 
         pattern = r'\*\w+\*'
-        cleaned_string = re.sub(pattern, '', input_string)
+        text = re.sub(pattern, '', text)
 
-        cleaned_string = cleaned_string.replace("  ", ' ').replace("  ", ' ')
+        text = text.replace("  ", ' ').replace("  ", ' ')
 
-        return cleaned_string
+        return text

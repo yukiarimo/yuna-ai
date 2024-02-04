@@ -4,10 +4,10 @@
 <head data-bs-theme="dark">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Blank Page - Yuna AI</title>
+    <title>Yuna AI</title>
     <meta name="theme-color" content="#000000">
-    <link rel="canonical" href="http://www.yuna-ai.live/blank.html">
-    <meta property="og:url" content="http://www.yuna-ai.live/blank.html">
+    <link rel="canonical" href="http://www.yuna-ai.live/">
+    <meta property="og:url" content="http://www.yuna-ai.live/">
     <meta property="og:description" content="Your virtual AI girlfriend">
     <meta name="twitter:image" content="http://www.yuna-ai.live/img/yuna-ai.png">
     <meta name="twitter:title" content="Yuna AI">
@@ -27,13 +27,12 @@
     </script>
     <link rel="icon" type="image/jpeg" sizes="60x60" href="img/yuna-ai.png">
     <link rel="icon" type="image/jpeg" sizes="60x60" href="img/yuna-ai.png" media="(prefers-color-scheme: dark)">
-    <link rel="icon" type="image/jpeg" sizes="60x60" href="img/yuna-ai.png">
-    <link rel="icon" type="image/jpeg" sizes="60x60" href="img/yuna-ai.png" media="(prefers-color-scheme: dark)">
-    <link rel="icon" type="image/jpeg" sizes="60x60" href="img/yuna-ai.png">
-    <link rel="icon" type="image/jpeg" sizes="60x60" href="img/yuna-ai.png">
-    <link rel="icon" type="image/jpeg" sizes="60x60" href="img/yuna-ai.png">
-    <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
     <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="/css/bootstrap/bootstrap.min.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="/css/bootstrap/swiper-icons.css">
+    <link rel="stylesheet" href="/css/bootstrap/aos.min.css">
+    <link rel="stylesheet" href="/css/bootstrap/Articles-Cards-images.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
@@ -146,9 +145,10 @@
                             <div class="d-none d-sm-block topbar-divider"></div>
                             <li class="nav-item dropdown no-arrow">
                                 <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
-                                        aria-expanded="false" data-bs-toggle="dropdown" href="#"><img
-                                            class="border rounded-circle img-profile"
-                                            src="img/yuna-girl-head.png?h=0ecc82101fb9a10ca459432faa8c0656"></a>
+                                        aria-expanded="false" data-bs-toggle="dropdown" href="#">
+                                        <img class="border rounded-circle img-profile" src="img/yuna-girl-head.png" style="height: 26px;">
+                                    </a>
+
                                     <div class="dropdown-menu shadow dropdown-menu-end animated--grow-in"><a
                                             class="dropdown-item" onclick="callYuna.show();"><i
                                                 class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Call</a><a
@@ -215,7 +215,7 @@
                                         <div class="tab-pane fade show active" id="chats" role="tabpanel"
                                             aria-labelledby="chats-tab">
                                             <div class="header">
-                                                <h1>Chats</h1>
+                                                <h1 class="m-0 fw-bold">Chats</h1>
                                                 <button class="add-button" onclick="createHistoryFile();">+</button>
                                             </div>
                                             <ul class="list-group" id="chat-items">
@@ -224,7 +224,7 @@
                                         </div>
                                         <div class="tab-pane fade" id="collections" role="tabpanel"
                                             aria-labelledby="collections-tab">
-                                            <div class="header">Collections</div>
+                                            <div class="header m-0 fw-bold">Collections</div>
                                             <ul class="collection-list" id="collectionItems">
                                                 <!-- Collections content -->
                                             </ul>
@@ -280,7 +280,7 @@
                                         </div>
                                         <div class="tab-pane fade" id="params" role="tabpanel"
                                             aria-labelledby="params-tab">
-                                            <div class="section-heading">Params</div>
+                                            <div class="section-heading m-0 fw-bold">Params</div>
                                             <div id="parameter-container">
                                                 <!-- Dynamic HTML elements will be added here -->
                                             </div>
@@ -329,8 +329,7 @@
                                     <div class="col-lg-4">
                                         <div class="card mb-3">
                                             <div class="card-body text-center shadow"><img
-                                                    class="rounded-circle mb-3 mt-4"
-                                                    src="img/yuna-girl-head.png?h=a0a7d00bcd8e4f84f4d8ce636a8f94d4"
+                                                    class="rounded-circle mb-3 mt-4" src="img/yuna-girl-head.png"
                                                     width="160" height="160">
                                                 <div class="mb-3"><button class="btn btn-primary btn-sm"
                                                         type="button">Change
@@ -339,7 +338,7 @@
                                         </div>
                                         <div class="card shadow mb-4">
                                             <div class="card-header py-3">
-                                                <h6 class="text-primary fw-bold m-0">Projects</h6>
+                                                <h6 class="fw-bold m-0">Projects</h6>
                                             </div>
                                             <div class="card-body">
                                                 <h4 class="small fw-bold">Server migration<span
@@ -426,7 +425,7 @@
                                             <div class="col">
                                                 <div class="card shadow mb-3">
                                                     <div class="card-header py-3">
-                                                        <p class="text-primary m-0 fw-bold">User Settings</p>
+                                                        <p class="m-0 fw-bold">User Settings</p>
                                                     </div>
                                                     <div class="card-body">
                                                         <form>
@@ -472,7 +471,7 @@
                                                 </div>
                                                 <div class="card shadow">
                                                     <div class="card-header py-3">
-                                                        <p class="text-primary m-0 fw-bold">Contact Settings</p>
+                                                        <p class="m-0 fw-bold">Contact Settings</p>
                                                     </div>
                                                     <div class="card-body">
                                                         <form>
@@ -564,7 +563,8 @@
     <!--<a class="border rounded-circle d-inline scroll-to-top" href="#page-top"
         style="width: 50px; height: 50px; display: flex; justify-content: center; align-items: center;"><i
             class="fas fa-angle-up"></i></a>-->
-    </div><div class="scroll-to-top" style="display: none;"></div>
+    </div>
+    <div class="scroll-to-top" style="display: none;"></div>
 
     <div id="backgroundMusic" style="display: none;"></div>
 
@@ -638,8 +638,11 @@
             </div>
         </div>
     </div>
-    <script src="/bootstrap/js/bootstrap.min.js?h=e55bde7d6e36ebf17ba0b8c1e80e4065"></script>
-    <script src="/js/theme.js?h=79f403485707cf2617c5bc5a2d386bb0"></script>
+
+    <script src="/js/bootstrap/bootstrap.min.js"></script>
+    <script src="/js/bootstrap/aos.min.js"></script>
+    <script src="/js/bootstrap/bs-init.js"></script>
+    <script src="/js/bootstrap/freelancer.js"></script>
 </body>
 
 </html>

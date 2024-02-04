@@ -1,3 +1,11 @@
+* {
+    font-family: "kawai-font" !important;
+}
+
+i {
+    font-family: "Font Awesome 5 Free" !important;
+}
+
 .sidebar-o {
     scrollbar-width: none !important;
     transition: none !important;
@@ -244,12 +252,6 @@ body {
 .control img {
     width: 50%;
     height: auto;
-}
-
-h1 {
-    color: #333;
-    /* Replace with the actual color from your Figma design */
-    margin-bottom: 20px;
 }
 
 button {
@@ -511,11 +513,6 @@ input:checked~.slider .off-label {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
-}
-
-.header h1 {
-    font-size: 24px;
-    margin: 0;
 }
 
 .add-button {

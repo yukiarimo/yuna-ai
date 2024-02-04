@@ -17,7 +17,7 @@ class ChatGenerator:
         )
         self.classifier = pipeline("text-classification", model=f"{config['server']['agi_model_dir']}yuna-emotion")
 
-    def generate(self, chat_id, speech=False, text="", template=None, chat_history_manager=None):
+    async def generate(self, chat_id, speech=False, text="", template=None, chat_history_manager=None, conn=None):
         chat_history = chat_history_manager.load_chat_history(list({current_user.get_id()})[0], chat_id)
 
         if template == "dialog":
@@ -119,8 +119,23 @@ class ChatGenerator:
 
         elif template == None:
             print('template is none')
+        
+        if self.config["server"]["stream"] == True:
+            response = self.model(
+            response,
+            stream=True,
+            top_k=self.config["ai"]["top_k"],
+            top_p=self.config["ai"]["top_p"],
+            temperature=self.config["ai"]["temperature"],
+            repeat_penalty=self.config["ai"]["repetition_penalty"],
+            max_tokens=self.config["ai"]["max_new_tokens"],
+            stop=self.config["ai"]["stop"],
+            )
 
-        response = self.model(
+            for response in response:
+                await conn.send(response['choices'][0]['text'])
+        else:
+            response = self.model(
             response,
             stream=False,
             top_k=self.config["ai"]["top_k"],
@@ -131,30 +146,28 @@ class ChatGenerator:
             stop=self.config["ai"]["stop"],
             )
         
-        # Assuming the dictionary is stored in a variable named 'response'
-        response = response['choices'][0]['text']
-        response = self.clearText(str(response))
+            # Assuming the dictionary is stored in a variable named 'response'
+            response = response['choices'][0]['text']
+            response = self.clearText(str(response))
 
-        if self.config["ai"]["emotions"]:
-            response_add = self.classifier(response)[0]['label']
+            if self.config["ai"]["emotions"]:
+                response_add = self.classifier(response)[0]['label']
 
-            # Replace words
-            replacement_dict = {
-                "anger": "*angry*",
-                "disgust": "*disgusted*",
-                "fear": "*scared*",
-                "joy": "*smiling*",
-                "neutral": "",
-                "sadness": "*sad*",
-                "surprise": "*surprised*"
-            }
+                # Replace words
+                replacement_dict = {
+                    "anger": "*angry*",
+                    "disgust": "*disgusted*",
+                    "fear": "*scared*",
+                    "joy": "*smiling*",
+                    "neutral": "",
+                    "sadness": "*sad*",
+                    "surprise": "*surprised*"
+                }
 
-            for word, replacement in replacement_dict.items():
-                response_add = response_add.replace(word, replacement)
+                for word, replacement in replacement_dict.items():
+                    response_add = response_add.replace(word, replacement)
 
-            response = response + f" {response_add}"
-
-        # response = self.clearText(str(response))
+                response = response + f" {response_add}"
 
         if template != "himitsuCopilot" and template != "himitsuCopilotGen" and template != "summary" and template != None:
             chat_history.append({"name": "Yuki", "message": text})
@@ -163,7 +176,6 @@ class ChatGenerator:
 
         if speech==True:
             chat_history_manager.generate_speech(response)
-        return response
     
     def clearText(self, text):
         text = self.remove_image_tags(text)

@@ -9,6 +9,10 @@ import json
 import os
 from itsdangerous import URLSafeTimedSerializer
 from flask_login import login_manager
+import asyncio
+import websockets
+
+connected = set()
 
 with open('static/config.json', 'r') as config_file:
     config = json.load(config_file)
@@ -167,6 +171,22 @@ class YunaServer:
 
 yuna_server = YunaServer()
 app = yuna_server.app
+
+async def socketServer(websocket, path):
+    # Register.
+    connected.add(websocket)
+    try:
+        async for message in websocket:
+            print(f"Received message: {message}")
+            # get json data from the client
+    finally:
+        # Unregister.
+        connected.remove(websocket)
+
+start_server = websockets.serve(socketServer, "localhost", 5000)
+
+asyncio.get_event_loop().run_until_complete(start_server)
+asyncio.get_event_loop().run_forever()
 
 if __name__ == '__main__':
     if yuna_server.config["server"]["port"] != "":

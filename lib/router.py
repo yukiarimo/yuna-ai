@@ -1,3 +1,6 @@
+import asyncio
+import websockets
+import json
 from flask import jsonify, request, send_from_directory
 from flask_login import current_user
 from pydub import AudioSegment
@@ -30,7 +33,7 @@ def handle_history_request(chat_history_manager):
     else:
         return jsonify({'error': 'Invalid task parameter'}), 400
         
-def handle_message_request(chat_generator, chat_history_manager):
+async def handle_message_request(chat_generator, chat_history_manager):
     data = request.get_json()
     chat_id = data.get('chat')
     speech = data.get('speech')
@@ -70,12 +73,13 @@ def handle_audio_request(self):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     
-def handle_image_request(self):
+async def handle_image_request(self, websocket):
     data = request.get_json()
 
     if 'image' in data and 'task' in data and data['task'] == 'caption':
         image_caption = capture_image(data)
-        return jsonify({'message': f'{image_caption}'})
+        await websocket.send(json.dumps({'message': image_caption}))
+
     elif 'prompt' in data and 'chat' in data and data['task'] == 'generate':
         prompt = data['prompt']
         chat_id = data['chat']
@@ -89,7 +93,7 @@ def handle_image_request(self):
         self.chat_history_manager.save_chat_history(chat_history, chat_id)
         yuna_image_message = f"Sure, here you go! <img src='img/art/{created_image}' class='image-message'>"
 
-        return jsonify({'message': yuna_image_message})
+        await websocket.send(json.dumps({'message': f"Image created: {created_image}"}))
     else:
         return jsonify({'error': 'Invalid task parameter'}), 400
     

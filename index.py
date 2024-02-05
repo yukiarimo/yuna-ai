@@ -178,7 +178,10 @@ async def socketServer(websocket, path):
     try:
         async for message in websocket:
             print(f"Received message: {message}")
-            # get json data from the client
+            # extract the chat_id, speech, text, and template from the message
+            data = json.loads(message)
+            # send the message to the handle_message_request function
+            response = await handle_message_request(yuna_server.chat_generator, yuna_server.chat_history_manager, data.get('chat'), data.get('speech'), data.get('text'), data.get('template'), websocket)
     finally:
         # Unregister.
         connected.remove(websocket)

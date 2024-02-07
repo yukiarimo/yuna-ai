@@ -17,8 +17,9 @@ class ChatGenerator:
         )
         self.classifier = pipeline("text-classification", model=f"{config['server']['agi_model_dir']}yuna-emotion")
 
-    async def generate(self, chat_id, speech=False, text="", template=None, chat_history_manager=None, conn=None):
+    def generate(self, chat_id, speech=False, text="", template=None, chat_history_manager=None, conn=None):
         chat_history = chat_history_manager.load_chat_history(list({current_user.get_id()})[0], chat_id)
+        response = ''
 
         if template == "dialog":
             max_length_all_input_and_output = self.config["ai"]["context_length"]
@@ -120,7 +121,7 @@ class ChatGenerator:
         elif template == None:
             print('template is none')
         
-        if self.config["server"]["stream"] == True:
+        if self.config["ai"]["stream"] == True:
             response = self.model(
             response,
             stream=True,
@@ -133,7 +134,7 @@ class ChatGenerator:
             )
 
             for response in response:
-                await conn.send(response['choices'][0]['text'])
+                conn.send(response['choices'][0]['text'])
         else:
             response = self.model(
             response,
@@ -176,11 +177,10 @@ class ChatGenerator:
 
         if speech==True:
             chat_history_manager.generate_speech(response)
+
+        return response
     
     def clearText(self, text):
-        text = self.remove_image_tags(text)
-        text = self.remove_emojis(text)
-
         pattern = r'<img.*?class="image-message">'
         text = re.sub(pattern, '', text)
 

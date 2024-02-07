@@ -15,6 +15,7 @@ def handle_history_request(chat_history_manager):
     if task == 'load':
         return jsonify(chat_history_manager.load_chat_history(list({current_user.get_id()})[0], chat_id))
     elif task == 'list':
+        print(chat_history_manager.list_history_files({current_user.get_id()}))
         return jsonify(chat_history_manager.list_history_files({current_user.get_id()}))
     elif task == 'edit':
         history = data.get('history')
@@ -33,7 +34,7 @@ def handle_history_request(chat_history_manager):
     else:
         return jsonify({'error': 'Invalid task parameter'}), 400
         
-async def handle_message_request(chat_generator, chat_history_manager, chat_id=None, speech=None, text=None, template=None, conn=None):
+def handle_message_request(chat_generator, chat_history_manager, chat_id=None, speech=None, text=None, template=None, conn=None):
     data = request.get_json()
     chat_id = data.get('chat')
     speech = data.get('speech')
@@ -49,6 +50,8 @@ async def handle_message_request(chat_generator, chat_history_manager, chat_id=N
     """)
 
     response = chat_generator.generate(chat_id, speech, text, template, chat_history_manager, conn)
+
+    print('response -> ', response)
 
     return jsonify({'response': response})
 

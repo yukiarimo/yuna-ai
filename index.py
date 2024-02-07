@@ -188,8 +188,8 @@ async def socketServer(websocket, path):
 
 start_server = websockets.serve(socketServer, "localhost", 5000)
 
-asyncio.get_event_loop().run_until_complete(start_server)
-asyncio.get_event_loop().run_forever()
+#asyncio.get_event_loop().run_until_complete(start_server)
+#asyncio.get_event_loop().run_forever()
 
 if __name__ == '__main__':
     if yuna_server.config["server"]["port"] != "":

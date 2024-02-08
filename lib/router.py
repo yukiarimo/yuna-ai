@@ -15,8 +15,8 @@ def handle_history_request(chat_history_manager):
     if task == 'load':
         return jsonify(chat_history_manager.load_chat_history(list({current_user.get_id()})[0], chat_id))
     elif task == 'list':
-        print(chat_history_manager.list_history_files({current_user.get_id()}))
-        return jsonify(chat_history_manager.list_history_files({current_user.get_id()}))
+        print(chat_history_manager.list_history_files(current_user.get_id()))
+        return jsonify(chat_history_manager.list_history_files(current_user.get_id()))
     elif task == 'edit':
         history = data.get('history')
         chat_history_manager.save_chat_history(history, list({current_user.get_id()})[0], chat_id)

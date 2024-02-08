@@ -70,9 +70,13 @@ class ChatHistoryManager:
         user_folder_path = self._user_folder_path(username)
         if not os.path.isdir(user_folder_path):
             return []  # Return an empty list if the user's folder doesn't exist
+        
+        print(f"User folder path: {user_folder_path}")
 
         # List only files in the user's directory, excluding directories
         history_files = [f for f in os.listdir(user_folder_path) if os.path.isfile(os.path.join(user_folder_path, f))]
+
+        print(f"History files: {history_files}")
 
         # Sort alphabetically
         history_files.sort(key=lambda x: x.lower())

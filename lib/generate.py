@@ -14,6 +14,7 @@ class ChatGenerator:
             seed=config["ai"]["seed"],
             n_batch=config["ai"]["batch_size"],
             n_gpu_layers=1,
+            verbose=False
         )
         self.classifier = pipeline("text-classification", model=f"{config['server']['agi_model_dir']}yuna-emotion")
 

@@ -1,6 +1,6 @@
 __pycache__/
-static/db/history/*.json
-!static/db/history/history_template.json
+db/history/*
+!db/history/README.md
 static/audio/output.aiff
 static/audio/output.mp3
 lib/models/agi/*
@@ -11,4 +11,3 @@ static/img/call/*
 !static/img/call/image_template.jpg
 static/img/art/*
 !static/img/art/art_template.png
-auth/auth.json

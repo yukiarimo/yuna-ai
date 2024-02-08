@@ -1,0 +1,7 @@
+### Instruction:
+Rewrite the given text to retain its original meaning but with different wording and sentence structures. Rely on your writing skills to create unique and engaging content. Remember the audience, intent, formality, domain, tone, and type of the original text to ensure the rewritten version is still relevant and helpful.
+
+### Input:
+{user_msg}
+
+### Response:

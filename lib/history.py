@@ -2,39 +2,84 @@ import json
 import os
 import shutil
 import subprocess
-from cryptography.fernet import Fernet
-from cryptography.fernet import InvalidToken
+from cryptography.fernet import Fernet, InvalidToken
 
 class ChatHistoryManager:
     def __init__(self, config):
         self.config = config
-    
-    def create_chat_history_file(self, chat_id):
+        self.base_history_path = "db/history"  # Base path for histories
+
+    def _user_folder_path(self, username):
+        """Constructs the path to the user's folder."""
+        print(f"Username: {username}")
+        return os.path.join(self.base_history_path, username)
+
+    def _ensure_user_folder_exists(self, username):
+        """Ensures that the user-specific folder exists."""
+        user_folder_path = self._user_folder_path(username)
+        os.makedirs(user_folder_path, exist_ok=True)
+        return user_folder_path
+
+    def create_chat_history_file(self, username, chat_id):
+        user_folder_path = self._ensure_user_folder_exists(username)
+        history_file_path = os.path.join(user_folder_path, f"{chat_id}")  # File path includes username folder
         history_starting_template = [
             {"name": self.config['ai']['names'][0], "message": "Hi"}, 
             {"name": self.config['ai']['names'][1], "message": "Hello"},
             {"name": self.config['ai']['names'][0], "message": "How are you doing?"}, 
             {"name": self.config['ai']['names'][1], "message": "I'm doing great! Thanks for asking!"}
-        ]        
+        ]
         chat_history_json = json.dumps(history_starting_template)
         encrypted_chat_history = self.encrypt_data(chat_history_json)
-        with open(os.path.join(self.config["server"]["history"], chat_id), 'wb') as file:
+        with open(history_file_path, 'wb') as file:
             file.write(encrypted_chat_history)
 
-    def delete_chat_history_file(self, chat_id):
-        os.remove(os.path.join(self.config["server"]["history"], chat_id))
+    def save_chat_history(self, chat_history, username, chat_id):
+        user_folder_path = self._ensure_user_folder_exists(username)
+        history_file_path = os.path.join(user_folder_path, f"{chat_id}")
+        chat_history_json = json.dumps(chat_history)
+        encrypted_chat_history = self.encrypt_data(chat_history_json)
+        with open(history_file_path, 'wb') as file:
+            file.write(encrypted_chat_history)
 
-    def rename_chat_history_file(self, chat_id, new_chat_id):
-        os.rename(
-            os.path.join(self.config["server"]["history"], chat_id),
-            os.path.join(self.config["server"]["history"], new_chat_id)
-        )
+    def load_chat_history(self, username, chat_id):
+        user_folder_path = self._ensure_user_folder_exists(username)
+        history_file_path = os.path.join(user_folder_path, f"{chat_id}")
+        try:
+            with open(history_file_path, 'rb') as file:
+                encrypted_chat_history = file.read()
+            decrypted_chat_history = self.decrypt_data(encrypted_chat_history)
+            return json.loads(decrypted_chat_history)
+        except FileNotFoundError:
+            # The file does not exist, create a new chat history file
+            self.create_chat_history_file(username, chat_id)
+            return []
 
-    def list_history_files(self):
-        history_files = [f for f in os.listdir(self.config["server"]["history"]) if os.path.isfile(os.path.join(self.config["server"]["history"], f))]
+    def delete_chat_history_file(self, username, chat_id):
+        chat_history_path = os.path.join(self._user_folder_path(username), f"{chat_id}")
+        if os.path.exists(chat_history_path):
+            os.remove(chat_history_path)
 
-        # Place main_history_file first and then sort alphabetically
-        history_files.sort(key=lambda x: (x != self.config["server"]["default_history_file"], x.lower()))
+    def rename_chat_history_file(self, username, old_chat_id, new_chat_id):
+        old_path = os.path.join(self._user_folder_path(username), f"{old_chat_id}")
+        new_path = os.path.join(self._user_folder_path(username), f"{new_chat_id}")
+        if os.path.exists(old_path):
+            os.rename(old_path, new_path)
+
+    def list_history_files(self, username):
+        user_folder_path = self._user_folder_path(username)
+        if not os.path.isdir(user_folder_path):
+            return []  # Return an empty list if the user's folder doesn't exist
+        
+        print(f"User folder path: {user_folder_path}")
+
+        # List only files in the user's directory, excluding directories
+        history_files = [f for f in os.listdir(user_folder_path) if os.path.isfile(os.path.join(user_folder_path, f))]
+
+        print(f"History files: {history_files}")
+
+        # Sort alphabetically
+        history_files.sort(key=lambda x: x.lower())
         return history_files
 
     def generate_speech(self, response):
@@ -51,7 +96,7 @@ class ChatHistoryManager:
         return key.encode()
 
     def save_config(self):
-        with open('static/config.json', 'w') as config_file:
+        with open('static/config', 'w') as config_file:
             json.dump(self.config, config_file, indent=4)
 
     def encrypt_data(self, data):
@@ -68,32 +113,3 @@ class ChatHistoryManager:
         except InvalidToken:
             raise ValueError("Cannot decrypt data with the current encryption key")
         return decrypted_data
-
-    def save_chat_history(self, chat_history, chat):
-        history_path = os.path.join(self.config["server"]["history"], chat)
-        #chat_history_json = json.dumps(chat_history)
-        if isinstance(chat_history, set):
-            chat_history = list(chat_history)
-        chat_history_json = json.dumps(chat_history)
-        encrypted_chat_history = self.encrypt_data(chat_history_json)
-        with open(history_path, 'wb') as file:
-            file.write(encrypted_chat_history)
-
-    def load_chat_history(self, chat_id):
-        history_path = os.path.join(self.config["server"]["history"], chat_id)
-        with open(history_path, 'rb') as file:
-            encrypted_chat_history = file.read()
-        if not encrypted_chat_history:
-            # The file is empty, create a new chat history file
-            self.create_chat_history_file(chat_id)
-            with open(history_path, 'rb') as file:
-                encrypted_chat_history = file.read()
-        try:
-            decrypted_chat_history = self.decrypt_data(encrypted_chat_history)
-        except InvalidToken:
-            # The file is not encrypted, create a new chat history file
-            self.create_chat_history_file(chat_id)
-            with open(history_path, 'rb') as file:
-                encrypted_chat_history = file.read()
-            decrypted_chat_history = self.decrypt_data(encrypted_chat_history)
-        return json.loads(decrypted_chat_history)

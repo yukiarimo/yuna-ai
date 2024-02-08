@@ -9,4 +9,10 @@
     <url>
         <loc>http://www.yuna-ai.live/services</loc>
     </url>
+    <url>
+        <loc>http://www.yuna-ai.live/main</loc>
+    </url>
+    <url>
+        <loc>http://www.yuna-ai.live/yuna</loc>
+    </url>
 </urlset>

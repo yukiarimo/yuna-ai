@@ -1,4 +1,5 @@
 import random
+import shutil
 from flask import Flask, get_flashed_messages, request, jsonify, send_from_directory, redirect, url_for, flash
 from flask_login import LoginManager, UserMixin, login_required, logout_user, login_user, current_user
 from lib.generate import ChatGenerator, ChatHistoryManager
@@ -8,6 +9,10 @@ import json
 import os
 from itsdangerous import URLSafeTimedSerializer
 from flask_login import login_manager
+import asyncio
+import websockets
+
+connected = set()
 
 with open('static/config.json', 'r') as config_file:
     config = json.load(config_file)
@@ -52,8 +57,8 @@ class YunaServer:
 
     # Read users from JSON file
     def read_users(self):
-        if os.path.exists('static/db/admin/users.json'):
-            with open('static/db/admin/users.json', 'r') as f:
+        if os.path.exists('db/admin/users.json'):
+            with open('db/admin/users.json', 'r') as f:
                 users = json.load(f)
         else:
             users = {}
@@ -61,7 +66,7 @@ class YunaServer:
 
     # Write users to JSON file
     def write_users(self, users):
-        with open('static/db/admin/users.json', 'w') as f:
+        with open('db/admin/users.json', 'w') as f:
             json.dump(users, f)
             
     def load_config(self):
@@ -107,6 +112,7 @@ class YunaServer:
                     users[username] = password
                     self.write_users(users)
                     flash('Registered successfully')
+                    os.makedirs(f'db/history/{username}', exist_ok=True)
             elif action == 'login':
                 print('login action triggered for')
                 if users.get(username) == password:
@@ -138,6 +144,8 @@ class YunaServer:
                     del users[username]
                     self.write_users(users)
                     flash('Account deleted successfully')
+                    logout_user()
+                    shutil.rmtree(f'db/history/{username}')
                 else:
                     flash('Invalid username or password')
 
@@ -163,6 +171,25 @@ class YunaServer:
 
 yuna_server = YunaServer()
 app = yuna_server.app
+
+async def socketServer(websocket, path):
+    # Register.
+    connected.add(websocket)
+    try:
+        async for message in websocket:
+            print(f"Received message: {message}")
+            # extract the chat_id, speech, text, and template from the message
+            data = json.loads(message)
+            # send the message to the handle_message_request function
+            response = await handle_message_request(yuna_server.chat_generator, yuna_server.chat_history_manager, data.get('chat'), data.get('speech'), data.get('text'), data.get('template'), websocket)
+    finally:
+        # Unregister.
+        connected.remove(websocket)
+
+start_server = websockets.serve(socketServer, "localhost", 5000)
+
+#asyncio.get_event_loop().run_until_complete(start_server)
+#asyncio.get_event_loop().run_forever()
 
 if __name__ == '__main__':
     if yuna_server.config["server"]["port"] != "":

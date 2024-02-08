@@ -1,10 +1,9 @@
-import json
 import os
 import re
+from flask_login import current_user
 from transformers import pipeline
 from llama_cpp import Llama
 from lib.history import ChatHistoryManager
-from cryptography.fernet import Fernet
 
 class ChatGenerator:
     def __init__(self, config):
@@ -15,11 +14,13 @@ class ChatGenerator:
             seed=config["ai"]["seed"],
             n_batch=config["ai"]["batch_size"],
             n_gpu_layers=1,
+            verbose=False
         )
         self.classifier = pipeline("text-classification", model=f"{config['server']['agi_model_dir']}yuna-emotion")
 
-    def generate(self, chat_id, speech=False, text="", template=None, chat_history_manager=None):
-        chat_history = chat_history_manager.load_chat_history(chat_id)
+    def generate(self, chat_id, speech=False, text="", template=None, chat_history_manager=None, conn=None):
+        chat_history = chat_history_manager.load_chat_history(list({current_user.get_id()})[0], chat_id)
+        response = ''
 
         if template == "dialog":
             max_length_all_input_and_output = self.config["ai"]["context_length"]
@@ -120,8 +121,23 @@ class ChatGenerator:
 
         elif template == None:
             print('template is none')
+        
+        if self.config["ai"]["stream"] == True:
+            response = self.model(
+            response,
+            stream=True,
+            top_k=self.config["ai"]["top_k"],
+            top_p=self.config["ai"]["top_p"],
+            temperature=self.config["ai"]["temperature"],
+            repeat_penalty=self.config["ai"]["repetition_penalty"],
+            max_tokens=self.config["ai"]["max_new_tokens"],
+            stop=self.config["ai"]["stop"],
+            )
 
-        response = self.model(
+            for response in response:
+                conn.send(response['choices'][0]['text'])
+        else:
+            response = self.model(
             response,
             stream=False,
             top_k=self.config["ai"]["top_k"],
@@ -132,77 +148,56 @@ class ChatGenerator:
             stop=self.config["ai"]["stop"],
             )
         
-        # Assuming the dictionary is stored in a variable named 'response'
-        response = response['choices'][0]['text']
-        response = self.clearText(str(response))
+            # Assuming the dictionary is stored in a variable named 'response'
+            response = response['choices'][0]['text']
+            response = self.clearText(str(response))
 
-        if self.config["ai"]["emotions"]:
-            response_add = self.classifier(response)[0]['label']
+            if self.config["ai"]["emotions"]:
+                response_add = self.classifier(response)[0]['label']
 
-            # Replace words
-            replacement_dict = {
-                "anger": "*angry*",
-                "disgust": "*disgusted*",
-                "fear": "*scared*",
-                "joy": "*smiling*",
-                "neutral": "",
-                "sadness": "*sad*",
-                "surprise": "*surprised*"
-            }
+                # Replace words
+                replacement_dict = {
+                    "anger": "*angry*",
+                    "disgust": "*disgusted*",
+                    "fear": "*scared*",
+                    "joy": "*smiling*",
+                    "neutral": "",
+                    "sadness": "*sad*",
+                    "surprise": "*surprised*"
+                }
 
-            for word, replacement in replacement_dict.items():
-                response_add = response_add.replace(word, replacement)
+                for word, replacement in replacement_dict.items():
+                    response_add = response_add.replace(word, replacement)
 
-            response = response + f" {response_add}"
-
-        # response = self.clearText(str(response))
+                response = response + f" {response_add}"
 
         if template != "himitsuCopilot" and template != "himitsuCopilotGen" and template != "summary" and template != None:
             chat_history.append({"name": "Yuki", "message": text})
             chat_history.append({"name": "Yuna", "message": response})
-            chat_history_manager.save_chat_history(chat_history, chat_id)
+            chat_history_manager.save_chat_history(chat_history, list({current_user.get_id()})[0], chat_id)
 
         if speech==True:
             chat_history_manager.generate_speech(response)
+
         return response
     
     def clearText(self, text):
-        text = self.remove_image_tags(text)
-        text = self.remove_emojis(text)
-        return text
-
-    def remove_image_tags(self, text):
         pattern = r'<img.*?class="image-message">'
-        cleaned_text = re.sub(pattern, '', text)
-        return cleaned_text
+        text = re.sub(pattern, '', text)
 
-    def remove_emojis(self, input_string):
         emoji_pattern = re.compile("["
                                u"\U0001F600-\U0001F64F"  # Emojis in the emoticons block
                                u"\U0001F300-\U0001F5FF"  # Other symbols and pictographs
-                               # ... (other emoji ranges)
                                "]+", flags=re.UNICODE)
 
-        cleaned_string = emoji_pattern.sub('', input_string)
+        text = emoji_pattern.sub('', text)
 
         emoticon_pattern = r':-?\)|:-?\(|;-?\)|:-?D|:-?P'
-        cleaned_string = re.sub(emoticon_pattern, '', cleaned_string)
+        text = re.sub(emoticon_pattern, '', text)
 
         pattern = r'\*\w+\*'
-        cleaned_string = re.sub(pattern, '', input_string)
+        text = re.sub(pattern, '', text)
 
-        cleaned_string = cleaned_string.replace("  ", ' ').replace("  ", ' ')
+        text = text.replace("  ", ' ').replace("  ", ' ')
 
-        return cleaned_string
-
-if __name__ == '__main__':
-    with open("config.json", 'r') as file:
-        config = json.load(file)
-
-    chat_generator = ChatGenerator(config)
-    chat_history_manager = ChatHistoryManager(config)
-
-    # Example usage:
-    chat_id = "example_chat"
-    chat_history_manager.create_chat_history_file(chat_id)
-    chat_generator.generate(chat_id, speech=True, text="Hello, how are you?")
+        return text

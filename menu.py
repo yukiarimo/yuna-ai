@@ -1,6 +1,7 @@
 import subprocess
 import os
 import sys
+import webbrowser
 
 try:
     import pytermgui as ptg
@@ -67,7 +68,9 @@ def install_cpu(event):
 
 def install_nvidia(event):
     print("Installing NVIDIA dependencies...")
-    os.environ["CMAKE_ARGS"] = "-DLLAMA_CUBLAS=on"
+    env = os.environ.copy()
+    env["CMAKE_ARGS"] = "-DLLAMA_CUBLAS=on"
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "llama-cpp-python"], env=env)
     subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements-nvidia.txt"])
     print("NVIDIA dependencies installed!")
     if 'configure_gpu' in windows:
@@ -76,7 +79,13 @@ def install_nvidia(event):
 
 def install_amd(event):
     print("Installing AMD dependencies...")
-    os.environ["CMAKE_ARGS"] = "-DLLAMA_HIPBLAS=on"
+    env = os.environ.copy()
+    # YOU NEED TO SPECIFY THE CORRECT GFX NUMBER FOR YOUR GPU
+    # THE DEFAULT IS GFX1100 - which was used since I have a  RX7600
+    # Check the Shader ISA Instruction Set for your GPU
+    env["CMAKE_ARGS"] = "-DLLAMA_HIPBLAS=ON -DCMAKE_C_COMPILER=/opt/rocm/llvm/bin/clang -DCMAKE_CXX_COMPILER=/opt/rocm/llvm/bin/clang++ -DCMAKE_PREFIX_PATH=/opt/rocm -DAMDGPU_TARGETS=gfx1100"
+    env["FORCE_CMAKE"] = "1"
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "llama-cpp-python"], env=env)
     subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements-amd.txt"])
     print("AMD dependencies installed!")
     if 'configure_gpu' in windows:
@@ -85,7 +94,9 @@ def install_amd(event):
 
 def install_metal(event):
     print("Installing Metal dependencies...")
-    os.environ["CMAKE_ARGS"] = "-DLLAMA_METAL=on"
+    env = os.environ.copy()
+    env["CMAKE_ARGS"] = "-DLLAMA_METAL=on"
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "llama-cpp-python"], env=env)
     subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements-macos.txt"])
     print("Metal dependencies installed!")
     if 'configure_gpu' in windows:
@@ -179,6 +190,25 @@ def OneClickInstall(event):
     install_update_dependencies(event)
     install_models(event)
 
+def patreon(event):
+    webbrowser.open('https://www.patreon.com/yukiarimo')
+
+def kofi(event):
+    webbrowser.open('https://ko-fi.com/yukiarimo')
+
+def donate(event):
+    windows['donate'] = ptg.Window(
+    ptg.Label("[210 bold]========== Donate =========="),
+    ptg.Label("Yuna is an open source project. You can support the development of Yuna by donating"),
+    ptg.Button("Patreon", onclick=patreon),
+    ptg.Button("Ko-Fi", onclick=kofi),
+    )
+    manager.add(windows['donate'], assign=True)
+    manager.focus(windows['donate'])
+
+
+    
+
 main_menu = ptg.Window(
     ptg.Label("[210 bold]========== Menu =========="),
     ptg.Button("Start Yuna", onclick=start_yuna),
@@ -186,6 +216,7 @@ main_menu = ptg.Window(
     ptg.Button("One Click Install", onclick=OneClickInstall),
     ptg.Button("Configure", onclick=configure_submenu),
     ptg.Button("Reset", onclick=clear_models),
+    ptg.Button("Donate", onclick=donate),
     ptg.Button("Exit", onclick=goodbye),
     ptg.Button("Info", onclick=info),
 )

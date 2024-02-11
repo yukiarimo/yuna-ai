@@ -81,21 +81,13 @@
                             <span class="badge badge-pill">5</span></a></li>
                     <li><a href="#" class="nav-link" onclick="OpenTab('2')"><i class="fas fa-book-open"></i> Library</a>
                     </li>
-                    <li><a href="#" class="nav-link" onclick="OpenTab('3')"><i class="fas fa-cog"></i> Settings</a>
-                    </li>
                     <li><a href="#" class="nav-link" onclick="OpenTab('4')"><i class="fas fa-user"></i> Profile</a></li>
+                    <li><a href="#" class="nav-link" onclick="settingsView.show();"><i class="fas fa-cog"></i>
+                            Settings</a>
+                    </li>
                     <li><a href="#" class="nav-link" onclick="OpenTab('5')"><i class="fas fa-ellipsis-h"></i> More</a>
                     </li>
                 </ul>
-
-                <div class="user-card">
-                    <img src="img/yuna-girl-head.png" alt="User Image">
-                    <div class="user-info">
-                        <div class="user-name">Yuna Ai</div>
-                        <div class="user-email">tam@ui8.net</div>
-                    </div>
-                    <button class="btn btn-success btn-sm">Free</button>
-                </div>
 
                 <div class="toggle-theme">
                     <button>Light</button>
@@ -146,7 +138,8 @@
                             <li class="nav-item dropdown no-arrow">
                                 <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
                                         aria-expanded="false" data-bs-toggle="dropdown" href="#">
-                                        <img class="border rounded-circle img-profile" src="img/yuna-girl-head.png" style="height: 26px;">
+                                        <img class="border rounded-circle img-profile" src="img/yuna-girl-head.png"
+                                            style="height: 26px;">
                                     </a>
 
                                     <div class="dropdown-menu shadow dropdown-menu-end animated--grow-in"><a
@@ -234,270 +227,85 @@
                             </div>
                         </div>
 
-                        <div class="tab-o" id="3">
-                            <div class="coll-lo">
-                                <div class="block-card settings-container el-9">
-                                    <ul class="nav nav-tabs" id="myTab" role="tablist">
-                                        <li class="nav-item" role="presentation">
-                                            <button class="nav-link active" id="account-tab" data-bs-toggle="tab"
-                                                data-bs-target="#account" type="button" role="tab"
-                                                aria-controls="account" aria-selected="true">Setup</button>
-                                        </li>
-                                        <li class="nav-item" role="presentation">
-                                            <button class="nav-link" id="params-tab" data-bs-toggle="tab"
-                                                data-bs-target="#params" type="button" role="tab" aria-controls="params"
-                                                aria-selected="false">Params</button>
-                                        </li>
-                                        <li class="nav-item" role="presentation">
-                                            <button class="nav-link" id="api-tab" data-bs-toggle="tab"
-                                                data-bs-target="#api" type="button" role="tab" aria-controls="api"
-                                                aria-selected="false">API</button>
-                                        </li>
-                                        <li class="nav-item" role="presentation">
-                                            <button class="nav-link" onclick="OpenLink('/pricing')" id="yuna-tab"
-                                                data-bs-toggle="tab" data-bs-target="#yuna" type="button" role="tab"
-                                                aria-controls="yuna" aria-selected="false">Yuna +</button>
-                                        </li>
-                                    </ul>
-                                    <div class="tab-content" id="myTabContent">
-                                        <div class="tab-pane fade show active" id="account" role="tabpanel"
-                                            aria-labelledby="account-tab">
-                                            <h3 class="section-heading">Dark Mode</h3>
-                                            <div class="input-group">
-                                                <div class="form-check form-switch">
-                                                    <input class="form-check-input" type="checkbox" id="darkModeSwitch"
-                                                        onclick="toggleTheme()" checked>
-                                                    <label class="form-check-label" for="darkModeSwitch"></label>
-                                                </div>
-                                            </div>
-
-                                            <div class="list-group">
-                                                <button type="button" class="list-group-item list-group-item-action"
-                                                    onclick="checkConfigData()">⚙️ Auto Fix</button>
-                                                <button type="button" class="list-group-item list-group-item-action"
-                                                    onclick="fixDialogData()">⚙️ Auto Build</button>
-                                            </div>
-                                        </div>
-                                        <div class="tab-pane fade" id="params" role="tabpanel"
-                                            aria-labelledby="params-tab">
-                                            <div class="section-heading m-0 fw-bold">Params</div>
-                                            <div id="parameter-container">
-                                                <!-- Dynamic HTML elements will be added here -->
-                                            </div>
-
-                                            <button class="btn" onclick="localStorage.clear()">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                            <button class="btn">
-                                                <i class="bi bi-x"></i>
-                                            </button>
-                                            <button class="btn" onclick="saveConfigParams()">
-                                                <i class="bi bi-check"></i>
-                                            </button>
-
-                                        </div>
-                                        <div class="tab-pane fade" id="api" role="tabpanel" aria-labelledby="api-tab">
-                                            <h3 class="section-heading">AI Data Usage</h3>
-
-                                            <div class="list-group">
-                                                <span class="list-group-item list-group-item-action">This feature
-                                                    allows
-                                                    us to use your search data to improve our AI models.</span>
-                                            </div>
-
-                                            <div class="input-group">
-                                                <div class="form-check form-switch">
-                                                    <div class="form-check form-switch">
-                                                        <input class="form-check-input" type="checkbox"
-                                                            id="aiDataUsageSwitch" checked>
-                                                        <label class="form-check-label" for="aiDataUsageSwitch"></label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="tab-pane fade" id="yuna" role="tabpanel" aria-labelledby="yuna-tab">
-                                            <div class="section-heading">Yuna +</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
                         <div class="tab-o" id="4">
                             <div class="coll-lo">
-                                <div class="row mb-3">
-                                    <div class="col-lg-4">
-                                        <div class="card mb-3">
-                                            <div class="card-body text-center shadow"><img
-                                                    class="rounded-circle mb-3 mt-4" src="img/yuna-girl-head.png"
-                                                    width="160" height="160">
-                                                <div class="mb-3"><button class="btn btn-primary btn-sm"
-                                                        type="button">Change
-                                                        Photo</button></div>
+                                <div class="col-10">
+                                    <div class="row">
+                                        <!-- Profile Card -->
+                                        <div class="col-md-4">
+                                            <div class="card">
+                                                <img src="img/yuna-girl-head.png" class="card-img-top"
+                                                    alt="Profile Picture">
+                                                <div class="card-body">
+                                                    <div style="display: flex; flex-direction: row;">
+                                                        <h5 class="card-title">Yuna Ai</h5>
+                                                        <button class="btn btn-success btn-sm"
+                                                            style="margin-left: 5px;">Free</button>
+                                                    </div>
+                                                    <p class="card-text">California, USA</p>
+                                                    <p class="card-text">OpenAI, SEO</p>
+                                                    <button class="btn btn-primary">Upload Photo</button>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="card shadow mb-4">
-                                            <div class="card-header py-3">
-                                                <h6 class="fw-bold m-0">Projects</h6>
-                                            </div>
-                                            <div class="card-body">
-                                                <h4 class="small fw-bold">Server migration<span
-                                                        class="float-end">20%</span>
-                                                </h4>
-                                                <div class="progress progress-sm mb-3">
-                                                    <div class="progress-bar bg-danger" aria-valuenow="20"
-                                                        aria-valuemin="0" aria-valuemax="100" style="width: 20%;">
-                                                        <span class="visually-hidden">20%</span></div>
+
+                                        <!-- Personal Details Form -->
+                                        <div class="col-md-8">
+                                            <form>
+                                                <div class="mb-3">
+                                                    <label for="firstName" class="form-label">Name</label>
+                                                    <input type="text" class="form-control" id="userName"
+                                                        value="Yuna Ai">
                                                 </div>
-                                                <h4 class="small fw-bold">Sales tracking<span
-                                                        class="float-end">40%</span></h4>
-                                                <div class="progress progress-sm mb-3">
-                                                    <div class="progress-bar bg-warning" aria-valuenow="40"
-                                                        aria-valuemin="0" aria-valuemax="100" style="width: 40%;">
-                                                        <span class="visually-hidden">40%</span></div>
+                                                <div class="mb-3">
+                                                    <label for="lastName" class="form-label">Email</label>
+                                                    <input type="email" class="form-control" id="userEmail"
+                                                        value="yuna_ai@gmail.com">
                                                 </div>
-                                                <h4 class="small fw-bold">Customer Database<span
-                                                        class="float-end">60%</span>
-                                                </h4>
-                                                <div class="progress progress-sm mb-3">
-                                                    <div class="progress-bar bg-primary" aria-valuenow="60"
-                                                        aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
-                                                        <span class="visually-hidden">60%</span></div>
-                                                </div>
-                                                <h4 class="small fw-bold">Payout Details<span
-                                                        class="float-end">80%</span></h4>
-                                                <div class="progress progress-sm mb-3">
-                                                    <div class="progress-bar bg-info" aria-valuenow="80"
-                                                        aria-valuemin="0" aria-valuemax="100" style="width: 80%;">
-                                                        <span class="visually-hidden">80%</span></div>
-                                                </div>
-                                                <h4 class="small fw-bold">Account setup<span
-                                                        class="float-end">Complete!</span>
-                                                </h4>
-                                                <div class="progress progress-sm mb-3">
-                                                    <div class="progress-bar bg-success" aria-valuenow="100"
-                                                        aria-valuemin="0" aria-valuemax="100" style="width: 100%;">
-                                                        <span class="visually-hidden">100%</span></div>
-                                                </div>
-                                            </div>
+                                                <!-- Add other form fields as needed -->
+                                                <button type="submit" class="btn btn-primary">Save</button>
+                                            </form>
                                         </div>
                                     </div>
-                                    <div class="col-lg-8">
-                                        <div class="row mb-3 d-none">
-                                            <div class="col">
-                                                <div class="card text-white bg-primary shadow">
-                                                    <div class="card-body">
-                                                        <div class="row mb-2">
-                                                            <div class="col">
-                                                                <p class="m-0">Peformance</p>
-                                                                <p class="m-0"><strong>65.2%</strong></p>
-                                                            </div>
-                                                            <div class="col-auto"><i class="fas fa-rocket fa-2x"></i>
-                                                            </div>
-                                                        </div>
-                                                        <p class="text-white-50 small m-0"><i
-                                                                class="fas fa-arrow-up"></i>&nbsp;5% since last
-                                                            month
-                                                        </p>
+
+                                    <!-- Skills and Events -->
+                                    <div class="row mt-4">
+                                        <!-- Skills Section -->
+                                        <div class="col-md-6">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">Emotional Profile</h5>
+                                                    <!-- Skill Bars -->
+                                                    <div class="mb-3">
+                                                        <label for="uiuxDesign" class="form-label">Cuteness</label>
+                                                        <input type="range" class="form-range" id="uiuxDesign">
                                                     </div>
-                                                </div>
-                                            </div>
-                                            <div class="col">
-                                                <div class="card text-white bg-success shadow">
-                                                    <div class="card-body">
-                                                        <div class="row mb-2">
-                                                            <div class="col">
-                                                                <p class="m-0">Peformance</p>
-                                                                <p class="m-0"><strong>65.2%</strong></p>
-                                                            </div>
-                                                            <div class="col-auto"><i class="fas fa-rocket fa-2x"></i>
-                                                            </div>
-                                                        </div>
-                                                        <p class="text-white-50 small m-0"><i
-                                                                class="fas fa-arrow-up"></i>&nbsp;5% since last
-                                                            month
-                                                        </p>
+
+                                                    <div class="mb-3">
+                                                        <label for="uiuxDesign" class="form-label">Obsessive</label>
+                                                        <input type="range" class="form-range" id="uiuxDesign">
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="row">
-                                            <div class="col">
-                                                <div class="card shadow mb-3">
-                                                    <div class="card-header py-3">
-                                                        <p class="m-0 fw-bold">User Settings</p>
-                                                    </div>
-                                                    <div class="card-body">
-                                                        <form>
-                                                            <div class="row">
-                                                                <div class="col">
-                                                                    <div class="mb-3"><label class="form-label"
-                                                                            for="username"><strong>Username</strong></label><input
-                                                                            class="form-control" type="text"
-                                                                            id="username" placeholder="user.name"
-                                                                            name="username"></div>
-                                                                </div>
-                                                                <div class="col">
-                                                                    <div class="mb-3"><label class="form-label"
-                                                                            for="email"><strong>Email
-                                                                                Address</strong></label><input
-                                                                            class="form-control" type="email" id="email"
-                                                                            placeholder="user@example.com" name="email">
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row">
-                                                                <div class="col">
-                                                                    <div class="mb-3"><label class="form-label"
-                                                                            for="first_name"><strong>First
-                                                                                Name</strong></label><input
-                                                                            class="form-control" type="text"
-                                                                            id="first_name" placeholder="John"
-                                                                            name="first_name"></div>
-                                                                </div>
-                                                                <div class="col">
-                                                                    <div class="mb-3"><label class="form-label"
-                                                                            for="last_name"><strong>Last
-                                                                                Name</strong></label><input
-                                                                            class="form-control" type="text"
-                                                                            id="last_name" placeholder="Doe"
-                                                                            name="last_name"></div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="mb-3"><button class="btn btn-primary btn-sm"
-                                                                    type="submit">Save Settings</button></div>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                                <div class="card shadow">
-                                                    <div class="card-header py-3">
-                                                        <p class="m-0 fw-bold">Contact Settings</p>
-                                                    </div>
-                                                    <div class="card-body">
-                                                        <form>
-                                                            <div class="mb-3"><label class="form-label"
-                                                                    for="address"><strong>Address</strong></label><input
-                                                                    class="form-control" type="text" id="address"
-                                                                    placeholder="Sunset Blvd, 38" name="address">
-                                                            </div>
-                                                            <div class="row">
-                                                                <div class="col">
-                                                                    <div class="mb-3"><label class="form-label"
-                                                                            for="city"><strong>City</strong></label><input
-                                                                            class="form-control" type="text" id="city"
-                                                                            placeholder="Los Angeles" name="city"></div>
-                                                                </div>
-                                                                <div class="col">
-                                                                    <div class="mb-3"><label class="form-label"
-                                                                            for="country"><strong>Country</strong></label><input
-                                                                            class="form-control" type="text"
-                                                                            id="country" placeholder="USA"
-                                                                            name="country"></div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="mb-3"><button class="btn btn-primary btn-sm"
-                                                                    type="submit">Save&nbsp;Settings</button></div>
-                                                        </form>
+
+                                        <!-- Events Section -->
+                                        <div class="col-md-6">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">Plugins</h5>
+
+                                                    <div class="mb-3">
+                                                        <label for="uiuxDesign" class="form-label">Himitsu
+                                                            Assistant</label>
+                                                        <!-- toggle switch -->
+                                                        <div class="form-check form-switch">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                id="updateEmojiHistory">
+                                                            <label class="form-check-label"
+                                                                for="updateEmojiHistory">Enable Himitsu
+                                                                Copilot</label>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -505,48 +313,51 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="tab-o" id="5">
-                            <div class="coll-lo">
-                                <div class="block-card settings-container el-9">
-                                    <ul class="nav nav-tabs" id="myTab" role="tablist">
-                                        <li class="nav-item" role="presentation">
-                                            <button class="nav-link active" id="account-tab" data-bs-toggle="tab"
-                                                data-bs-target="#account" type="button" role="tab"
-                                                aria-controls="account" aria-selected="true">Himitsu</button>
-                                        </li>
-                                        <li class="nav-item" role="presentation">
-                                            <button class="nav-link" id="params-tab" data-bs-toggle="tab"
-                                                data-bs-target="#params" type="button" role="tab" aria-controls="params"
-                                                aria-selected="false">Kanojo Connect</button>
-                                        </li>
-                                    </ul>
-                                    <div class="tab-content" id="myTabContent">
-                                        <div class="tab-pane fade show active" id="account" role="tabpanel"
-                                            aria-labelledby="account-tab">
-                                            <h3 class="section-heading">Dark Mode</h3>
-                                            <div class="input-group">
-                                                <div class="form-check form-switch">
-                                                    <input class="form-check-input" type="checkbox" id="darkModeSwitch"
-                                                        onclick="toggleTheme()" checked>
-                                                    <label class="form-check-label" for="darkModeSwitch"></label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="tab-pane fade" id="api" role="tabpanel" aria-labelledby="api-tab">
-                                            <h3 class="section-heading">AI Data Usage</h3>
-
-                                            <div class="list-group">
-                                                <span class="list-group-item list-group-item-action">This feature</span>
-                                            </div>
-
-                                            <div class="input-group">
-                                                <div class="form-check form-switch">
+                            <div class="tab-o" id="5">
+                                <div class="coll-lo">
+                                    <div class="block-card settings-container el-9">
+                                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link active" id="account-tab" data-bs-toggle="tab"
+                                                    data-bs-target="#account" type="button" role="tab"
+                                                    aria-controls="account" aria-selected="true">Himitsu</button>
+                                            </li>
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link" id="params-tab" data-bs-toggle="tab"
+                                                    data-bs-target="#params" type="button" role="tab"
+                                                    aria-controls="params" aria-selected="false">Kanojo Connect</button>
+                                            </li>
+                                        </ul>
+                                        <div class="tab-content" id="myTabContent">
+                                            <div class="tab-pane fade show active" id="account" role="tabpanel"
+                                                aria-labelledby="account-tab">
+                                                <h3 class="section-heading">Dark Mode</h3>
+                                                <div class="input-group">
                                                     <div class="form-check form-switch">
                                                         <input class="form-check-input" type="checkbox"
-                                                            id="aiDataUsageSwitch" checked>
-                                                        <label class="form-check-label" for="aiDataUsageSwitch"></label>
+                                                            id="darkModeSwitch" onclick="toggleTheme()" checked>
+                                                        <label class="form-check-label" for="darkModeSwitch"></label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane fade" id="api" role="tabpanel"
+                                                aria-labelledby="api-tab">
+                                                <h3 class="section-heading">AI Data Usage</h3>
+
+                                                <div class="list-group">
+                                                    <span class="list-group-item list-group-item-action">This
+                                                        feature</span>
+                                                </div>
+
+                                                <div class="input-group">
+                                                    <div class="form-check form-switch">
+                                                        <div class="form-check form-switch">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                id="aiDataUsageSwitch" checked>
+                                                            <label class="form-check-label"
+                                                                for="aiDataUsageSwitch"></label>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -559,8 +370,7 @@
                 </div>
             </div>
         </div>
-    </div>
-    <!--<a class="border rounded-circle d-inline scroll-to-top" href="#page-top"
+        <!--<a class="border rounded-circle d-inline scroll-to-top" href="#page-top"
         style="width: 50px; height: 50px; display: flex; justify-content: center; align-items: center;"><i
             class="fas fa-angle-up"></i></a>-->
     </div>
@@ -620,6 +430,122 @@
                 </div>
                 <div class="modal-footer">
                     <!-- Close button -->
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="emojiSettingsModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content" style="background-color: #2D2C40; color: white;">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" id="emojiSettingsModalLabel">Settings</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <!-- Sidebar for tabs -->
+                        <div class="col-2">
+                            <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist"
+                                aria-orientation="vertical">
+                                <button class="nav-link active" id="v-pills-general-tab" data-bs-toggle="pill"
+                                    data-bs-target="#v-pills-general" type="button" role="tab"
+                                    aria-controls="v-pills-general" aria-selected="true">General</button>
+                                <button class="nav-link" id="v-pills-system-tab" data-bs-toggle="pill"
+                                    data-bs-target="#v-pills-system" type="button" role="tab"
+                                    aria-controls="v-pills-system" aria-selected="false">System</button>
+                                <button class="nav-link" id="v-pills-ai-tab" data-bs-toggle="pill"
+                                    data-bs-target="#v-pills-ai" type="button" role="tab" aria-controls="v-pills-ai"
+                                    aria-selected="false">AI</button>
+                            </div>
+                        </div>
+                        <!-- Tab content -->
+                        <div class="col-10">
+                            <div class="tab-content" id="v-pills-tabContent">
+                                <div class="tab-pane fade show active" id="v-pills-general" role="tabpanel"
+                                    aria-labelledby="v-pills-general-tab">
+                                    <div class="list-group">
+                                        <div class="list-group-item" style="background-color: transparent;">
+                                            <h6>General</h6>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="updateEmojiHistory">
+                                                <label class="form-check-label" for="updateEmojiHistory">Himitsu
+                                                    Copilot</label>
+                                            </div>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="updateEmojiTones">
+                                                <label class="form-check-label" for="updateEmojiTones">Offline
+                                                    Mode</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="list-group-item" style="background-color: transparent;">
+                                            <h6>Mode</h6>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" onclick="toggleTheme()" checked
+                                                    type="checkbox" id="updateEmojiHistory">
+                                                <label class="form-check-label" for="updateEmojiHistory">Dark
+                                                    Mode</label>
+                                            </div>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="updateEmojiTones">
+                                                <label class="form-check-label" for="updateEmojiTones">Automatic
+                                                    Toggle</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="v-pills-system" role="tabpanel"
+                                    aria-labelledby="v-pills-system-tab">
+                                    <div class="list-group">
+                                        <div class="list-group-item" style="background-color: transparent;">
+                                            <h6>Data</h6>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" checked type="checkbox"
+                                                    id="updateEmojiHistory">
+                                                <label class="form-check-label" for="updateEmojiHistory">User Datat
+                                                    Collection</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="list-group-item" style="background-color: transparent;">
+                                            <h6>Account</h6>
+                                            <p>This will give you a lot of benefits.</p>
+                                            <button class="btn text-white">Go Premium</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="v-pills-ai" role="tabpanel"
+                                    aria-labelledby="v-pills-ai-tab">
+                                    <div class="list-group">
+                                        <div class="list-group-item" style="background-color: transparent;">
+                                            <h6>Customization</h6>
+
+                                            <div id="parameter-container">
+                                                <!-- Dynamic HTML elements will be added here -->
+                                            </div>
+
+                                            <button class="btn" onclick="localStorage.clear()">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                            <button class="btn">
+                                                <i class="bi bi-x"></i>
+                                            </button>
+                                            <button class="btn" onclick="saveConfigParams()">
+                                                <i class="bi bi-check"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>

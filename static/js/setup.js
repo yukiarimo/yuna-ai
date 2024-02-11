@@ -288,3 +288,10 @@ var callYuna = {
       myModal.show();
   }
 };
+
+var settingsView = {
+  show: function() {
+    var myModal = new bootstrap.Modal(document.getElementById('settingsModal'), {});
+    myModal.show();
+  }
+};

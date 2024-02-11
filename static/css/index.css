@@ -675,7 +675,7 @@ body::-webkit-scrollbar {
 
 .modal-content {
     height: 100%;
-    width: auto !important;
+    width: 100% !important;
 }
 
 .modal-body {

@@ -226,99 +226,71 @@ function generateText() {
   sendGeneratedTextToServer(generatedText);
 }
 
-function sendGeneratedTextToServer(generatedText) {
+async function sendGeneratedTextToServer(generatedText) {
   const templateSelect = document.getElementById("templateSelect");
   const selectedTemplate = templateSelect.value;
 
   removeHimitsu(generatedText);
 
-  // Send a POST request to /message endpoint
-  fetch(`${server_url + server_port}/message`, {
+  try {
+    const response = await fetch(`${server_url + server_port}/message`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         chat: selectedFilename,
         text: generatedText,
         template: isHimitsu ? "himitsuCopilotGen" : currentPromptName,
       }),
-    })
-    .then((response) => response.json())
-    .then((data) => {
-      if (isHimitsu.toString() == 'true') {
-        fetch(`${server_url + server_port}/message`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              chat: selectedFilename,
-              text: data.response,
-              template: currentPromptName,
-            }),
-          })
-          .then((response) => response.json())
-          .then((data) => {
-            messageManager.removeBr();
-            messageManager.removeTypingBubble();
-            loadConfig();
-            const messageData = {
-              name: name2,
-              message: data.response,
-            };
+    });
 
-            messageManager.createMessage(messageData.name, messageData.message);
-            messageManager.addBr();
+    const data = await response.json();
 
-            playAudio(audioType = 'message');
+    if (isHimitsu.toString() === 'true') {
+      const response2 = await fetch(`${server_url + server_port}/message`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat: selectedFilename,
+          text: data.response,
+          template: currentPromptName,
+        }),
+      });
 
-            if (isTTS.toString() == 'true') {
-              playAudio();
-            }
-          })
-          .catch((error) => {
-            messageManager.removeTypingBubble();
-            loadConfig();
-            const messageData = {
-              name: name2,
-              message: error,
-            };
+      const data2 = await response2.json();
 
-            messageManager.createMessage(messageData.name, messageData.message);
-            playAudio(audioType = 'error');
-          });
-
-      } else {
-        messageManager.removeBr();
-        messageManager.removeTypingBubble();
-        loadConfig();
-        const messageData = {
-          name: name2,
-          message: data.response,
-        };
-
-        messageManager.createMessage(messageData.name, messageData.message);
-        messageManager.addBr();
-
-        playAudio(audioType = 'message');
-
-        if (isTTS.toString() == 'true') {
-          playAudio();
-        }
-      }
-    })
-    .catch((error) => {
+      messageManager.removeBr();
       messageManager.removeTypingBubble();
       loadConfig();
-      const messageData = {
-        name: name2,
-        message: error,
-      };
 
-      messageManager.createMessage(messageData.name, messageData.message);
-      playAudio(audioType = 'error');
-    });
+      messageManager.createMessage(name2, data2.response);
+      messageManager.addBr();
+
+      playAudio(audioType = 'message');
+
+      if (isTTS.toString() === 'true') {
+        playAudio();
+      }
+    } else {
+      messageManager.removeBr();
+      messageManager.removeTypingBubble();
+      loadConfig();
+
+      messageManager.createMessage(name2, data.response);
+      messageManager.addBr();
+
+      playAudio(audioType = 'message');
+
+      if (isTTS.toString() === 'true') {
+        playAudio();
+      }
+    }
+  } catch (error) {
+    messageManager.removeTypingBubble();
+    loadConfig();
+
+    messageManager.createMessage(name2, error);
+    playAudio(audioType = 'error');
+  }
 }
 
 function removeHimitsu(msg) {

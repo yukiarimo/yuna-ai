@@ -1,5 +1,3 @@
-import asyncio
-import websockets
 import json
 from flask import jsonify, request, send_from_directory
 from flask_login import current_user
@@ -76,12 +74,12 @@ def handle_audio_request(self):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     
-async def handle_image_request(self, websocket):
+async def handle_image_request(self):
     data = request.get_json()
 
     if 'image' in data and 'task' in data and data['task'] == 'caption':
         image_caption = capture_image(data)
-        await websocket.send(json.dumps({'message': image_caption}))
+        return jsonify({'message': image_caption})
 
     elif 'prompt' in data and 'chat' in data and data['task'] == 'generate':
         prompt = data['prompt']
@@ -96,12 +94,9 @@ async def handle_image_request(self, websocket):
         self.chat_history_manager.save_chat_history(chat_history, chat_id)
         yuna_image_message = f"Sure, here you go! <img src='img/art/{created_image}' class='image-message'>"
 
-        await websocket.send(json.dumps({'message': f"Image created: {created_image}"}))
+        return jsonify({'message': yuna_image_message})
     else:
         return jsonify({'error': 'Invalid task parameter'}), 400
     
 def services(self):
     return send_from_directory('.', 'services.html')
-    
-def pricing(self):
-    return send_from_directory('.', 'pricing.html')

@@ -8,6 +8,7 @@ const typingBubble = `<div class="block-message-1" id="circle-loader"><div class
 var himitsuCopilot;
 var name1;
 var name2;
+var config_data;
 
 async function loadConfig() {
   const response = await fetch('../../config.json');
@@ -26,303 +27,124 @@ function checkHimitsuCopilotState() {
 // Class and functions to add and removed <br>s from the message container
 class messageManager {
   constructor() {
-    this.brCount = 0;
-  }
-
-  addBr() {
-    this.brCount += 1;
-    let messageContainer = document.getElementById('message-container');
-    messageContainer.innerHTML += `<br><br><br><br><br>`;
-    this.scrollMsg();
-  }
-
-  removeBr() {
-    if (this.brCount > 0) {
-      this.brCount -= 1;
-      let messageContainer = document.getElementById('message-container');
-      let currentHTML = messageContainer.innerHTML;
-      let removeIndex = currentHTML.lastIndexOf('<br><br><br><br><br>');
-      let newHTML = currentHTML.substring(0, removeIndex);
-      messageContainer.innerHTML = newHTML;
-    }
+    this.messageContainer = document.getElementById('message-container');
+    this.inputText = document.getElementById('input_text');
   }
 
   createMessage(name, messageContent) {
-    const messageContainer = document.getElementById('message-container');
     const messageElement = document.createElement('div');
     messageElement.innerHTML = `<strong>${name}</strong>: ${messageContent}`;
-    messageContainer.appendChild(messageElement);
-    this.scrollMsg();
+    this.messageContainer.appendChild(messageElement);
+    scrollMsg();
   }
 
   createTypingBubble() {
-    const messageContainer = document.getElementById('message-container');
-    const typingBubble = '<div id="circle-loader"></div>'; // Assuming typingBubble HTML structure
-    messageContainer.insertAdjacentHTML('beforeend', typingBubble);
-    this.scrollMsg();
+    const typingBubble = '<div id="circle-loader"></div>';
+    this.messageContainer.insertAdjacentHTML('beforeend', typingBubble);
+    scrollMsg();
   }
 
   removeTypingBubble() {
     const bubble = document.getElementById('circle-loader');
-    if (bubble) {
-      bubble.remove();
-    }
+    bubble?.remove();
   }
 
   scrollMsg() {
-    const messageContainer = document.getElementById('message-container');
-    messageContainer.scrollTop = messageContainer.scrollHeight;
+    this.messageContainer.scrollTop = this.messageContainer.scrollHeight;
   }
 
   sendMessage(message, imageData = '', url = '/message') {
-    if (url == '/message') {
-      if (message == '') {
-        message = document.getElementById('input_text').value;
-      }
+    this.inputText.value = '';
+    this.createTypingBubble();
 
-      if (checkHimitsuCopilotState()) {
-        fetch(`${server_url + server_port}/message`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              chat: selectedFilename,
-              text: message,
-              template: "himitsuCopilot",
-            }),
-          })
-          .then(response => response.json())
-          .then(data => {
-            this.removeBr();
-            messageManager.removeTypingBubble();
+    if (url === '/message') {
+      message = message || this.inputText.value;
+      const serverEndpoint = `${server_url + server_port}${url}`;
+      const headers = { 'Content-Type': 'application/json' };
+      const body = JSON.stringify({ chat: selectedFilename, text: message, template: currentPromptName });
 
-            // Split the response data into three parts in an array by the "\n" character
-            var splitData = data.response.split('\n');
-
-            var fields = [{
-              id: 'text',
-              label: 'Input',
-              type: 'text'
-            }];
-
-            for (let i = 0; i < splitData.length; i++) {
-              fields.push({
-                id: `q${i+1}`,
-                label: `${splitData[i]}`,
-                type: 'text'
-              });
-            }
-
-            himitsuCopilot = new PromptTemplate([], fields);
-
-            var messageDiv = document.createElement('div');
-
-            // create #Himitsu element into messageDiv
-            const form = document.createElement('form');
-            form.setAttribute("id", "Himitsu");
-            messageDiv.appendChild(form);
-
-            // Append the button
-            const buttonDiv = document.createElement('div');
-            buttonDiv.className = 'block-button';
-            buttonDiv.setAttribute('type', 'button');
-            buttonDiv.setAttribute('onclick', 'generateText();');
-            buttonDiv.innerText = 'Gen';
-            messageDiv.appendChild(buttonDiv);
-            loadConfig();
-            messageData = {
-              name: name1,
-              message: messageDiv.innerHTML,
-            };
-
-            messageManager.createMessage(messageData.name, messageData.message);
-
-            himitsuCopilot.generateElements();
-
-            isHimitsu = true;
-          })
-          .catch(error => {
-            console.error('Error:', error);
-
-            messageManager.removeTypingBubble();
-
-            const messageData = {
-              name: name2,
-              message: error,
-            };
-
-            messageManager.createMessage(messageData.name, messageData.message);
-            playAudio(audioType = 'error');
-          });
-        return
-      }
-
-      document.getElementById('input_text').value = ''
-
-      this.removeBr();
-      messageContainer = document.getElementById('message-container');
-
-      var messageData;
-
-      if (currentPromptName == 'dialog') {
-        imageName = imageData
-        // Image check
-        if (imageName.toString() == 'false') {
-          imageName = '';
-        } else {
-          imageName = imageData
-          imageName = `<img src='img/call/${imageName}.jpg' class='image-message'>`;
-        }
-        loadConfig();
-        messageData = {
-          name: name1,
-          message: message + imageName,
-        };
-
-        messageManager.createMessage(messageData.name, messageData.message);
-        messageManager.createTypingBubble();
-        messageManager.addBr();
-
-        playAudio(audioType = 'send');
-
-      } else if (currentPromptName != 'dialog') {
-        var messageDiv = document.createElement('div');
-
-        // create #Himitsu element into messageDiv
-        const form = document.createElement('form');
-        form.setAttribute("id", "Himitsu");
-        messageDiv.appendChild(form);
-
-        // Append the button
-        const buttonDiv = document.createElement('div');
-        buttonDiv.className = 'block-button';
-        buttonDiv.setAttribute('type', 'button');
-        buttonDiv.setAttribute('onclick', 'generateText();');
-        buttonDiv.innerText = 'Gen';
-        messageDiv.appendChild(buttonDiv);
-        loadConfig();
-        messageData = {
-          name: name1,
-          message: messageDiv.innerHTML,
-          template: currentPromptName,
-        };
-
-        messageManager.createMessage(messageData.name, messageData.message);
-
-        if (currentPromptName == 'himitsu') {
-          himitsu.generateElements();
-        } else if (currentPromptName == 'writer') {
-          writer.generateSelectElements();
-          writer.generateTemplateInputs();
-        } else if (currentPromptName == 'paraphrase') {
-          paraphrase.generateSelectElements();
-          paraphrase.generateTemplateInputs();
-        } else if (currentPromptName == 'decisionMaking') {
-          decisionMaking.generateSelectElements();
-          decisionMaking.generateTemplateInputs();
-        } else if (currentPromptName == 'dialog') {
-          // skip this
-        }
-
-        // input a value like before with a 200ms delay
-        if (currentPromptName != 'dialog') {
-          setTimeout(function () {
-            document.getElementById('text').value = message
-          }, 50);
-        }
-
-        messageManager.createTypingBubble();
-
-        messageManager.addBr();
-        return;
-      }
-
-      playAudio(audioType = 'send');
-
-      // Send a POST request to /message endpoint
-      fetch(`${server_url + server_port}/message`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            chat: selectedFilename,
-            text: messageData.message,
-            template: currentPromptName,
-          }),
-        })
+      fetch(serverEndpoint, { method: 'POST', headers, body })
         .then(response => response.json())
         .then(data => {
-          this.removeBr();
-          messageManager.removeTypingBubble();
-
-          const messageData = {
-            name: name2,
-            message: data.response,
-          };
-
-          messageManager.createMessage(messageData.name, messageData.message);
-          messageManager.addBr();
-
-          playAudio(audioType = 'message');
+          this.removeTypingBubble();
+          this.createMessage(name1, this.processResponse(data.response));
+          playAudio('send');
         })
         .catch(error => {
-          messageManager.removeTypingBubble();
-
-          const messageData = {
-            name: name2,
-            message: error,
-          };
-
-          messageManager.createMessage(messageData.name, messageData.message);
-          playAudio(audioType = 'error');
+          this.handleError(error);
         });
-    } else if (url = '/image') {
-      imageDataURL = imageData[0];
-      imageName = imageData[1];
-      messageForImage = imageData[2];
-
-      // Send the captured image to the Flask server
-      fetch(`${server_url+server_port}/image`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            image: imageDataURL,
-            name: imageName,
-            task: 'caption',
-          })
-        })
-        .then(response => {
-          if (response.ok) {
-            // Parse the JSON data from the response
-            return response.json();
-          } else {
-            throw new Error('Error sending captured image.');
-          }
-        })
-        .then(data => {
-          // Delete the element with id "bubble"
-          const bubble = document.getElementById('circle-loader');
-          if (bubble) {
-            bubble.remove();
-          }
-          // Display if ok
-          messageContainer = document.getElementById('message-container');
-
-          // Access the image caption from the server response
-          const imageCaption = data.message;
-          var askYunaImage = `*You can see ${imageCaption} in the image* ${messageForImage}`
-
-          return askYunaImage;
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          alert('Error sending captured image.');
-        });
+    } else if (url === '/image') {
+      this.sendImage(imageData);
     }
+  }
+
+  processResponse(response) {
+    // Split the response data into parts by the "\n" character
+    const splitData = response.split('\n');
+  
+    // Create a div to hold the message and the generated form
+    const messageDiv = document.createElement('div');
+  
+    // Create a form element with the id "Himitsu"
+    const form = document.createElement('form');
+    form.setAttribute('id', 'Himitsu');
+    messageDiv.appendChild(form);
+  
+    // Create input elements for each part of the split data
+    splitData.forEach((dataPart, index) => {
+      const inputGroup = document.createElement('div');
+      inputGroup.className = 'input-group';
+  
+      const label = document.createElement('label');
+      label.htmlFor = `q${index + 1}`;
+      label.textContent = dataPart;
+      inputGroup.appendChild(label);
+  
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.id = `q${index + 1}`;
+      input.name = `q${index + 1}`;
+      inputGroup.appendChild(input);
+  
+      form.appendChild(inputGroup);
+    });
+  
+    // Append a button to generate text
+    const buttonDiv = document.createElement('div');
+    buttonDiv.className = 'block-button';
+    buttonDiv.setAttribute('type', 'button');
+    buttonDiv.setAttribute('onclick', 'generateText();');
+    buttonDiv.textContent = 'Gen';
+    messageDiv.appendChild(buttonDiv);
+  
+    // Return the innerHTML of the messageDiv as the processed response
+    return messageDiv.innerHTML;
+  }
+
+  handleError(error) {
+    console.error('Error:', error);
+    this.removeTypingBubble();
+    this.createMessage(name2, error);
+    playAudio('error');
+  }
+
+  sendImage(imageData) {
+    const [imageDataURL, imageName, messageForImage] = imageData;
+    const serverEndpoint = `${server_url + server_port}/image`;
+    const headers = { 'Content-Type': 'application/json' };
+    const body = JSON.stringify({ image: imageDataURL, name: imageName, task: 'caption' });
+
+    fetch(serverEndpoint, { method: 'POST', headers, body })
+      .then(response => response.ok ? response.json() : Promise.reject('Error sending captured image.'))
+      .then(data => {
+        this.removeTypingBubble();
+        const imageCaption = `*You can see ${data.message} in the image* ${messageForImage}`;
+        return imageCaption; // You might want to do something with this caption
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Error sending captured image.');
+      });
   }
 }
 
@@ -330,46 +152,32 @@ class messageManager {
 messageManager = new messageManager();
 
 function playAudio(audioType = 'tts') {
-  // Generate a random query parameter value
-  var randomValue = Math.random();
-
-  // Get the audio source element
-  var audioSource = document.getElementById("backgroundMusic");
-
-  if (audioType == 'tts') {
-    // Set the src attribute with the random query parameter
-    audioSource.src = `audio/output.mp3?v=${randomValue}`;
-  } else if (audioType == 'message') {
-    audioSource.src = 'audio/sounds/message.mp3';
-  } else if (audioType == 'send') {
-    audioSource.src = 'audio/sounds/send.mp3';
-  } else if (audioType == 'error') {
-    audioSource.src = 'audio/sounds/error.mp3';
-  } else if (audioType == 'ringtone') {
-    audioSource.src = 'audio/sounds/ringtone.mp3';
-  }
+  const audioSource = document.getElementById("backgroundMusic");
+  const audioMap = {
+    'tts': `audio/output.mp3?v=${Math.random()}`,
+    'message': 'audio/sounds/message.mp3',
+    'send': 'audio/sounds/send.mp3',
+    'error': 'audio/sounds/error.mp3',
+    'ringtone': 'audio/sounds/ringtone.mp3'
+  };
+  audioSource.src = audioMap[audioType];
 }
 
 // Other functions (clearHistory, loadHistory, downloadHistory) go here if needed.
 function formatMessage(messageData) {
-  // Create a div for the message
-  var messageDiv = document.createElement('div');
+  const messageDiv = document.createElement('div');
   loadConfig();
-  messageDiv.classList.add('p-2', 'mb-2'); // Bootstrap padding and margin classes
+  messageDiv.classList.add('p-2', 'mb-2');
 
-  // Set the CSS class based on the name
-  if (messageData.name === 'Yuki') {
-    messageDiv.classList.add('block-message-2', 'text-end', 'bg-primary', 'text-white'); // Yuki's messages on the right
-  } else if (messageData.name === 'Yuna') {
-    messageDiv.classList.add('block-message-1', 'text-start', 'bg-secondary', 'text-white'); // Yuna's messages on the left
-  }
+  const classes = messageData.name === 'Yuki' 
+    ? ['block-message-2', 'text-end', 'bg-primary', 'text-white'] 
+    : ['block-message-1', 'text-start', 'bg-secondary', 'text-white'];
+  messageDiv.classList.add(...classes);
 
-  // Create a paragraph for the message text
-  var messageText = document.createElement('pre');
-  messageText.classList.add('m-0'); // Bootstrap margin class
+  const messageText = document.createElement('pre');
+  messageText.classList.add('m-0');
   messageText.innerHTML = messageData.message;
 
-  // Append the message text to the message div
   messageDiv.appendChild(messageText);
 
   scrollMsg();
@@ -377,151 +185,188 @@ function formatMessage(messageData) {
   return messageDiv;
 }
 
-
-function downloadHistory() {
-  if (selectedFilename == "") {
-    selectedFilename = config_data.server.default_history_file;
+class HistoryManager {
+  constructor(serverUrl, serverPort, defaultHistoryFile) {
+    this.serverUrl = serverUrl;
+    this.serverPort = serverPort;
+    this.defaultHistoryFile = defaultHistoryFile;
+    this.messageContainer = document.getElementById('message-container');
   }
 
-  const historyContainer = document.getElementById('message-container');
+  createHistoryFile() {
+    const newFileName = prompt('Enter a name for the new file (with .json):');
+    if (!newFileName) {
+      console.log('File creation cancelled.');
+      return; // Exit if no name is entered
+    }
 
-  // Fetch the selected chat history file from the server
-  fetch(`${server_url + server_port}/history`, {
+    fetch(`${this.serverUrl + this.serverPort}/history`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        chat: selectedFilename,
-        task: 'load',
-      }),
+        chat: newFileName,
+        task: "create"
+      })
     })
-    .then(response => response.json())
-    .then(data => {
-      var chatHistory = JSON.stringify(data);
-      var blob = new Blob([chatHistory], {
-        type: 'text/plain',
-      });
-      var url = URL.createObjectURL(blob);
-
-      // Create a temporary anchor element for downloading
-      var a = document.createElement('a');
-      a.href = url;
-      a.download = `${selectedFilename}.json`;
-      a.click();
-
-      // Clean up
-      URL.revokeObjectURL(url);
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(responseData => {
+      console.log('File created:', responseData);
+      // Optionally, update UI or state to reflect the new file
     })
     .catch(error => {
-      console.error('Error fetching history for download:', error);
+      console.error('An error occurred:', error);
     });
-}
 
-// Function to open a pop-up dialog for editing history
-function editHistory() {
-  if (selectedFilename == "") {
-    selectedFilename = config_data.default_history_file;
+    // Reload the page with a delay of 1 second
+    setTimeout(() => {
+      location.reload();
+    }, 1000);
   }
 
-  // Fetch the selected chat history file from the server
-  fetch(`${server_url+server_port}/history`, {
+  get selectedFilename() {
+    return this._selectedFilename || this.defaultHistoryFile;
+  }
+
+  set selectedFilename(filename) {
+    this._selectedFilename = filename;
+  }
+
+  downloadHistory() {
+    this.fetchHistory('load')
+      .then(data => {
+        const chatHistory = JSON.stringify(data);
+        const blob = new Blob([chatHistory], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${this.selectedFilename}.json`;
+        document.body.appendChild(a); // Append to body to ensure visibility in Firefox
+        a.click();
+        document.body.removeChild(a); // Clean up
+
+        URL.revokeObjectURL(url);
+      })
+      .catch(error => console.error('Error fetching history for download:', error));
+  }
+
+  editHistory() {
+    this.fetchHistory('load')
+      .then(data => {
+        const historyPopup = document.createElement('div');
+        historyPopup.classList.add('block-popup', 'edit-popup');
+
+        const popupContent = `
+          <div class="modal-content">
+            <div class="modal-header">Edit History</div>
+            <div class="modal-body">
+              <textarea class="block-scroll">${JSON.stringify(data, null, 2)}</textarea>
+            </div>
+            <div class="modal-footer">
+              <button class="block-button" onclick="historyManager.saveEditedHistory('${this.selectedFilename}')">Save</button>
+              <button class="block-button" onclick="historyManager.closePopup('${historyPopup.id}')">Cancel</button>
+            </div>
+          </div>
+        `;
+
+        historyPopup.innerHTML = popupContent;
+        document.body.appendChild(historyPopup);
+      })
+      .catch(error => console.error('Error loading selected history file:', error));
+  }
+
+  saveEditedHistory() {
+    const editTextArea = document.querySelector('.block-popup.edit-popup textarea');
+    const editedText = editTextArea.value;
+
+    this.sendEditHistory(editedText, this.selectedFilename);
+  }
+
+  sendEditHistory(editedText, filename) {
+    fetch(`${this.serverUrl + this.serverPort}/history`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        chat: selectedFilename,
+        chat: filename,
+        task: 'edit',
+        history: JSON.parse(editedText),
+      }),
+    })
+    .then(response => response.json())
+    .then(() => this.loadSelectedHistory())
+    .catch(error => console.error('Error sending edited history:', error));
+  }
+
+  fetchHistory(task) {
+    return fetch(`${this.serverUrl + this.serverPort}/history`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat: this.selectedFilename,
+        task: task,
+      }),
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    });
+  }
+
+  closePopup(popupId) {
+    const popup = document.getElementById(popupId);
+    popup?.remove();
+  }
+
+  // Placeholder for loadSelectedHistory method
+  loadSelectedHistory(filename) {
+    const selectedFilename = filename || this.defaultHistoryFile;
+
+    fetch(`${this.serverUrl + this.serverPort}/history`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
         task: 'load',
+        chat: selectedFilename
       }),
     })
     .then(response => response.json())
     .then(data => {
-      var historyPopup = document.createElement('div');
-      historyPopup.classList.add('block-popup');
-      historyPopup.classList.add('edit-popup');
-
-      // Create the HTML content for the pop-up dialog
-      var popupContent = `
-        <div class="modal-content">
-          <div class="modal-header">Edit History</div>
-          <div class="modal-body">
-            <textarea class="block-scroll">${JSON.stringify(data, null, 2)}</textarea>
-          </div>
-          <div class="modal-footer">
-            <button class="block-button" onclick="saveEditedHistory('${selectedFilename}')">Save</button>
-            <button class="block-button" onclick="closePopup('${historyPopup.id}')">Cancel</button>
-          </div>
-        </div>
-      `;
-
-      historyPopup.innerHTML = popupContent;
-
-      // Add the pop-up dialog to the body
-      document.body.appendChild(historyPopup);
+      this.displayMessages(data);
     })
     .catch(error => {
       console.error('Error loading selected history file:', error);
     });
-}
 
-function saveEditedHistory(selectedFilename) {
-  var editTextArea = document.querySelector('.block-popup.edit-popup textarea');
-  var editedText = editTextArea.value;
-
-  // Call the function to save the edited message here, e.g., send it to the server
-  sendEditHistory(editedText, selectedFilename);
-
-  // Close the pop-up dialog
-  closePopup('call');
-}
-
-function closePopup(popupId) {
-  var popup = document.getElementById(popupId);
-  popup.remove();
-}
-
-function sendEditHistory(editTextArea, selectedFilename) {
-  // Send a POST request to /history endpoint
-  fetch(`${server_url+server_port}/history`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        chat: selectedFilename,
-        task: 'edit',
-        history: JSON.parse(editTextArea),
-      }),
-    })
-    .then(response => response.json())
-    .then(data => {
-      // Display if ok
-      loadSelectedHistory();
-    })
-    .catch(error => {
-      console.error('Error sending message:', error);
-    });
-}
-
-function displayMessages(messages) {
-  messageContainer = document.getElementById('message-container');
-
-  // Clear the existing content of messageContainer
-  while (messageContainer.firstChild) {
-    messageContainer.removeChild(messageContainer.firstChild);
+    this.closePopupsAll();
   }
 
-  // Loop through the messages and format each one
-  messages.forEach(messageData => {
-    var formattedMessage = formatMessage(messageData);
-    messageContainer.appendChild(formattedMessage);
-  });
+  displayMessages(messages) {
+    // Clear the existing content of messageContainer
+    while (this.messageContainer.firstChild) {
+      this.messageContainer.removeChild(this.messageContainer.firstChild);
+    }
 
-  messageContainer.innerHTML = `<br>` + messageContainer.innerHTML + `<br><br><br><br><br>`
+    // Loop through the messages and format each one
+    messages.forEach(messageData => {
+      const formattedMessage = formatMessage(messageData);
+      this.messageContainer.appendChild(formattedMessage);
+    });
 
-  scrollMsg()
+    this.messageContainer.innerHTML = `<br>` + this.messageContainer.innerHTML + `<br><br><br><br><br>`;
+    scrollMsg();
+  }
+  
 }
+
+// Assuming server_url, server_port, and config_data are defined globally
+var historyManager = ''
 
 navigator.mediaDevices.getUserMedia({
     video: true
@@ -535,77 +380,45 @@ navigator.mediaDevices.getUserMedia({
     console.log('Error accessing the camera:', error);
   });
 
+function closePopup(popupId) {
+  var popup = document.getElementById(popupId);
+  popup.remove();
+}
+
 function scrollMsg() {
   objDiv = document.getElementById("message-container");
   objDiv.scrollTop = objDiv.scrollHeight;
 }
 
-function drawArt() {
-  messageContainer = document.getElementById('message-container');
-
-  console.log(selectedFilename)
-  var imagePrompt = prompt('Enter a prompt for the image:');
+async function drawArt() {
+  const messageContainer = document.getElementById('message-container');
+  const imagePrompt = prompt('Enter a prompt for the image:');
   loadConfig();
-  messageData = {
-    "name": name1,
-    "message": imagePrompt
-  }
 
   closePopupsAll();
 
-  let formattedMessage = formatMessage(messageData);
-  messageContainer.appendChild(formattedMessage);
-
+  messageContainer.insertAdjacentHTML('beforeend', formatMessage({ name: name1, message: imagePrompt }));
   messageContainer.insertAdjacentHTML('beforeend', typingBubble);
-  scrollMsg()
+  scrollMsg();
 
-  // Send the captured image to the Flask server
-  fetch(`${server_url+server_port}/image`, {
+  try {
+    const response = await fetch(`${server_url+server_port}/image`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        prompt: imagePrompt,
-        chat: selectedFilename,
-        task: 'generate',
-      })
-    })
-    .then(response => {
-      if (response.ok) {
-        // Parse the JSON data from the response
-        return response.json();
-      } else {
-        throw new Error('Error generating image.');
-      }
-    })
-    .then(data => {
-      // Delete the element with id "bubble"
-      const bubble = document.getElementById('circle-loader');
-      if (bubble) {
-        bubble.remove();
-      }
-      // Display if ok
-      messageContainer = document.getElementById('message-container');
-
-      // Access the image caption from the server response
-      const imageCreated = data.message;
-
-      messageData2 = {
-        "name": name2,
-        "message": imageCreated
-      }
-
-      let formattedMessage = formatMessage(messageData2);
-      messageContainer.appendChild(formattedMessage);
-
-      console.log('Image Generated Successfully');
-
-    })
-    .catch(error => {
-      console.error('Error:', error);
-      alert('Error sending captured image.');
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: imagePrompt, chat: selectedFilename, task: 'generate' })
     });
+
+    if (!response.ok) throw new Error('Error generating image.');
+
+    const data = await response.json();
+    document.getElementById('circle-loader')?.remove();
+
+    messageContainer.insertAdjacentHTML('beforeend', formatMessage({ name: name2, message: data.message }));
+    console.log('Image Generated Successfully');
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Error sending captured image.');
+  }
 }
 
 // Add an event listener to the "Capture Image" button
@@ -642,285 +455,97 @@ function captureImage() {
 }
 
 // Modify the captureImage function to handle file uploads
-function captureImageViaFile() {
-  var imageUpload = document.getElementById('imageUpload');
-  var messageContainer = document.getElementById('message-container');
+async function captureImageViaFile() {
+  const imageUpload = document.getElementById('imageUpload');
+  const file = imageUpload.files[0];
 
-  if (imageUpload.files.length > 0) {
-    var file = imageUpload.files[0];
-    var reader = new FileReader();
-
-    reader.onloadend = function () {
-      // Convert the image file to a base64 data URL
-      var imageDataURL = reader.result;
-
-      var messageForImage = prompt('Enter a message for the image:');
-
-      // Generate a random image name using current timestamp
-      var imageName = new Date().getTime().toString();
-
-      closePopupsAll();
-
-      // Send the uploaded image to the Flask server
-      fetch(`${server_url+server_port}/image`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            image: imageDataURL,
-            name: imageName,
-            task: 'caption',
-          })
-        })
-        .then(response => {
-          if (response.ok) {
-            // Parse the JSON data from the response
-            return response.json();
-          } else {
-            throw new Error('Error sending uploaded image.');
-          }
-        })
-        .then(data => {
-          // Access the image caption from the server response
-          const imageCaption = data.message;
-          var askYunaImage = `*You can see ${imageCaption} in the image* ${messageForImage}`;
-
-          sendMessage(askYunaImage, imageName);
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          alert('Error sending uploaded image.');
-        });
-    };
-
-    // Read the image file as a data URL
-    reader.readAsDataURL(file);
-  } else {
+  if (!file) {
     alert('No file selected.');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onloadend = async function () {
+    const imageDataURL = reader.result;
+    const messageForImage = prompt('Enter a message for the image:');
+    const imageName = Date.now().toString();
+
+    closePopupsAll();
+
+    try {
+      const response = await fetch(`${server_url+server_port}/image`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: imageDataURL, name: imageName, task: 'caption' })
+      });
+
+      if (!response.ok) throw new Error('Error sending uploaded image.');
+
+      const data = await response.json();
+      const imageCaption = data.message;
+      const askYunaImage = `*You can see ${imageCaption} in the image* ${messageForImage}`;
+
+      sendMessage(askYunaImage, imageName);
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error sending uploaded image.');
+    }
+  };
+
+  reader.readAsDataURL(file);
+}
+
+async function populateHistorySelect() {
+  loadConfig();
+  const historySelect = document.getElementById('chat-items');
+  const config = JSON.parse(localStorage.getItem('config'));
+
+  if (!config) {
+    setTimeout(() => location.reload(), 100);
+    return;
+  }
+
+  server_port = config.server.port;
+  server_url = config.server.url;
+
+  try {
+    const response = await fetch(`${server_url+server_port}/history`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ task: 'list' })
+    });
+
+    if (!response.ok) throw new Error('Error fetching history files.');
+
+    const data = await response.json();
+    historySelect.insertAdjacentHTML('beforeend', data.map(filename => `...`).join(''));
+    
+    selectedFilename = config_data.server.default_history_file;
+    historyManager = new HistoryManager(server_url, server_port, config_data.server.default_history_file);
+  } catch (error) {
+    console.error('Error:', error);
   }
 }
 
-// Function to fetch and populate chat history file options
-function populateHistorySelect() {
-  loadConfig();
-  return new Promise((resolve, reject) => {
-    var historySelect = document.getElementById('chat-items');
+async function loadSelectedHistory(selectedFilename = config_data.server.default_history_file) {
+  const messageContainer = document.getElementById('message-container');
 
-    if (localStorage.getItem('config') == null) {
-      // reload the page with delay of 1 second if config is not available
-      setTimeout(function () {
-        location.reload()
-      }, 100);
-    }
-
-    server_port = JSON.parse(localStorage.getItem('config')).server.port
-    server_url = JSON.parse(localStorage.getItem('config')).server.url
-
-    // Fetch the list of history files from the server using the new /history route with 'load' task
-    fetch(`${server_url+server_port}/history`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          task: 'list',
-        }),
-      })
-      .then(response => response.json())
-      .then(data => {
-
-        // Populate the <select> with the available options 
-        historySelect.insertAdjacentHTML('beforeend', data.map(filename => ` 
-          <li class="collection-item list-group-item d-flex justify-content-between align-items-center">
-          <div class="collection-info"> 
-              <span class="collection-name">${filename}</span> 
-            </div>
-              <div class="btn-group">
-                  <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Action</button>
-                  <ul class="dropdown-menu collection-actions">
-                      <li><button class="dropdown-item" type="button">Open</button></li>
-                      <li><button class="dropdown-item" type="button">Edit</button></li>
-                      <li><button class="dropdown-item" type="button">Delete</button></li>
-                      <li><button class="dropdown-item" type="button">Download</button></li>
-                      <li><button class="dropdown-item" type="button">Rename</button></li>
-                  </ul>
-              </div>
-          </li>
-          
-          `).join(''));
-
-        duplicateAndCategorizeChats()
-        // Select all the buttons in the list
-        let buttons = document.querySelectorAll('.collection-item .collection-actions li button');
-
-        // Add an event listener to each button
-        buttons.forEach(button => {
-          button.addEventListener('click', function (event) {
-            // Prevent the default action
-            event.preventDefault();
-
-            // Get the name of the file
-            let fileName = this.closest('.collection-item').querySelector('.collection-name').textContent;
-
-            // Get the action (the button's text content)
-            let action = this.textContent;
-
-            // You can now use fileName and action for whatever you need
-            console.log(`Action: ${action}, File Name: ${fileName}`);
-
-            // Handle the action
-            switch (action) {
-              case 'Open':
-                selectedFilename = fileName;
-                loadSelectedHistory(fileName);
-                OpenTab('1');
-                break;
-              case 'Edit':
-                selectedFilename = fileName;
-
-                alert('Edit History is not available yet.');
-                break;
-              case 'Delete':
-                // continue only if the user confirms alert
-                if (confirm("Are you sure you want to delete this file?")) {
-                  fetch(`${server_url + server_port}/history`, {
-                      method: 'POST',
-                      headers: {
-                        'Content-Type': 'application/json',
-                      },
-                      body: JSON.stringify({
-                        chat: fileName,
-                        task: "delete"
-                      })
-                    })
-                    .then(response => {
-                      if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                      }
-                      return response.json();
-                    })
-                    .then(responseData => {
-                      console.log(responseData);
-                    })
-                    .catch(error => {
-                      console.error('An error occurred:', error);
-                    });
-
-                  // reload the page with delay of 1 second
-                  setTimeout(function () {
-                    location.reload()
-                  }, 100);
-                }
-                break;
-              case 'Download':
-                // request load history file from the server and download it as json file
-                fetch(`${server_url + server_port}/history`, {
-                    method: 'POST',
-                    headers: {
-                      'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                      chat: fileName,
-                      task: "load"
-                    })
-                  })
-                  .then(response => response.json())
-                  .then(data => {
-                    var chatHistory = JSON.stringify(data);
-                    var blob = new Blob([chatHistory], {
-                      type: 'text/plain',
-                    });
-                    var url = URL.createObjectURL(blob);
-
-                    // Create a temporary anchor element for downloading
-                    var a = document.createElement('a');
-                    a.href = url;
-                    a.download = `${fileName}.json`;
-                    a.click();
-
-                    // Clean up
-                    URL.revokeObjectURL(url);
-                  })
-                  .catch(error => {
-                    console.error('Error fetching history for download:', error);
-                  });
-                break;
-              case 'Rename':
-                var newName = prompt('Enter a new name for the file (with .json):', fileName);
-                selectedFilename = newName;
-
-                fetch(`${server_url + server_port}/history`, {
-                    method: 'POST',
-                    headers: {
-                      'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                      chat: fileName,
-                      name: newName,
-                      task: "rename"
-                    })
-                  })
-                  .then(response => {
-                    if (!response.ok) {
-                      throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                  })
-                  .then(responseData => {
-                    console.log(responseData);
-                  })
-                  .catch(error => {
-                    console.error('An error occurred:', error);
-                  });
-                break;
-              default:
-                console.log(`Unknown action: ${action} for file: ${fileName}`);
-            }
-          });
-        });
-
-        selectedFilename = config_data.server.default_history_file;
-      })
-      .catch(error => {
-        console.error('Error fetching history files:', error);
-      });
-
-    // Resolve the promise when the operation is complete
-    resolve();
-  });
-}
-
-function createHistoryFile() {
-  var newFileName = prompt('Enter a name for the new file (with .json):');
-
-  fetch(`${server_url + server_port}/history`, {
+  try {
+    const response = await fetch(`${server_url+server_port}/history`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        chat: newFileName,
-        task: "create"
-      })
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then(responseData => {
-      console.log(responseData);
-    })
-    .catch(error => {
-      console.error('An error occurred:', error);
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ task: 'load', chat: selectedFilename })
     });
 
-  // reload the page with delay of 1 second
-  setTimeout(function () {
-    location.reload()
-  }, 100);
+    if (!response.ok) throw new Error('Error loading selected history file.');
+
+    const data = await response.json();
+    historyManager.displayMessages(data);
+  } catch (error) {
+    console.error('Error:', error);
+  }
+
+  closePopupsAll();
 }
 
 function duplicateAndCategorizeChats() {
@@ -968,39 +593,6 @@ function duplicateAndCategorizeChats() {
   document.getElementById('collectionItems').classList.add('list-group');
 }
 
-// Function to load the selected chat history file
-function loadSelectedHistory(selectedFilename) {
-  messageContainer = document.getElementById('message-container');
-
-  if (selectedFilename == undefined) {
-    selectedFilename = config_data.server.default_history_file;
-  }
-
-  // Define the data to be sent in the POST request
-  var requestData = {
-    task: 'load',
-    chat: selectedFilename
-  };
-
-  // Fetch the selected chat history file from the server using POST
-  fetch(`${server_url+server_port}/history`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(requestData),
-    })
-    .then(response => response.json())
-    .then(data => {
-      displayMessages(data);
-    })
-    .catch(error => {
-      console.error('Error loading selected history file:', error);
-    });
-
-  closePopupsAll();
-}
-
 function muteAudio() {
   audioElement = document.getElementById("backgroundMusic");
 
@@ -1028,113 +620,6 @@ function closePopupsAll() {
   var parameterContainer = document.getElementById('parameter-container');
   parameterContainer.innerHTML = '';
 }
-
-// Get all tabs
-const tabs = document.querySelectorAll('.tab');
-// Get all content sections
-const sections = document.querySelectorAll('.section');
-
-// Function to remove active class from all tabs and hide all sections
-function resetActiveTabsAndHideSections() {
-  tabs.forEach(tab => {
-    tab.classList.remove('active');
-  });
-  sections.forEach(section => {
-    section.style.display = 'none';
-  });
-}
-
-// Function to initialize tabs functionality
-function initTabs() {
-  tabs.forEach((tab, index) => {
-    tab.addEventListener('click', () => {
-      resetActiveTabsAndHideSections();
-      // Add active class to the clicked tab
-      tab.classList.add('active');
-      // Display the corresponding section
-      sections[index].style.display = 'block';
-    });
-  });
-}
-
-var firstNavSidebar = document.getElementsByClassName('nav-link')[0];
-var secondNavSidebar = document.getElementsByClassName('nav-link')[1];
-var thirdNavSidebar = document.getElementsByClassName('nav-link')[2];
-var fourthNavSidebar = document.getElementsByClassName('nav-link')[3];
-var fifthNavSidebar = document.getElementsByClassName('nav-link')[4];
-
-if (window.matchMedia("(max-width: 428px)").matches) {
-  document.getElementsByClassName('scroll-to-top')[0].style.display = 'none';
-}
-
-// add "selected" class to which is clicked and remove from other tabs
-firstNavSidebar.addEventListener('click', function () {
-  document.getElementsByClassName('scroll-to-top')[0].style.display = 'none';
-  firstNavSidebar.classList.add('active');
-  secondNavSidebar.classList.remove('active');
-  thirdNavSidebar.classList.remove('active');
-  fourthNavSidebar.classList.remove('active');
-  fifthNavSidebar.classList.remove('active');
-});
-
-secondNavSidebar.addEventListener('click', function () {
-  document.getElementsByClassName('scroll-to-top')[0].style.display = 'flex';
-  firstNavSidebar.classList.remove('active');
-  secondNavSidebar.classList.add('active');
-  thirdNavSidebar.classList.remove('active');
-  fourthNavSidebar.classList.remove('active');
-  fifthNavSidebar.classList.remove('active');
-});
-
-thirdNavSidebar.addEventListener('click', function () {
-  document.getElementsByClassName('scroll-to-top')[0].style.display = 'flex';
-  firstNavSidebar.classList.remove('active');
-  secondNavSidebar.classList.remove('active');
-  thirdNavSidebar.classList.add('active');
-  fourthNavSidebar.classList.remove('active');
-  fifthNavSidebar.classList.remove('active');
-});
-
-fourthNavSidebar.addEventListener('click', function () {
-  document.getElementsByClassName('scroll-to-top')[0].style.display = 'flex';
-  firstNavSidebar.classList.remove('active');
-  secondNavSidebar.classList.remove('active');
-  thirdNavSidebar.classList.remove('active');
-  fourthNavSidebar.classList.add('active');
-  fifthNavSidebar.classList.remove('active');
-});
-
-fifthNavSidebar.addEventListener('click', function () {
-  document.getElementsByClassName('scroll-to-top')[0].style.display = 'flex';
-  firstNavSidebar.classList.remove('active');
-  secondNavSidebar.classList.remove('active');
-  thirdNavSidebar.classList.remove('active');
-  fourthNavSidebar.classList.remove('active');
-  fifthNavSidebar.classList.add('active');
-});
-
-document.getElementsByClassName('sidebarToggle')[0].addEventListener('click', function () {
-  document.getElementsByClassName('sidebar-o')[0].style.width = '100%';
-  kawaiAutoScale();
-});
-
-function togglesidebarBack() {
-  document.getElementsByClassName('sidebar-o')[0].classList.add('toggled');
-  document.getElementsByClassName('sidebar-o')[0].width = '';
-  kawaiAutoScale();
-}
-
-document.getElementsByClassName('sidebarToggleIn')[0].addEventListener('click', function () {
-  document.getElementsByClassName('sidebar-o')[0].style.width = '100%';
-  kawaiAutoScale();
-});
-
-// if on mobile, run this function
-if (window.matchMedia("(max-width: 767px)").matches) {
-  togglesidebarBack()
-}
-
-kawaiAutoScale();
 
 var myDefaultAllowList = bootstrap.Tooltip.Default.allowList;
 myDefaultAllowList['a'] = myDefaultAllowList['a'] || [];
@@ -1209,83 +694,6 @@ checkMe().then(messages => {
 }).catch(error => {
   // Handle any errors here
   console.error(error);
-});
-
-var allHtmlContent = '';
-
-document.getElementById('searchButton').addEventListener('click', function () {
-  var searchData = document.getElementById('searchInput').value;
-
-  // Display the request information
-  var requestResultsContainer = document.getElementById('requestResults');
-  requestResultsContainer.innerHTML = '<p><strong>Request:</strong> Sending search request for: ' +
-    searchData + '</p>';
-
-  // Use Fetch API to send a POST request to your server
-  fetch('http://localhost:3003/search', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        json: searchData
-      }),
-    })
-    .then(response => response.text()) // Note: Use text() instead of json() to get the HTML content
-    .then(htmlContent => {
-      // Store all the HTML content received from the server
-      allHtmlContent = htmlContent;
-
-      // Display the response information
-      var responseResultsContainer = document.getElementById('results');
-      responseResultsContainer.innerHTML =
-        '<p><strong>Response:</strong> Received HTML content from the server.</p>';
-
-      // Process the received HTML content
-      var parser = new DOMParser();
-      var doc = parser.parseFromString(htmlContent, 'text/html');
-
-      // Example: Display the title of the parsed HTML
-      var titleElement = doc.querySelector('title');
-
-      // Get the element with class 'kno-rdesc'
-      var knoRdescElement = doc.querySelector('.kno-rdesc');
-
-      if (knoRdescElement == null) {
-        // If the element is not found, try to get the element with class 'kno-rdesc c-wiz'
-        knoRdescElement = doc.getElementsByClassName('hgKElc')[0];
-      }
-
-      // Extract text content from the element
-      var textContent = knoRdescElement ? knoRdescElement.textContent.trim() : '';
-
-      var resultsContainer = document.getElementById('results');
-      resultsContainer.innerHTML = '<p><strong>Page Title:</strong> ' + titleElement
-        .innerText + '</p>';
-      resultsContainer.innerHTML += '<p><strong>Extracted Content:</strong> ' + textContent +
-        '</p>';
-
-      // Select all elements with class "N54PNb"
-      var resultElements = doc.querySelectorAll('.N54PNb');
-
-      // Loop through each result element
-      resultElements.forEach(function (resultElement) {
-        // Get the title
-        var titleElement = resultElement.querySelector('.LC20lb');
-        var title = titleElement ? titleElement.textContent.trim() : '';
-
-        // Get the URL
-        var urlElement = resultElement.querySelector('a');
-        var url = urlElement ? urlElement.href : '';
-
-        // Display the information
-        resultsContainer.innerHTML += '<p><strong>Title:</strong> ' + title +
-          '</p>';
-        resultsContainer.innerHTML += '<p><strong>URL:</strong> <a href="' + url +
-          '" target="_blank">' + url + '</a></p>';
-      });
-    })
-    .catch(error => console.error('Error:', error));
 });
 
 function updateMsgCount() {

@@ -694,7 +694,6 @@ body::-webkit-scrollbar {
 }
 
 body {
-    background-color: #121212;
     color: #fff;
 }
 
@@ -731,7 +730,7 @@ body {
 }
 
 .sidebar-menu .active {
-    background-color: #333;
+    background-color: #18bc9c !important;
 }
 
 .sidebar-menu li a .badge {

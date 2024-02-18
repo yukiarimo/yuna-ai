@@ -60,12 +60,12 @@
 
 <body id="page-top">
     <div id="wrapper">
-        <nav class="navbar sidebar sidebar-o align-items-start sidebar sidebar-dark accordion p-0 navbar-dark">
+        <nav class="navbar sidebar sidebar-o bg-black align-items-start sidebar sidebar-dark accordion p-0 navbar-dark">
             <div class="container-fluid d-flex flex-column p-0">
                 <div class="sidebar-header">
                     <a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
                         <div class="sidebar-brand-icon">
-                            <img src="img/yuna-ai.png" alt="Yuna AI" style="width: 30px; height: 30px;">
+                            <img src="img/yuna-ai.png" alt="Yuna AI Logo" style="width: 30px; height: 30px;">
                             <button class="sidebarToggleIn btn btn-link d-md-none rounded-circle me-3" type="button"><i
                                     onclick="togglesidebarBack()" class="fas fa-bars"></i></button>
                         </div>
@@ -75,7 +75,7 @@
                 <ul class="sidebar-menu">
                     <li><a href="#" class="nav-link active" onclick="OpenTab('1')"><i class="fas fa-comment-dots"></i>
                             Chats
-                            <span class="badge badge-pill">5</span></a></li>
+                            <span class="badge badge-pill" id="messageCount">0</span></a></li>
                     <li><a href="#" class="nav-link" onclick="OpenTab('2')"><i class="fas fa-book-open"></i> Library</a>
                     </li>
                     <li><a href="#" class="nav-link" onclick="OpenTab('4')"><i class="fas fa-user"></i> Profile</a></li>
@@ -135,7 +135,7 @@
                             <li class="nav-item dropdown no-arrow">
                                 <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
                                         aria-expanded="false" data-bs-toggle="dropdown" href="#">
-                                        <img class="border rounded-circle img-profile" src="img/yuna-girl-head.png"
+                                        <img class="border rounded-circle img-profile" src="img/yuna-girl-head.png" alt="Profile Picture"
                                             style="height: 26px;">
                                     </a>
 
@@ -180,7 +180,7 @@
                                         <label class="form-check-label" for="customSwitch"></label>
                                     </div>
 
-                                    <i class="bi bi-arrow-up-circle" onclick="sendMessage('')"
+                                    <i class="bi bi-arrow-up-circle" onclick="messageManager.sendMessage('')"
                                         style="font-size: 2em;"></i>
                                 </div>
                             </div>

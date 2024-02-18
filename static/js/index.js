@@ -2,7 +2,6 @@ var server_url = '';
 var server_port = '';
 var selectedFilename = '';
 var backgroundMusic = document.getElementById('backgroundMusic');
-var isTTS = false;
 var isHimitsu = false;
 var messageContainer = document.getElementById('message-container');
 const typingBubble = `<div class="block-message-1" id="circle-loader"><div class="circle-loader"></div></div>`;
@@ -32,45 +31,35 @@ class messageManager {
 
   addBr() {
     this.brCount += 1;
-    messageContainer = document.getElementById('message-container');
-
-    messageContainer.innerHTML = messageContainer.innerHTML + `<br><br><br><br><br>`
-    scrollMsg();
+    let messageContainer = document.getElementById('message-container');
+    messageContainer.innerHTML += `<br><br><br><br><br>`;
+    this.scrollMsg();
   }
 
   removeBr() {
-    this.brCount -= 1;
-    messageContainer = document.getElementById('message-container');
-
-    // Get the current innerHTML
-    let currentHTML = messageContainer.innerHTML;
-
-    // Calculate the index to start removing elements from
-    let removeIndex = currentHTML.length - 5 * '<br>'.length;
-
-    // Remove the last 5 elements
-    let newHTML = currentHTML.substring(0, removeIndex);
-
-    // Set the new innerHTML
-    messageContainer.innerHTML = newHTML;
+    if (this.brCount > 0) {
+      this.brCount -= 1;
+      let messageContainer = document.getElementById('message-container');
+      let currentHTML = messageContainer.innerHTML;
+      let removeIndex = currentHTML.lastIndexOf('<br><br><br><br><br>');
+      let newHTML = currentHTML.substring(0, removeIndex);
+      messageContainer.innerHTML = newHTML;
+    }
   }
 
   createMessage(name, messageContent) {
     const messageContainer = document.getElementById('message-container');
-    const messageData = {
-      name: name,
-      message: messageContent,
-    };
-
-    const formattedMessage = formatMessage(messageData);
-    messageContainer.appendChild(formattedMessage);
-    scrollMsg();
+    const messageElement = document.createElement('div');
+    messageElement.innerHTML = `<strong>${name}</strong>: ${messageContent}`;
+    messageContainer.appendChild(messageElement);
+    this.scrollMsg();
   }
 
   createTypingBubble() {
     const messageContainer = document.getElementById('message-container');
+    const typingBubble = '<div id="circle-loader"></div>'; // Assuming typingBubble HTML structure
     messageContainer.insertAdjacentHTML('beforeend', typingBubble);
-    scrollMsg();
+    this.scrollMsg();
   }
 
   removeTypingBubble() {
@@ -79,62 +68,125 @@ class messageManager {
       bubble.remove();
     }
   }
-}
 
-// Create a new instance of the messageManager class
-messageManager = new messageManager();
-
-function sendMessage(message, imageName = false) {
-  if (message == '') {
-    message = document.getElementById('input_text').value;
+  scrollMsg() {
+    const messageContainer = document.getElementById('message-container');
+    messageContainer.scrollTop = messageContainer.scrollHeight;
   }
 
-  if (checkHimitsuCopilotState()) {
-    fetch(`${server_url + server_port}/message`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          chat: selectedFilename,
-          text: message,
-          template: "himitsuCopilot",
-        }),
-      })
-      .then(response => response.json())
-      .then(data => {
-        messageManager.removeBr();
-        messageManager.removeTypingBubble();
+  sendMessage(message, imageData = '', url = '/message') {
+    if (url == '/message') {
+      if (message == '') {
+        message = document.getElementById('input_text').value;
+      }
 
-        // Split the response data into three parts in an array by the "\n" character
-        var splitData = data.response.split('\n');
-        console.log(splitData);
+      if (checkHimitsuCopilotState()) {
+        fetch(`${server_url + server_port}/message`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              chat: selectedFilename,
+              text: message,
+              template: "himitsuCopilot",
+            }),
+          })
+          .then(response => response.json())
+          .then(data => {
+            this.removeBr();
+            messageManager.removeTypingBubble();
 
-        himitsuCopilot = new PromptTemplate(
-          [],
-          [{
+            // Split the response data into three parts in an array by the "\n" character
+            var splitData = data.response.split('\n');
+
+            var fields = [{
               id: 'text',
               label: 'Input',
               type: 'text'
-            },
-            {
-              id: 'q1',
-              label: `${splitData[0]}`,
-              type: 'text'
-            },
-            {
-              id: 'q2',
-              label: `${splitData[1]}`,
-              type: 'text'
-            },
-            {
-              id: 'q3',
-              label: `${splitData[2]}`,
-              type: 'text'
-            },
-          ]
-        );
+            }];
 
+            for (let i = 0; i < splitData.length; i++) {
+              fields.push({
+                id: `q${i+1}`,
+                label: `${splitData[i]}`,
+                type: 'text'
+              });
+            }
+
+            himitsuCopilot = new PromptTemplate([], fields);
+
+            var messageDiv = document.createElement('div');
+
+            // create #Himitsu element into messageDiv
+            const form = document.createElement('form');
+            form.setAttribute("id", "Himitsu");
+            messageDiv.appendChild(form);
+
+            // Append the button
+            const buttonDiv = document.createElement('div');
+            buttonDiv.className = 'block-button';
+            buttonDiv.setAttribute('type', 'button');
+            buttonDiv.setAttribute('onclick', 'generateText();');
+            buttonDiv.innerText = 'Gen';
+            messageDiv.appendChild(buttonDiv);
+            loadConfig();
+            messageData = {
+              name: name1,
+              message: messageDiv.innerHTML,
+            };
+
+            messageManager.createMessage(messageData.name, messageData.message);
+
+            himitsuCopilot.generateElements();
+
+            isHimitsu = true;
+          })
+          .catch(error => {
+            console.error('Error:', error);
+
+            messageManager.removeTypingBubble();
+
+            const messageData = {
+              name: name2,
+              message: error,
+            };
+
+            messageManager.createMessage(messageData.name, messageData.message);
+            playAudio(audioType = 'error');
+          });
+        return
+      }
+
+      document.getElementById('input_text').value = ''
+
+      this.removeBr();
+      messageContainer = document.getElementById('message-container');
+
+      var messageData;
+
+      if (currentPromptName == 'dialog') {
+        imageName = imageData
+        // Image check
+        if (imageName.toString() == 'false') {
+          imageName = '';
+        } else {
+          imageName = imageData
+          imageName = `<img src='img/call/${imageName}.jpg' class='image-message'>`;
+        }
+        loadConfig();
+        messageData = {
+          name: name1,
+          message: message + imageName,
+        };
+
+        messageManager.createMessage(messageData.name, messageData.message);
+        messageManager.createTypingBubble();
+        messageManager.addBr();
+
+        playAudio(audioType = 'send');
+
+      } else if (currentPromptName != 'dialog') {
         var messageDiv = document.createElement('div');
 
         // create #Himitsu element into messageDiv
@@ -153,153 +205,129 @@ function sendMessage(message, imageName = false) {
         messageData = {
           name: name1,
           message: messageDiv.innerHTML,
+          template: currentPromptName,
         };
 
         messageManager.createMessage(messageData.name, messageData.message);
 
-        himitsuCopilot.generateElements();
+        if (currentPromptName == 'himitsu') {
+          himitsu.generateElements();
+        } else if (currentPromptName == 'writer') {
+          writer.generateSelectElements();
+          writer.generateTemplateInputs();
+        } else if (currentPromptName == 'paraphrase') {
+          paraphrase.generateSelectElements();
+          paraphrase.generateTemplateInputs();
+        } else if (currentPromptName == 'decisionMaking') {
+          decisionMaking.generateSelectElements();
+          decisionMaking.generateTemplateInputs();
+        } else if (currentPromptName == 'dialog') {
+          // skip this
+        }
 
-        isHimitsu = true;
-      })
-      .catch(error => {
-        console.error('Error:', error);
+        // input a value like before with a 200ms delay
+        if (currentPromptName != 'dialog') {
+          setTimeout(function () {
+            document.getElementById('text').value = message
+          }, 50);
+        }
 
-        messageManager.removeTypingBubble();
+        messageManager.createTypingBubble();
 
-        const messageData = {
-          name: name2,
-          message: error,
-        };
-
-        messageManager.createMessage(messageData.name, messageData.message);
-        playAudio(audioType = 'error');
-      });
-    return
-  }
-
-  document.getElementById('input_text').value = ''
-
-  messageManager.removeBr();
-  messageContainer = document.getElementById('message-container');
-
-  var messageData;
-
-  if (currentPromptName == 'dialog') {
-    // Image check
-    if (imageName.toString() == 'false') {
-      imageName = '';
-    } else {
-      imageName = `<img src='img/call/${imageName}.jpg' class='image-message'>`;
-    }
-    loadConfig();
-    messageData = {
-      name: name1,
-      message: message + imageName,
-    };
-
-    messageManager.createMessage(messageData.name, messageData.message);
-    messageManager.createTypingBubble();
-    messageManager.addBr();
-
-    playAudio(audioType = 'send');
-
-  } else if (currentPromptName != 'dialog') {
-    var messageDiv = document.createElement('div');
-
-    // create #Himitsu element into messageDiv
-    const form = document.createElement('form');
-    form.setAttribute("id", "Himitsu");
-    messageDiv.appendChild(form);
-
-    // Append the button
-    const buttonDiv = document.createElement('div');
-    buttonDiv.className = 'block-button';
-    buttonDiv.setAttribute('type', 'button');
-    buttonDiv.setAttribute('onclick', 'generateText();');
-    buttonDiv.innerText = 'Gen';
-    messageDiv.appendChild(buttonDiv);
-    loadConfig();
-    messageData = {
-      name: name1,
-      message: messageDiv.innerHTML,
-      template: currentPromptName,
-    };
-
-    messageManager.createMessage(messageData.name, messageData.message);
-
-    if (currentPromptName == 'himitsu') {
-      himitsu.generateElements();
-    } else if (currentPromptName == 'writer') {
-      writer.generateSelectElements();
-      writer.generateTemplateInputs();
-    } else if (currentPromptName == 'paraphrase') {
-      paraphrase.generateSelectElements();
-      paraphrase.generateTemplateInputs();
-    } else if (currentPromptName == 'decisionMaking') {
-      decisionMaking.generateSelectElements();
-      decisionMaking.generateTemplateInputs();
-    } else if (currentPromptName == 'dialog') {
-      // skip this
-    }
-
-    // input a value like before with a 200ms delay
-    if (currentPromptName != 'dialog') {
-      setTimeout(function () {
-        document.getElementById('text').value = message
-      }, 50);
-    }
-
-    messageManager.createTypingBubble();
-
-    messageManager.addBr();
-    return;
-  }
-
-  playAudio(audioType = 'send');
-
-  // Send a POST request to /message endpoint
-  fetch(`${server_url + server_port}/message`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        chat: selectedFilename,
-        text: messageData.message,
-        template: currentPromptName,
-      }),
-    })
-    .then(response => response.json())
-    .then(data => {
-      messageManager.removeBr();
-      messageManager.removeTypingBubble();
-
-      const messageData = {
-        name: name2,
-        message: data.response,
-      };
-
-      messageManager.createMessage(messageData.name, messageData.message);
-      messageManager.addBr();
-
-      playAudio(audioType = 'message');
-
-      if (isTTS.toString() == 'true') {
-        playAudio();
+        messageManager.addBr();
+        return;
       }
-    })
-    .catch(error => {
-      messageManager.removeTypingBubble();
 
-      const messageData = {
-        name: name2,
-        message: error,
-      };
+      playAudio(audioType = 'send');
 
-      messageManager.createMessage(messageData.name, messageData.message);
-      playAudio(audioType = 'error');
-    });
+      // Send a POST request to /message endpoint
+      fetch(`${server_url + server_port}/message`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            chat: selectedFilename,
+            text: messageData.message,
+            template: currentPromptName,
+          }),
+        })
+        .then(response => response.json())
+        .then(data => {
+          this.removeBr();
+          messageManager.removeTypingBubble();
+
+          const messageData = {
+            name: name2,
+            message: data.response,
+          };
+
+          messageManager.createMessage(messageData.name, messageData.message);
+          messageManager.addBr();
+
+          playAudio(audioType = 'message');
+        })
+        .catch(error => {
+          messageManager.removeTypingBubble();
+
+          const messageData = {
+            name: name2,
+            message: error,
+          };
+
+          messageManager.createMessage(messageData.name, messageData.message);
+          playAudio(audioType = 'error');
+        });
+    } else if (url = '/image') {
+      imageDataURL = imageData[0];
+      imageName = imageData[1];
+      messageForImage = imageData[2];
+
+      // Send the captured image to the Flask server
+      fetch(`${server_url+server_port}/image`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            image: imageDataURL,
+            name: imageName,
+            task: 'caption',
+          })
+        })
+        .then(response => {
+          if (response.ok) {
+            // Parse the JSON data from the response
+            return response.json();
+          } else {
+            throw new Error('Error sending captured image.');
+          }
+        })
+        .then(data => {
+          // Delete the element with id "bubble"
+          const bubble = document.getElementById('circle-loader');
+          if (bubble) {
+            bubble.remove();
+          }
+          // Display if ok
+          messageContainer = document.getElementById('message-container');
+
+          // Access the image caption from the server response
+          const imageCaption = data.message;
+          var askYunaImage = `*You can see ${imageCaption} in the image* ${messageForImage}`
+
+          return askYunaImage;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Error sending captured image.');
+        });
+    }
+  }
 }
+
+// Create a new instance of the messageManager class
+messageManager = new messageManager();
 
 function playAudio(audioType = 'tts') {
   // Generate a random query parameter value
@@ -608,45 +636,9 @@ function captureImage() {
 
   closePopupsAll();
 
-  // Send the captured image to the Flask server
-  fetch(`${server_url+server_port}/image`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        image: imageDataURL,
-        name: imageName,
-        task: 'caption',
-      })
-    })
-    .then(response => {
-      if (response.ok) {
-        // Parse the JSON data from the response
-        return response.json();
-      } else {
-        throw new Error('Error sending captured image.');
-      }
-    })
-    .then(data => {
-      // Delete the element with id "bubble"
-      const bubble = document.getElementById('circle-loader');
-      if (bubble) {
-        bubble.remove();
-      }
-      // Display if ok
-      messageContainer = document.getElementById('message-container');
+  askYunaImage = messageManager.sendMessage('', [imageDataURL, imageName, messageForImage], '/image');
 
-      // Access the image caption from the server response
-      const imageCaption = data.message;
-      var askYunaImage = `*You can see ${imageCaption} in the image* ${messageForImage}`
-
-      sendMessage(askYunaImage, imageName)
-    })
-    .catch(error => {
-      console.error('Error:', error);
-      alert('Error sending captured image.');
-    });
+  messageManager.sendMessage(askYunaImage, imageName, '/message');
 }
 
 // Modify the captureImage function to handle file uploads
@@ -662,10 +654,7 @@ function captureImageViaFile() {
       // Convert the image file to a base64 data URL
       var imageDataURL = reader.result;
 
-      var messageForImage = '';
-      if (isTTS.toString() == 'false') {
-        messageForImage = prompt('Enter a message for the image:');
-      }
+      var messageForImage = prompt('Enter a message for the image:');
 
       // Generate a random image name using current timestamp
       var imageName = new Date().getTime().toString();
@@ -1298,3 +1287,10 @@ document.getElementById('searchButton').addEventListener('click', function () {
     })
     .catch(error => console.error('Error:', error));
 });
+
+function updateMsgCount() {
+  setTimeout(function () {
+    let counterMsg = document.getElementById('message-container').querySelectorAll('.p-2.mb-2').length
+    document.getElementById('messageCount').textContent = counterMsg
+  }, 500);
+}

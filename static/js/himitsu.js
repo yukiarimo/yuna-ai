@@ -46,114 +46,22 @@ class PromptTemplate {
   }
 }
 
-// Example of different prompts
-const writer = new PromptTemplate(
-  [{
-      id: 'audience',
-      options: ['General', 'Knowledgeable', 'Expert', 'Other']
-    },
-    {
-      id: 'intent',
-      options: ['Inform', 'Describe', 'Convince', 'Tell A Story', 'Other']
-    },
-    {
-      id: 'formality',
-      options: ['Informal', 'Neutral', 'Formal', 'Other']
-    },
-    {
-      id: 'domain',
-      options: ['Academic', 'Business', 'General', 'Email', 'Casual', 'Creative', 'Other']
-    },
-    {
-      id: 'tone',
-      options: ['Neutral', 'Friendly', 'Confident', 'Urgent', 'Joyful', 'Analytical', 'Optimistic', 'Other']
-    },
-    {
-      id: 'type',
-      options: ['Blog Post', 'Email', 'Essay', 'Article', 'Description', 'Social Media Post', 'Document', 'Tutorial', 'Review', 'Creative Writing', 'Presentation', 'Speech', 'Research', 'Other']
-    }
-  ],
-  [{
-    id: 'text',
-    label: 'Text',
-    type: 'input'
-  }]
-);
+const commonOptions = [
+  { id: 'audience', options: ['General', 'Knowledgeable', 'Expert', 'Other'] },
+  { id: 'intent', options: ['Inform', 'Describe', 'Convince', 'Tell A Story', 'Other'] },
+  { id: 'formality', options: ['Informal', 'Neutral', 'Formal', 'Other'] },
+  { id: 'tone', options: ['Neutral', 'Friendly', 'Confident', 'Urgent', 'Joyful', 'Analytical', 'Optimistic', 'Other'] },
+  { id: 'type', options: ['Blog Post', 'Email', 'Essay', 'Article', 'Description', 'Social Media Post', 'Document', 'Tutorial', 'Review', 'Creative Writing', 'Presentation', 'Speech', 'Research', 'Other'] }
+];
 
-const paraphrase = new PromptTemplate(
-  [{
-      id: 'audience',
-      options: ['General', 'Knowledgeable', 'Expert', 'Other']
-    },
-    {
-      id: 'intent',
-      options: ['Inform', 'Describe', 'Convince', 'Tell A Story', 'Other']
-    },
-    {
-      id: 'formality',
-      options: ['Informal', 'Neutral', 'Formal', 'Other']
-    },
-    {
-      id: 'tone',
-      options: ['Neutral', 'Friendly', 'Confident', 'Urgent', 'Joyful', 'Analytical', 'Optimistic', 'Other']
-    },
-    {
-      id: 'type',
-      options: ['Blog Post', 'Email', 'Essay', 'Article', 'Description', 'Social Media Post', 'Document', 'Tutorial', 'Review', 'Creative Writing', 'Presentation', 'Speech', 'Research', 'Other']
-    }
-  ],
-  [{
-    id: 'text',
-    label: 'Text',
-    type: 'input'
-  }]
-);
+const textInput = [{ id: 'text', label: 'Text', type: 'input' }];
 
-const decisionMaking = new PromptTemplate(
-  [{
-    id: 'Mood',
-    options: ['Good', 'Bad', 'Neutral']
-  }],
-  [{
-    id: 'text',
-    label: 'Text',
-    type: 'input'
-  }]
-);
-
-const himitsu = new PromptTemplate(
-  [{
-    id: 'question_type',
-    options: ['Curiosity', 'Confusion', 'Research', 'Other']
-  }],
-  [{
-    id: 'text',
-    label: 'Text',
-    type: 'text' // Changed from 'input' to 'text'
-  }]
-);
-
-const dialog = new PromptTemplate([{
-    id: 'text',
-    label: 'Question',
-    type: 'input'
-  }],
-  [{
-    id: 'text',
-    label: 'Text',
-    type: 'input'
-  }])
-
-const search = new PromptTemplate([{
-    id: 'text',
-    label: 'Question',
-    type: 'input'
-  }],
-  [{
-    id: 'text',
-    label: 'Text',
-    type: 'input'
-  }])
+const writer = new PromptTemplate([...commonOptions, { id: 'domain', options: ['Academic', 'Business', 'General', 'Email', 'Casual', 'Creative', 'Other'] }], textInput);
+const paraphrase = new PromptTemplate(commonOptions, textInput);
+const decisionMaking = new PromptTemplate([{ id: 'Mood', options: ['Good', 'Bad', 'Neutral'] }], textInput);
+const himitsu = new PromptTemplate([{ id: 'question_type', options: ['Curiosity', 'Confusion', 'Research', 'Other'] }], [{ id: 'text', label: 'Text', type: 'text' }]);
+const dialog = new PromptTemplate([{ id: 'text', label: 'Question', type: 'input' }], textInput);
+const search = new PromptTemplate([{ id: 'text', label: 'Question', type: 'input' }], textInput);
 
 let currentPrompt = 'dialog';
 let currentPromptName = 'dialog';
@@ -232,62 +140,42 @@ async function sendGeneratedTextToServer(generatedText) {
 
   removeHimitsu(generatedText);
 
-  try {
+  const sendRequest = async (text, template) => {
     const response = await fetch(`${server_url + server_port}/message`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         chat: selectedFilename,
-        text: generatedText,
-        template: isHimitsu ? "himitsuCopilotGen" : currentPromptName,
+        text: text,
+        template: template,
       }),
     });
 
-    const data = await response.json();
+    return await response.json();
+  };
+
+  try {
+    const data = await sendRequest(generatedText, isHimitsu ? "himitsuCopilotGen" : selectedTemplate);
 
     if (isHimitsu.toString() === 'true') {
-      const response2 = await fetch(`${server_url + server_port}/message`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat: selectedFilename,
-          text: data.response,
-          template: currentPromptName,
-        }),
-      });
-
-      const data2 = await response2.json();
-
-      messageManager.removeBr();
-      messageManager.removeTypingBubble();
-      loadConfig();
-
+      const data2 = await sendRequest(data.response, selectedTemplate);
       messageManager.createMessage(name2, data2.response);
-      messageManager.addBr();
-
-      playAudio(audioType = 'message');
-
-      if (isTTS.toString() === 'true') {
-        playAudio();
-      }
     } else {
-      messageManager.removeBr();
-      messageManager.removeTypingBubble();
-      loadConfig();
-
       messageManager.createMessage(name2, data.response);
-      messageManager.addBr();
+    }
 
-      playAudio(audioType = 'message');
+    messageManager.removeBr();
+    messageManager.removeTypingBubble();
+    loadConfig();
+    messageManager.addBr();
+    playAudio(audioType = 'message');
 
-      if (isTTS.toString() === 'true') {
-        playAudio();
-      }
+    if (isTTS.toString() === 'true') {
+      playAudio();
     }
   } catch (error) {
     messageManager.removeTypingBubble();
     loadConfig();
-
     messageManager.createMessage(name2, error);
     playAudio(audioType = 'error');
   }

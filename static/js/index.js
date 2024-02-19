@@ -11,10 +11,7 @@ var name2;
 var config_data;
 
 async function loadConfig() {
-  const response = await fetch('../../config.json');
-  const data = await response.json();
-  name1 = data.ai.names[0];
-  name2 = data.ai.names[1];
+  const { ai: { names: [name1, name2] } } = await (await fetch('../../config.json')).json();
   document.getElementById('input_text').placeholder = `Ask ${name2}...`;
 }
 
@@ -24,17 +21,40 @@ function checkHimitsuCopilotState() {
   return isOn // This will log 'true' if the switch is on, 'false' if it's off
 }
 
-// Class and functions to add and removed <br>s from the message container
 class messageManager {
   constructor() {
     this.messageContainer = document.getElementById('message-container');
     this.inputText = document.getElementById('input_text');
   }
 
+  displayMessages(messages) {
+    messageContainer = document.getElementById('message-container');
+  
+    // Clear the existing content of messageContainer
+    while (messageContainer.firstChild) {
+      messageContainer.removeChild(messageContainer.firstChild);
+    }
+  
+    // Loop through the messages and format each one
+    messages.forEach(messageData => {
+      var formattedMessage = formatMessage(messageData);
+      messageContainer.appendChild(formattedMessage);
+    });
+  
+    messageContainer.innerHTML = messageContainer.innerHTML
+  
+    scrollMsg()
+  }
+
   createMessage(name, messageContent) {
-    const messageElement = document.createElement('div');
-    messageElement.innerHTML = `<strong>${name}</strong>: ${messageContent}`;
-    this.messageContainer.appendChild(messageElement);
+    const messageContainer = document.getElementById('message-container');
+    const messageData = {
+      name: name,
+      message: messageContent,
+    };
+
+    const formattedMessage = formatMessage(messageData);
+    messageContainer.appendChild(formattedMessage);
     scrollMsg();
   }
 
@@ -54,11 +74,13 @@ class messageManager {
   }
 
   sendMessage(message, imageData = '', url = '/message') {
-    this.inputText.value = '';
+    this.inputText = document.getElementById('input_text');
+    this.createMessage(name1, this.inputText.value);
     this.createTypingBubble();
 
     if (url === '/message') {
       message = message || this.inputText.value;
+      this.inputText.value = '';
       const serverEndpoint = `${server_url + server_port}${url}`;
       const headers = { 'Content-Type': 'application/json' };
       const body = JSON.stringify({ chat: selectedFilename, text: message, template: currentPromptName });
@@ -67,7 +89,7 @@ class messageManager {
         .then(response => response.json())
         .then(data => {
           this.removeTypingBubble();
-          this.createMessage(name1, this.processResponse(data.response));
+          this.createMessage(name2, data.response);
           playAudio('send');
         })
         .catch(error => {
@@ -79,46 +101,22 @@ class messageManager {
   }
 
   processResponse(response) {
-    // Split the response data into parts by the "\n" character
     const splitData = response.split('\n');
+    const formInputs = splitData.map((dataPart, index) => `
+      <div class="input-group">
+        <label for="q${index + 1}">${dataPart}</label>
+        <input type="text" id="q${index + 1}" name="q${index + 1}">
+      </div>
+    `).join('');
   
-    // Create a div to hold the message and the generated form
-    const messageDiv = document.createElement('div');
-  
-    // Create a form element with the id "Himitsu"
-    const form = document.createElement('form');
-    form.setAttribute('id', 'Himitsu');
-    messageDiv.appendChild(form);
-  
-    // Create input elements for each part of the split data
-    splitData.forEach((dataPart, index) => {
-      const inputGroup = document.createElement('div');
-      inputGroup.className = 'input-group';
-  
-      const label = document.createElement('label');
-      label.htmlFor = `q${index + 1}`;
-      label.textContent = dataPart;
-      inputGroup.appendChild(label);
-  
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.id = `q${index + 1}`;
-      input.name = `q${index + 1}`;
-      inputGroup.appendChild(input);
-  
-      form.appendChild(inputGroup);
-    });
-  
-    // Append a button to generate text
-    const buttonDiv = document.createElement('div');
-    buttonDiv.className = 'block-button';
-    buttonDiv.setAttribute('type', 'button');
-    buttonDiv.setAttribute('onclick', 'generateText();');
-    buttonDiv.textContent = 'Gen';
-    messageDiv.appendChild(buttonDiv);
-  
-    // Return the innerHTML of the messageDiv as the processed response
-    return messageDiv.innerHTML;
+    return `
+      <div>
+        <form id="Himitsu">
+          ${formInputs}
+        </form>
+        <div class="block-button" type="button" onclick="generateText();">Gen</div>
+      </div>
+    `;
   }
 
   handleError(error) {
@@ -169,7 +167,7 @@ function formatMessage(messageData) {
   loadConfig();
   messageDiv.classList.add('p-2', 'mb-2');
 
-  const classes = messageData.name === 'Yuki' 
+  const classes = messageData.name == name1 || messageData.name == 'Yuki'
     ? ['block-message-2', 'text-end', 'bg-primary', 'text-white'] 
     : ['block-message-1', 'text-start', 'bg-secondary', 'text-white'];
   messageDiv.classList.add(...classes);
@@ -346,23 +344,6 @@ class HistoryManager {
 
     this.closePopupsAll();
   }
-
-  displayMessages(messages) {
-    // Clear the existing content of messageContainer
-    while (this.messageContainer.firstChild) {
-      this.messageContainer.removeChild(this.messageContainer.firstChild);
-    }
-
-    // Loop through the messages and format each one
-    messages.forEach(messageData => {
-      const formattedMessage = formatMessage(messageData);
-      this.messageContainer.appendChild(formattedMessage);
-    });
-
-    this.messageContainer.innerHTML = `<br>` + this.messageContainer.innerHTML + `<br><br><br><br><br>`;
-    scrollMsg();
-  }
-  
 }
 
 // Assuming server_url, server_port, and config_data are defined globally
@@ -540,7 +521,7 @@ async function loadSelectedHistory(selectedFilename = config_data.server.default
     if (!response.ok) throw new Error('Error loading selected history file.');
 
     const data = await response.json();
-    historyManager.displayMessages(data);
+    messageManager.displayMessages(data);
   } catch (error) {
     console.error('Error:', error);
   }
@@ -549,48 +530,22 @@ async function loadSelectedHistory(selectedFilename = config_data.server.default
 }
 
 function duplicateAndCategorizeChats() {
-  // Get the history select element
-  var historySelect = document.getElementById('chat-items');
-
-  // Create a new div for the categorized chats
-  var collectionItems = document.createElement('div');
+  const chatItems = document.querySelectorAll('#chat-items .collection-item');
+  const collectionItems = document.createElement('div');
   collectionItems.id = 'collectionItems';
-  // add class 'list-group' to the div
+  collectionItems.classList.add('list-group');
 
-  // Get the chat items
-  var chatItems = historySelect.querySelectorAll('.collection-item');
+  const generalChatsDiv = document.createElement('div');
+  const otherChatsDiv = document.createElement('div');
 
-  // Create divs for the general and other chats
-  var generalChatsDiv = document.createElement('div');
-  generalChatsDiv.className = 'general-chats';
-  var otherChatsDiv = document.createElement('div');
-  otherChatsDiv.className = 'other-chats';
-
-  // Iterate over the chat items
   chatItems.forEach(item => {
-    // Clone the item
-    var clonedItem = item.cloneNode(true);
-
-    // Get the collection name
-    var collectionName = clonedItem.querySelector('.collection-name').textContent;
-
-    // Check if the collection name contains ':general:'
-    if (collectionName.includes(':general:')) {
-      // Add the cloned item to the general chats div
-      generalChatsDiv.appendChild(clonedItem);
-    } else {
-      // Add the cloned item to the other chats div
-      otherChatsDiv.appendChild(clonedItem);
-    }
+    const clonedItem = item.cloneNode(true);
+    const collectionName = clonedItem.querySelector('.collection-name').textContent;
+    (collectionName.includes(':general:') ? generalChatsDiv : otherChatsDiv).appendChild(clonedItem);
   });
 
-  // Add the general and other chats divs to the collection select div
-  collectionItems.appendChild(generalChatsDiv);
-  collectionItems.appendChild(otherChatsDiv);
-
-  // Add the collection select div to the body
-  document.getElementById('collectionItems').innerHTML = collectionItems.innerHTML;
-  document.getElementById('collectionItems').classList.add('list-group');
+  collectionItems.append(generalChatsDiv, otherChatsDiv);
+  document.getElementById('collectionItems').replaceWith(collectionItems);
 }
 
 function muteAudio() {
@@ -652,53 +607,33 @@ document.addEventListener('DOMContentLoaded', (event) => {
   });
 });
 
-function checkMe() {
-  return fetch('/flash-messages')
-    .then(response => response.json())
-    .then(messages => {
-      // messages is an array of strings, each containing a message
-      return messages;
-    });
+async function checkMe() {
+  const response = await fetch('/flash-messages');
+  return response.json();
 }
+
 document.addEventListener('DOMContentLoaded', loadConfig);
 
 function importFlash(messages) {
-  console.log(messages);
   const dropdownMenu = document.querySelector('.dropdown-menu.dropdown-menu-end.dropdown-list.animated--grow-in');
-
-  // Clear the current contents of the dropdownMenu
-  dropdownMenu.innerHTML = '';
-
-  messages.forEach(message => {
-    const messageTemplate = `
-      <a class="dropdown-item d-flex align-items-center" href="#">
-        <div class="mr-3">
-          <div class="icon-circle bg-primary">
-            <i class="fas fa-file-alt text-white"></i>
-          </div>
+  dropdownMenu.innerHTML = messages.map(message => `
+    <a class="dropdown-item d-flex align-items-center" href="#">
+      <div class="mr-3">
+        <div class="icon-circle bg-primary">
+          <i class="fas fa-file-alt text-white"></i>
         </div>
-        <div>
-          <span class="font-weight-bold">${message}</span>
-        </div>
-      </a>
-    `;
+      </div>
+      <div>
+        <span class="font-weight-bold">${message}</span>
+      </div>
+    </a>
+  `).join('');
+}
 
-    // Append the new message template to the dropdownMenu
-    dropdownMenu.innerHTML += messageTemplate;
-  });
-};
-
-checkMe().then(messages => {
-  // Do something with messages here
-  importFlash(messages)
-}).catch(error => {
-  // Handle any errors here
-  console.error(error);
-});
+checkMe().then(importFlash).catch(console.error);
 
 function updateMsgCount() {
-  setTimeout(function () {
-    let counterMsg = document.getElementById('message-container').querySelectorAll('.p-2.mb-2').length
-    document.getElementById('messageCount').textContent = counterMsg
+  setTimeout(() => {
+    document.getElementById('messageCount').textContent = document.querySelectorAll('#message-container .p-2.mb-2').length;
   }, 500);
 }

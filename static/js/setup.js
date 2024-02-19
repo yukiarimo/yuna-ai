@@ -81,36 +81,27 @@ async function delay(ms) {
 
 async function checkConfigData() {
   await delay(100);
-  if (typeof config_data === 'undefined') {
-    if (localStorage.getItem('config')) {
-      // reload the page with delay of 1 second if config is not available
-      setTimeout(function () {
-        config_data = JSON.parse(localStorage.getItem('config'))
-        server_url = config_data.server.url
-        server_port = config_data.server.port
+  if (config_data) return;
 
-        fixDialogData();
-      }, 100);
-    } else {
-      // Fetch the JSON data
-      fetch('/config.json')
-        .then(response => response.json())
-        .then((data) => {
-          // Handle the JSON data
-          config_data = data
-          localStorage.setItem('config', JSON.stringify(config_data));
-          server_url = config_data.server.url
-          server_port = config_data.server.port
-        })
-        .catch((error) => {
-          console.error('Error:', error);
-        });
-
-      await delay(100);
-      openConfigParams();
+  if (localStorage.getItem('config')) {
+    setTimeout(() => {
+      config_data = JSON.parse(localStorage.getItem('config'));
+      ({ server: { url: server_url, port: server_port } } = config_data);
+      fixDialogData();
+    }, 100);
+  } else {
+    try {
+      const response = await fetch('/config.json');
+      config_data = await response.json();
+      localStorage.setItem('config', JSON.stringify(config_data));
+      ({ server: { url: server_url, port: server_port } } = config_data);
+    } catch (error) {
+      console.error('Error:', error);
     }
-    closePopupsAll();
+    await delay(100);
+    openConfigParams();
   }
+  closePopupsAll();
 }
 
 checkConfigData();

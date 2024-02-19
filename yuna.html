@@ -3,7 +3,8 @@
 
 <head data-bs-theme="dark">
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <meta name="viewport"
+		content="width=device-width, initial-scale=1.0, shrink-to-fit=no, maximum-scale=1.0, user-scalable=no">
     <title>Yuna AI</title>
     <meta name="theme-color" content="#000000">
     <link rel="canonical" href="http://www.yuna-ai.live/">
@@ -25,13 +26,11 @@
             "url": "http://www.yuna-ai.live"
         }
     </script>
-    <link rel="icon" type="image/jpeg" sizes="60x60" href="img/yuna-ai.png">
-    <link rel="icon" type="image/jpeg" sizes="60x60" href="img/yuna-ai.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" type="image/jpeg" sizes="60x60" href="/img/yuna-ai.png">
     <link rel="manifest" href="/manifest.json">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/awesome.css">
 
     <link rel="stylesheet" href="/css/kawai-v11-2.css">
     <link rel="stylesheet" href="/css/index.css">
@@ -100,34 +99,16 @@
                             type="button"><i class="fas fa-bars"></i></button>
                         <ul class="navbar-nav flex-nowrap ms-auto">
                             <li class="nav-item">
-                                <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#searchModal">
+                                <a class="nav-link" href="#" data-bs-toggle="modal" aria-label="Search" data-bs-target="#searchModal">
                                     <i class="fas fa-search"></i>
                                 </a>
                             </li>
                             <li class="nav-item dropdown no-arrow mx-1">
                                 <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
-                                        aria-expanded="false" data-bs-toggle="dropdown" href="#"><i
+                                        aria-expanded="false" data-bs-toggle="dropdown" aria-label="Notifications" href="#"><i
                                             class="fas fa-bell fa-fw"></i></a>
                                     <div class="dropdown-menu dropdown-menu-end dropdown-list animated--grow-in">
-                                        <h6 class="dropdown-header">alerts center</h6><a
-                                            class="dropdown-item d-flex align-items-center" href="#">
-                                            <div class="me-3">
-                                                <div class="bg-primary icon-circle"><i
-                                                        class="fas fa-file-alt text-white"></i></div>
-                                            </div>
-                                            <div><span class="small text-gray-500">December 12, 2019</span>
-                                                <p>A new monthly report is ready to download!</p>
-                                            </div>
-                                        </a><a class="dropdown-item d-flex align-items-center" href="#">
-                                            <div class="me-3">
-                                                <div class="bg-warning icon-circle"><i
-                                                        class="fas fa-exclamation-triangle text-white"></i></div>
-                                            </div>
-                                            <div><span class="small text-gray-500">December 2, 2019</span>
-                                                <p>Spending Alert: We've noticed unusually high spending for your
-                                                    account.</p>
-                                            </div>
-                                        </a>
+                                        <!-- Dynamic HTML elements will be added here -->
                                     </div>
                                 </div>
                             </li>
@@ -166,10 +147,10 @@
                             <div class="input-wrapper ui-container">
                                 <div class="input-container">
                                     <i class="fas fa-ellipsis-h" style="font-size: 2em;"></i>
-                                    <button class="attach-button btn btn-primary" data-bs-toggle="popover"
+                                    <button class="attach-button btn btn-primary" data-bs-toggle="popover" aria-label="Attach File"
                                         data-bs-placement="bottom" data-bs-html="true"
                                         data-bs-content="<a class='btn btn-outline-primary btn-sm dropdown-item' onclick='handleTextFileClick()'>Text File</a><a class='btn btn-outline-info btn-sm dropdown-item' onclick='handleImageFileClick()'>Image File</a>">
-                                        <i class="fas fa-paperclip" style="font-size: 2em;"></i>
+                                        <i class="fas fa-file" style="font-size: 2em;"></i>
                                     </button>
                                     <input type="file" id="imageUpload" accept="image/*" style="display: none;"
                                         onchange="captureImageViaFile()">
@@ -180,7 +161,7 @@
                                         <label class="form-check-label" for="customSwitch"></label>
                                     </div>
 
-                                    <i class="bi bi-arrow-up-circle" onclick="messageManager.sendMessage('')"
+                                    <i class="fas fa-arrow-up" onclick="messageManager.sendMessage('')"
                                         style="font-size: 2em;"></i>
                                 </div>
                             </div>

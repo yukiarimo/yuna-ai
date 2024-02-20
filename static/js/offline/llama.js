@@ -81,6 +81,12 @@ class LlamaCpp {
             no_display_prompt,
         });
     }
+    stop() {
+        this.worker.terminate();
+    }
+    start() {
+        this.loadWorker();
+    }
 }
 
 export { LlamaCpp };

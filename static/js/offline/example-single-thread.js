@@ -1,4 +1,6 @@
-import { LlamaCpp } from "./llama-st/llama.js";
+import {
+  LlamaCpp
+} from "./llama.js";
 
 var app;
 const buttonRun = document.querySelector("#run");
@@ -12,50 +14,50 @@ const textareaResult = document.querySelector("#result");
 
 const onModelLoaded = () => {
   const prompt = textareaPrompt.value;
-  buttonRunProgressLoadingModel.setAttribute("hidden", "hidden");
-  buttonRunProgressLoadedModel.removeAttribute("hidden");
   console.debug("model: loaded");
 
   app.run({
-      prompt: prompt,
-      ctx_size: 2048,
-      temp: 0.8,
-      top_k: 40,
-      no_display_prompt: true,
+    prompt: prompt,
+    ctx_size: 2048,
+    temp: 0.8,
+    top_k: 40,
+    no_display_prompt: false,
   });
+  console.log(app);
 }
+
+function stopOnYuki(text) {
+  if (text.includes("Yuki")) {
+    console.log("Stopping generation on 'Yuki'");
+    //onComplete();
+    app.stop();
+    stopMe()
+  }
+}
+
+document.getElementById("startme").addEventListener("click", function() {
+  app.start();
+});
 
 const onMessageChunk = (text) => {
   console.log(text);
 
-  if (buttonRunProgressGenerating.hasAttribute("hidden")) {
-    buttonRunProgressLoadingModel.setAttribute("hidden", "hidden");
-    buttonRunProgressLoadedModel.setAttribute("hidden", "hidden");
-    buttonRunProgressGenerating.removeAttribute("hidden");
-  }
+  stopOnYuki(text);
 
   // textareaResult.value += text;
   textareaResult.innerText += text;
-
-  // if new generated tex contains "Yuki" then stop generating (for testing)
 };
 
 const onComplete = () => {
   console.debug("model: completed");
-  buttonRun.removeAttribute("hidden");
-  buttonRunProgressLoadingModel.setAttribute("hidden", "hidden");
-  buttonRunProgressLoadedModel.setAttribute("hidden", "hidden");
-  buttonRunProgressGenerating.setAttribute("hidden", "hidden");
   modelProgress.setAttribute("hidden", "hidden");
 };
 
 buttonRun.addEventListener("click", (e) => {
-  buttonRun.setAttribute("hidden", "hidden");
-  buttonRunProgressLoadingModel.removeAttribute("hidden");
   modelProgress.removeAttribute("hidden");
   // textareaResult.value = "";
   textareaResult.innerText = "";
-
+  
   if (app && app.url == selectModel.value) {
     onModelLoaded();
     return;
@@ -63,8 +65,14 @@ buttonRun.addEventListener("click", (e) => {
 
   app = new LlamaCpp(
     selectModel.value,
-    onModelLoaded,          
-    onMessageChunk,       
+    onModelLoaded,
+    onMessageChunk,
     onComplete,
   );
 });
+
+function stopMe() {
+  modelProgress.removeAttribute("hidden");
+  // textareaResult.value = "";
+  textareaResult.innerText = "";
+}

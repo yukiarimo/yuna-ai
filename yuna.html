@@ -4,15 +4,15 @@
 <head data-bs-theme="dark">
     <meta charset="utf-8">
     <meta name="viewport"
-		content="width=device-width, initial-scale=1.0, shrink-to-fit=no, maximum-scale=1.0, user-scalable=no">
+        content="width=device-width, initial-scale=1.0, shrink-to-fit=no, maximum-scale=1.0, user-scalable=no">
     <title>Yuna AI</title>
     <meta name="theme-color" content="#000000">
     <link rel="canonical" href="http://www.yuna-ai.live/">
     <meta property="og:url" content="http://www.yuna-ai.live/">
     <meta property="og:description" content="Your virtual AI girlfriend">
-    <meta name="twitter:image" content="http://www.yuna-ai.live/img/yuna-ai.png">
+    <meta name="twitter:image" content="http://www.yuna-ai.live/static/img/yuna-ai.png">
     <meta name="twitter:title" content="Yuna AI">
-    <meta property="og:image" content="http://www.yuna-ai.live/img/yuna-ai.png">
+    <meta property="og:image" content="http://www.yuna-ai.live/static/img/yuna-ai.png">
     <meta name="description" content="Your virtual AI girlfriend">
     <meta property="og:type" content="website">
     <meta property="og:title" content="Yuna AI">
@@ -26,18 +26,17 @@
             "url": "http://www.yuna-ai.live"
         }
     </script>
-    <link rel="icon" type="image/jpeg" sizes="60x60" href="/img/yuna-ai.png">
+    <link rel="icon" type="image/jpeg" sizes="60x60" href="/static/img/yuna-ai.png">
+    <script src="/static/js/offline/offline.js" defer></script>
     <link rel="manifest" href="/manifest.json">
-    <link rel="stylesheet" href="/css/bootstrap.min.css">
-    <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="/css/awesome.css">
-
-    <link rel="stylesheet" href="/css/kawai-v11-2.css">
-    <link rel="stylesheet" href="/css/index.css">
-    <script src="/js/kawai-v11-2.js" defer></script>
-    <script src="/js/index.js" defer></script>
-    <script src="/js/himitsu.js" defer></script>
-    <script src="/js/setup.js" defer></script>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/awesome.css">
+    <link rel="stylesheet" href="/static/css/kawai-v11-2.css">
+    <link rel="stylesheet" href="/static/css/index.css">
+    <script src="/static/js/kawai-v11-2.js" defer></script>
+    <script src="/static/js/index.js" defer></script>
+    <script src="/static/js/himitsu.js" defer></script>
+    <script src="/static/js/setup.js" defer></script>
 
     <script>
         if ('serviceWorker' in navigator) {
@@ -64,7 +63,7 @@
                 <div class="sidebar-header">
                     <a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
                         <div class="sidebar-brand-icon">
-                            <img src="img/yuna-ai.png" alt="Yuna AI Logo" style="width: 30px; height: 30px;">
+                            <img src="/static/img/yuna-ai.png" alt="Yuna AI Logo" style="width: 30px; height: 30px;">
                             <button class="sidebarToggleIn btn btn-link d-md-none rounded-circle me-3" type="button"><i
                                     onclick="togglesidebarBack()" class="fas fa-bars"></i></button>
                         </div>
@@ -99,14 +98,15 @@
                             type="button"><i class="fas fa-bars"></i></button>
                         <ul class="navbar-nav flex-nowrap ms-auto">
                             <li class="nav-item">
-                                <a class="nav-link" href="#" data-bs-toggle="modal" aria-label="Search" data-bs-target="#searchModal">
+                                <a class="nav-link" href="#" data-bs-toggle="modal" aria-label="Search"
+                                    data-bs-target="#searchModal">
                                     <i class="fas fa-search"></i>
                                 </a>
                             </li>
                             <li class="nav-item dropdown no-arrow mx-1">
                                 <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
-                                        aria-expanded="false" data-bs-toggle="dropdown" aria-label="Notifications" href="#"><i
-                                            class="fas fa-bell fa-fw"></i></a>
+                                        aria-expanded="false" data-bs-toggle="dropdown" aria-label="Notifications"
+                                        href="#"><i class="fas fa-bell fa-fw"></i></a>
                                     <div class="dropdown-menu dropdown-menu-end dropdown-list animated--grow-in">
                                         <!-- Dynamic HTML elements will be added here -->
                                     </div>
@@ -116,8 +116,8 @@
                             <li class="nav-item dropdown no-arrow">
                                 <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
                                         aria-expanded="false" data-bs-toggle="dropdown" href="#">
-                                        <img class="border rounded-circle img-profile" src="img/yuna-girl-head.png" alt="Profile Picture"
-                                            style="height: 26px;">
+                                        <img class="border rounded-circle img-profile" src="/static/img/yuna-girl-head.png"
+                                            alt="Profile Picture" style="height: 26px;">
                                     </a>
 
                                     <div class="dropdown-menu shadow dropdown-menu-end animated--grow-in"><a
@@ -147,8 +147,8 @@
                             <div class="input-wrapper ui-container">
                                 <div class="input-container">
                                     <i class="fas fa-ellipsis-h" style="font-size: 2em;"></i>
-                                    <button class="attach-button btn btn-primary" data-bs-toggle="popover" aria-label="Attach File"
-                                        data-bs-placement="bottom" data-bs-html="true"
+                                    <button class="attach-button btn btn-primary" data-bs-toggle="popover"
+                                        aria-label="Attach File" data-bs-placement="bottom" data-bs-html="true"
                                         data-bs-content="<a class='btn btn-outline-primary btn-sm dropdown-item' onclick='handleTextFileClick()'>Text File</a><a class='btn btn-outline-info btn-sm dropdown-item' onclick='handleImageFileClick()'>Image File</a>">
                                         <i class="fas fa-file" style="font-size: 2em;"></i>
                                     </button>
@@ -212,7 +212,7 @@
                                         <!-- Profile Card -->
                                         <div class="col-md-4">
                                             <div class="card">
-                                                <img src="img/yuna-girl-head.png" class="card-img-top"
+                                                <img src="/static/img/yuna-girl-head.png" class="card-img-top"
                                                     alt="Profile Picture">
                                                 <div class="card-body">
                                                     <div style="display: flex; flex-direction: row;">
@@ -368,7 +368,7 @@
                 <div class="modal-body">
                     <div class="d-flex flex-column flex-md-row h-100">
                         <div class="video-block ratio ratio-16x9">
-                            <img src="img/yuna-girl-head.png" class="w-100" alt="Static Image">
+                            <img src="/static/img/yuna-girl-head.png" class="w-100" alt="Static Image">
                         </div>
                         <div class="video-block ratio ratio-16x9">
                             <video id="localVideo" playsinline class="w-100" autoplay muted></video>
@@ -459,6 +459,7 @@
                                                 <label class="form-check-label" for="updateEmojiTones">Offline
                                                     Mode</label>
                                             </div>
+                                            <button id="enableOffline">Enable Offline Mode</button>
                                         </div>
 
                                         <div class="list-group-item" style="background-color: transparent;">
@@ -543,9 +544,9 @@
         </div>
     </div>
 
-    <script src="/js/bootstrap/bootstrap.bundle.min.js"></script>
-    <script src="/js/bootstrap/jquery.min.js"></script>
-    <script src="/js/bootstrap/script.min.js"></script>
+    <script src="/static/js/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/bootstrap/jquery.min.js"></script>
+    <script src="/static/js/bootstrap/script.min.js"></script>
 </body>
 
 </html>

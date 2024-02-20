@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
+  <script type="module" src="example-single-thread.js" defer></script>
 </head>
 
 <body>
@@ -14,7 +15,6 @@
       <div class="mb-3">
         <label for="model" class="form-label">Model:</label>
         <select id="model" name="model" class="form-select" aria-label="Select model" required>
-          <!-- <option value="https://huggingface.co/Qwen/Qwen1.5-0.5B-Chat-GGUF/resolve/main/qwen1_5-0_5b-chat-q3_k_m.gguf" selected>Qwen/Qwen1.5-0.5B-Chat Q3_K_M (350 MB)</option> -->
           <option value="https://huggingface.co/afrideva/TinyMistral-248M-SFT-v4-GGUF/resolve/main/tinymistral-248m-sft-v4.q8_0.gguf">
             tinymistral-248m-sft-v4 q8_0 (265.26 MB)</option>
           <option value="https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF/resolve/main/tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf">
@@ -37,6 +37,8 @@
       <button id="run" class="btn btn-primary">Run</button>
     </section>
 
+    <button id="startme">deddede</button>
+
     <section class="mb-3">
       <button id="run-progress-loading-model" class="btn btn-primary" aria-busy="true" hidden>Loading model...</button>
       <button id="run-progress-loaded-model" class="btn btn-success" aria-busy="true" hidden>Loaded model</button>
@@ -49,8 +51,6 @@
       </div>
     </section>
   </main>
-
-  <script type="module" src="example-single-thread.js"></script>
 </body>
 
 </html>

@@ -2,7 +2,7 @@ var name1;
 var name2;
 
 async function loadConfig() {
-  const response = await fetch('../../config.json');
+  const response = await fetch('/static/config.json');
   const data = await response.json();
   name1 = data.ai.names[0];
   name2 = data.ai.names[1];

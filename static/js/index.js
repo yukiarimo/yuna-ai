@@ -11,7 +11,7 @@ var name2;
 var config_data;
 
 async function loadConfig() {
-  const { ai: { names: [name1, name2] } } = await (await fetch('../../config.json')).json();
+  const { ai: { names: [name1, name2] } } = await (await fetch('/static/config.json')).json();
   document.getElementById('input_text').placeholder = `Ask ${name2}...`;
 }
 
@@ -19,6 +19,23 @@ function checkHimitsuCopilotState() {
   var toggleSwitch = document.getElementById('customSwitch');
   var isOn = toggleSwitch.checked;
   return isOn // This will log 'true' if the switch is on, 'false' if it's off
+}
+
+function downloadVariableAsFile(variableContent, filename) {
+  // Create a Blob with the variable content
+  const blob = new Blob([variableContent], { type: 'text/plain' });
+
+  // Create an anchor element and trigger a download
+  const anchor = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  anchor.href = url;
+  anchor.download = filename;
+  document.body.appendChild(anchor);
+  anchor.click();
+
+  // Clean up by revoking the Object URL and removing the anchor element
+  document.body.removeChild(anchor);
+  URL.revokeObjectURL(url);
 }
 
 class messageManager {
@@ -34,6 +51,12 @@ class messageManager {
     while (messageContainer.firstChild) {
       messageContainer.removeChild(messageContainer.firstChild);
     }
+
+    console.log('Messages:', messages);
+    
+  
+  // Example usage:
+  downloadVariableAsFile(JSON.stringify(messages), 'myVariable.txt');
   
     // Loop through the messages and format each one
     messages.forEach(messageData => {
@@ -476,6 +499,198 @@ async function captureImageViaFile() {
   reader.readAsDataURL(file);
 }
 
+// Function to fetch and populate chat history file options
+function populateHistorySelect() {
+  loadConfig();
+  return new Promise((resolve, reject) => {
+    var historySelect = document.getElementById('chat-items');
+
+    if (localStorage.getItem('config') == null) {
+      // reload the page with delay of 1 second if config is not available
+      setTimeout(function () {
+        location.reload()
+      }, 100);
+    }
+
+    server_port = JSON.parse(localStorage.getItem('config')).server.port
+    server_url = JSON.parse(localStorage.getItem('config')).server.url
+
+    // Fetch the list of history files from the server using the new /history route with 'load' task
+    fetch(`${server_url+server_port}/history`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          task: 'list',
+        }),
+      })
+      .then(response => response.json())
+      .then(data => {
+        historySelect = document.getElementById('chat-items');
+
+        // Populate the <select> with the available options 
+        historySelect.insertAdjacentHTML('beforeend', data.map(filename => ` 
+          <li class="collection-item list-group-item d-flex justify-content-between align-items-center">
+          <div class="collection-info"> 
+              <span class="collection-name">${filename}</span> 
+            </div>
+              <div class="btn-group">
+                  <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Action</button>
+                  <ul class="dropdown-menu collection-actions">
+                      <li><button class="dropdown-item" type="button">Open</button></li>
+                      <li><button class="dropdown-item" type="button">Edit</button></li>
+                      <li><button class="dropdown-item" type="button">Delete</button></li>
+                      <li><button class="dropdown-item" type="button">Download</button></li>
+                      <li><button class="dropdown-item" type="button">Rename</button></li>
+                  </ul>
+              </div>
+          </li>
+          
+          `).join(''));
+
+        duplicateAndCategorizeChats()
+        // Select all the buttons in the list
+        let buttons = document.querySelectorAll('.collection-item .collection-actions li button');
+
+        // Add an event listener to each button
+        buttons.forEach(button => {
+          button.addEventListener('click', function (event) {
+            // Prevent the default action
+            event.preventDefault();
+
+            // Get the name of the file
+            let fileName = this.closest('.collection-item').querySelector('.collection-name').textContent;
+
+            // Get the action (the button's text content)
+            let action = this.textContent;
+
+            // You can now use fileName and action for whatever you need
+            console.log(`Action: ${action}, File Name: ${fileName}`);
+
+            // Handle the action
+            switch (action) {
+              case 'Open':
+                selectedFilename = fileName;
+                loadSelectedHistory(fileName);
+                OpenTab('1');
+                break;
+              case 'Edit':
+                selectedFilename = fileName;
+
+                alert('Edit History is not available yet.');
+                break;
+              case 'Delete':
+                // continue only if the user confirms alert
+                if (confirm("Are you sure you want to delete this file?")) {
+                  fetch(`${server_url + server_port}/history`, {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify({
+                        chat: fileName,
+                        task: "delete"
+                      })
+                    })
+                    .then(response => {
+                      if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                      }
+                      return response.json();
+                    })
+                    .then(responseData => {
+                      console.log(responseData);
+                    })
+                    .catch(error => {
+                      console.error('An error occurred:', error);
+                    });
+
+                  // reload the page with delay of 1 second
+                  setTimeout(function () {
+                    location.reload()
+                  }, 100);
+                }
+                break;
+              case 'Download':
+                // request load history file from the server and download it as json file
+                fetch(`${server_url + server_port}/history`, {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                      chat: fileName,
+                      task: "load"
+                    })
+                  })
+                  .then(response => response.json())
+                  .then(data => {
+                    var chatHistory = JSON.stringify(data);
+                    var blob = new Blob([chatHistory], {
+                      type: 'text/plain',
+                    });
+                    var url = URL.createObjectURL(blob);
+
+                    // Create a temporary anchor element for downloading
+                    var a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${fileName}.json`;
+                    a.click();
+
+                    // Clean up
+                    URL.revokeObjectURL(url);
+                  })
+                  .catch(error => {
+                    console.error('Error fetching history for download:', error);
+                  });
+                break;
+              case 'Rename':
+                var newName = prompt('Enter a new name for the file (with .json):', fileName);
+                selectedFilename = newName;
+
+                fetch(`${server_url + server_port}/history`, {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                      chat: fileName,
+                      name: newName,
+                      task: "rename"
+                    })
+                  })
+                  .then(response => {
+                    if (!response.ok) {
+                      throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                  })
+                  .then(responseData => {
+                    console.log(responseData);
+                  })
+                  .catch(error => {
+                    console.error('An error occurred:', error);
+                  });
+                break;
+              default:
+                console.log(`Unknown action: ${action} for file: ${fileName}`);
+            }
+          });
+        });
+
+        selectedFilename = config_data.server.default_history_file;
+      })
+      .catch(error => {
+        console.error('Error fetching history files:', error);
+      });
+
+    // Resolve the promise when the operation is complete
+    resolve();
+  });
+}
+
+/*
 async function populateHistorySelect() {
   loadConfig();
   const historySelect = document.getElementById('chat-items');
@@ -499,6 +714,7 @@ async function populateHistorySelect() {
     if (!response.ok) throw new Error('Error fetching history files.');
 
     const data = await response.json();
+    console.log('History files:', data);
     historySelect.insertAdjacentHTML('beforeend', data.map(filename => `...`).join(''));
     
     selectedFilename = config_data.server.default_history_file;
@@ -507,6 +723,7 @@ async function populateHistorySelect() {
     console.error('Error:', error);
   }
 }
+*/
 
 async function loadSelectedHistory(selectedFilename = config_data.server.default_history_file) {
   const messageContainer = document.getElementById('message-container');
@@ -519,6 +736,7 @@ async function loadSelectedHistory(selectedFilename = config_data.server.default
     });
 
     if (!response.ok) throw new Error('Error loading selected history file.');
+    console.log(response.json());
 
     const data = await response.json();
     messageManager.displayMessages(data);

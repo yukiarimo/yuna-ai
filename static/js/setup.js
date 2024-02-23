@@ -91,7 +91,7 @@ async function checkConfigData() {
     }, 100);
   } else {
     try {
-      const response = await fetch('/config.json');
+      const response = await fetch('/static/config.json');
       config_data = await response.json();
       localStorage.setItem('config', JSON.stringify(config_data));
       ({ server: { url: server_url, port: server_port } } = config_data);

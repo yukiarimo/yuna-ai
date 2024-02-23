@@ -83,7 +83,9 @@ class YunaServer:
         self.app.route('/services', methods=['GET'], endpoint='services')(lambda: services(self))
 
     def custom_static(self, filename):
-        return send_from_directory(app.static_folder, filename)
+        if not filename.startswith('static/') and not filename.startswith('/favicon.ico') and not filename.startswith('/manifest.json'):
+            filename = 'static/' + filename
+        return send_from_directory(self.app.static_folder, filename)
 
     @login_required
     def logout(self):

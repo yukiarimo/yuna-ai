@@ -88,7 +88,7 @@ class OfflineRequest {
     handleMessageRequest() {
         console.log('Running custom function instead of fetch to /message');
         return Promise.resolve(new Response(JSON.stringify({
-            message: 'Custom response for /message'
+            response: 'Custom response for /image'
         })));
     }
 
@@ -100,8 +100,6 @@ class OfflineRequest {
     }
 
     handleHistoryRequest(resource, init) {
-        console.log('Running custom function instead of fetch to /history');
-
         // Parse the request body to get the task
         const requestBody = JSON.parse(init.body);
         const task = requestBody.task;
@@ -112,12 +110,20 @@ class OfflineRequest {
 
         switch (task) {
             case 'load':
-                let test1 = localStorage.getItem(chat)
-                console.log(localStorage.getItem(test1));
-                return Promise.resolve(new Response(test1));
+                let test1 = ''
+                if (chat == undefined) {
+                    // load default history file from config_data.server.default_history_file
+                    test1 = "history_template.json";
+                } else {
+                    test1 = localStorage.getItem(chat)
+                }
+
+                return Promise.resolve(new Response(localStorage.getItem(chat)));
             case 'list':
                 // get the history from local storage array and return it
                 const history = JSON.parse(localStorage.getItem('history'));
+
+                console.log('History:', history);
 
                 return Promise.resolve(new Response(JSON.stringify({
                     history
@@ -177,15 +183,17 @@ class OfflineApp {
         localStorage.setItem("app", true);
 
         // create an array with one element from config_data.server.default_history_file
-        var history = [config_data.server.default_history_file];
+        var history = ["history_template.json"];
         console.log(history);
         localStorage.setItem("history", JSON.stringify(history));
+        localStorage.setItem('history_template.json', JSON.stringify([{"name": "Yuki", message: "Hello"}, {name: "Yuna", message: "Hi"}]));
         location.reload();
     }
 }
 
 // Instantiate the class
 new OfflineApp();
+// run initializeApp 
 
 document.getElementById('enableOffline').addEventListener('click', function () {
     // toggle offline mode

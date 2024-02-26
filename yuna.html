@@ -7,12 +7,12 @@
         content="width=device-width, initial-scale=1.0, shrink-to-fit=no, maximum-scale=1.0, user-scalable=no">
     <title>Yuna AI</title>
     <meta name="theme-color" content="#000000">
-    <link rel="canonical" href="http://www.yuna-ai.live/">
-    <meta property="og:url" content="http://www.yuna-ai.live/">
+    <link rel="canonical" href="http://www.yuna-ai.live">
+    <meta property="og:url" content="/">
     <meta property="og:description" content="Your virtual AI girlfriend">
-    <meta name="twitter:image" content="http://www.yuna-ai.live/static/img/yuna-ai.png">
+    <meta name="twitter:image" content="/static/img/yuna-ai.png">
     <meta name="twitter:title" content="Yuna AI">
-    <meta property="og:image" content="http://www.yuna-ai.live/static/img/yuna-ai.png">
+    <meta property="og:image" content="/static/img/yuna-ai.png">
     <meta name="description" content="Your virtual AI girlfriend">
     <meta property="og:type" content="website">
     <meta property="og:title" content="Yuna AI">
@@ -75,7 +75,9 @@
                     <li><a href="#" class="nav-link active" onclick="OpenTab('1')"><i class="fas fa-comment-dots"></i>
                             Chats
                             <span class="badge badge-pill" id="messageCount">0</span></a></li>
-                    <li><a href="#" class="nav-link" onclick="OpenTab('2')"><i class="fas fa-book-open"></i> Library</a>
+                    <li><a href="#" class="nav-link" onclick="OpenTab('2')"><i class="fas fa-book-open"></i>
+                            Library
+                            <span class="badge badge-pill" id="chatsCount">0</span></a>
                     </li>
                     <li><a href="#" class="nav-link" onclick="OpenTab('4')"><i class="fas fa-user"></i> Profile</a></li>
                     <li><a href="#" class="nav-link" onclick="settingsView.show();"><i class="fas fa-cog"></i>
@@ -123,7 +125,7 @@
                                     </a>
 
                                     <div class="dropdown-menu shadow dropdown-menu-end animated--grow-in"><a
-                                            class="dropdown-item" onclick="callYuna.show();"><i
+                                            class="dropdown-item" onclick="callYuna.show();" href="#"><i
                                                 class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Call</a><a
                                             class="dropdown-item" onclick="OpenTab('4')" href="#"><i
                                                 class="fas fa-cogs fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Profile</a><a

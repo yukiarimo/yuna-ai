@@ -52,11 +52,15 @@ class messageManager {
       messageContainer.removeChild(messageContainer.firstChild);
     }
 
-    console.log('Messages:', messages);
-    
-  
-  // Example usage:
-  downloadVariableAsFile(JSON.stringify(messages), 'myVariable.txt');
+    messages = messages
+    // check if the messages is an array or string
+    if (typeof messages === 'string') {      
+      try {
+        messages = JSON.parse(`${messages}`);
+      } catch (error) {
+        console.error('Error parsing JSON:', error);
+      }
+    }
   
     // Loop through the messages and format each one
     messages.forEach(messageData => {
@@ -217,7 +221,6 @@ class HistoryManager {
   createHistoryFile() {
     const newFileName = prompt('Enter a name for the new file (with .json):');
     if (!newFileName) {
-      console.log('File creation cancelled.');
       return; // Exit if no name is entered
     }
 
@@ -418,7 +421,6 @@ async function drawArt() {
     document.getElementById('circle-loader')?.remove();
 
     messageContainer.insertAdjacentHTML('beforeend', formatMessage({ name: name2, message: data.message }));
-    console.log('Image Generated Successfully');
   } catch (error) {
     console.error('Error:', error);
     alert('Error sending captured image.');
@@ -528,9 +530,13 @@ function populateHistorySelect() {
       .then(response => response.json())
       .then(data => {
         historySelect = document.getElementById('chat-items');
+        if (data.history != undefined) {
+          data = data.history;
+        }
 
         // Populate the <select> with the available options 
-        historySelect.insertAdjacentHTML('beforeend', data.map(filename => ` 
+        historySelect.insertAdjacentHTML('beforeend', data.map(filename => 
+          ` 
           <li class="collection-item list-group-item d-flex justify-content-between align-items-center">
           <div class="collection-info"> 
               <span class="collection-name">${filename}</span> 
@@ -725,26 +731,29 @@ async function populateHistorySelect() {
 }
 */
 
-async function loadSelectedHistory(selectedFilename = config_data.server.default_history_file) {
+function loadSelectedHistory(selectedFilename) {
   const messageContainer = document.getElementById('message-container');
-
-  try {
-    const response = await fetch(`${server_url+server_port}/history`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ task: 'load', chat: selectedFilename })
-    });
-
-    if (!response.ok) throw new Error('Error loading selected history file.');
-    console.log(response.json());
-
-    const data = await response.json();
-    messageManager.displayMessages(data);
-  } catch (error) {
-    console.error('Error:', error);
+  if (selectedFilename == undefined) {
+    selectedFilename = config_data.server.default_history_file;
   }
 
-  closePopupsAll();
+  fetch(`${server_url+server_port}/history`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ task: 'load', chat: selectedFilename })
+  })
+  .then(response => {
+    console.log();
+    if (!response.ok) throw new Error('Error loading selected history file.');
+    return response.json();
+  })
+  .then(data => {
+    messageManager.displayMessages(data);
+    closePopupsAll();
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
 }
 
 function duplicateAndCategorizeChats() {
@@ -853,5 +862,8 @@ checkMe().then(importFlash).catch(console.error);
 function updateMsgCount() {
   setTimeout(() => {
     document.getElementById('messageCount').textContent = document.querySelectorAll('#message-container .p-2.mb-2').length;
+    document.getElementById('chatsCount').textContent = document.querySelectorAll('#chat-items .collection-item').length;
   }, 500);
 }
+
+updateMsgCount();

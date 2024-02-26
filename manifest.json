@@ -3,27 +3,16 @@
     "name": "Yuna AI",
     "description": "Yuna AI - your personal AI girlfriend",
     "icons": [{
-            "src": "img/yuna-ai.png",
+            "src": "/img/yuna-ai.png",
             "sizes": "512X512",
             "type": "image/png",
             "purpose": "maskable"
         },
         {
-            "src": "img/yuna-ai.png",
+            "src": "/static/img/yuna-ai.png",
             "sizes": "512X512",
             "type": "image/png",
             "purpose": "maskable"
-        },
-        {
-            "src": "http://www.yuna-ai.live/img/Yuna%20AI.png?h=b5a2c76a793aa38091c50cbc0efbc386",
-            "type": "image/png",
-            "sizes": "512X512",
-            "purpose": "any maskable"
-        }, {
-            "src": "http://www.yuna-ai.live/img/Yuna%20AI.png?h=b5a2c76a793aa38091c50cbc0efbc386",
-            "type": "image/png",
-            "sizes": "512X512",
-            "purpose": "any maskable"
         }
     ],
     "start_url": "yuna.html",

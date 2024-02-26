@@ -7,7 +7,7 @@ const buttonRun = document.querySelector("#run");
 const buttonRunProgressLoadingModel = document.querySelector("#run-progress-loading-model");
 const buttonRunProgressLoadedModel = document.querySelector("#run-progress-loaded-model");
 const buttonRunProgressGenerating = document.querySelector("#run-progress-generating");
-const selectModel = document.querySelector("select#model");
+const selectedModel = "/lib/models/yuna/tinymistral-248m-sft-v4.q8_0.gguf"
 const modelProgress = document.querySelector("#model-progress");
 const textareaPrompt = document.querySelector("textarea#prompt");
 const textareaResult = document.querySelector("#result");
@@ -58,13 +58,13 @@ buttonRun.addEventListener("click", (e) => {
   // textareaResult.value = "";
   textareaResult.innerText = "";
   
-  if (app && app.url == selectModel.value) {
+  if (app && app.url == selectedModel) {
     onModelLoaded();
     return;
   }
 
   app = new LlamaCpp(
-    selectModel.value,
+    selectedModel,
     onModelLoaded,
     onMessageChunk,
     onComplete,

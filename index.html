@@ -3,16 +3,15 @@
 
 <head data-bs-theme="dark">
     <meta charset="utf-8">
-    <meta name="viewport"
-		content="width=device-width, initial-scale=1.0, shrink-to-fit=no, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no, user-scalable=no">
     <title>Yuna AI</title>
     <meta name="theme-color" content="#000000">
     <link rel="canonical" href="http://www.yuna-ai.live/">
     <meta property="og:url" content="http://www.yuna-ai.live/">
     <meta property="og:description" content="Your virtual AI girlfriend">
-    <meta name="twitter:image" content="http://www.yuna-ai.live/img/yuna-ai.png">
+    <meta name="twitter:image" content="http://www.yuna-ai.live/static/img/yuna-ai.png">
     <meta name="twitter:title" content="Yuna AI">
-    <meta property="og:image" content="http://www.yuna-ai.live/img/yuna-ai.png">
+    <meta property="og:image" content="http://www.yuna-ai.live/static/img/yuna-ai.png">
     <meta name="description" content="Your virtual AI girlfriend">
     <meta property="og:type" content="website">
     <meta property="og:title" content="Yuna AI">
@@ -26,11 +25,10 @@
             "url": "http://www.yuna-ai.live"
         }
     </script>
-    <link rel="icon" type="image/jpeg" sizes="60x60" href="img/yuna-ai.png">
-    <link rel="manifest" href="/manifest.json">
-    <link rel="stylesheet" href="/css/bootstrap.min.css">
-    <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="/css/awesome.css">
+    <link rel="icon" type="image/jpeg" sizes="60x60" href="/static/img/yuna-ai.png">
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/awesome.css">
     <style>
         * {
             font-family: "kawai-font" !important;
@@ -42,16 +40,21 @@
 
         @font-face {
             font-family: "kawai-font";
-            src: url("../fonts/kawai-font.woff") format("woff");
+            src: url("/static/fonts/kawai-font.woff") format("woff");
             font-style: normal;
             font-weight: normal;
+        }
+
+        img {
+                height: 300px;
+                width: auto;
         }
     </style>
 
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function () {
-                navigator.serviceWorker.register('/sw.js').then(
+                navigator.serviceWorker.register('/static/sw.js').then(
                     function (registration) {
                         // Registration was successful
                         console.log('ServiceWorker registration successful with scope: ', registration
@@ -73,7 +76,7 @@
                 <span
                     class="bs-icon-sm bs-icon-circle shadow d-flex justify-content-center align-items-center me-2 bs-icon">
                     <!-- Add img-fluid class and set a max-height -->
-                    <img src="img/yuna-ai.png" alt="Yuna AI" class="img-fluid" style="max-height: 45px;">
+                    <img src="/static/img/yuna-ai.png" alt="Yuna AI" class="/static/img-fluid" style="max-height: 45px;">
                 </span>
                 <span>Yuna AI</span>
             </a>
@@ -100,15 +103,15 @@
                 <div class="col-12 col-lg-10 mx-auto">
                     <div class="position-relative" style="display: flex;flex-wrap: wrap;justify-content: flex-end;">
                         <div style="position: relative;flex: 0 0 45%;transform: translate3d(-15%, 35%, 0);"><img
-                                class="img-fluid rounded shadow w-100 fit-cover" data-bss-parallax=""
+                                class="/static/img-fluid rounded shadow w-100 fit-cover" data-bss-parallax=""
                                 data-bss-parallax-speed="0.8"
-                                src="img/products/phone-screen.png?h=fce4fd8e26138d1b5fd8c63ef4f2e64c"></div>
+                                src="/static/img/products/phone-screen.png?h=fce4fd8e26138d1b5fd8c63ef4f2e64c"></div>
                         <div style="position: relative;flex: 0 0 45%;transform: translate3d(-5%, 20%, 0);"><img
-                                class="img-fluid" data-bss-parallax="" data-bss-parallax-speed="0.4"
-                                src="img/yuna-girl.png?h=104fcc18ad179e4b0b9e0ee12b849bed"></div>
+                                class="/static/img-fluid" data-bss-parallax="" data-bss-parallax-speed="0.4"
+                                src="/static/img/yuna-girl.png?h=104fcc18ad179e4b0b9e0ee12b849bed"></div>
                         <div style="position: relative;flex: 0 0 60%;transform: translate3d(0, 0%, 0);"><img
-                                class="img-fluid" data-bss-parallax="" data-bss-parallax-speed="0.25"
-                                src="img/products/chat.png?h=fc1e51d44f18accfa3a90f81c9cfffe4"></div>
+                                class="/static/img-fluid" data-bss-parallax="" data-bss-parallax-speed="0.25"
+                                src="/static/img/products/chat.png?h=fc1e51d44f18accfa3a90f81c9cfffe4"></div>
                     </div>
                 </div>
             </div>
@@ -384,7 +387,7 @@
                             class="bs-icon-sm bs-icon-circle d-flex justify-content-center align-items-center bs-icon me-2"><span
                                 class="bs-icon-sm bs-icon-circle shadow d-flex justify-content-center align-items-center me-2 bs-icon">
                                 <!-- Add img-fluid class and set a max-height -->
-                                <img src="img/yuna-ai.png" alt="Yuna AI" class="img-fluid" style="max-height: 45px;">
+                                <img src="/static/img/yuna-ai.png" alt="Yuna AI" class="/static/img-fluid" style="max-height: 45px;">
                             </span></span><span>Yuna AI</span></div>
                     <p class="text-muted">Your personal AI girlfriend.</p>
                 </div><!-- End: Social Icons -->
@@ -476,9 +479,9 @@
     </div>
     </div>
 
-    <script src="/js/bootstrap/bootstrap.bundle.min.js"></script>
-    <script src="/js/bootstrap/jquery.min.js"></script>
-    <script src="/js/bootstrap/script.min.js"></script>
+    <script src="/static/js/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/bootstrap/jquery.min.js"></script>
+    <script src="/static/js/bootstrap/script.min.js"></script>
 </body>
 
 </html>

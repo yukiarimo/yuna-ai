@@ -3,8 +3,8 @@
 
 <head data-bs-theme="dark">
     <meta charset="utf-8">
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, shrink-to-fit=no, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no, user-scalable=no", viewport-fit=cover">
+    <meta name="apple-mobile-web-app-status-bar-style" content="none">
     <title>Yuna AI</title>
     <meta name="theme-color" content="#000000">
     <link rel="canonical" href="http://www.yuna-ai.live">
@@ -26,10 +26,20 @@
             "url": "http://www.yuna-ai.live"
         }
     </script>
+    <!--
+<script type="importmap">
+        {
+          "imports": {
+            "three": "https://unpkg.com/three@0.161.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.161.0/examples/jsm/"
+          }
+        }
+      </script>
+    -->
     <link rel="icon" type="image/jpeg" sizes="60x60" href="/static/img/yuna-ai.png">
     <script src="/static/js/offline/offline.js" defer></script>
     <script type="module" src="/static/js/offline/thread.js" defer></script>
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="/static/manifest.json">
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/css/awesome.css">
     <link rel="stylesheet" href="/static/css/kawai-v11-2.css">
@@ -40,6 +50,15 @@
     <script src="/static/js/setup.js" defer></script>
     <script src="/static/js/kanojo.js" defer></script>
 
+    <style>
+        body {
+            margin: 0;
+        }
+
+        canvas {
+            display: block;
+        }
+    </style>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function () {
@@ -56,18 +75,96 @@
             });
         }
     </script>
+
+    <!--
+<script type="module" defer>
+        import * as THREE from 'three';
+    import { OrbitControls } from 'https://unpkg.com/three/examples/jsm/controls/OrbitControls.js';
+    import { GLTFLoader } from 'https://unpkg.com/three/examples/jsm/loaders/GLTFLoader.js';
+
+    let camera, scene, renderer, model, controls;
+
+    init();
+    animate();
+
+    function init() {
+        scene = new THREE.Scene();
+
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
+        camera.position.set(0, 150, 50); // Adjust camera position to better view the model
+
+        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor( 0x000000, 0 ); // the default
+
+        // create a div element
+        const div = document.createElement('div');
+        // set id to the 3d-model
+        div.id = 'vr-model';
+        // append the renderer to the div
+        div.appendChild(renderer.domElement);
+        // append the div to the top of the body
+        document.body.insertBefore(div, document.body.firstChild);
+
+        controls = new OrbitControls(camera, renderer.domElement);
+        controls.target.set(0, -20, -150);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.maxPolarAngle = Math.PI / 2; // Prevent the camera from going below the ground
+        controls.minPolarAngle = Math.PI / 3; // Prevent the camera from going too high
+
+        const ambientLight = new THREE.AmbientLight(0xcccccc, 0.4);
+        scene.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(1, 1, 0).normalize();
+        scene.add(directionalLight);
+
+        // GLTFLoader to load a 3D model
+        const loader = new GLTFLoader();
+        loader.load('/static/js/untitled.glb', function (gltf) {
+            model = gltf.scene;
+            scene.add(model);
+        }, undefined, function (error) {
+            console.error(error);
+        });
+
+        window.addEventListener('resize', onWindowResize, false);
+    }
+
+    function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    function animate() {
+        requestAnimationFrame(animate);
+
+        // Required if controls.enableDamping or controls.autoRotate are set to true
+        controls.update();
+
+        render();
+    }
+
+    function render() {
+        renderer.render(scene, camera);
+    }
+</script>
+-->
+
 </head>
 
 <body id="page-top">
     <div id="wrapper">
-        <nav class="navbar sidebar sidebar-o bg-black align-items-start sidebar sidebar-dark accordion p-0 navbar-dark">
+        <nav class="navbar sidebar sidebar-o bg-black align-items-start sidebar-dark accordion p-0 navbar-dark"
+            id="sidebar">
             <div class="container-fluid d-flex flex-column p-0">
                 <div class="sidebar-header">
                     <a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
+                        <i onclick="toggleSidebar(); kawaiAutoScale()" class="fas fa-bars"></i>
                         <div class="sidebar-brand-icon">
                             <img src="/static/img/yuna-ai.png" alt="Yuna AI Logo" style="width: 30px; height: 30px;">
-                            <button class="sidebarToggleIn btn btn-link d-md-none rounded-circle me-3" type="button"><i
-                                    onclick="togglesidebarBack()" class="fas fa-bars"></i></button>
                         </div>
                         <div class="sidebar-brand-text mx-3"><span>Yuna AI</span></div>
                     </a>
@@ -97,9 +194,9 @@
         <div class="d-flex flex-column" id="content-wrapper" style="background-color: none !important;">
             <div id="content">
                 <nav class="navbar navbar-expand shadow mb-4 topbar static-top navbar-light topbar-o fixed-top">
-                    <div class="container-fluid"><button
-                            class="sidebarToggle btn btn-link d-md-none rounded-circle me-3" id="sidebarToggleTop"
-                            type="button"><i class="fas fa-bars"></i></button>
+                    <div class="container-fluid"><button class="sidebarToggle btn btn-link rounded-circle me-3"
+                            id="sidebarToggleTop" type="button" onclick="toggleSidebar(); kawaiAutoScale()"><i
+                                class="fas fa-bars"></i></button>
                         <ul class="navbar-nav flex-nowrap ms-auto">
                             <li class="nav-item">
                                 <a class="nav-link" href="#" data-bs-toggle="modal" aria-label="Search"
@@ -143,7 +240,7 @@
                 <div class="container-fluid">
                     <div class="block-o">
                         <div class="tab-o tab-o-default" id="1">
-                            <div class="coll-lo">
+                            <div class="" id="msgCol">
                                 <div class="block-card block-scroll" id="message-container">
                                     <!-- Dynamic HTML elements will be added here -->
                                 </div>
@@ -212,7 +309,7 @@
 
                         <div class="tab-o" id="4">
                             <div class="coll-lo">
-                                <div class="col-10">
+                                <div class="col-10" id="profile-card">
                                     <div class="row">
                                         <!-- Profile Card -->
                                         <div class="col-md-4">
@@ -593,23 +690,23 @@
 
     <div class="modal" tabindex="-1" role="dialog" id="fileModal">
         <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">File Input</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">File Input</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="file" id="fileInput">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="fileSubmit">Submit</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
             </div>
-            <div class="modal-body">
-              <input type="file" id="fileInput">
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-primary" id="fileSubmit">Submit</button>
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-          </div>
         </div>
-      </div>
+    </div>
 
     <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 11">
         <div id="toggleToast" class="toast align-items-center text-white bg-primary border-0" role="alert"

@@ -86,7 +86,12 @@ async function checkConfigData() {
   if (localStorage.getItem('config')) {
     setTimeout(() => {
       config_data = JSON.parse(localStorage.getItem('config'));
-      ({ server: { url: server_url, port: server_port } } = config_data);
+      ({
+        server: {
+          url: server_url,
+          port: server_port
+        }
+      } = config_data);
       fixDialogData();
     }, 100);
   } else {
@@ -94,7 +99,12 @@ async function checkConfigData() {
       const response = await fetch('/static/config.json');
       config_data = await response.json();
       localStorage.setItem('config', JSON.stringify(config_data));
-      ({ server: { url: server_url, port: server_port } } = config_data);
+      ({
+        server: {
+          url: server_url,
+          port: server_port
+        }
+      } = config_data);
     } catch (error) {
       console.error('Error:', error);
     }
@@ -199,14 +209,47 @@ function togglesidebarBack() {
   kawaiAutoScale();
 }
 
-document.getElementsByClassName('sidebarToggleIn')[0].addEventListener('click', function () {
-  document.getElementsByClassName('sidebar-o')[0].style.width = '100%';
-  kawaiAutoScale();
-});
-
 // if on mobile, run this function
 if (window.matchMedia("(max-width: 767px)").matches) {
   togglesidebarBack()
 }
 
+// get the height of the #message-container and get the height of the .input-wrapper.ui-container and set the height of the #message-container to the height of the #message-container - the height of the .input-wrapper.ui-container
+// run the function kawaiAutoScale() with 1 second delay
+setTimeout(function () {
+  var messageContainer = document.getElementById('message-container');
+  var inputWrapper = document.getElementsByClassName('input-wrapper')[0];
+  console.log(inputWrapper.clientHeight);
+  console.log(`calc(${messageContainer.clientHeight} - ${inputWrapper.clientHeight}px)`);
+  messageContainer.style.height = `calc(${messageContainer.innerHeight}px - ${inputWrapper.innerHeight}px)`;
+}, 200);
+
 kawaiAutoScale();
+
+function getVisibleHeight() {
+  var elem = document.getElementById('message-container');
+  var inputWrapper = document.querySelector('.input-wrapper');
+  var bob = document.querySelector('.topbar-o');
+
+  elem.style.height = `calc(100% - ${bob.offsetHeight}px - ${inputWrapper.offsetHeight}px)`;
+  //elem.style.marginTop = `-${bob.offsetHeight}px`;
+
+  const topbarElement = document.querySelector('.topbar-o');
+  const style = window.getComputedStyle(topbarElement);
+  const bottomMargin = style.marginBottom;
+
+  // set bottomMargin to .block-o with important
+  document.querySelector('.block-o').style.marginTop = `-${bottomMargin}`;
+}
+
+setTimeout(getVisibleHeight, 100);
+
+// check if mobile device
+if (window.matchMedia("(max-width: 767px)").matches) {
+  document.querySelectorAll('.nav-link').forEach(function (element) {
+    element.addEventListener('click', async function () {
+      toggleSidebar();
+      kawaiAutoScale();
+    });
+  });
+}

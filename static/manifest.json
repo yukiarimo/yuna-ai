@@ -15,7 +15,7 @@
             "purpose": "maskable"
         }
     ],
-    "start_url": "yuna.html",
+    "start_url": "/",
     "background_color": "#99c189",
     "theme_color": "#99c189",
     "display": "standalone",

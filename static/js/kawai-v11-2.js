@@ -218,6 +218,12 @@ function kawaiAutoScale() {
             sendMessageContainer.style.width = `calc(100% - ${sidebarWidth}px)`;
             sendMessageContainer.style.marginLeft = `${sidebarWidth}px`;
         }
+
+        if (sidebar.classList.contains('showside')) {
+            sidebar.style.display = 'none';
+          }
+
+          getVisibleHeight();
     }
 }
 

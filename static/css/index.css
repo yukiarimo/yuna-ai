@@ -8,6 +8,36 @@
     user-select: none;
 }
 
+body,
+html,
+.modal {
+    overflow: hidden;
+}
+
+#msgCol {
+    height: 100vh !important;
+}
+
+#profile-card {
+    overflow-y: auto !important;
+}
+
+#vr-model {
+    width: min-content;
+    height: -webkit-fill-available;
+    position: fixed !important;
+    display: flex !important;
+    z-index: 99999999;
+}
+
+#vr-model canvas {
+    position: absolute !important;
+    bottom: 0 !important;
+    width: auto !important;
+    height: 400px !important;
+    left: 0% !important;
+}
+
 i {
     font-family: "Font Awesome 5 Free" !important;
 }
@@ -154,8 +184,28 @@ body {
     scrollbar-width: none;
     display: flex;
     flex-direction: column;
-    background: none !important;
-    background-color: transparent !important;
+    position: relative;
+    background: transparent !important;
+}
+
+/*
+#message-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 20px;
+    background: linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%); 
+    pointer-events: none; 
+    z-index: 1;
+}*/
+
+#msgCol {
+    background-image: url('/static/img/test-d.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center top;
 }
 
 .coll-lo {
@@ -164,16 +214,6 @@ body {
     margin-bottom: 2%;
     width: auto;
     height: auto;
-}
-
-.input-wrapper {
-    position: fixed;
-    display: flex;
-    bottom: 0;
-    right: 0;
-    left: 0;
-    align-items: center;
-    justify-content: center;
 }
 
 #himitsuToggle {
@@ -446,11 +486,17 @@ input:checked~.slider .off-label {
     display: none;
 }
 
-.ui-container {
-    width: 100%;
-    max-width: 600px;
+.input-wrapper {
+    width: 90% !important;
     margin: 0 auto;
     text-align: center;
+    position: fixed;
+    display: flex;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    align-items: center;
+    justify-content: center;
 }
 
 .title {
@@ -463,6 +509,7 @@ input:checked~.slider .off-label {
     align-items: center;
     background-color: #333;
     padding: 5px;
+    border-radius: 16px;
 }
 
 .scroll-to-top {
@@ -480,10 +527,6 @@ input:checked~.slider .off-label {
     font-size: 16px;
     padding: 10px;
     margin: 0 5px;
-}
-
-.ui-container {
-    max-width: 100% !important;
 }
 
 .attach-button {
@@ -658,6 +701,10 @@ body::-webkit-scrollbar {
     #himitsuToggle {
         margin-right: 11% !important;
     }
+
+    #msgCol {
+        background-image: url('/static/img/test.png');
+    }
 }
 
 #wrapper #content-wrapper {
@@ -704,8 +751,13 @@ body {
 }
 
 .sidebar {
-    width: 250px;
+    width: 250px !important;
     padding: 20px;
+    top: 0;
+}
+
+.hideside {
+    display: flex !important;
 }
 
 .sidebar-header {

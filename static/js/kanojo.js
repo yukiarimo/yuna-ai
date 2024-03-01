@@ -198,12 +198,8 @@ const initialData = {
 
 const kanojo = new KanojoConnect(initialData);
 kanojo.addName('Haruka');
-console.log(kanojo.getName(2)); // Should log 'Haruka'
 kanojo.deleteName('Yuna');
-console.log(kanojo.names); // Should log ['Yuki', 'Haruka']
-// Demonstrating new methods
 kanojo.setMemory('New memory');
-console.log(kanojo.getMemory()); // Should log 'New memory'
 
 // Create a bootstrap modal popup with a file input area and when file is provided run the hubToKanojo function
 document.getElementById('fileSubmit').addEventListener('click', function () {
@@ -241,5 +237,5 @@ document.getElementById('fileSubmit').addEventListener('click', function () {
 // open the modal with the delay of 1 second
 setTimeout(function () {
     const modal = new bootstrap.Modal(document.getElementById('fileModal'));
-    modal.show();
+    //modal.show();
 }, 1000);

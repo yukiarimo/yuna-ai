@@ -3,10 +3,10 @@
     "name": "Yuna AI",
     "description": "Yuna AI - your personal AI girlfriend",
     "icons": [{
-            "src": "/img/yuna-ai.png",
+            "src": "/static/img/yuna-ai.png",
             "sizes": "512X512",
             "type": "image/png",
-            "purpose": "maskable"
+            "purpose": "any"
         },
         {
             "src": "/static/img/yuna-ai.png",
@@ -15,7 +15,7 @@
             "purpose": "maskable"
         }
     ],
-    "start_url": "/",
+    "start_url": "/yuna.html",
     "background_color": "#99c189",
     "theme_color": "#99c189",
     "display": "standalone",

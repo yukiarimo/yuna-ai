@@ -118,31 +118,100 @@ checkConfigData();
 // run openConfigParams() with 1 second delay
 setTimeout(openConfigParams, 1000);
 
-document.addEventListener('keydown', function (event) {
-  if (event.target.tagName.toLowerCase() === 'input' || !event.shiftKey) return;
+document.addEventListener("keydown", function (event) {
+  // Prevent default action for Tab to avoid focusing on the next element
+  if (event.key === "Tab") {
+    event.preventDefault();
+    toggleSidebar();
+    kawaiAutoScale()
+    return;
+  }
 
-  const keyActions = {
-    'b': toggleSidebar,
-    'c': () => {
-      if (document.getElementById('call').style.display == 'none') {
-        callYuna.show();
-      } else {
-        closePopupsAll();
-      }
-    },
-    '1': () => OpenTab('1'),
-    '2': () => OpenTab('2'),
-    '3': () => OpenTab('3'),
-  };
+  // Check if Shift key is pressed along with the key and is not in the input field
+  if (event.shiftKey && document.activeElement !== document.getElementById('input_text')) {
+    switch (event.key) {
+      case "H":
+        event.preventDefault(); // Prevent any default action
+        var navSidebar = document.getElementsByClassName('side-link');
 
-  const key = event.key.toLowerCase();
-  if (keyActions[key]) keyActions[key]();
-});
+        for (let j = 0; j < navSidebar.length; j++) {
+          navSidebar[j].classList.remove('active');
+        }
+        navSidebar[0].classList.add('active');
+        OpenTab('1')
+
+        break;
+      case "L":
+        event.preventDefault(); // Prevent any default action
+        var navSidebar = document.getElementsByClassName('side-link');
+
+        for (let j = 0; j < navSidebar.length; j++) {
+          navSidebar[j].classList.remove('active');
+        }
+        navSidebar[1].classList.add('active');
+        OpenTab('2')
+        break;
+      case "E":
+        event.preventDefault(); // Prevent any default action
+        var navSidebar = document.getElementsByClassName('side-link');
+
+        for (let j = 0; j < navSidebar.length; j++) {
+          navSidebar[j].classList.remove('active');
+        }
+        navSidebar[2].classList.add('active');
+        OpenTab('3')
+        break;
+      case "P":
+        event.preventDefault(); // Prevent any default action
+        var navSidebar = document.getElementsByClassName('side-link');
+
+        for (let j = 0; j < navSidebar.length; j++) {
+          navSidebar[j].classList.remove('active');
+        }
+        navSidebar[3].classList.add('active');
+        OpenTab('4')
+        break;
+      case "S":
+        event.preventDefault(); // Prevent any default action
+        var navSidebar = document.getElementsByClassName('side-link');
+
+        for (let j = 0; j < navSidebar.length; j++) {
+          navSidebar[j].classList.remove('active');
+        }
+        navSidebar[4].classList.add('active');
+        OpenTab('5')
+        break;
+      case "C":
+        event.preventDefault(); // Prevent any default action
+        // check if callYuna is open
+        if (document.getElementById('videoCallModal').classList.contains('show')) {
+          callYuna.hide();
+        } else {
+          callYuna.show();
+        }
+        break;
+    }
+  }
+
+  // Check if Enter key is pressed
+  if (event.key === "Enter") {
+    // Prevent default action for Enter to avoid submitting the form
+    event.preventDefault();
+    // Check if the message input is focused
+    if (document.activeElement === document.getElementById('input_text')) {
+      // Send the message
+      messageManager.sendMessage('')
+    }
+  }
+})
 
 var callYuna = {
+  myModal: new bootstrap.Modal(document.getElementById('videoCallModal'), {}),
   show: function () {
-    var myModal = new bootstrap.Modal(document.getElementById('videoCallModal'), {});
-    myModal.show();
+    this.myModal.show();
+  },
+  hide: function () {
+    this.myModal.hide();
   }
 };
 
@@ -185,7 +254,7 @@ if (window.matchMedia("(max-width: 428px)").matches) {
   document.getElementsByClassName('scroll-to-top')[0].style.display = 'none';
 }
 
-var navSidebar = document.getElementsByClassName('nav-link');
+var navSidebar = document.getElementsByClassName('side-link');
 var scrollToTop = document.getElementsByClassName('scroll-to-top')[0];
 
 for (let i = 0; i < navSidebar.length; i++) {
@@ -232,21 +301,17 @@ function getVisibleHeight() {
   var bob = document.querySelector('.topbar-o');
 
   elem.style.height = `calc(100% - ${bob.offsetHeight}px - ${inputWrapper.offsetHeight}px)`;
-  //elem.style.marginTop = `-${bob.offsetHeight}px`;
 
   const topbarElement = document.querySelector('.topbar-o');
   const style = window.getComputedStyle(topbarElement);
   const bottomMargin = style.marginBottom;
-
-  // set bottomMargin to .block-o with important
-  document.querySelector('.block-o').style.marginTop = `-${bottomMargin}`;
 }
 
 setTimeout(getVisibleHeight, 100);
 
 // check if mobile device
 if (window.matchMedia("(max-width: 767px)").matches) {
-  document.querySelectorAll('.nav-link').forEach(function (element) {
+  document.querySelectorAll('.side-link').forEach(function (element) {
     element.addEventListener('click', async function () {
       toggleSidebar();
       kawaiAutoScale();

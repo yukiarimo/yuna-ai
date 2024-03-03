@@ -74,7 +74,7 @@ def handle_audio_request(self):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     
-async def handle_image_request(self):
+async def handle_image_request(chat_history_manager):
     data = request.get_json()
 
     if 'image' in data and 'task' in data and data['task'] == 'caption':
@@ -85,13 +85,13 @@ async def handle_image_request(self):
         prompt = data['prompt']
         chat_id = data['chat']
 
-        chat_history = self.chat_history_manager.load_chat_history(chat_id)
+        chat_history = chat_history_manager.load_chat_history(chat_id)
         chat_history.append({"name": self.config['ai']['names'][0], "message": prompt})
 
         created_image = create_image(prompt)
         chat_history.append({"name": self.config['ai']['names'][1], "message": f"Sure, here you go! <img src='img/art/{created_image}' class='image-message'>"})
 
-        self.chat_history_manager.save_chat_history(chat_history, chat_id)
+        chat_history_manager.save_chat_history(chat_history, chat_id)
         yuna_image_message = f"Sure, here you go! <img src='img/art/{created_image}' class='image-message'>"
 
         return jsonify({'message': yuna_image_message})

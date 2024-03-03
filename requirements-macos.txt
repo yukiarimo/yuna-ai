@@ -12,3 +12,4 @@ html2text
 bs4
 itsdangerous
 cryptography
+Flask-Compress

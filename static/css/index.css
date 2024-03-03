@@ -14,6 +14,14 @@ html,
     overflow: hidden;
 }
 
+body {
+    background-color: #212529 !important;
+}
+
+.block-o {
+    margin-top: 0 !important;
+}
+
 #msgCol {
     height: 100vh !important;
 }
@@ -162,6 +170,19 @@ body {
     position: fixed;
     top: 0;
     width: 100%;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+#sidebarToggleTop {
+    background-color: var(--dark-tertiary) !important;
+}
+
+.navbar-nav > .nav-item {
+    background-color: var(--dark-tertiary) !important;
+    width: 40px !important;
+    height: 40px !important;
 }
 
 .topbar-o>.block-button {
@@ -178,7 +199,7 @@ body {
     bottom: 0px;
     left: 0;
     right: 0;
-    overflow-y: auto;
+    overflow-y: scroll;
     max-height: 100% !important;
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -186,20 +207,8 @@ body {
     flex-direction: column;
     position: relative;
     background: transparent !important;
+    padding: 0 !important;
 }
-
-/*
-#message-container::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 20px;
-    background: linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%); 
-    pointer-events: none; 
-    z-index: 1;
-}*/
 
 #msgCol {
     background-image: url('/static/img/test-d.png');
@@ -214,12 +223,6 @@ body {
     margin-bottom: 2%;
     width: auto;
     height: auto;
-}
-
-#himitsuToggle {
-    position: absolute !important;
-    right: 0 !important;
-    margin-right: 3% !important;
 }
 
 .block-icon:nth-of-type(1),
@@ -317,6 +320,10 @@ button {
     margin-left: 10px;
 }
 
+.block-message-1 {
+    background-color: #212529 !important;
+}
+
 .icon img {
     width: 40px !important;
     height: 40px !important;
@@ -327,6 +334,7 @@ button {
     background-color: #1f1f1f;
     padding: 20px;
     border-radius: 8px;
+    margin-top: 50px !important;
 }
 
 .tab-header {
@@ -551,10 +559,15 @@ input:checked~.slider .off-label {
     margin: 0 10px;
     padding: 10px;
     font-size: 16px;
+    background: transparent;
 }
 
 .input-field:focus {
     outline: none;
+}
+
+.input-field:focus {
+  outline: none;
 }
 
 .header {
@@ -687,19 +700,12 @@ body::-webkit-scrollbar {
         display: flex;
         flex-direction: column;
         /* background-color: #1e1e1e; */
-        /* color: #ffffff; */
         height: 100vh;
-        /* padding: 20px; */
-        /* box-sizing: border-box; */
         position: fixed;
         bottom: 0;
         /* overflow-y: auto; */
-        z-index: 999;
-        /* transition: all 0.5s ease; */
-    }
-
-    #himitsuToggle {
-        margin-right: 11% !important;
+        z-index: 99999999;
+        width: 100%;
     }
 
     #msgCol {
@@ -833,4 +839,43 @@ body {
     border: none;
     padding: 10px 20px;
     border-radius: 10px;
+}
+
+.search-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    background-color: #000000;
+    border-radius: 20px;
+    padding: 5px 10px;
+}
+
+.search-input {
+    border: none;
+    background-color: transparent;
+    padding: 10px;
+    margin: 0 10px;
+    font-size: 14px;
+    /* Small font size */
+    width: 100%;
+}
+
+.search-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+/* Hide the outline that appears on input focus */
+.search-input:focus {
+    outline: none;
 }

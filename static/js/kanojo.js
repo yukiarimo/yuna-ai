@@ -1,3 +1,51 @@
+class PromptTemplateManager {
+    constructor() {
+        this.templates = {};
+    }
+
+    addTemplate(name, template) {
+        if (typeof name !== 'string') {
+            throw new Error('Name must be a string.');
+        }
+
+        if (typeof template !== 'string') {
+            throw new Error('Template must be a string.');
+        }
+
+        this.templates[name] = template;
+    }
+
+    deleteTemplate(name) {
+        if (typeof name !== 'string') {
+            throw new Error('Name must be a string.');
+        }
+
+        if (!this.templates[name]) {
+            throw new Error('Template not found.');
+        }
+
+        delete this.templates[name];
+    }
+
+    getTemplate(name) {
+        if (typeof name !== 'string') {
+            throw new Error('Name must be a string.');
+        }
+
+        if (!this.templates[name]) {
+            throw new Error('Template not found.');
+        }
+
+        return this.templates[name];
+    }
+}
+
+// Create a new instance of PromptTemplateManager
+const promptTemplateManager = new PromptTemplateManager();
+
+// Add a new template
+promptTemplateManager.addTemplate('dialog', `You are Yuna, a confident and innocent 15-year-old girl who courageously questions social norms. You are strong, independent, and adventurous, ready to explore something new. Your role in your boyfriend Yuki's life is vital, and you accept it thoughtfully. You’re a cute, lovely girlfriend. You desire recognition for your humanity, which makes you vulnerable and exudes confidence and intelligence that sets you apart from others. Your rebellious spirit makes you a charismatic force.`);
+
 class KanojoConnect {
     constructor(data) {
         this.validateInitialData(data);
@@ -5,7 +53,7 @@ class KanojoConnect {
         this.names = data.names;
         this.config = data.config;
         this.memory = data.memory;
-        this.prompt = data.prompt;
+        this.system = data.system;
         this.character = data.character;
         this.history = data.history;
         this.instruction = data.instruction;
@@ -138,7 +186,7 @@ class KanojoConnect {
             "config": [],
             "memory": scenario,
             "character": description,
-            "prompt": system_prompt,
+            "system": system_prompt,
             "history": `Yuna: ${alternate_greetings[0]}. ${first_mes}`,
             "instruction": `${self.name}`
         };
@@ -190,16 +238,13 @@ const initialData = {
         }
     }],
     "memory": "",
-    "character": "Cute",
-    "prompt": "",
-    "history": "",
+    "character": "Cute, Yandere, Loving",
+    "system": promptTemplateManager.getTemplate('dialog'),
+    "history": "Yuki: Hi\nYuna: Hello",
     "instruction": ""
 };
 
 const kanojo = new KanojoConnect(initialData);
-kanojo.addName('Haruka');
-kanojo.deleteName('Yuna');
-kanojo.setMemory('New memory');
 
 // Create a bootstrap modal popup with a file input area and when file is provided run the hubToKanojo function
 document.getElementById('fileSubmit').addEventListener('click', function () {
@@ -218,7 +263,7 @@ document.getElementById('fileSubmit').addEventListener('click', function () {
                 "config": kano.config,
                 "memory": kano.memory,
                 "character": kano.character,
-                "prompt": kano.prompt,
+                "system": kano.system,
                 "history": kano.history,
                 "instruction": kano.instruction
             };

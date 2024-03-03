@@ -6,7 +6,7 @@
     <meta name="viewport"
 		content="width=device-width, initial-scale=1.0, shrink-to-fit=no, maximum-scale=1.0, user-scalable=no">
     <title>Yuna AI | Login</title>
-    <meta name="theme-color" content="#000000">
+    <meta name="theme-color" content="#212529">
     <link rel="canonical" href="http://www.yuna-ai.live/">
     <meta property="og:url" content="http://www.yuna-ai.live/">
     <meta property="og:description" content="Your virtual AI girlfriend">
@@ -50,7 +50,7 @@
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function () {
-                navigator.serviceWorker.register('/sw.js').then(
+                navigator.serviceWorker.register('/static/sw.js').then(
                     function (registration) {
                         // Registration was successful
                         console.log('ServiceWorker registration successful with scope: ', registration

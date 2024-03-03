@@ -19,6 +19,9 @@ class YunaServer:
     def __init__(self):
         self.app = Flask(__name__, static_folder='static')
         self.app.secret_key = 'Yuna_AI_Secret_Key'
+        self.app.config['COMPRESS_ALGORITHM'] = ['br', 'gzip']
+        self.app.config['COMPRESS_LEVEL'] = 6
+        self.app.config['COMPRESS_MIMETYPES'] = ['text/html', 'text/css', 'text/xml', 'application/json', 'application/javascript']
         login_manager.init_app(self.app)
         login_manager.login_view = 'main'
         login_manager.user_loader(self.user_loader)
@@ -73,11 +76,13 @@ class YunaServer:
         self.app.route('/')(self.render_index)
         self.app.route('/<path:filename>')(self.custom_static)
         self.app.route('/yuna')(self.yuna_server)
+        self.app.route('/yuna.html')(self.yuna_server)
+        self.app.route('/apple-touch-icon.png')(self.image_pwa)
         self.app.route('/flash-messages')(self.flash_messages)
         self.app.route('/main', methods=['GET', 'POST'])(self.main)
         self.app.route('/history', methods=['POST'], endpoint='history')(lambda: handle_history_request(self.chat_history_manager))
         self.app.route('/message', methods=['POST'], endpoint='message')(lambda: handle_message_request(self.chat_generator, self.chat_history_manager))
-        self.app.route('/image', methods=['POST'], endpoint='image')(lambda: handle_image_request(self))
+        self.app.route('/image', methods=['POST'], endpoint='image')(lambda: handle_image_request(self.chat_history_manager))
         self.app.route('/audio', methods=['POST'], endpoint='audio')(lambda: handle_audio_request(self))
         self.app.route('/logout', methods=['POST'])(self.logout)
         self.app.route('/services', methods=['GET'], endpoint='services')(lambda: services(self))
@@ -86,6 +91,9 @@ class YunaServer:
         if not filename.startswith('static/') and not filename.startswith('/favicon.ico') and not filename.startswith('/manifest.json'):
             filename = 'static/' + filename
         return send_from_directory(self.app.static_folder, filename)
+    
+    def image_pwa(self):
+        return send_from_directory(self.app.static_folder, 'img/yuna-ai.png')
 
     @login_required
     def logout(self):

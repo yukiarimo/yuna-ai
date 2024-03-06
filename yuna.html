@@ -252,7 +252,9 @@
 
                             <div class="search-container input-wrapper ui-container">
                                 <div class="search-bar">
-                                    <button class="search-button icon-left" aria-label="Search">
+                                    <!-- a button to open popup-->
+                                    <button class="search-button icon-left" aria-label="promptTemplatePopup"
+                                        onclick="promptTemplatePopup.show()">
                                         <i class="fas fa-search"></i>
                                     </button>
                                     <button class="search-button icon-left attach-button" data-bs-toggle="popover"
@@ -656,7 +658,8 @@
                                         <div class="list-group-item" style="background-color: transparent;">
                                             <h6>Account</h6>
                                             <p>This will give you a lot of benefits.</p>
-                                            <button class="btn btn-primary text-white">Go Premium</button>
+                                            <button class="btn btn-primary text-white"
+                                                onclick="OpenLink('/services.html')">Go Premium</button>
                                         </div>
                                     </div>
                                 </div>
@@ -693,6 +696,30 @@
         </div>
     </div>
 
+    <!-- promptTemplatePopup Modal -->
+    <div class="modal fade" id="promptTemplatePopup" tabindex="-1" aria-labelledby="promptTemplatePopupLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-light">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="promptTemplatePopupLabel">Prompt Templates</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <select id='promptTemplateSelect'></select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal" tabindex="-1" role="dialog" id="fileModal">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -714,7 +741,6 @@
     </div>
 
     <script src="/static/js/bootstrap/bootstrap.bundle.min.js"></script>
-    <script src="/static/js/bootstrap/jquery.min.js"></script>
     <script src="/static/js/bootstrap/script.min.js"></script>
 </body>
 

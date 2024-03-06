@@ -74,7 +74,7 @@ def handle_audio_request(self):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     
-async def handle_image_request(chat_history_manager):
+def handle_image_request(chat_history_manager):
     data = request.get_json()
 
     if 'image' in data and 'task' in data and data['task'] == 'caption':

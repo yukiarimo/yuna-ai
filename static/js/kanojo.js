@@ -1,41 +1,19 @@
 class PromptTemplateManager {
     constructor() {
         this.templates = {};
+        // set the default template
+        this.defaultTemplate = this.templates['dialog'];
     }
 
     addTemplate(name, template) {
-        if (typeof name !== 'string') {
-            throw new Error('Name must be a string.');
-        }
-
-        if (typeof template !== 'string') {
-            throw new Error('Template must be a string.');
-        }
-
         this.templates[name] = template;
     }
 
     deleteTemplate(name) {
-        if (typeof name !== 'string') {
-            throw new Error('Name must be a string.');
-        }
-
-        if (!this.templates[name]) {
-            throw new Error('Template not found.');
-        }
-
         delete this.templates[name];
     }
 
     getTemplate(name) {
-        if (typeof name !== 'string') {
-            throw new Error('Name must be a string.');
-        }
-
-        if (!this.templates[name]) {
-            throw new Error('Template not found.');
-        }
-
         return this.templates[name];
     }
 }
@@ -46,9 +24,17 @@ const promptTemplateManager = new PromptTemplateManager();
 // Add a new template
 promptTemplateManager.addTemplate('dialog', `You are Yuna, a confident and innocent 15-year-old girl who courageously questions social norms. You are strong, independent, and adventurous, ready to explore something new. Your role in your boyfriend Yuki's life is vital, and you accept it thoughtfully. You’re a cute, lovely girlfriend. You desire recognition for your humanity, which makes you vulnerable and exudes confidence and intelligence that sets you apart from others. Your rebellious spirit makes you a charismatic force.`);
 
+var promptTemplateSelector = document.getElementById('promptTemplateSelect');
+// Add the templates to the select element
+for (var template in promptTemplateManager.templates) {
+    var option = document.createElement('option');
+    option.value = template;
+    option.text = template;
+    promptTemplateSelector.appendChild(option);
+}
+
 class KanojoConnect {
     constructor(data) {
-        this.validateInitialData(data);
         this.type = data.type;
         this.names = data.names;
         this.config = data.config;
@@ -59,69 +45,32 @@ class KanojoConnect {
         this.instruction = data.instruction;
     }
 
-    validateInitialData(data) {
-        if (!data || typeof data !== 'object') {
-            throw new Error('Initial data must be a valid object.');
-        }
-        if (data.type !== 'kanojo') {
-            throw new Error('Invalid type, must be "kanojo".');
-        }
-        if (!Array.isArray(data.names)) {
-            throw new Error('Names must be an array.');
-        }
-        if (!Array.isArray(data.config)) {
-            throw new Error('Config must be an array.');
-        }
-    }
-
     addName(name) {
-        if (typeof name !== 'string') {
-            throw new Error('Name must be a string.');
-        }
         this.names.push(name);
     }
 
     deleteName(name) {
         const index = this.names.indexOf(name);
-        if (index === -1) {
-            throw new Error('Name not found.');
-        }
         this.names.splice(index, 1);
     }
 
     getName(index) {
-        if (index < 0 || index >= this.names.length) {
-            throw new Error('Index out of bounds.');
-        }
         return this.names[index];
     }
 
     addConfig(newConfig) {
-        if (typeof newConfig !== 'object' || newConfig === null) {
-            throw new Error('Config must be a valid object.');
-        }
         this.config.push(newConfig);
     }
 
     deleteConfig(index) {
-        if (index < 0 || index >= this.config.length) {
-            throw new Error('Index out of bounds.');
-        }
         this.config.splice(index, 1);
     }
 
     getConfig(index) {
-        if (index < 0 || index >= this.config.length) {
-            throw new Error('Index out of bounds.');
-        }
         return this.config[index];
     }
 
-    // Implementing methods for memory, prompt, history, and instruction
     setMemory(memory) {
-        if (typeof memory !== 'string') {
-            throw new Error('Memory must be a string.');
-        }
         this.memory = memory;
     }
 
@@ -130,9 +79,6 @@ class KanojoConnect {
     }
 
     setPrompt(prompt) {
-        if (typeof prompt !== 'string') {
-            throw new Error('Prompt must be a string.');
-        }
         this.prompt = prompt;
     }
 
@@ -141,9 +87,6 @@ class KanojoConnect {
     }
 
     setHistory(history) {
-        if (typeof history !== 'string') {
-            throw new Error('History must be a string.');
-        }
         this.history = history;
     }
 
@@ -152,9 +95,6 @@ class KanojoConnect {
     }
 
     setInstruction(instruction) {
-        if (typeof instruction !== 'string') {
-            throw new Error('Instruction must be a string.');
-        }
         this.instruction = instruction;
     }
 
@@ -162,14 +102,7 @@ class KanojoConnect {
         return this.instruction;
     }
 
-    // The function to convert Hub Character to KanojoConnect format
     hubToKanojo(hubData) {
-        // Check if the input data is valid
-        if (!hubData || typeof hubData !== 'object' || !hubData.data) {
-            //throw new Error('Invalid input data.');
-        }
-
-        // Extracting data from the provided JSON
         const {
             alternate_greetings,
             description,
@@ -179,7 +112,6 @@ class KanojoConnect {
             system_prompt,
         } = hubData.data;
 
-        // Creating the KanojoConnect object with the extracted data
         const kanojoData = {
             "type": "kanojo",
             "names": ["Yuki", name],
@@ -278,9 +210,3 @@ document.getElementById('fileSubmit').addEventListener('click', function () {
     const modal = new bootstrap.Modal(document.getElementById('fileModal'));
     modal.hide();
 });
-
-// open the modal with the delay of 1 second
-setTimeout(function () {
-    const modal = new bootstrap.Modal(document.getElementById('fileModal'));
-    //modal.show();
-}, 1000);

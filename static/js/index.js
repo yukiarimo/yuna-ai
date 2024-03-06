@@ -164,7 +164,11 @@ class messageManager {
       .then(data => {
         this.removeTypingBubble();
         const imageCaption = `*You can see ${data.message} in the image* ${messageForImage}`;
-        return imageCaption; // You might want to do something with this caption
+
+        this.removeTypingBubble();
+        this.createMessage(name2, imageCaption);
+
+        return imageCaption;
       })
       .catch(error => {
         console.error('Error:', error);
@@ -485,13 +489,11 @@ async function captureImageViaFile() {
         body: JSON.stringify({ image: imageDataURL, name: imageName, task: 'caption' })
       });
 
-      if (!response.ok) throw new Error('Error sending uploaded image.');
-
       const data = await response.json();
       const imageCaption = data.message;
       const askYunaImage = `*You can see ${imageCaption} in the image* ${messageForImage}`;
 
-      sendMessage(askYunaImage, imageName);
+      messageManager.sendMessage(askYunaImage, imageName, '/message');
     } catch (error) {
       console.error('Error:', error);
       alert('Error sending uploaded image.');

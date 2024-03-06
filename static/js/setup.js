@@ -215,6 +215,13 @@ var callYuna = {
   }
 };
 
+var promptTemplatePopup = {
+  show: function () {
+    var myModal = new bootstrap.Modal(document.getElementById('promptTemplatePopup'), {});
+    myModal.show();
+  }
+};
+
 var settingsView = {
   show: function () {
     var myModal = new bootstrap.Modal(document.getElementById('settingsModal'), {});

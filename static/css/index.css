@@ -211,7 +211,7 @@ body {
 }
 
 #msgCol {
-    background-image: url('/static/img/test-d.png');
+    background-image: url('/static/img/background.webp');
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center top;
@@ -706,10 +706,6 @@ body::-webkit-scrollbar {
         /* overflow-y: auto; */
         z-index: 99999999;
         width: 100%;
-    }
-
-    #msgCol {
-        background-image: url('/static/img/test.png');
     }
 }
 

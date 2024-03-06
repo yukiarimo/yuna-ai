@@ -8,6 +8,7 @@ import json
 import os
 from itsdangerous import URLSafeTimedSerializer
 from flask_login import login_manager
+from flask_compress import Compress
 
 with open('static/config.json', 'r') as config_file:
     config = json.load(config_file)
@@ -22,6 +23,7 @@ class YunaServer:
         self.app.config['COMPRESS_ALGORITHM'] = ['br', 'gzip']
         self.app.config['COMPRESS_LEVEL'] = 6
         self.app.config['COMPRESS_MIMETYPES'] = ['text/html', 'text/css', 'text/xml', 'application/json', 'application/javascript']
+        Compress(self.app)
         login_manager.init_app(self.app)
         login_manager.login_view = 'main'
         login_manager.user_loader(self.user_loader)
@@ -84,8 +86,8 @@ class YunaServer:
         self.app.route('/message', methods=['POST'], endpoint='message')(lambda: handle_message_request(self.chat_generator, self.chat_history_manager))
         self.app.route('/image', methods=['POST'], endpoint='image')(lambda: handle_image_request(self.chat_history_manager))
         self.app.route('/audio', methods=['POST'], endpoint='audio')(lambda: handle_audio_request(self))
-        self.app.route('/logout', methods=['POST'])(self.logout)
-        self.app.route('/services', methods=['GET'], endpoint='services')(lambda: services(self))
+        self.app.route('/logout', methods=['GET'])(self.logout)
+        self.app.route('/services.html', methods=['GET'], endpoint='services')(lambda: services(self))
 
     def custom_static(self, filename):
         if not filename.startswith('static/') and not filename.startswith('/favicon.ico') and not filename.startswith('/manifest.json'):
@@ -98,6 +100,7 @@ class YunaServer:
     @login_required
     def logout(self):
         logout_user()
+        print('User logged out')
         return redirect(url_for('main'))
 
     def main(self):

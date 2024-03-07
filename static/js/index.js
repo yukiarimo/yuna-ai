@@ -110,7 +110,7 @@ class messageManager {
       this.inputText.value = '';
       const serverEndpoint = `${server_url + server_port}${url}`;
       const headers = { 'Content-Type': 'application/json' };
-      const body = JSON.stringify({ chat: selectedFilename, text: message, template: currentPromptName });
+      const body = JSON.stringify({ chat: selectedFilename, text: message, template: kanojo.buildKanojo() });
 
       fetch(serverEndpoint, { method: 'POST', headers, body })
         .then(response => response.json())

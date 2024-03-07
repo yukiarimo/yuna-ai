@@ -45,14 +45,12 @@ class YunaServer:
     # User loader function
     @login_manager.user_loader
     def user_loader(self, user_id):
-        print(f"User loader is running. User ID: {user_id}")  # Debugging line
         users = self.read_users()
         if user_id in users:
             user = self.User()
             user.id = user_id
             print(f"User {user_id} found in users.")  # Debugging line
             return user
-        print(f"User {user_id} not found in users.")  # Debugging line
         return None
 
     # Read users from JSON file
@@ -121,7 +119,6 @@ class YunaServer:
                     flash('Registered successfully')
                     os.makedirs(f'db/history/{username}', exist_ok=True)
             elif action == 'login':
-                print('login action triggered for')
                 if users.get(username) == password:
                     user = self.User()
                     user.id = username

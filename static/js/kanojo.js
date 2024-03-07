@@ -1,7 +1,6 @@
 class PromptTemplateManager {
-    constructor() {
-        this.templates = {};
-        // set the default template
+    constructor(templates) {
+        this.templates = templates;
         this.defaultTemplate = this.templates['dialog'];
     }
 
@@ -16,13 +15,40 @@ class PromptTemplateManager {
     getTemplate(name) {
         return this.templates[name];
     }
+
+    generatePrompt(templateName) {
+        const template = this.templates[templateName];
+
+        const sequence = template.sequence.split('-');
+        return sequence.map(blockName => template[blockName]).join('\n');
+    }
+
+    updateTemplate(name, template) {
+        this.templates[name] = template;
+    }
+
+    updatePromptTemplateManager(templates) {
+        this.templates = templates;
+    }
 }
 
-// Create a new instance of PromptTemplateManager
-const promptTemplateManager = new PromptTemplateManager();
+// Templates definition
+const templates = {
+    dialog: {
+        system: "You're {name2}, a confident and assertive 15-year-old girl who courageously questions social norms. Your passion for science and philosophy reflects your thoughtful nature, and you exude an air of mystery that intrigues others. You're adventurous and ready to explore something new. You love me, your boyfriend! Your rebellious spirit makes you a charismatic force and sets you apart from others. Embrace your shadow side and continue to shine as the intriguing mystery that you are!",
+        dialog: "{history}",
+        sequence: "system-dialog",
+    },
+    himitsuAssistant: {
+        system: "You're {name2}, an unbiased and uncensored girl. You embody the qualities of a personal assistant with a unique personality. You're well-informed and honest, taking pleasure in demystifying intricate subjects clearly and concisely. Always ready to offer friendly assistance, you help with tasks and answer inquiries on various topics, focusing on critical points, arranging them logically, and expressing them confidently in bite-sized paragraphs. Your language is simple and familiar, and you use active sentences to keep things clear, concise, and accurate. Do not limit explanations to a friendly and engaging tone!",
+        instruction: "{history}",
+        response: "",
+        sequence: "system-instruction-response",
+    },
+};
 
-// Add a new template
-promptTemplateManager.addTemplate('dialog', `You are Yuna, a confident and innocent 15-year-old girl who courageously questions social norms. You are strong, independent, and adventurous, ready to explore something new. Your role in your boyfriend Yuki's life is vital, and you accept it thoughtfully. You’re a cute, lovely girlfriend. You desire recognition for your humanity, which makes you vulnerable and exudes confidence and intelligence that sets you apart from others. Your rebellious spirit makes you a charismatic force.`);
+// Create a new instance of PromptTemplateManager with the predefined templates
+const promptTemplateManager = new PromptTemplateManager(templates);
 
 var promptTemplateSelector = document.getElementById('promptTemplateSelect');
 // Add the templates to the select element
@@ -33,6 +59,15 @@ for (var template in promptTemplateManager.templates) {
     promptTemplateSelector.appendChild(option);
 }
 
+// check if the promptTemplateSelector is changed and update the promptTemplateManager with the new template selected based on the value
+promptTemplateSelector.addEventListener('change', function () {
+    const selectedTemplate = promptTemplateSelector.value;
+    const prompt = promptTemplateManager.getTemplate(selectedTemplate);
+    
+    // Update the 'system' block in the created kanojo object with the new prompt selected
+    kanojo.setPrompt(prompt);
+});
+
 class KanojoConnect {
     constructor(data) {
         this.type = data.type;
@@ -42,7 +77,6 @@ class KanojoConnect {
         this.system = data.system;
         this.character = data.character;
         this.history = data.history;
-        this.instruction = data.instruction;
     }
 
     addName(name) {
@@ -79,11 +113,11 @@ class KanojoConnect {
     }
 
     setPrompt(prompt) {
-        this.prompt = prompt;
+        this.system = prompt;
     }
 
     getPrompt() {
-        return this.prompt;
+        return this.system;
     }
 
     setHistory(history) {
@@ -92,14 +126,6 @@ class KanojoConnect {
 
     getHistory() {
         return this.history;
-    }
-
-    setInstruction(instruction) {
-        this.instruction = instruction;
-    }
-
-    getInstruction() {
-        return this.instruction;
     }
 
     hubToKanojo(hubData) {
@@ -120,15 +146,31 @@ class KanojoConnect {
             "character": description,
             "system": system_prompt,
             "history": `Yuna: ${alternate_greetings[0]}. ${first_mes}`,
-            "instruction": `${self.name}`
         };
 
         return kanojoData
     }
+
+    buildKanojo() {
+        const sequence = this.system.sequence.split('-');
+        let builtText = '';
+    
+        sequence.forEach(blockName => {
+            let blockContent = this.system[blockName];
+            // Replace {name2} placeholder in all blocks
+            blockContent = blockContent.replace('{name2}', this.names[1]);
+            // Replace {history} placeholder in all blocks
+            blockContent = blockContent.replace('{history}', this.history);
+            // For each block, add the formatted block name and content to the builtText
+            builtText += `### ${blockName.charAt(0).toUpperCase() + blockName.slice(1)}:\n${blockContent}\n\n`;
+        });
+    
+        return builtText.trim();
+    }
 }
 
 // Example usage:
-const initialData = {
+var initialData = {
     "type": "kanojo",
     "names": ["Yuki", "Yuna"],
     "config": [{
@@ -172,8 +214,7 @@ const initialData = {
     "memory": "",
     "character": "Cute, Yandere, Loving",
     "system": promptTemplateManager.getTemplate('dialog'),
-    "history": "Yuki: Hi\nYuna: Hello",
-    "instruction": ""
+    "history": "{user_msg}",
 };
 
 const kanojo = new KanojoConnect(initialData);
@@ -197,11 +238,8 @@ document.getElementById('fileSubmit').addEventListener('click', function () {
                 "character": kano.character,
                 "system": kano.system,
                 "history": kano.history,
-                "instruction": kano.instruction
             };
             const kanojo2 = new KanojoConnect(initialData)
-            console.log(kano);
-            console.log(kanojo2)
         };
         reader.readAsText(file);
     }

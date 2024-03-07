@@ -18,21 +18,17 @@ class ChatGenerator:
         )
         self.classifier = pipeline("text-classification", model=f"{config['server']['agi_model_dir']}yuna-emotion")
 
-    def generate(self, chat_id, speech=False, text="", template=None, chat_history_manager=None, conn=None):
+    def generate(self, chat_id, speech=False, text="", template=None, chat_history_manager=None):
         chat_history = chat_history_manager.load_chat_history(list({current_user.get_id()})[0], chat_id)
         response = ''
 
-        if template == "dialog":
+        if True:
             max_length_all_input_and_output = self.config["ai"]["context_length"]
             max_length_of_generated_tokens = self.config["ai"]["max_new_tokens"]
             max_length_of_input_tokens = max_length_all_input_and_output - max_length_of_generated_tokens
 
-            prompt_dir = os.path.join(self.config["server"]["prompts"], 'dialog.txt')
-            with open(prompt_dir, 'r') as file:
-                prompt = file.read()
-
             # Tokenize the history and prompt
-            tokenized_prompt = self.model.tokenize(prompt.encode('utf-8'))
+            tokenized_prompt = self.model.tokenize(template.encode('utf-8'))
 
             # Load the chat history
             text_of_history = ''
@@ -55,35 +51,13 @@ class ChatGenerator:
             cropped_history = tokenized_history[-max_length_of_history_tokens:]
 
             # Replace the placeholder in the prompt with the cropped history
-            inserted_history = prompt.replace('{user_msg}', self.model.detokenize(cropped_history).decode('utf-8'))
-
-            # Tokenize the everything_for_model_input to calculate its length in tokens
-            print("input size: ", len(self.model.tokenize(inserted_history.encode('utf-8'))))
+            inserted_history = template.replace('{user_msg}', self.model.detokenize(cropped_history).decode('utf-8'))
 
             response = inserted_history
 
-            # inject prompt variable from dialog into new_history
-        elif template != "dialog" and template != "himitsuCopilot" and template != "himitsuCopilotGen" and template != "summary" and template != None:
-            prompt_dir = os.path.join(self.config["server"]["prompts"] + f'{template}.txt')
-            with open(prompt_dir, 'r') as file:
-                prompt = file.read()
-
-            # calculate the length of the prompt variable
-            prompt_length = len(self.model.tokenize(prompt.encode('utf-8')))
-
-            # Calculate the maximum length for the history
-            max_length = self.config["ai"]["context_length"] - self.config["ai"]["max_new_tokens"]
-
-            # Crop the history to fit within the max_length and prompt_length combined, counting from the end of the text
-            cropped_history = text[:(max_length - prompt_length)]
-
-            # replace string {user_msg} in the prompt with the history
-            response = prompt.replace('{user_msg}', cropped_history)
-
         elif template == "summary":
             import article_parser
-            title, content = article_parser.parse(url="https://www.iphones.ru/iNotes/vyshla-ios-173-beta-2-no-ne-speshite-eyo-ustanavlivat-01-03-2024", output='markdown', timeout=50)
-            print(title, content)
+            title, content = article_parser.parse(url="https://www.example.com", output='markdown', timeout=50)
         
         elif template == "himitsuCopilot":
             prompt_dir = os.path.join(self.config["server"]["prompts"] + f'{template}.txt')
@@ -134,9 +108,8 @@ class ChatGenerator:
             stop=self.config["ai"]["stop"],
             )
 
-            for response in response:
-                conn.send(response['choices'][0]['text'])
         else:
+            print('--------------------\n', response, '\n--------------------\n')
             response = self.model(
             response,
             stream=False,
@@ -199,5 +172,17 @@ class ChatGenerator:
         text = re.sub(pattern, '', text)
 
         text = text.replace("  ", ' ').replace("  ", ' ')
+
+        # Remove the last newline character
+        if text[-1] == '\n':
+            text = text[:-1]
+
+        # If the last character is a space, remove it
+        if text[-1] == ' ':
+            text = text[:-1]
+
+        # if the first character is a space, remove it
+        if text[0] == ' ':
+            text = text[1:]
 
         return text

@@ -295,8 +295,6 @@ if (window.matchMedia("(max-width: 767px)").matches) {
 setTimeout(function () {
   var messageContainer = document.getElementById('message-container');
   var inputWrapper = document.getElementsByClassName('input-wrapper')[0];
-  console.log(inputWrapper.clientHeight);
-  console.log(`calc(${messageContainer.clientHeight} - ${inputWrapper.clientHeight}px)`);
   messageContainer.style.height = `calc(${messageContainer.innerHeight}px - ${inputWrapper.innerHeight}px)`;
 }, 200);
 

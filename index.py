@@ -1,18 +1,14 @@
-import random
 import shutil
 from flask import Flask, get_flashed_messages, request, jsonify, send_from_directory, redirect, url_for, flash
 from flask_login import LoginManager, UserMixin, login_required, logout_user, login_user, current_user
 from lib.generate import ChatGenerator, ChatHistoryManager
-from lib.router import handle_history_request, handle_image_request, handle_message_request, handle_audio_request, services, pricing
+from lib.router import handle_history_request, handle_image_request, handle_message_request, handle_audio_request, services
 from flask_cors import CORS
 import json
 import os
 from itsdangerous import URLSafeTimedSerializer
 from flask_login import login_manager
-import asyncio
-import websockets
-
-connected = set()
+from flask_compress import Compress
 
 with open('static/config.json', 'r') as config_file:
     config = json.load(config_file)
@@ -24,6 +20,10 @@ class YunaServer:
     def __init__(self):
         self.app = Flask(__name__, static_folder='static')
         self.app.secret_key = 'Yuna_AI_Secret_Key'
+        self.app.config['COMPRESS_ALGORITHM'] = ['br', 'gzip']
+        self.app.config['COMPRESS_LEVEL'] = 6
+        self.app.config['COMPRESS_MIMETYPES'] = ['text/html', 'text/css', 'text/xml', 'application/json', 'application/javascript']
+        Compress(self.app)
         login_manager.init_app(self.app)
         login_manager.login_view = 'main'
         login_manager.user_loader(self.user_loader)
@@ -45,14 +45,12 @@ class YunaServer:
     # User loader function
     @login_manager.user_loader
     def user_loader(self, user_id):
-        print(f"User loader is running. User ID: {user_id}")  # Debugging line
         users = self.read_users()
         if user_id in users:
             user = self.User()
             user.id = user_id
             print(f"User {user_id} found in users.")  # Debugging line
             return user
-        print(f"User {user_id} not found in users.")  # Debugging line
         return None
 
     # Read users from JSON file
@@ -78,22 +76,29 @@ class YunaServer:
         self.app.route('/')(self.render_index)
         self.app.route('/<path:filename>')(self.custom_static)
         self.app.route('/yuna')(self.yuna_server)
+        self.app.route('/yuna.html')(self.yuna_server)
+        self.app.route('/apple-touch-icon.png')(self.image_pwa)
         self.app.route('/flash-messages')(self.flash_messages)
         self.app.route('/main', methods=['GET', 'POST'])(self.main)
         self.app.route('/history', methods=['POST'], endpoint='history')(lambda: handle_history_request(self.chat_history_manager))
         self.app.route('/message', methods=['POST'], endpoint='message')(lambda: handle_message_request(self.chat_generator, self.chat_history_manager))
-        self.app.route('/image', methods=['POST'], endpoint='image')(lambda: handle_image_request(self))
+        self.app.route('/image', methods=['POST'], endpoint='image')(lambda: handle_image_request(self.chat_history_manager))
         self.app.route('/audio', methods=['POST'], endpoint='audio')(lambda: handle_audio_request(self))
-        self.app.route('/logout', methods=['POST'])(self.logout)
-        self.app.route('/services', methods=['GET'], endpoint='services')(lambda: services(self))
-        self.app.route('/pricing', methods=['GET'], endpoint='pricing')(lambda: pricing(self))
+        self.app.route('/logout', methods=['GET'])(self.logout)
+        self.app.route('/services.html', methods=['GET'], endpoint='services')(lambda: services(self))
 
     def custom_static(self, filename):
-        return send_from_directory(app.static_folder, filename)
+        if not filename.startswith('static/') and not filename.startswith('/favicon.ico') and not filename.startswith('/manifest.json'):
+            filename = 'static/' + filename
+        return send_from_directory(self.app.static_folder, filename)
+    
+    def image_pwa(self):
+        return send_from_directory(self.app.static_folder, 'img/yuna-ai.png')
 
     @login_required
     def logout(self):
         logout_user()
+        print('User logged out')
         return redirect(url_for('main'))
 
     def main(self):
@@ -114,7 +119,6 @@ class YunaServer:
                     flash('Registered successfully')
                     os.makedirs(f'db/history/{username}', exist_ok=True)
             elif action == 'login':
-                print('login action triggered for')
                 if users.get(username) == password:
                     user = self.User()
                     user.id = username
@@ -160,36 +164,13 @@ class YunaServer:
         return jsonify(messages)
     
     @login_required
-    def yuna_server(self):
-        # generate a random number and set it as a flash message
-        random_number = random.randint(1, 100)
-        flash(f'Random number: {random_number}')
-        
+    def yuna_server(self):        
         # send flash message "Hello, {username}!"
         flash(f'Hello, {current_user.get_id()}!')
         return send_from_directory('.', 'yuna.html')
 
 yuna_server = YunaServer()
 app = yuna_server.app
-
-async def socketServer(websocket, path):
-    # Register.
-    connected.add(websocket)
-    try:
-        async for message in websocket:
-            print(f"Received message: {message}")
-            # extract the chat_id, speech, text, and template from the message
-            data = json.loads(message)
-            # send the message to the handle_message_request function
-            response = await handle_message_request(yuna_server.chat_generator, yuna_server.chat_history_manager, data.get('chat'), data.get('speech'), data.get('text'), data.get('template'), websocket)
-    finally:
-        # Unregister.
-        connected.remove(websocket)
-
-start_server = websockets.serve(socketServer, "localhost", 5000)
-
-#asyncio.get_event_loop().run_until_complete(start_server)
-#asyncio.get_event_loop().run_forever()
 
 if __name__ == '__main__':
     if yuna_server.config["server"]["port"] != "":

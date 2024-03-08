@@ -1,5 +1,3 @@
-import asyncio
-import websockets
 import json
 from flask import jsonify, request, send_from_directory
 from flask_login import current_user
@@ -34,7 +32,7 @@ def handle_history_request(chat_history_manager):
     else:
         return jsonify({'error': 'Invalid task parameter'}), 400
         
-def handle_message_request(chat_generator, chat_history_manager, chat_id=None, speech=None, text=None, template=None, conn=None):
+def handle_message_request(chat_generator, chat_history_manager, chat_id=None, speech=None, text=None, template=None):
     data = request.get_json()
     chat_id = data.get('chat')
     speech = data.get('speech')
@@ -49,7 +47,7 @@ def handle_message_request(chat_generator, chat_history_manager, chat_id=None, s
     template: {template}
     """)
 
-    response = chat_generator.generate(chat_id, speech, text, template, chat_history_manager, conn)
+    response = chat_generator.generate(chat_id, speech, text, template, chat_history_manager)
 
     print('response -> ', response)
 
@@ -76,32 +74,29 @@ def handle_audio_request(self):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     
-async def handle_image_request(self, websocket):
+def handle_image_request(chat_history_manager):
     data = request.get_json()
 
     if 'image' in data and 'task' in data and data['task'] == 'caption':
         image_caption = capture_image(data)
-        await websocket.send(json.dumps({'message': image_caption}))
+        return jsonify({'message': image_caption})
 
     elif 'prompt' in data and 'chat' in data and data['task'] == 'generate':
         prompt = data['prompt']
         chat_id = data['chat']
 
-        chat_history = self.chat_history_manager.load_chat_history(chat_id)
+        chat_history = chat_history_manager.load_chat_history(chat_id)
         chat_history.append({"name": self.config['ai']['names'][0], "message": prompt})
 
         created_image = create_image(prompt)
         chat_history.append({"name": self.config['ai']['names'][1], "message": f"Sure, here you go! <img src='img/art/{created_image}' class='image-message'>"})
 
-        self.chat_history_manager.save_chat_history(chat_history, chat_id)
+        chat_history_manager.save_chat_history(chat_history, chat_id)
         yuna_image_message = f"Sure, here you go! <img src='img/art/{created_image}' class='image-message'>"
 
-        await websocket.send(json.dumps({'message': f"Image created: {created_image}"}))
+        return jsonify({'message': yuna_image_message})
     else:
         return jsonify({'error': 'Invalid task parameter'}), 400
     
 def services(self):
     return send_from_directory('.', 'services.html')
-    
-def pricing(self):
-    return send_from_directory('.', 'pricing.html')

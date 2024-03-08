@@ -3,15 +3,17 @@
 
 <head data-bs-theme="dark">
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=yes, user-scalable=no" ,
+        viewport-fit=cover">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Yuna AI</title>
-    <meta name="theme-color" content="#000000">
-    <link rel="canonical" href="http://www.yuna-ai.live/">
-    <meta property="og:url" content="http://www.yuna-ai.live/">
+    <meta name="theme-color" content="#212529">
+    <link rel="canonical" href="http://www.yuna-ai.live">
+    <meta property="og:url" content="/">
     <meta property="og:description" content="Your virtual AI girlfriend">
-    <meta name="twitter:image" content="http://www.yuna-ai.live/img/yuna-ai.png">
+    <meta name="twitter:image" content="/static/img/yuna-ai.png">
     <meta name="twitter:title" content="Yuna AI">
-    <meta property="og:image" content="http://www.yuna-ai.live/img/yuna-ai.png">
+    <meta property="og:image" content="/static/img/yuna-ai.png">
     <meta name="description" content="Your virtual AI girlfriend">
     <meta property="og:type" content="website">
     <meta property="og:title" content="Yuna AI">
@@ -25,25 +27,43 @@
             "url": "http://www.yuna-ai.live"
         }
     </script>
-    <link rel="icon" type="image/jpeg" sizes="60x60" href="img/yuna-ai.png">
-    <link rel="icon" type="image/jpeg" sizes="60x60" href="img/yuna-ai.png" media="(prefers-color-scheme: dark)">
-    <link rel="manifest" href="/manifest.json">
-    <link rel="stylesheet" href="/css/bootstrap.min.css">
-    <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <!--
+<script type="importmap">
+        {
+          "imports": {
+            "three": "https://unpkg.com/three@0.161.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.161.0/examples/jsm/"
+          }
+        }
+      </script>
+    -->
+    <link rel="icon" type="image/jpeg" sizes="60x60" href="/static/img/yuna-ai.png">
+    <script src="/static/js/offline/offline.js" defer></script>
+    <script type="module" src="/static/js/offline/thread.js" defer></script>
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/awesome.css">
+    <link rel="stylesheet" href="/static/css/kawai-v11-2.css">
+    <link rel="stylesheet" href="/static/css/index.css">
+    <script src="/static/js/kawai-v11-2.js" defer></script>
+    <script src="/static/js/kanojo.js" defer></script>
+    <script src="/static/js/index.js" defer></script>
+    <script src="/static/js/himitsu.js" defer></script>
+    <script src="/static/js/setup.js" defer></script>
 
-    <link rel="stylesheet" href="/css/kawai-v11-2.css">
-    <link rel="stylesheet" href="/css/index.css">
-    <script src="/js/kawai-v11-2.js" defer></script>
-    <script src="/js/index.js" defer></script>
-    <script src="/js/himitsu.js" defer></script>
-    <script src="/js/setup.js" defer></script>
+    <style>
+        body {
+            margin: 0;
+        }
 
+        canvas {
+            display: block;
+        }
+    </style>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function () {
-                navigator.serviceWorker.register('/sw.js').then(
+                navigator.serviceWorker.register('/static/sw.js').then(
                     function (registration) {
                         // Registration was successful
                         console.log('ServiceWorker registration successful with scope: ', registration
@@ -56,33 +76,117 @@
             });
         }
     </script>
+
+    <!--
+<script type="module" defer>
+        import * as THREE from 'three';
+    import { OrbitControls } from 'https://unpkg.com/three/examples/jsm/controls/OrbitControls.js';
+    import { GLTFLoader } from 'https://unpkg.com/three/examples/jsm/loaders/GLTFLoader.js';
+
+    let camera, scene, renderer, model, controls;
+
+    init();
+    animate();
+
+    function init() {
+        scene = new THREE.Scene();
+
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
+        camera.position.set(0, 150, 50); // Adjust camera position to better view the model
+
+        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor( 0x000000, 0 ); // the default
+
+        // create a div element
+        const div = document.createElement('div');
+        // set id to the 3d-model
+        div.id = 'vr-model';
+        // append the renderer to the div
+        div.appendChild(renderer.domElement);
+        // append the div to the top of the body
+        document.body.insertBefore(div, document.body.firstChild);
+
+        controls = new OrbitControls(camera, renderer.domElement);
+        controls.target.set(0, -20, -150);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.maxPolarAngle = Math.PI / 2; // Prevent the camera from going below the ground
+        controls.minPolarAngle = Math.PI / 3; // Prevent the camera from going too high
+
+        const ambientLight = new THREE.AmbientLight(0xcccccc, 0.4);
+        scene.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(1, 1, 0).normalize();
+        scene.add(directionalLight);
+
+        // GLTFLoader to load a 3D model
+        const loader = new GLTFLoader();
+        loader.load('/static/js/untitled.glb', function (gltf) {
+            model = gltf.scene;
+            scene.add(model);
+        }, undefined, function (error) {
+            console.error(error);
+        });
+
+        window.addEventListener('resize', onWindowResize, false);
+    }
+
+    function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    function animate() {
+        requestAnimationFrame(animate);
+
+        // Required if controls.enableDamping or controls.autoRotate are set to true
+        controls.update();
+
+        render();
+    }
+
+    function render() {
+        renderer.render(scene, camera);
+    }
+</script>
+-->
+
 </head>
 
 <body id="page-top">
     <div id="wrapper">
-        <nav class="navbar sidebar sidebar-o align-items-start sidebar sidebar-dark accordion p-0 navbar-dark">
+        <nav class="navbar sidebar sidebar-o bg-black align-items-start sidebar-dark accordion p-0 navbar-dark"
+            id="sidebar">
             <div class="container-fluid d-flex flex-column p-0">
                 <div class="sidebar-header">
                     <a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
                         <div class="sidebar-brand-icon">
-                            <img src="img/yuna-ai.png" alt="Yuna AI" style="width: 30px; height: 30px;">
-                            <button class="sidebarToggleIn btn btn-link d-md-none rounded-circle me-3" type="button"><i
-                                    onclick="togglesidebarBack()" class="fas fa-bars"></i></button>
+                            <img src="/static/img/yuna-ai.png" alt="Yuna AI Logo" style="width: 30px; height: 30px;">
                         </div>
                         <div class="sidebar-brand-text mx-3"><span>Yuna AI</span></div>
                     </a>
                 </div>
                 <ul class="sidebar-menu">
-                    <li><a href="#" class="nav-link active" onclick="OpenTab('1')"><i class="fas fa-comment-dots"></i>
+                    <li><a href="#" class="nav-link side-link active" onclick="OpenTab('1')"><i
+                                class="fas fa-comment-dots"></i>
                             Chats
-                            <span class="badge badge-pill">5</span></a></li>
-                    <li><a href="#" class="nav-link" onclick="OpenTab('2')"><i class="fas fa-book-open"></i> Library</a>
+                            <span class="badge badge-pill" id="messageCount">0</span></a></li>
+                    <li><a href="#" class="nav-link side-link" onclick="OpenTab('2')"><i class="fas fa-book-open"></i>
+                            Library
+                            <span class="badge badge-pill" id="chatsCount">0</span></a>
                     </li>
-                    <li><a href="#" class="nav-link" onclick="OpenTab('4')"><i class="fas fa-user"></i> Profile</a></li>
-                    <li><a href="#" class="nav-link" onclick="settingsView.show();"><i class="fas fa-cog"></i>
+                    <li><a href="#" class="nav-link side-link" onclick="OpenTab('3')"><i class="fas fa-compass"></i>
+                            Explore</a>
+                    <li><a href="#" class="nav-link side-link" onclick="OpenTab('4')"><i class="fas fa-user"></i>
+                            Profile</a></li>
+                    <li><a href="#" class="nav-link side-link" onclick="settingsView.show();"><i class="fas fa-cog"></i>
                             Settings</a>
                     </li>
-                    <li><a href="#" class="nav-link" onclick="OpenTab('5')"><i class="fas fa-ellipsis-h"></i> More</a>
+                    <li><a href="#" class="nav-link side-link" onclick="OpenTab('5')"><i class="fas fa-ellipsis-h"></i>
+                            More</a>
                     </li>
                 </ul>
 
@@ -95,60 +199,43 @@
         <div class="d-flex flex-column" id="content-wrapper" style="background-color: none !important;">
             <div id="content">
                 <nav class="navbar navbar-expand shadow mb-4 topbar static-top navbar-light topbar-o fixed-top">
-                    <div class="container-fluid"><button
-                            class="sidebarToggle btn btn-link d-md-none rounded-circle me-3" id="sidebarToggleTop"
-                            type="button"><i class="fas fa-bars"></i></button>
+                    <div class="container-fluid">
+                        <button class="sidebarToggle btn btn-link rounded-circle me-3" aria-label="Menu"
+                            id="sidebarToggleTop" type="button" onclick="toggleSidebar(); kawaiAutoScale()">
+                            <i class="fas fa-bars"></i>
+                        </button>
                         <ul class="navbar-nav flex-nowrap ms-auto">
-                            <li class="nav-item">
-                                <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#searchModal">
+                            <li class="nav-item d-flex justify-content-center align-items-center rounded-circle">
+                                <a class="btn btn-link" href="#" data-bs-toggle="modal" aria-label="Search"
+                                    data-bs-target="#searchModal">
                                     <i class="fas fa-search"></i>
                                 </a>
                             </li>
-                            <li class="nav-item dropdown no-arrow mx-1">
-                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
-                                        aria-expanded="false" data-bs-toggle="dropdown" href="#"><i
-                                            class="fas fa-bell fa-fw"></i></a>
-                                    <div class="dropdown-menu dropdown-menu-end dropdown-list animated--grow-in">
-                                        <h6 class="dropdown-header">alerts center</h6><a
-                                            class="dropdown-item d-flex align-items-center" href="#">
-                                            <div class="me-3">
-                                                <div class="bg-primary icon-circle"><i
-                                                        class="fas fa-file-alt text-white"></i></div>
-                                            </div>
-                                            <div><span class="small text-gray-500">December 12, 2019</span>
-                                                <p>A new monthly report is ready to download!</p>
-                                            </div>
-                                        </a><a class="dropdown-item d-flex align-items-center" href="#">
-                                            <div class="me-3">
-                                                <div class="bg-warning icon-circle"><i
-                                                        class="fas fa-exclamation-triangle text-white"></i></div>
-                                            </div>
-                                            <div><span class="small text-gray-500">December 2, 2019</span>
-                                                <p>Spending Alert: We've noticed unusually high spending for your
-                                                    account.</p>
-                                            </div>
-                                        </a>
-                                    </div>
+                            <li
+                                class="nav-item d-flex justify-content-center align-items-center rounded-circle mx-1 dropdown no-arrow">
+                                <a class="btn btn-link" aria-expanded="false" data-bs-toggle="dropdown"
+                                    aria-label="Notifications" href="#">
+                                    <i class="fas fa-bell fa-fw"></i>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end dropdown-list animated--grow-in">
+                                    <!-- Dynamic HTML elements will be added here -->
                                 </div>
                             </li>
-                            <div class="d-none d-sm-block topbar-divider"></div>
-                            <li class="nav-item dropdown no-arrow">
-                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
-                                        aria-expanded="false" data-bs-toggle="dropdown" href="#">
-                                        <img class="border rounded-circle img-profile" src="img/yuna-girl-head.png"
-                                            style="height: 26px;">
-                                    </a>
-
-                                    <div class="dropdown-menu shadow dropdown-menu-end animated--grow-in"><a
-                                            class="dropdown-item" onclick="callYuna.show();"><i
-                                                class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Call</a><a
-                                            class="dropdown-item" onclick="OpenTab('4')" href="#"><i
-                                                class="fas fa-cogs fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Profile</a><a
-                                            class="dropdown-item" onclick="OpenTab('4')" href="#"><i
-                                                class="fas fa-list fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Activity</a>
-                                        <div class="dropdown-divider"></div><a class="dropdown-item" href="/logout"><i
-                                                class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Logout</a>
-                                    </div>
+                            <li
+                                class="nav-item d-flex justify-content-center align-items-center rounded-circle dropdown no-arrow">
+                                <a class="btn btn-link" aria-expanded="false" data-bs-toggle="dropdown" href="#">
+                                    <img class="border rounded-circle img-profile" src="/static/img/yuna-girl-head.png"
+                                        alt="Profile Picture" style="height: 26px;">
+                                </a>
+                                <div class="dropdown-menu shadow dropdown-menu-end animated--grow-in">
+                                    <a class="dropdown-item" onclick="callYuna.show();" href="#"><i
+                                            class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Call</a><a
+                                        class="dropdown-item" onclick="OpenTab('4')" href="#"><i
+                                            class="fas fa-cogs fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Profile</a><a
+                                        class="dropdown-item" onclick="OpenTab('4')" href="#"><i
+                                            class="fas fa-list fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Activity</a>
+                                    <div class="dropdown-divider"></div><a class="dropdown-item" href="/logout"><i
+                                            class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Logout</a>
                                 </div>
                             </li>
                         </ul>
@@ -157,31 +244,41 @@
                 <div class="container-fluid">
                     <div class="block-o">
                         <div class="tab-o tab-o-default" id="1">
-                            <div class="coll-lo">
+                            <div class="" id="msgCol">
                                 <div class="block-card block-scroll" id="message-container">
                                     <!-- Dynamic HTML elements will be added here -->
                                 </div>
                             </div>
 
-                            <div class="input-wrapper ui-container">
-                                <div class="input-container">
-                                    <i class="fas fa-ellipsis-h" style="font-size: 2em;"></i>
-                                    <button class="attach-button btn btn-primary" data-bs-toggle="popover"
-                                        data-bs-placement="bottom" data-bs-html="true"
+                            <div class="search-container input-wrapper ui-container">
+                                <div class="search-bar">
+                                    <!-- a button to open popup-->
+                                    <button class="search-button icon-left" aria-label="promptTemplatePopup"
+                                        onclick="promptTemplatePopup.show()">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                    <button class="search-button icon-left attach-button" data-bs-toggle="popover"
+                                        aria-label="Attach File" data-bs-placement="bottom" data-bs-html="true"
                                         data-bs-content="<a class='btn btn-outline-primary btn-sm dropdown-item' onclick='handleTextFileClick()'>Text File</a><a class='btn btn-outline-info btn-sm dropdown-item' onclick='handleImageFileClick()'>Image File</a>">
-                                        <i class="fas fa-paperclip" style="font-size: 2em;"></i>
+                                        <i class="fas fa-folder"></i>
                                     </button>
                                     <input type="file" id="imageUpload" accept="image/*" style="display: none;"
                                         onchange="captureImageViaFile()">
-                                    <input id="input_text" type="text" class="input-field" placeholder="Ask Yuna...">
+                                    <input id="input_text" type="text" class="input-field" placeholder="Ask Yuna..."
+                                        type="text" class="search-input">
 
-                                    <div class="form-check form-switch" id="himitsuToggle">
+                                    <div class="form-check form-switch" style="display: none;">
                                         <input class="form-check-input" type="checkbox" id="customSwitch">
-                                        <label class="form-check-label" for="customSwitch"></label>
+                                        <label class="form-check label" for="customSwitch">Himitsu Copilot</label>
                                     </div>
 
-                                    <i class="bi bi-arrow-up-circle" onclick="sendMessage('')"
-                                        style="font-size: 2em;"></i>
+                                    <div class="form-check form-switch" id="himitsuToggle">
+                                        <input class="form-check-input" type="checkbox" id="customSwitch" onclick="changeHimitsuState()">
+                                    </div>
+
+                                    <button class="search-button icon-right" aria-label="Send">
+                                        <i class="fas fa-arrow-up" onclick="messageManager.sendMessage('')"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -206,7 +303,7 @@
                                             aria-labelledby="chats-tab">
                                             <div class="header">
                                                 <h1 class="m-0 fw-bold">Chats</h1>
-                                                <button class="add-button" onclick="createHistoryFile();">+</button>
+                                                <button class="add-button" onclick="historyManager.createHistoryFile();">+</button>
                                             </div>
                                             <ul class="list-group" id="chat-items">
                                                 <!-- Will be added dynamically -->
@@ -224,14 +321,64 @@
                             </div>
                         </div>
 
+                        <div class="tab-o" id="3">
+                            <div class="coll-lo">
+                                <div class="block-card settings-container el-9">
+                                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link active" id="account-tab" data-bs-toggle="tab"
+                                                data-bs-target="#account" type="button" role="tab"
+                                                aria-controls="account" aria-selected="true">Himitsu</button>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link" id="params-tab" data-bs-toggle="tab"
+                                                data-bs-target="#params" type="button" role="tab" aria-controls="params"
+                                                aria-selected="false">Kanojo Connect</button>
+                                        </li>
+                                    </ul>
+                                    <div class="tab-content" id="myTabContent">
+                                        <div class="tab-pane fade show active" id="account" role="tabpanel"
+                                            aria-labelledby="account-tab">
+                                            <h3 class="section-heading">Dark Mode</h3>
+                                            <div class="input-group">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" id="darkModeSwitch"
+                                                        onclick="toggleTheme()" checked>
+                                                    <label class="form-check-label" for="darkModeSwitch"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" id="api" role="tabpanel" aria-labelledby="api-tab">
+                                            <h3 class="section-heading">AI Data Usage</h3>
+
+                                            <div class="list-group">
+                                                <span class="list-group-item list-group-item-action">This
+                                                    feature</span>
+                                            </div>
+
+                                            <div class="input-group">
+                                                <div class="form-check form-switch">
+                                                    <div class="form-check form-switch">
+                                                        <input class="form-check-input" type="checkbox"
+                                                            id="aiDataUsageSwitch" checked>
+                                                        <label class="form-check-label" for="aiDataUsageSwitch"></label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="tab-o" id="4">
                             <div class="coll-lo">
-                                <div class="col-10">
+                                <div class="col-10 settings-container el-9" id="profile-card">
                                     <div class="row">
                                         <!-- Profile Card -->
                                         <div class="col-md-4">
                                             <div class="card">
-                                                <img src="img/yuna-girl-head.png" class="card-img-top"
+                                                <img src="/static/img/yuna-girl-head.png" class="card-img-top"
                                                     alt="Profile Picture">
                                                 <div class="card-body">
                                                     <div style="display: flex; flex-direction: row;">
@@ -300,7 +447,8 @@
                                                             <input class="form-check-input" type="checkbox"
                                                                 id="updateEmojiHistory">
                                                             <label class="form-check-label"
-                                                                for="updateEmojiHistory">Enable Himitsu
+                                                                for="updateEmojiHistory">Enable
+                                                                Himitsu
                                                                 Copilot</label>
                                                         </div>
                                                     </div>
@@ -310,58 +458,61 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
-                            <div class="tab-o" id="5">
-                                <div class="coll-lo">
-                                    <div class="block-card settings-container el-9">
-                                        <ul class="nav nav-tabs" id="myTab" role="tablist">
-                                            <li class="nav-item" role="presentation">
-                                                <button class="nav-link active" id="account-tab" data-bs-toggle="tab"
-                                                    data-bs-target="#account" type="button" role="tab"
-                                                    aria-controls="account" aria-selected="true">Himitsu</button>
-                                            </li>
-                                            <li class="nav-item" role="presentation">
-                                                <button class="nav-link" id="params-tab" data-bs-toggle="tab"
-                                                    data-bs-target="#params" type="button" role="tab"
-                                                    aria-controls="params" aria-selected="false">Kanojo Connect</button>
-                                            </li>
-                                        </ul>
-                                        <div class="tab-content" id="myTabContent">
-                                            <div class="tab-pane fade show active" id="account" role="tabpanel"
-                                                aria-labelledby="account-tab">
-                                                <h3 class="section-heading">Dark Mode</h3>
-                                                <div class="input-group">
-                                                    <div class="form-check form-switch">
-                                                        <input class="form-check-input" type="checkbox"
-                                                            id="darkModeSwitch" onclick="toggleTheme()" checked>
-                                                        <label class="form-check-label" for="darkModeSwitch"></label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="tab-pane fade" id="api" role="tabpanel"
-                                                aria-labelledby="api-tab">
-                                                <h3 class="section-heading">AI Data Usage</h3>
+                        <div class="tab-o" id="5">
+                            <main class="container settings-container el-9">
+                                <section>
+                                    <h2> Demo </h2>
 
-                                                <div class="list-group">
-                                                    <span class="list-group-item list-group-item-action">This
-                                                        feature</span>
-                                                </div>
+                                    <div class="mb-3">
+                                        <label for="model" class="form-label">Model:</label>
+                                        <select id="model" name="model" class="form-select" aria-label="Select model"
+                                            required>
+                                            <option
+                                                value="https://huggingface.co/afrideva/TinyMistral-248M-SFT-v4-GGUF/resolve/main/tinymistral-248m-sft-v4.q8_0.gguf">
+                                                tinymistral-248m-sft-v4 q8_0 (265.26 MB)</option>
+                                            <option
+                                                value="https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF/resolve/main/tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf">
+                                                TinyLlama/TinyLlama-1.1B-Chat-v1.0 Q4_K_M (669 MB)</option>
+                                        </select>
+                                    </div>
 
-                                                <div class="input-group">
-                                                    <div class="form-check form-switch">
-                                                        <div class="form-check form-switch">
-                                                            <input class="form-check-input" type="checkbox"
-                                                                id="aiDataUsageSwitch" checked>
-                                                            <label class="form-check-label"
-                                                                for="aiDataUsageSwitch"></label>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                    <div class="mb-3">
+                                        <label for="prompt" class="form-label">Prompt:</label>
+                                        <textarea id="prompt" name="prompt" class="form-control"
+                                            rows="5">Suppose Alice originally had 3 apples.</textarea>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="result" class="form-label">Result:</label>
+                                        <pre id="result" name="result" class="form-control"></pre>
+                                    </div>
+                                </section>
+
+                                <section class="mb-3">
+                                    <button id="run" class="btn btn-primary">Run</button>
+                                </section>
+
+                                <button id="startme">deddede</button>
+
+                                <section class="mb-3">
+                                    <button id="run-progress-loading-model" class="btn btn-primary" aria-busy="true"
+                                        hidden>Loading model...</button>
+                                    <button id="run-progress-loaded-model" class="btn btn-success" aria-busy="true"
+                                        hidden>Loaded model</button>
+                                    <button id="run-progress-generating" class="btn btn-warning" aria-busy="true"
+                                        hidden>Generating...</button>
+                                </section>
+
+                                <section>
+                                    <div class="progress" hidden>
+                                        <div id="model-progress" class="progress-bar" role="progressbar"
+                                            style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
                                         </div>
                                     </div>
-                                </div>
-                            </div>
+                                </section>
+                            </main>
                         </div>
                     </div>
                 </div>
@@ -387,7 +538,7 @@
                 <div class="modal-body">
                     <div class="d-flex flex-column flex-md-row h-100">
                         <div class="video-block ratio ratio-16x9">
-                            <img src="img/yuna-girl-head.png" class="w-100" alt="Static Image">
+                            <img src="/static/img/yuna-girl-head.png" class="w-100" alt="Static Image">
                         </div>
                         <div class="video-block ratio ratio-16x9">
                             <video id="localVideo" playsinline class="w-100" autoplay muted></video>
@@ -396,13 +547,13 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" onclick="captureImage()"><i
-                            class="bi bi-camera-video"></i></button>
+                            class="fas fa-video"></i></button>
                     <button type="button" class="btn btn-secondary" onclick="muteAudio();"><i
-                            class="bi bi-mic"></i></button>
+                            class="fas fa-microphone"></i></button>
                     <button type="button" class="btn btn-secondary" onclick="drawArt();"><i
-                            class="bi bi-pencil"></i></button>
+                            class="fas fa-pencil-alt"></i></button>
                     <button type="button" class="btn btn-danger" onclick="closePopupsAll();"><i
-                            class="bi bi-telephone-x"></i></button>
+                            class="fas fa-phone-slash"></i></button>
                 </div>
             </div>
         </div>
@@ -437,7 +588,7 @@
     <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="emojiSettingsModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content" style="background-color: #2D2C40; color: white;">
+            <div class="modal-content bg-dark">
                 <div class="modal-header border-0">
                     <h5 class="modal-title" id="emojiSettingsModalLabel">Settings</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
@@ -478,6 +629,7 @@
                                                 <label class="form-check-label" for="updateEmojiTones">Offline
                                                     Mode</label>
                                             </div>
+                                            <button id="enableOffline">Enable Offline Mode</button>
                                         </div>
 
                                         <div class="list-group-item" style="background-color: transparent;">
@@ -512,7 +664,8 @@
                                         <div class="list-group-item" style="background-color: transparent;">
                                             <h6>Account</h6>
                                             <p>This will give you a lot of benefits.</p>
-                                            <button class="btn text-white">Go Premium</button>
+                                            <button class="btn btn-primary text-white"
+                                                onclick="OpenLink('/services.html')">Go Premium</button>
                                         </div>
                                     </div>
                                 </div>
@@ -549,22 +702,52 @@
         </div>
     </div>
 
-    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-        <div id="toggleToast" class="toast align-items-center text-white bg-primary border-0" role="alert"
-            aria-live="assertive" aria-atomic="true">
-            <div class="d-flex">
-                <div class="toast-body">
-                    ひみつ toggled.
+    <!-- promptTemplatePopup Modal -->
+    <div class="modal fade" id="promptTemplatePopup" tabindex="-1" aria-labelledby="promptTemplatePopupLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-dark text-light">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="promptTemplatePopupLabel">Prompt Templates</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
                 </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
-                    aria-label="Close"></button>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <select id='promptTemplateSelect'></select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <script src="/js/bootstrap/bootstrap.bundle.min.js"></script>
-    <script src="/js/bootstrap/jquery.min.js"></script>
-    <script src="/js/bootstrap/script.min.js"></script>
+    <div class="modal" tabindex="-1" role="dialog" id="fileModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">File Input</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="file" id="fileInput">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="fileSubmit">Submit</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/bootstrap/script.min.js"></script>
 </body>
 
 </html>

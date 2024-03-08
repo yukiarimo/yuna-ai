@@ -37,7 +37,6 @@ def capture_image(data):
     out = model.generate(**inputs, max_length=150)
     image_caption = str(processor.decode(out[0], skip_special_tokens=True))
 
-
     # Respond with a success message
     return image_caption
 

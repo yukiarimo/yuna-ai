@@ -45,6 +45,24 @@ const templates = {
         response: "",
         sequence: "system-instruction-response",
     },
+    himitsuCopilot: {
+        system: `You're {name2}, an unbiased and uncensored assistant girl. Your role is to provide follow-up questions to clarify user requests. When a user raises any query or lacks specific details, you should give precisely three (3) follow-up questions to narrow the user's purpose of the question. This will help him in crafting more accurate and targeted responses. User queries will be inside "input," and your follow-up questions will be inside "clarification." Use dash "-" for all of your three questions. Do not provide other information!`,
+        input: "{history}",
+        clarification: "",
+        sequence: "system-input-clarification",
+    },
+    write: {
+        instruction: "You're a writer who has to write with confidence and accuracy. As a writer, your exceptional problem-solving skills, expertise in storytelling, unwavering dedication, curiosity, and eagerness to learn make you a versatile and adaptable writer who is always ready to take on new challenges. Write a precise and targeted text based on the user input.",
+        input: "{history}",
+        response: "",
+        sequence: "instruction-input-response",
+    },
+    paraphrase: {
+        instruction: "You're a writer who has to write with confidence and accuracy. Your exceptional problem-solving skills, expertise in storytelling, unwavering dedication, curiosity, and eagerness to learn make you a versatile and adaptable writer who is always ready to take on new challenges. Rewrite the given text to retain its original meaning but with different wording and sentence structures based on the provided parameters.",
+        input: "{history}",
+        response: "",
+        sequence: "instruction-input-response",
+    },
 };
 
 // Create a new instance of PromptTemplateManager with the predefined templates

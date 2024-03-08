@@ -266,10 +266,16 @@
                                         onchange="captureImageViaFile()">
                                     <input id="input_text" type="text" class="input-field" placeholder="Ask Yuna..."
                                         type="text" class="search-input">
-                                    <div class="form-check form-switch search-button icon-right" id="himitsuToggle">
+
+                                    <div class="form-check form-switch" style="display: none;">
                                         <input class="form-check-input" type="checkbox" id="customSwitch">
-                                        <label class="form-check-label" for="customSwitch"></label>
+                                        <label class="form-check label" for="customSwitch">Himitsu Copilot</label>
                                     </div>
+
+                                    <div class="form-check form-switch" id="himitsuToggle">
+                                        <input class="form-check-input" type="checkbox" id="customSwitch" onclick="changeHimitsuState()">
+                                    </div>
+
                                     <button class="search-button icon-right" aria-label="Send">
                                         <i class="fas fa-arrow-up" onclick="messageManager.sendMessage('')"></i>
                                     </button>
@@ -297,7 +303,7 @@
                                             aria-labelledby="chats-tab">
                                             <div class="header">
                                                 <h1 class="m-0 fw-bold">Chats</h1>
-                                                <button class="add-button" onclick="createHistoryFile();">+</button>
+                                                <button class="add-button" onclick="historyManager.createHistoryFile();">+</button>
                                             </div>
                                             <ul class="list-group" id="chat-items">
                                                 <!-- Will be added dynamically -->

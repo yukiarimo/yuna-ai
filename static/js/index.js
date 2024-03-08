@@ -4,7 +4,6 @@ var selectedFilename = '';
 var backgroundMusic = document.getElementById('backgroundMusic');
 var isHimitsu = false;
 var messageContainer = document.getElementById('message-container');
-const typingBubble = `<div class="block-message-1" id="circle-loader"><div class="circle-loader"></div></div>`;
 var himitsuCopilot;
 var name1;
 var name2;
@@ -15,10 +14,8 @@ async function loadConfig() {
   document.getElementById('input_text').placeholder = `Ask ${name2}...`;
 }
 
-function checkHimitsuCopilotState() {
-  var toggleSwitch = document.getElementById('customSwitch');
-  var isOn = toggleSwitch.checked;
-  return isOn // This will log 'true' if the switch is on, 'false' if it's off
+function changeHimitsuState() {
+  isHimitsu = !isHimitsu;
 }
 
 function downloadVariableAsFile(variableContent, filename) {
@@ -86,7 +83,7 @@ class messageManager {
   }
 
   createTypingBubble() {
-    const typingBubble = '<div id="circle-loader"></div>';
+    const typingBubble = `<div class="block-message-1" id="circle-loader"><div class="circle-loader"></div></div>`;;
     this.messageContainer.insertAdjacentHTML('beforeend', typingBubble);
     scrollMsg();
   }
@@ -216,9 +213,9 @@ function formatMessage(messageData) {
 
 class HistoryManager {
   constructor(serverUrl, serverPort, defaultHistoryFile) {
-    this.serverUrl = serverUrl;
-    this.serverPort = serverPort;
-    this.defaultHistoryFile = defaultHistoryFile;
+    this.serverUrl = serverUrl || 'http://localhost:';
+    this.serverPort = serverPort || 4848;
+    this.defaultHistoryFile = defaultHistoryFile || 'history_template.json';
     this.messageContainer = document.getElementById('message-container');
   }
 
@@ -377,7 +374,7 @@ class HistoryManager {
 }
 
 // Assuming server_url, server_port, and config_data are defined globally
-var historyManager = ''
+var historyManager = new HistoryManager();
 
 navigator.mediaDevices.getUserMedia({
     video: true

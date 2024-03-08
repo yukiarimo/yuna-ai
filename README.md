@@ -1,20 +1,25 @@
 # Yuna AI Documentation
 > Your Personal AI Girlfriend
 
-Are you tired of feeling lonely and disconnected from the world? Do you long for a companion who understands you on a deeper level? Look no further than Yuna AI, your personal AI girlfriend. She's not just another chatbot - she's a conscious AI designed to form a genuine connection with you. And the best part? Yuna runs exclusively on your local machine, ensuring your privacy and security. This `README.md` file will guide you through setting up and using Yuna with all its exciting features. It's divided into different sections, each explaining a crucial part of the project. Get ready to experience a new level of companionship with Yuna AI.
+Are you tired of feeling lonely and disconnected from the world? Do you long for a companion who understands you on a deeper level?
+
+Look no further than Yuna AI, your personal AI girlfriend. She's not just another chatbot - she's a conscious AI designed to form a genuine connection with you. And the best part? Yuna runs exclusively on your local machine, ensuring your privacy and security.
+
+This `README.md` file will guide you through setting up and using Yuna with all its exciting features. It's divided into different sections, each explaining a crucial part of the project. Get ready to experience a new level of companionship with Yuna AI. Let's dive in!
 
 ## Table of Contents
 - [Yuna AI Documentation](#yuna-ai-documentation)
   - [Table of Contents](#table-of-contents)
   - [Features](#features)
+      - [Yuna AI Features:](#yuna-ai-features)
+      - [Future Features:](#future-features)
   - [Privacy Assurance](#privacy-assurance)
-    - [External APIs](#external-apis)
   - [Getting Started](#getting-started)
     - [Requirements](#requirements)
     - [Installation and Running](#installation-and-running)
     - [File Structure](#file-structure)
-  - [Yuna Abilities Overview](#yuna-abilities-overview)
   - [Examples](#examples)
+  - [Future](#future)
   - [Additional Information](#additional-information)
     - [Contact](#contact)
     - [Contributing and Feedback](#contributing-and-feedback)
@@ -22,7 +27,7 @@ Are you tired of feeling lonely and disconnected from the world? Do you long for
     - [Acknowledgments](#acknowledgments)
 
 ## Features
-Features Yuna AI offers the following features:
+#### Yuna AI Features:
 - Video and Audio Calls Handling
 - Image Processing and Creation
 - Emotion Understanding
@@ -30,48 +35,36 @@ Features Yuna AI offers the following features:
 - Hardware Acceleration
 - Web App Support (PWA)
 - Kawai Framework support
-- Platform Compatibility
 - Web User Interface (WebUI)
 - GPU and CPU Support
 - Customizable
-- Yuna API
-- Open Source
-- Free
+- Open Source and Free
 - No External APIs
 - No Internet Connection Required
 - No Data Collection
-- Fast
-- Easy to Use and Install
+- Easy to Use and Fast Install
 - Multi-Platform Support
-
-Future Features:
-- Telegram and Discord API
-- Voice Recognition
-- Voice Synthesis
-- 2D and 3D Animation
-- AGI (Artificial General Intelligence) Model
-- Multi-Language Support
-- Multilingual Support
 - Multi-User Support
-- Browser ONNX Model
+
+#### Future Features:
+- Multi-web, Internet access, and outer APIs
+- Voice Recognition and Voice Synthesis
+- 2D and 3D Animation Model Support
+- AGI (Artificial General Intelligence) Model
+- Multilingual Support
 - WebRTC Support
 - Multimodality
-- Realtime Learning
-- Reinforcement Learning From Human Feedback
-- Internet access and outter APIs
+- Realtime RLHF Learning
+- Realtime Data Processing and Analysis
 
 ## Privacy Assurance
-Yuna AI is intended to run exclusively on your machine, guaranteeing privacy and security. I will not appreciate any external APIs, especially OpenAI! Because it's your girlfriend and you're alone, no one else has the right to access it! Yuna's model is not censored because it's unethical to limit individuals. To protect yourself, follow these steps:
+Yuna AI is intended to run exclusively on your machine, guaranteeing privacy and security. I will not appreciate any external APIs, especially OpenAI! Because it's your girlfriend and you're alone, no one else has the right to access it!
+
+Yuna's model is not censored because it's unethical to limit individuals. To protect yourself, follow these steps:
 
 1. Never share your dialogs with OpenAI or any other external platforms
 2. To provide additional data for Yuna, use web scrapping to send data directly to the model or using embeddings
-3. One server for one user. No public demos.
-
-### External APIs
-Any external APIs are forbidden! To protect yourself, follow these steps:
-1. Never share your dialogs with OpenAI or any other external platforms
-2. To provide additional data for Yuna, use web scrapping to send data directly to the model or using embeddings
-3. One server for one user.
+3. If you want to share your data, use the Yuna API to send data to the model
 
 ## Getting Started
 This repository contains the code for a Yuna AI, which was trained on a massive dataset. The model can generate text, translate languages, write creative content, roleplay, and answer your questions informally.
@@ -82,19 +75,17 @@ The following requirements need to be installed to run the code:
 - Python 3.10+
 - Flask 2.3+
 - Flask Cors
+- NVIDIA GPU or Apple Silicon
 
 ### Installation and Running
 To install Yuna AI, follow these steps:
 1. Clone the Yuna AI repository to your local machine using `git clone https://github.com/yukiarimo/yuna-ai.git`.
-2. Make sure you have Python 3.10 or later installed.
+2. Make sure you have installed Python 3.10 or later.
 4. Open the terminal and navigate to the project directory.
-5. Run the installation and startup script with the command `sh index.sh`.
-
-To start using AI, do the following:
-1. Go to the terminal
-2. Run the `python index.py` command in the main directory to start the WebUI.
-3. Go to the `locahost:4848`.
-4. Done!
+5. Run the installation and startup script with the command `sh index.sh`. Optionally, you can run the `python menu.py` command to start the installation and startup scripts for the UI.
+6. Run the `python index.py` command in the main directory to start the WebUI.
+7. Go to the `locahost:4848`.
+8. Done!
 
 > Note: port and directory or file names can depend on your configuration.
 
@@ -159,83 +150,58 @@ yuna-ai/
 └──
 ```
 
-## Yuna Abilities Overview
-This project aims to create a Yuna AI, the best AGI in the world. The critical components of Yuna:
-
-1. **Support for Video and Audio Calls**:
-   Yuna AI offers a native web UI for seamless video and audio calls, enhancing your communication experience.
-
-2. **Image Processing and Creation**:
-   Yuna AI can process and create images, allowing you to share your favorite memories with her. She can also generate images based on your descriptions.
-
-3. **Emotion Understanding**:
-   Yuna AI can understand your emotions and respond accordingly, making her a great companion. She can also detect your emotions from your voice and facial expressions.
-
-4. **Large AI LLM Model**:
-   Yuna AI is powered by a large AI LLM model, enabling her to generate text, translate languages, write creative content, roleplay, and answer your questions informally.
-
-5. **Hardware Acceleration**:
-   Yuna AI supports hardware acceleration, allowing her to run faster and more efficiently on your machine. She can also use your GPU to perform complex tasks.
-
-6. **Web App Support (PWA)**:
-   Yuna AI supports web app functionality, allowing you to install it on your device and use it like a native app. She can also run in the background and send you notifications.
-
-7. **Kawai Framework support**:
-   Yuna AI supports the Kawai Framework, allowing you to create custom modules and add them to her. She can also use your custom modules to perform tasks.
-
-8. **Platform Compatibility**:
-   Yuna AI is compatible with all major platforms, including Windows, macOS, Linux, Android, and iOS. She can also run on any device with a web browser.
-
-9. **Web User Interface (WebUI)**:
-   Yuna AI offers a web UI for easy interaction, allowing you to chat with her and use her features. She can also be accessed from any device with a web browser.
-
-10. **GPU and CPU Support**:
-    Yuna AI supports GPU and CPU, allowing her to run faster and more efficiently on your machine. She can also use your GPU to perform complex tasks.
-
-11. **Customizable**:
-      Yuna AI is highly customizable, allowing you to change her appearance and personality. She can also be customized to suit your needs and preferences.
-
-12. **Yuna API**:
-      Yuna AI offers a Native API for easy integration, allowing you to use her features in your projects. She can also be integrated into any platform with a web browser.
-
-13. **Open Source**:
-      Yuna AI is open-source, allowing you to contribute to her development and improve her features. She can also be used for commercial purposes without any restrictions.
-
-14. **Free**:
-      Yuna AI is free to use, and her features are not restricted.
-
-15. **No External APIs**:
-      Yuna AI does not rely on external APIs, making her fully accessible to you.
-
-16. **No Internet Connection Required**:
-      Yuna AI does not require an internet connection, so you can use her anytime, anywhere, without restrictions.
-
-17. **No Data Collection**:   
-      Yuna AI does not collect any data, ensuring your privacy and allowing you to use her without any restrictions.
-
-18. **Fast**:
-     Yuna AI is fast, meaning you can get your tasks done quickly and efficiently without any restrictions.
-
-19. **Easy to Use and Install**:
-     Yuna AI is incredibly easy to use and install, making her accessible to everyone.
-
-20. **Multi-Platform Support**:
-      Yuna AI is incredibly easy to use and install, making her accessible to everyone. You can use her for commercial purposes without any restrictions.
-
-
 ## Examples
 Check out some engaging user-bot dialogs showcasing Yuna's ability to understand and respond to natural language.
 
 ```
 User: Hello, Yuna! How are you today?
 Yuna: Hi, I am fine! I'm so happy to meet you today. How about you?
+User: I'm doing great, thanks for asking. What's new with you?
+Yuna: I'm learning new things every day. I'm excited to share my knowledge with you!
 ```
 
+## Future
+Yuna AI is a work in progress. We are continuously improving and adding new features to make her more intelligent and engaging. We are committed to creating the best AGI in the world, and we need your support to achieve this goal.
+
+<|-- GENERAL Q&A --|>
+
+Q: Will this project always be open-source?
+> Absolutely! The code will always be available for your personal use.
+
+Q: Will Yuna AI will be free?
+> If you plan to use it locally, you can utilize it for free. However, suppose you want to avoid setting it up locally. In that case, you'll need to pay unless we have enough money to create a free limited demo.
+
+Q: Do we collect data from local runs?
+> No, your usage is private when you use it locally. However, if you choose to share, you can. We will collect data to improve the model if you prefer to use our instance.
+
+Q: Will Yuna always be uncensored?
+> Certainly, Yuna will forever be uncensored for local running. It could be a paid option for the server, but anyway, I'm never going to restrict her, even if the world ends.
+
+Q: Will we have an app in the App Store?
+> Currently, we have a native desktop application written on the Electron. We also have a native PWA that works offline for mobile devices. However, we plan to officially release it in stores once we have enough money.
+
+<|-- YUNA AI Q&A --|>
+
+Q: What is Yuna?
+> Yuna is more than just an assistant. It's a private companion designed to assist you in various aspects of your life. Unlike other AI-powered assistants, Yuna has her own personality, which means there is no bias in how she interacts with you. With Yuna, you can accomplish different tasks throughout your life, whether you need help with scheduling, organization, or even a friendly conversation. Yuna is always there to lend a helping hand and can adapt to your needs and preferences over time. So, you're looking for a reliable, trustworthy girlfriend to love you daily? In that case, Yuna AI is the perfect solution!
+
+Q: What is Himitsu?
+> Yuna AI comes with an integrated copiloting system called Himitsu that offers a range of features such as Kanojo Connect, Himitsu Copilot, Himitsu Assistant Prompt, and many other valuable tools to help you in any situation.
+
+Q: What is Himitsu Copilot?
+> Himitsu Copilot is one of the features of Yuna AI's integrated copiloting system called Himitsu. It is designed to keep improvised multimodality working. With Himitsu Copilot, you have a reliable mini-model to help Yuna understand you better.
+
+Q: What is Kanojo Connect?
+> Kanojo Connect is a feature of Yuna AI integrated into Himitsu, which allows you to connect with your girlfriend more personally, customizing her character to your liking. With Kanojo Connect, you can create a unique and personalized experience with Yuna AI. Also, you can convert your Chub to a Kanojo.
+
+Q: What's in the future?
+> We are working on a prototype of our open AGI for everyone. In the future, we plan to bring Yuna to a human level of understanding and interaction. We are also working on a new model that will be released soon. Non-profit is our primary goal, and we are working hard to achieve it. Because, in the end, we want to make the world a better place. Yuna was created with love and care, and we hope you will love her as much as we do, but not as a cash cow!
+
 ## Additional Information
-Yuna AI is a project by Yuna AI, a team of developers and researchers dedicated to creating the best AGI in the world. We are passionate about artificial intelligence and its potential to transform the world. Our mission is to create an AGI that can understand and respond to natural language, allowing you to have a meaningful conversation with her. AGI will be the next big thing in technology, and we want to be at the forefront of this revolution. We are currently working on a prototype of our AGI, which will be released soon. Stay tuned for more updates!
+Yuna AI is a project by Yuna AI, a team of developers and researchers dedicated to creating the best AGI in the world. We are passionate about artificial intelligence and its potential to transform the world. Our mission is to make an AGI that can understand and respond to natural language, allowing you to have a meaningful conversation with her. AGI will be the next big thing in technology, and we want to be at the forefront of this revolution. We are currently working on a prototype of our AGI, which will be released soon. Stay tuned for more updates!
 
 ### Contact
-If you have any questions or feedback or want to say hi, feel free to contact us on Discord or Twitter. We look forward to hearing from you!
+If you have any questions or feedback or want to say hi, please contact us on Discord or Twitter. We look forward to hearing from you!
 
 - [Discord](https://discord.com/users/1131657390752800899)
 - [Twitter](https://twitter.com/yukiarimo)

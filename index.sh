@@ -43,7 +43,7 @@ install_update_dependencies() {
 
 install_cpu() {
     echo "Installing CPU dependencies..."
-    pip install -r requirements.txt
+    pip install -r requirements.txt --break-system-packages
     echo "CPU dependencies installed."
     
 }
@@ -51,7 +51,7 @@ install_cpu() {
 install_nvidia() {
     echo "Installing NVIDIA dependencies..."
     CMAKE_ARGS="-DLLAMA_CUBLAS=on" pip install llama-cpp-python
-    pip install -r requirements-nvidia.txt
+    pip install -r requirements-nvidia.txt --break-system-packages
     echo "NVIDIA dependencies installed."
     
 }
@@ -63,7 +63,7 @@ install_amd() {
     # Check the Shader ISA Instruction Set for your GPU
     CMAKE_ARGS="-DLLAMA_HIPBLAS=ON -DCMAKE_C_COMPILER=/opt/rocm/llvm/bin/clang -DCMAKE_CXX_COMPILER=/opt/rocm/llvm/bin/clang++ -DCMAKE_PREFIX_PATH=/opt/rocm -DAMDGPU_TARGETS=gfx1100" FORCE_CMAKE=1 pip install llama-cpp-python
     CMAKE_ARGS="-DLLAMA_HIPBLAS=on" pip install llama-cpp-python
-    pip install -r requirements-amd.txt
+    pip install -r requirements-amd.txt --break-system-packages
     echo "AMD dependencies installed."
     
 }
@@ -71,7 +71,7 @@ install_amd() {
 install_metal() {
     echo "Installing Metal dependencies..."
     CMAKE_ARGS="-DLLAMA_METAL=on" pip install llama-cpp-python
-    pip install -r requirements-macos.txt
+    pip install -r requirements-macos.txt --break-system-packages
     echo "Metal dependencies installed."
     
 }

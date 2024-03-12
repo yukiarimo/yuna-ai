@@ -5,7 +5,7 @@
             "Yuna"
         ],
         "emotions": false,
-        "art": false,
+        "art": true,
         "max_new_tokens": 256,
         "context_length": 2048,
         "temperature": 0.6,
@@ -39,9 +39,7 @@
         "yuna_model_dir": "lib/models/yuna/",
         "yuna_default_model": "yuna-ai-q5.gguf",
         "agi_model_dir": "lib/models/agi/",
-        "art_default_model": "any_loli.safetensors",
-        "prompts": "db/prompts/",
-        "default_prompt_file": "dialog.txt",
+        "art_default_model": "yuna_ai_anime.safetensors",
         "device": "cpu"
     },
     "security": {

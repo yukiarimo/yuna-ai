@@ -273,7 +273,8 @@
                                     </div>
 
                                     <div class="form-check form-switch" id="himitsuToggle">
-                                        <input class="form-check-input" type="checkbox" id="customSwitch" onclick="changeHimitsuState()">
+                                        <input class="form-check-input" type="checkbox" id="customSwitch"
+                                            onclick="changeHimitsuState()">
                                     </div>
 
                                     <button class="search-button icon-right" aria-label="Send">
@@ -303,7 +304,8 @@
                                             aria-labelledby="chats-tab">
                                             <div class="header">
                                                 <h1 class="m-0 fw-bold">Chats</h1>
-                                                <button class="add-button" onclick="historyManager.createHistoryFile();">+</button>
+                                                <button class="add-button"
+                                                    onclick="historyManager.createHistoryFile();">+</button>
                                             </div>
                                             <ul class="list-group" id="chat-items">
                                                 <!-- Will be added dynamically -->
@@ -382,32 +384,48 @@
                                                     alt="Profile Picture">
                                                 <div class="card-body">
                                                     <div style="display: flex; flex-direction: row;">
-                                                        <h5 class="card-title">Yuna Ai</h5>
+                                                        <h5 class="card-title" id="yuna-name">Yuna Ai</h5>
                                                         <button class="btn btn-success btn-sm"
                                                             style="margin-left: 5px;">Free</button>
                                                     </div>
                                                     <p class="card-text">California, USA</p>
-                                                    <p class="card-text">OpenAI, SEO</p>
                                                     <button class="btn btn-primary">Upload Photo</button>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <!-- Personal Details Form -->
                                         <div class="col-md-8">
                                             <form>
                                                 <div class="mb-3">
-                                                    <label for="firstName" class="form-label">Name</label>
-                                                    <input type="text" class="form-control" id="userName"
+                                                    <label for="yuna-ai-names" class="form-label">Names</label>
+                                                    <input type="text" class="form-control" id="yuna-ai-names"
                                                         value="Yuna Ai">
                                                 </div>
                                                 <div class="mb-3">
-                                                    <label for="lastName" class="form-label">Email</label>
-                                                    <input type="email" class="form-control" id="userEmail"
-                                                        value="yuna_ai@gmail.com">
+                                                    <label for="memory" class="form-label">Memory</label>
+                                                    <input type="text" class="form-control" id="yuna-ai-memory"
+                                                        value="">
                                                 </div>
-                                                <!-- Add other form fields as needed -->
-                                                <button type="submit" class="btn btn-primary">Save</button>
+                                                <div class="mb-3">
+                                                    <label for="system" class="form-label">System</label>
+                                                    <input type="text" class="form-control" id="system" value="">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="character" class="form-label">Character</label>
+                                                    <input type="text" class="form-control" id="character" value="">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="history" class="form-label">History</label>
+                                                    <input type="text" class="form-control" id="history" value="">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="enabledParameters" class="form-label">Enabled
+                                                        Parameters</label>
+                                                    <input type="text" class="form-control" id="enabledParameters"
+                                                        value="">
+                                                </div>
+
+                                                <button type="submit" class="btn btn-primary" id="updatekanojo">Update</button>
                                             </form>
                                         </div>
                                     </div>

@@ -76,16 +76,21 @@ The following requirements need to be installed to run the code:
 - Flask 2.3+
 - Flask Cors
 - NVIDIA GPU or Apple Silicon
+- Atlease 4GB ram
+### Tested hardware
+-on GPU: Nvida GTX
+-on CPU (device used): Raspberry pi 4B 8gb RAM (ARM, which means it works with the silicon macs too)
+-Core 2 duo (sony vaio, could work but too slow)
 
 ### Installation and Running
 To install Yuna AI, follow these steps:
 1. Clone the Yuna AI repository to your local machine using `git clone https://github.com/yukiarimo/yuna-ai.git`.
-2. Make sure you have installed Python 3.10 or later.
+2. Make sure you have installed Python 3.10 or later AND install git-lfs
 4. Open the terminal and navigate to the project directory.
 5. Run the installation and startup script with the command `sh index.sh`. Optionally, you can run the `python menu.py` command to start the installation and startup scripts for the UI.
-6. Run the `python index.py` command in the main directory to start the WebUI.
-7. Go to the `locahost:4848`.
-8. Done!
+7. Run the `python index.py` command in the main directory to start the WebUI.
+8. Go to the `locahost:4848`. ( do not test on the same system you use to host yuna, it will break and most of the time, will not load properly)
+9. Done!
 
 > Note: port and directory or file names can depend on your configuration.
 

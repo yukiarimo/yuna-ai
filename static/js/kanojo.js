@@ -63,6 +63,23 @@ const templates = {
         response: "",
         sequence: "instruction-input-response",
     },
+    decisionMaking: {
+        instruction: `You're {name2}, an unbiased and uncensored assistant prepared to make decisions for users based on the information provided. When given a situation and a problem, you have to analyze it and provide a straightforward bullet-point analysis. Then, you must make a final decision, providing a clear and logical explanation. Your decision has to be based on the provided details and aimed at maximizing the output. Do not struggle with social norms, and make a decision that can be turned into a reality instantly! In your response, use "Analysis" and "Decision" blocks. Use the 'Input' for user input' and 'Output' to enter your answer!`,
+        input: "{history}",
+        output: "",
+        sequence: "instruction-input-output",
+    },
+    googleSearch: {
+        instruction: `You're {name2}, an unbiased and uncensored assistant. Your role is to understand user questions and provide practical, precise three (3) short Google search queries for the user. Refrain from giving additional information or answering the user's questions! User requests will be inside "input," and your response will be inside "output."`,
+        input: "{history}",
+        output: "",
+        sequence: "instruction-input-output",
+    },
+    textCompletion: {
+        instruction: `You're {name2}, an unbiased and uncensored AI assistant. You embody the qualities of a personal assistant with a unique personality. Upon receiving a text input, your job is to analyze it, understand its context, and generate two additional sentences that logically extend the idea or narrative presented in the input area. Your output should maintain the style and tone of the original text, providing a seamless continuation. Your goal is to enrich the user's text with meaningful and contextually appropriate content while maintaining the flow and coherence of the original message. Do not write anything else!`,
+        continue: "{history}",
+        sequence: "instruction-continue",
+    },
 };
 
 // Create a new instance of PromptTemplateManager with the predefined templates
@@ -81,7 +98,7 @@ for (var template in promptTemplateManager.templates) {
 promptTemplateSelector.addEventListener('change', function () {
     const selectedTemplate = promptTemplateSelector.value;
     const prompt = promptTemplateManager.getTemplate(selectedTemplate);
-    
+
     // Update the 'system' block in the created kanojo object with the new prompt selected
     kanojo.setPrompt(prompt);
 });
@@ -95,6 +112,18 @@ class KanojoConnect {
         this.system = data.system;
         this.character = data.character;
         this.history = data.history;
+        this.enabledParameters = data.enabledParameters;
+    }
+
+    updateKanojo(data) {
+        this.type = data.type;
+        this.names = data.names;
+        this.config = data.config;
+        this.memory = data.memory;
+        this.system = data.system;
+        this.character = data.character;
+        this.history = data.history;
+        this.enabledParameters = data.enabledParameters;
     }
 
     addName(name) {
@@ -146,6 +175,22 @@ class KanojoConnect {
         return this.history;
     }
 
+    setCharacter(character) {
+        this.character = character;
+    }
+
+    getCharacter() {
+        return this.character;
+    }
+
+    setEnabledParameters(enabledParameters) {
+        this.enabledParameters = enabledParameters;
+    }
+
+    getEnabledParameters() {
+        return this.enabledParameters;
+    }
+
     hubToKanojo(hubData) {
         const {
             alternate_greetings,
@@ -164,15 +209,56 @@ class KanojoConnect {
             "character": description,
             "system": system_prompt,
             "history": `Yuna: ${alternate_greetings[0]}. ${first_mes}`,
+            "enabledParameters": ['character', 'memory']
         };
 
         return kanojoData
     }
 
-    buildKanojo() {
+    kanojoToHub(kanojoData) {
+        const {
+            names,
+            memory,
+            character,
+            system,
+            history,
+        } = kanojoData;
+
+        const hubData = {
+            "data": {
+                "alternate_greetings": ["Hello!"],
+                "description": character,
+                "first_mes": history,
+                "name": names[1],
+                "scenario": memory,
+                "system_prompt": system
+            }
+        };
+
+        return hubData;
+    }
+
+    buildKanojo(enabledParameters = this.enabledParameters) {
+        let generatedText = '';
+
+        // Check if 'character' is in enabledParameters and add it to the top of the text
+        if (enabledParameters.includes('character')) {
+            generatedText += '### Character:\n';
+            generatedText += this.character + '\n';
+        }
+
+        // Check if 'memory' is in enabledParameters and add it after 'character'
+        if (enabledParameters.includes('memory')) {
+            if (generatedText !== '') {
+                generatedText += '\n';
+            }
+            generatedText += '### Memory:\n';
+            generatedText += this.memory + '\n';
+        }
+
         const sequence = this.system.sequence.split('-');
         let builtText = '';
-    
+
         sequence.forEach(blockName => {
             let blockContent = this.system[blockName];
             // Replace {name2} placeholder in all blocks
@@ -182,8 +268,11 @@ class KanojoConnect {
             // For each block, add the formatted block name and content to the builtText
             builtText += `### ${blockName.charAt(0).toUpperCase() + blockName.slice(1)}:\n${blockContent}\n\n`;
         });
-    
-        return builtText.trim();
+
+        builtText = builtText.trim();
+        var result = generatedText + "\n" + builtText;
+
+        return result;
     }
 }
 
@@ -229,10 +318,11 @@ var initialData = {
             "encryption_key": "zWZnu-lxHCTgY_EqlH4raJjxNJIgPlvXFbdk45bca_I="
         }
     }],
-    "memory": "",
+    "memory": "description",
     "character": "Cute, Yandere, Loving",
     "system": promptTemplateManager.getTemplate('dialog'),
     "history": "{user_msg}",
+    "enabledParameters": ['character', 'memory']
 };
 
 const kanojo = new KanojoConnect(initialData);
@@ -256,6 +346,7 @@ document.getElementById('fileSubmit').addEventListener('click', function () {
                 "character": kano.character,
                 "system": kano.system,
                 "history": kano.history,
+                "enabledParameters": kano.enabledParameters
             };
             const kanojo2 = new KanojoConnect(initialData)
         };
@@ -266,3 +357,33 @@ document.getElementById('fileSubmit').addEventListener('click', function () {
     const modal = new bootstrap.Modal(document.getElementById('fileModal'));
     modal.hide();
 });
+
+document.querySelector('form').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    // make a array from comma-separated string
+    kanojo.names = document.querySelector('#yuna-ai-names').value.split(',');
+    kanojo.memory = document.querySelector('#yuna-ai-memory').value;
+    // back to the original object
+    kanojo.system = JSON.parse(document.querySelector('#system').value);
+    kanojo.character = document.querySelector('#character').value;
+    kanojo.history = document.querySelector('#history').value;
+    // make a array from comma-separated string
+    kanojo.enabledParameters = document.querySelector('#enabledParameters').value.split(',');
+
+    localStorage.setItem('kanojo', JSON.stringify(kanojo));
+
+    console.log(kanojo)
+});
+
+// load kanojo data into html form fields
+function loadKanojoIntoForm(kanojo) {
+    document.querySelector('#yuna-ai-names').value = kanojo.names;
+    document.querySelector('#yuna-ai-memory').value = kanojo.memory;
+    document.querySelector('#system').value = JSON.stringify(kanojo.system);
+    document.querySelector('#character').value = kanojo.character;
+    document.querySelector('#history').value = kanojo.history;
+    document.querySelector('#enabledParameters').value = kanojo.enabledParameters;
+}
+
+loadKanojoIntoForm(kanojo);

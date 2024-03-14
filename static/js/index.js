@@ -154,16 +154,17 @@ class messageManager {
     const [imageDataURL, imageName, messageForImage] = imageData;
     const serverEndpoint = `${server_url + server_port}/image`;
     const headers = { 'Content-Type': 'application/json' };
-    const body = JSON.stringify({ image: imageDataURL, name: imageName, task: 'caption' });
+    const body = JSON.stringify({ image: imageDataURL, name: imageName, message: messageForImage, task: 'caption' });
 
     fetch(serverEndpoint, { method: 'POST', headers, body })
       .then(response => response.ok ? response.json() : Promise.reject('Error sending captured image.'))
       .then(data => {
         this.removeTypingBubble();
-        const imageCaption = `*You can see ${data.message} in the image* ${messageForImage}`;
+        const imageCaption = `${messageForImage}<img src="${data.path}" alt="${imageName}">`;
+        this.createMessage(name1, imageCaption);
 
-        this.removeTypingBubble();
-        this.createMessage(name2, imageCaption);
+        const imageResponse = `${data.message}`;
+        this.createMessage(name2, imageResponse);
 
         return imageCaption;
       })
@@ -457,8 +458,6 @@ function captureImage() {
   closePopupsAll();
 
   askYunaImage = messageManager.sendMessage('', [imageDataURL, imageName, messageForImage], '/image');
-
-  messageManager.sendMessage(askYunaImage, imageName, '/message');
 }
 
 // Modify the captureImage function to handle file uploads
@@ -478,23 +477,7 @@ async function captureImageViaFile() {
     const imageName = Date.now().toString();
 
     closePopupsAll();
-
-    try {
-      const response = await fetch(`${server_url+server_port}/image`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: imageDataURL, name: imageName, task: 'caption' })
-      });
-
-      const data = await response.json();
-      const imageCaption = data.message;
-      const askYunaImage = `*You can see ${imageCaption} in the image* ${messageForImage}`;
-
-      messageManager.sendMessage(askYunaImage, imageName, '/message');
-    } catch (error) {
-      console.error('Error:', error);
-      alert('Error sending uploaded image.');
-    }
+    messageManager.sendMessage('', [imageDataURL, imageName, messageForImage], '/image');
   };
 
   reader.readAsDataURL(file);

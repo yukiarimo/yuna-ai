@@ -13,3 +13,4 @@ bs4
 itsdangerous
 cryptography
 Flask-Compress
+webbrowser

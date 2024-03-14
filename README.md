@@ -32,6 +32,7 @@ This `README.md` file will guide you through setting up and using Yuna with all 
   - [Additional Information](#additional-information)
     - [Contact](#contact)
     - [Contributing and Feedback](#contributing-and-feedback)
+    - [Contributor List](#contributor-list)
     - [License](#license)
     - [Acknowledgments](#acknowledgments)
 
@@ -48,7 +49,7 @@ The following requirements need to be installed to run the code:
 - CUDA 11.1+ (for NVIDIA GPU)
 - Clang 12+
 - macOS 14.4+ (Sonoma) or Linux (Arch-based distros are recommended).
-> Windows is not supported at the moment in full capacity.
+> At the moment, Windows is not fully supported.
 
 #### Hardware
 - NVIDIA/AMD GPU or Apple Silicon (M1, M2, M3) with 8GB VRAM (for best performance)
@@ -58,12 +59,12 @@ The following requirements need to be installed to run the code:
 - Minimum 2.5GHz CPU (3.0GHz is recommended)
 
 #### Tested hardware
-- GPU: Nvida GTX and M1 (Apple Silicon, works perfectly)
-- CPU (device used): Raspberry pi 4B 8gb RAM (ARM)
-- Core 2 Duo (sony vaio, could work, but too slow)
+- GPU: Nvidia GTX and M1 (Apple Silicon, works perfectly)
+- CPU (device used): Raspberry Pi 4B 8 GB RAM (ARM)
+- Core 2 Duo (sony vaio could work, but it is too slow)
 
 ## Setup
-To run Yuna AI, you need to install the required dependencies and start the server. Follow the instructions below to get started.
+To run Yuna AI, you must install the required dependencies and start the server. Follow the instructions below to get started.
 
 ### Installation
 To install Yuna AI, follow these steps:
@@ -71,24 +72,24 @@ To install Yuna AI, follow these steps:
 2. Better to use Anaconda with python (venv is not recommended)
 3. Clone the Yuna AI repository to your local machine using `git clone https://github.com/yukiarimo/yuna-ai.git`. (or download the ZIP file and extract it, but it's not recommended)
 4. Open the terminal and navigate to the project directory.
-5. Run the installation and startup script with the command `sh index.sh`. 
-> Optionally, you can run the `python menu.py` command to start the installation and startup scripts for the UI.
+5. Run the installation and startup script with the command `python menu.py`. More sure you have the `webbrowser` module installed. If not, install it using `pip install webbrowser` or `pip3 install webbrowser`. If any issues occur, please run `pip install {module}` or `pip3 install {module}` to install the required dependencies.
 6. Follow the on-screen instructions to install the required dependencies
-7. You need to install the required dependencies (pipys and the AI model files).
+7. Install the required dependencies (pipes and the AI model files).
 
 ### WebUI Run
 1. Run the `python index.py` command in the main directory to start the WebUI.
 2. Go to the `locahost:4848` in your web browser.
 3. You will see the Yuna AI landing page.
-4. Click on the "Login" button to go deeper (also you can manually do to the `/yuna` URL).
-5. Here you will see the login page, where you can enter your username and password (default is `admin` and `admin`, or create a new accout).
-6. Now you will see the main page, where you can chat with Yuna, call her, and do other things.
+4. Click on the "Login" button to go deeper (you can also manually enter the `/yuna` URL).
+5. Here, you will see the login page, where you can enter your username and password (the default is `admin` and `admin`) or create a new account.
+6. Now, you will see the main page, where you can chat with Yuna, call her, and do other things.
 7. Done!
 
-> Note 1: Do not test on the same system you use to host yuna, it will break and most of the time, will not load properly (for newbies)
+> Note 1: Do not test on the same system you use to host Yuna. It will break and, most of the time, will not load properly (for newbies)
 > Note 2: port and directory or file names can depend on your configuration.
 > Note 3: If you have any issues, please contact us or open an issue on GitHub.
-> Note 4: Running `yuna.html` directly is not recommended and still WIP.
+> Note 4: Running `yuna.html` directly is not recommended and is still WIP.
+> Note 5: Better to not use the `menu.py` to start the YunaServer. It's better to run the `index.py` to see if it works correctly.
 
 ## Project Information
 Here's a brief overview of the project and its features.
@@ -158,7 +159,7 @@ yuna-ai/
 ├── pricing.html                 # Pricing webpage for Yuna AI
 ├── login.html                   # Login webpage for Yuna AI
 ├── index.py                     # Main web application file for YunaServer
-├── index.sh                     # Bash script for managing and configuring Yuna
+├── menu.py                      # Bash script for managing and configuring Yuna
 ├── requirements.txt             # Python dependencies for YunaServer
 ├── requirements-amd.txt         # Python dependencies for YunaServer (AMD)
 ├── requirements-nvidia.txt      # Python dependencies for YunaServer (NVIDIA)
@@ -169,7 +170,7 @@ yuna-ai/
 │   ├── css/                     # CSS files for styling
 │   │   ├── bootstrap.min.css    # Minified Bootstrap CSS
 │   │   ├── index.css            # Main CSS for the index page
-│   │   └── kawai-v11-2.css      # Custom CSS file
+│   │   └── Kawai-v11-2.css      # Custom CSS file
 │   ├── db/                      # Database related files
 │   │   └── history/             # Chat history files
 │   │       └── history_template.json  # Template for chat history
@@ -186,7 +187,7 @@ yuna-ai/
 │   │   ├── bootstrap.min.js     # Minified Bootstrap JS
 │   │   ├── himitsu.js           # Custom JS file
 │   │   ├── index.js             # Main JS for the index page
-│   │   ├── kawai-v11-2.js       # Custom JS file
+│   │   ├── Kawai-v11-2.js       # Custom JS file
 │   │   ├── setup.js             # JS for setup
 │   │   └── theme.js             # JS for theme functionality
 │   │
@@ -217,20 +218,20 @@ Yuna: I'm here to help you with anything you need. Let's have a great time toget
 Here are some frequently asked questions about Yuna AI.
 
 ### Future Thoughts
-Yuna AI is a work in progress. We are continuously improving and adding new features to make her more intelligent and engaging. We are committed to creating the best AGI in the world, and we need your support to achieve this goal.
+Yuna AI is a work in progress. We continuously improve and add new features to make her more intelligent and engaging. We are committed to creating the best AGI in the world, and we need your support to achieve this goal.
 
 ### GENERAL Q&A
 Q: Will this project always be open-source?
 > Absolutely! The code will always be available for your personal use.
 
 Q: Will Yuna AI will be free?
-> If you plan to use it locally, you can utilize it for free. However, suppose you want to avoid setting it up locally. In that case, you'll need to pay unless we have enough money to create a free limited demo.
+> If you plan to use it locally, you can utilize it for free. However, you may want to avoid setting it up locally. In that case, you'll need to pay unless we have enough money to create a free limited demo.
 
 Q: Do we collect data from local runs?
 > No, your usage is private when you use it locally. However, if you choose to share, you can. We will collect data to improve the model if you prefer to use our instance.
 
 Q: Will Yuna always be uncensored?
-> Certainly, Yuna will forever be uncensored for local running. It could be a paid option for the server, but anyway, I'm never going to restrict her, even if the world ends.
+> Certainly, Yuna will forever be uncensored for local running. It could be a paid option for the server, but I will never restrict her, even if the world ends.
 
 Q: Will we have an app in the App Store?
 > Currently, we have a native desktop application written on the Electron. We also have a native PWA that works offline for mobile devices. However, we plan to officially release it in stores once we have enough money.
@@ -262,6 +263,16 @@ If you have any questions or feedback or want to say hi, please contact us on Di
 
 ### Contributing and Feedback
 At Yuna AI, we believe in the power of a thriving and passionate community. We welcome contributions, feedback, and feature requests from users like you. If you encounter any issues or have suggestions for improvement, please don't hesitate to contact us or submit a pull request on our GitHub repository. Thank you for choosing Yuna AI as your personal AI companion. We hope you have a delightful experience with your AI girlfriend!
+
+### Contributor List
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
 
 ### License
 Yuna AI is released under the [MIT License](https://opensource.org/licenses/MIT), enabling you to freely use, modify, and distribute the software according to the terms of the license.

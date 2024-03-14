@@ -1,15 +1,86 @@
+import torch
+from transformers import PreTrainedModel, PretrainedConfig
+import re
+from torch import nn
+from PIL import Image
+from einops import rearrange, repeat
+from torchvision.transforms.v2 import (
+    Compose,
+    Resize,
+    InterpolationMode,
+    ToImage,
+    ToDtype,
+    Normalize,
+)
+import timm
+from typing import Optional
+import math
 from dataclasses import dataclass, field
 from typing import Any, Dict, Optional, Union, Tuple
-import math
-import torch
-import torch.nn as nn
-from einops import rearrange, repeat
-from transformers import PretrainedConfig, PreTrainedModel
 from transformers.activations import ACT2FN
 from transformers.modeling_outputs import CausalLMOutputWithPast
-from .configuration_moondream import PhiConfig
-
 FusedDense = None
+
+class PhiConfig(PretrainedConfig):
+    model_type = "phi-msft"
+
+    def __init__(
+        self,
+        vocab_size: int = 51200,
+        n_positions: int = 2048,
+        n_embd: int = 2048,
+        n_layer: int = 24,
+        n_inner: Optional[int] = None,
+        n_head: int = 32,
+        n_head_kv: Optional[int] = None,
+        rotary_dim: Optional[int] = 32,
+        activation_function: Optional[str] = "gelu_new",
+        flash_attn: bool = False,
+        flash_rotary: bool = False,
+        fused_dense: bool = False,
+        attn_pdrop: float = 0.0,
+        embd_pdrop: float = 0.0,
+        resid_pdrop: float = 0.0,
+        layer_norm_epsilon: float = 1e-5,
+        initializer_range: float = 0.02,
+        tie_word_embeddings: bool = False,
+        pad_vocab_size_multiple: int = 64,
+        gradient_checkpointing: bool = False,
+        **kwargs
+    ):
+        pad_vocab_size = (
+            math.ceil(vocab_size / pad_vocab_size_multiple) * pad_vocab_size_multiple
+        )
+        super().__init__(
+            vocab_size=pad_vocab_size,
+            n_positions=n_positions,
+            n_embd=n_embd,
+            n_layer=n_layer,
+            n_inner=n_inner,
+            n_head=n_head,
+            n_head_kv=n_head_kv,
+            activation_function=activation_function,
+            attn_pdrop=attn_pdrop,
+            embd_pdrop=embd_pdrop,
+            resid_pdrop=resid_pdrop,
+            layer_norm_epsilon=layer_norm_epsilon,
+            initializer_range=initializer_range,
+            pad_vocab_size_multiple=pad_vocab_size_multiple,
+            tie_word_embeddings=tie_word_embeddings,
+            gradient_checkpointing=gradient_checkpointing,
+            **kwargs
+        )
+        self.rotary_dim = min(rotary_dim, n_embd // n_head)
+        self.flash_attn = flash_attn
+        self.flash_rotary = flash_rotary
+        self.fused_dense = fused_dense
+
+    attribute_map = {
+        "max_position_embeddings": "n_positions",
+        "hidden_size": "n_embd",
+        "num_attention_heads": "n_head",
+        "num_hidden_layers": "n_layer",
+    }
 
 @dataclass
 class InferenceParams:
@@ -708,3 +779,230 @@ class PhiForCausalLM(PhiPreTrainedModel):
         return CausalLMOutputWithPast(
             loss=loss, logits=lm_logits, past_key_values=past_key_values
         )
+
+class MoondreamConfig(PretrainedConfig):
+    model_type = "moondream1"
+
+    def __init__(self, **kwargs):
+        self.phi_config = PhiConfig(**kwargs)
+        super().__init__(**kwargs)
+
+class VisualHolder(nn.Module):
+    def __init__(self, model):
+        super().__init__()
+        self.visual = model
+
+    def forward(self, x):
+        return self.visual(x)
+
+
+class ModelHolder(nn.Module):
+    def __init__(self, model):
+        super().__init__()
+        self.model = model
+
+    def forward(self, x):
+        return self.model(x)
+
+
+class LinearPatchEmbedding(nn.Module):
+    def __init__(self, conv):
+        super().__init__()
+        self.linear = nn.Linear(588, 1152)
+        self.linear.weight.data = conv.weight.data.view(1152, -1)
+        if conv.bias is not None:
+            self.linear.bias.data = conv.bias.data
+
+    def forward(self, x):
+        return self.linear(x)
+
+
+class MLP(nn.Module):
+    def __init__(
+        self,
+        in_features: int,
+        hidden_features: int = None,
+        out_features: int = None,
+        act_layer: nn.Module = nn.GELU,
+    ) -> None:
+        super().__init__()
+        out_features = out_features or in_features
+        hidden_features = hidden_features or in_features
+        self.fc1 = nn.Linear(in_features, hidden_features)
+        self.act = act_layer()
+        self.fc2 = nn.Linear(hidden_features, out_features)
+
+        torch.nn.init.kaiming_normal_(
+            self.fc1.weight, mode="fan_in", nonlinearity="relu"
+        )
+        torch.nn.init.kaiming_normal_(
+            self.fc2.weight, mode="fan_in", nonlinearity="relu"
+        )
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        x = self.fc1(x)
+        x = self.act(x)
+        x = self.fc2(x)
+        return x
+
+
+class VisionProjection(nn.Module):
+    def __init__(self):
+        super().__init__()
+
+        image_embedding_dim = 1152
+        model_dim = 2048
+        hidden_dim = model_dim * 4
+
+        self.mlp = MLP(image_embedding_dim, hidden_dim, model_dim)
+
+    @property
+    def device(self):
+        return self.mlp.fc1.weight.device
+
+    def forward(self, x):
+        return self.mlp(x)
+
+
+class VisionEncoder(nn.Module):
+    def __init__(self) -> None:
+        super().__init__()
+
+        self.encoder = ModelHolder(
+            VisualHolder(timm.create_model("vit_so400m_patch14_siglip_384"))
+        )
+        self.encoder.model.visual.patch_embed = LinearPatchEmbedding(
+            self.encoder.model.visual.patch_embed.proj
+        )
+        self.encoder.model.visual.attn_pool = nn.Identity()
+
+        self.projection = VisionProjection()
+
+        self.preprocess = Compose(
+            [
+                Resize(size=(378, 378), interpolation=InterpolationMode.BICUBIC),
+                ToImage(),
+                ToDtype(torch.float32, scale=True),
+                Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
+            ]
+        )
+
+    @property
+    def device(self):
+        return self.projection.mlp.fc1.weight.device
+
+    @property
+    def dtype(self):
+        return self.projection.mlp.fc1.weight.dtype
+
+    def __call__(self, image: Image) -> torch.Tensor:
+        with torch.no_grad():
+            x = (
+                self.preprocess(image.convert("RGB"))
+                .unsqueeze(0)
+                .to(self.device, dtype=self.dtype)
+            )
+            x = rearrange(x, "b c (h p1) (w p2) -> b (h w) (c p1 p2)", p1=14, p2=14)
+
+            x = self.encoder(x)
+            x = self.projection(x)
+
+            return x
+
+class Moondream(PreTrainedModel):
+    config_class = MoondreamConfig
+
+    def __init__(self, config):
+        super().__init__(config)
+        self.vision_encoder = VisionEncoder()
+
+        if type(config.phi_config) == dict:
+            phi_config = PhiConfig(**config.phi_config)
+        else:
+            phi_config = config.phi_config
+        self.text_model = PhiForCausalLM(phi_config)
+
+    @property
+    def device(self):
+        return self.text_model.device
+
+    def encode_image(self, image):
+        return self.vision_encoder(image)
+
+    def input_embeds(self, prompt, image_embeds, tokenizer):
+        def _tokenize(txt):
+            return tokenizer(
+                txt, return_tensors="pt", add_special_tokens=False
+            ).input_ids.to(self.device)
+
+        text_emb = self.text_model.get_input_embeddings()
+
+        # Add BOS token
+        embeds = []
+        embeds.append(
+            text_emb((torch.tensor([[tokenizer.bos_token_id]], device=self.device)))
+        )
+
+        if "<image>" not in prompt:
+            embeds.append(text_emb(_tokenize(prompt)))
+        else:
+            assert prompt.count("<image>") == 1
+            before, after = prompt.split("<image>")
+            embeds.append(text_emb(_tokenize(f"{before}<image>")))
+            embeds.append(image_embeds.to(self.device))
+            embeds.append(text_emb(_tokenize(f"</image>{after}")))
+
+        return torch.cat(embeds, dim=1)
+
+    def generate(
+        self,
+        image_embeds,
+        prompt,
+        tokenizer,
+        eos_text="<END>",
+        max_new_tokens=128,
+        **kwargs,
+    ):
+        eos_tokens = tokenizer(eos_text, add_special_tokens=False)[0].ids
+
+        generate_config = {
+            "eos_token_id": eos_tokens,
+            "bos_token_id": tokenizer.bos_token_id,
+            "pad_token_id": tokenizer.eos_token_id,
+            "max_new_tokens": max_new_tokens,
+            **kwargs,
+        }
+
+        with torch.no_grad():
+            inputs_embeds = self.input_embeds(prompt, image_embeds, tokenizer)
+            output_ids = self.text_model.generate(
+                inputs_embeds=inputs_embeds, **generate_config
+            )
+
+        return tokenizer.batch_decode(output_ids, skip_special_tokens=True)
+
+    def answer_question(
+        self,
+        image_embeds,
+        question,
+        tokenizer,
+        chat_history="",
+        result_queue=None,
+        **kwargs,
+    ):
+        prompt = f"<image>\n\n{chat_history}Question: {question}\n\nAnswer: "
+        answer = self.generate(
+            image_embeds,
+            prompt,
+            eos_text="<END>",
+            tokenizer=tokenizer,
+            max_new_tokens=256,
+            **kwargs,
+        )[0]
+        cleaned_answer = re.sub("<$", "", re.sub("END$", "", answer)).strip()
+
+        # Use the result_queue to pass the result if it is provided
+        if result_queue:
+            result_queue.put(cleaned_answer)
+        else:
+            return cleaned_answer

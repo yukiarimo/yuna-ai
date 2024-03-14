@@ -2,7 +2,9 @@
 from llama_cpp import Llama
 from langchain_community.llms import LlamaCpp
 from langchain.prompts import PromptTemplate
+from vision import capture_image
 
+"""
 # Initialize the Llama model with your configuration
 model = Llama(
     model_path="lib/models/yuna/yuna-ai-q5.gguf",
@@ -46,3 +48,6 @@ response = llm(
 
 # Print the generated response
 print(response['choices'][0]['text'])
+"""
+
+print(capture_image("/Users/yuki/Pictures/IMG_1039.JPG", "Describe the image."))

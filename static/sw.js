@@ -4,7 +4,6 @@ importScripts('/static/sw-toolbox.js');
 
 toolbox.precache([
     "/yuna.html",
-    "/static/js/offline/llama.js",
     "/static/js/offline/main-worker.js",
     "/static/js/offline/main.js",
     "/static/js/offline/thread.js",

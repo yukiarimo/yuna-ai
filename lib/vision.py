@@ -1,13 +1,11 @@
-import base64
 import json
 import os
-from transformers import BlipProcessor, BlipForConditionalGeneration
 from diffusers import StableDiffusionPipeline
 from PIL import Image
 from datetime import datetime
 import torch
 from PIL import Image
-from .yvision.moondream import Moondream
+from lib.visioninit import Moondream
 from transformers import CodeGenTokenizerFast as Tokenizer
 
 if os.path.exists("static/config.json"):
@@ -36,6 +34,12 @@ def create_image(prompt):
     return image_name
 
 def capture_image(image_path, prompt=None, use_cpu=False):
+    # print arguments
+    print("Arguments:")
+    print("  image_path:", image_path)
+    print("  prompt:", prompt)
+    print("  use_cpu:", use_cpu)
+
     device = torch.device("cpu") if use_cpu else (torch.device("cuda") if torch.cuda.is_available() else (torch.device("mps") if torch.backends.mps.is_available() else torch.device("cpu")))
     dtype = torch.float32 if use_cpu else (torch.float16 if torch.cuda.is_available() or torch.backends.mps.is_available() else torch.float32)
     
@@ -52,4 +56,4 @@ def capture_image(image_path, prompt=None, use_cpu=False):
 
     print(">", prompt)
     answer = moondream.answer_question(image_embeds, prompt, tokenizer)
-    print(answer)
+    return [answer, image_path]

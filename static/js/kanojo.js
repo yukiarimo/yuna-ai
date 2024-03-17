@@ -112,6 +112,7 @@ class KanojoConnect {
         this.system = data.system;
         this.character = data.character;
         this.history = data.history;
+        this.useHistory = data.useHistory;
         this.enabledParameters = data.enabledParameters;
     }
 
@@ -123,6 +124,7 @@ class KanojoConnect {
         this.system = data.system;
         this.character = data.character;
         this.history = data.history;
+        this.useHistory = data.useHistory;
         this.enabledParameters = data.enabledParameters;
     }
 
@@ -175,6 +177,14 @@ class KanojoConnect {
         return this.history;
     }
 
+    setUseHistory(useHistory) {
+        this.useHistory = useHistory;
+    }
+
+    getUseHistory() {
+        return this.useHistory;
+    }
+
     setCharacter(character) {
         this.character = character;
     }
@@ -209,6 +219,7 @@ class KanojoConnect {
             "character": description,
             "system": system_prompt,
             "history": `Yuna: ${alternate_greetings[0]}. ${first_mes}`,
+            "useHistory": true,
             "enabledParameters": ['character', 'memory']
         };
 
@@ -322,6 +333,7 @@ var initialData = {
     "character": "Cute, Yandere, Loving",
     "system": promptTemplateManager.getTemplate('dialog'),
     "history": "{user_msg}",
+    "useHistory": true,
     "enabledParameters": ['character', 'memory']
 };
 
@@ -346,6 +358,7 @@ document.getElementById('fileSubmit').addEventListener('click', function () {
                 "character": kano.character,
                 "system": kano.system,
                 "history": kano.history,
+                "useHistory": kano.useHistory,
                 "enabledParameters": kano.enabledParameters
             };
             const kanojo2 = new KanojoConnect(initialData)
@@ -361,16 +374,13 @@ document.getElementById('fileSubmit').addEventListener('click', function () {
 document.querySelector('form').addEventListener('submit', function(event) {
     event.preventDefault();
 
-    // make a array from comma-separated string
     kanojo.names = document.querySelector('#yuna-ai-names').value.split(',');
     kanojo.memory = document.querySelector('#yuna-ai-memory').value;
-    // back to the original object
     kanojo.system = JSON.parse(document.querySelector('#system').value);
     kanojo.character = document.querySelector('#character').value;
     kanojo.history = document.querySelector('#history').value;
-    // make a array from comma-separated string
+    kanojo.useHistory = document.querySelector('#useHistory').value;
     kanojo.enabledParameters = document.querySelector('#enabledParameters').value.split(',');
-
     localStorage.setItem('kanojo', JSON.stringify(kanojo));
 
     console.log(kanojo)
@@ -383,6 +393,7 @@ function loadKanojoIntoForm(kanojo) {
     document.querySelector('#system').value = JSON.stringify(kanojo.system);
     document.querySelector('#character').value = kanojo.character;
     document.querySelector('#history').value = kanojo.history;
+    document.querySelector('#useHistory').value = kanojo.useHistory;
     document.querySelector('#enabledParameters').value = kanojo.enabledParameters;
 }
 

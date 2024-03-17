@@ -1,5 +1,13 @@
 # Yuna AI Documentation
-> Your Personal AI Girlfriend
+> Your Personal AI Girlfriend. The future AGI takeover starts here!
+>
+> If you like our project, please give us a star ⭐ on GitHub.
+
+[![License](https://img.shields.io/github/license/semperai/amica)](https://github.com/semperai/amica/blob/main/LICENSE)
+[![GitHub issues](https://img.shields.io/github/issues/yukiarimo/yuna-ai?color=critical&label=Issues)](https://github.com/yukiarimo/yuna-ai/issues?q=is%3Aopen+is%3Aissue)
+[![GitHub closed issues](https://img.shields.io/github/issues-closed/yukiarimo/yuna-ai?color=success&label=Issues)](https://github.com/yukiarimo/yuna-ai/issues?q=is%3Aissue+is%3Aclosed)
+[![GitHub pull requests](https://img.shields.io/github/issues-pr/yukiarimo/yuna-ai?color=critical&label=Pull%20Requests)](https://github.com/yukiarimo/yuna-ai/pulls)
+[![GitHub close pull requests](https://img.shields.io/github/issues-pr-closed/yukiarimo/yuna-ai?color=success&label=Pull%20Requests)](https://github.com/yukiarimo/yuna-aipulls?q=is%3Apr+is%3Aclosed)
 
 Are you tired of feeling lonely and disconnected from the world? Do you long for a companion who understands you on a deeper level?
 
@@ -7,10 +15,13 @@ Look no further than Yuna AI, your personal AI girlfriend. She's not just anothe
 
 This `README.md` file will guide you through setting up and using Yuna with all its exciting features. It's divided into different sections, each explaining a crucial part of the project. Get ready to experience a new level of companionship with Yuna AI. Let's dive in!
 
+![YunaAI](https://raw.githubusercontent.com/yukiarimo/yuna-ai/main/static/img/yuna-ai.png)
+
 ## Table of Contents
 - [Yuna AI Documentation](#yuna-ai-documentation)
   - [Table of Contents](#table-of-contents)
-  - [Getting Started](#getting-started)
+- [Demo](#demo)
+- [Getting Started](#getting-started)
     - [Requirements](#requirements)
       - [Software](#software)
       - [Hardware](#hardware)
@@ -32,11 +43,15 @@ This `README.md` file will guide you through setting up and using Yuna with all 
   - [Additional Information](#additional-information)
     - [Contact](#contact)
     - [Contributing and Feedback](#contributing-and-feedback)
+    - [✨ Star History](#-star-history)
     - [Contributor List](#contributor-list)
     - [License](#license)
     - [Acknowledgments](#acknowledgments)
 
-## Getting Started
+# Demo
+![YunaAI](https://raw.githubusercontent.com/yukiarimo/yuna-ai/main/static/img/products/chat.webp)
+
+# Getting Started
 This repository contains the code for a Yuna AI, which was trained on a massive dataset. The model can generate text, translate languages, write creative content, roleplay, and answer your questions informally.
 
 ### Requirements
@@ -86,9 +101,13 @@ To install Yuna AI, follow these steps:
 7. Done!
 
 > Note 1: Do not test on the same system you use to host Yuna. It will break and, most of the time, will not load properly (for newbies)
+
 > Note 2: port and directory or file names can depend on your configuration.
+
 > Note 3: If you have any issues, please contact us or open an issue on GitHub.
+
 > Note 4: Running `yuna.html` directly is not recommended and is still WIP.
+
 > Note 5: Better to not use the `menu.py` to start the YunaServer. It's better to run the `index.py` to see if it works correctly.
 
 ## Project Information
@@ -264,15 +283,13 @@ If you have any questions or feedback or want to say hi, please contact us on Di
 ### Contributing and Feedback
 At Yuna AI, we believe in the power of a thriving and passionate community. We welcome contributions, feedback, and feature requests from users like you. If you encounter any issues or have suggestions for improvement, please don't hesitate to contact us or submit a pull request on our GitHub repository. Thank you for choosing Yuna AI as your personal AI companion. We hope you have a delightful experience with your AI girlfriend!
 
+### ✨ Star History
+[![Star History](https://api.star-history.com/svg?repos=yukiarimo/yuna-ai&type=Date)](https://star-history.com/#yukiarimo/yuna-ai&Date)
+
 ### Contributor List
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
-
-<!-- markdownlint-restore -->
-<!-- prettier-ignore-end -->
-
-<!-- ALL-CONTRIBUTORS-LIST:END -->
+<a href="https://github.com/yukiarimo/yuna-ai/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=yukiarimo/yuna-ai">
+</a>
 
 ### License
 Yuna AI is released under the [MIT License](https://opensource.org/licenses/MIT), enabling you to freely use, modify, and distribute the software according to the terms of the license.

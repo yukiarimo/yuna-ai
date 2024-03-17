@@ -16,7 +16,7 @@ toolbox.precache([
     "/static/js/bootstrap/script.min.js",
     "/static/fonts/kawai-font.woff",
     "/static/img/yuna-ai.png",
-    "/static/img/yuna-girl-head.png"
+    "/static/img/yuna-girl-head.webp"
 ]);
 
 toolbox.router.get('/images/*', toolbox.cacheFirst);

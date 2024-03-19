@@ -3,15 +3,24 @@ import os
 import shutil
 import subprocess
 from cryptography.fernet import Fernet, InvalidToken
+from flask_login import current_user
 
 class ChatHistoryManager:
-    def __init__(self, config):
+    def __init__(self, config, server):
         self.config = config
+        self.server = server
         self.base_history_path = "db/history"  # Base path for histories
 
-    def _user_folder_path(self, username):
+    def _user_folder_path(self, username=None):
         """Constructs the path to the user's folder."""
+        print("current_user.is_authenticated: ", list({current_user.get_id()})[0])
+        if username is None:
+            if current_user.is_authenticated:
+                username = current_user.username
+            else:
+                raise Exception("User is not authenticated")
         print(f"Username: {username}")
+        print(f"Base history path: {self.base_history_path} + {username}")
         return os.path.join(self.base_history_path, username)
 
     def _ensure_user_folder_exists(self, username):

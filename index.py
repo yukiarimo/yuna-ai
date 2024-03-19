@@ -31,7 +31,7 @@ class YunaServer:
         self.configure_routes()
         self.load_config()
         self.chat_generator = ChatGenerator(self.config)
-        self.chat_history_manager = ChatHistoryManager(self.config)
+        self.chat_history_manager = ChatHistoryManager(self.config, self)
         self.app.errorhandler(404)(self.page_not_found)
 
     @staticmethod

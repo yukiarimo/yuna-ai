@@ -5,14 +5,14 @@
             "Yuna"
         ],
         "emotions": false,
-        "art": true,
+        "art": false,
         "max_new_tokens": 256,
         "context_length": 2048,
         "temperature": 0.6,
-        "repetition_penalty": 1.1,
-        "last_n_tokens": 64,
+        "repetition_penalty": 1.11,
+        "last_n_tokens": 128,
         "seed": -1,
-        "top_k": 50,
+        "top_k": 100,
         "top_p": 0.9,
         "stop": [
             "Yuki:",
@@ -23,7 +23,8 @@
             "<|user|>",
             "<|system|>",
             "<|model|>",
-            "#"
+            "###",
+            "Yuki;"
         ],
         "stream": false,
         "batch_size": 128,

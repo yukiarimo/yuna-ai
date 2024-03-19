@@ -194,3 +194,42 @@ function removeHimitsu(msg) {
   // Set the text content of the 'pre' element to 'Hello World'
   preElement.innerHTML = msg;
 }
+/*
+elif template == "summary":
+import article_parser
+title, content = article_parser.parse(url="https://www.example.com", output='markdown', timeout=50)
+
+elif template == "himitsuCopilot":
+prompt_dir = os.path.join(self.config["server"]["prompts"] + f'{template}.txt')
+with open(prompt_dir, 'r') as file:
+    prompt = file.read()
+
+# calculate the length of the prompt variable
+prompt_length = len(self.model.tokenize(prompt.encode('utf-8')))
+
+# Calculate the maximum length for the history
+max_length = self.config["ai"]["context_length"] - self.config["ai"]["max_new_tokens"]
+
+# Crop the history to fit within the max_length and prompt_length combined, counting from the end of the text
+cropped_history = text[:(max_length - prompt_length)]
+
+# replace string {user_msg} in the prompt with the history
+response = prompt.replace('{user_msg}', cropped_history)
+
+elif template == "himitsuCopilotGen":
+prompt_dir = os.path.join(self.config["server"]["prompts"] + f'{template}.txt')
+with open(prompt_dir, 'r') as file:
+    prompt = file.read()
+
+# calculate the length of the prompt variable
+prompt_length = len(self.model.tokenize(prompt.encode('utf-8')))
+
+# Calculate the maximum length for the history
+max_length = self.config["ai"]["context_length"] - self.config["ai"]["max_new_tokens"]
+
+# Crop the history to fit within the max_length and prompt_length combined, counting from the end of the text
+cropped_history = text[:(max_length - prompt_length)]
+
+# replace string {user_msg} in the prompt with the history
+response = prompt.replace('{user_msg}', cropped_history)
+*/

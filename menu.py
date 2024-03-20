@@ -30,12 +30,19 @@ layout_ = _define_layout()
 manager.layout = layout_
 
 def info(event):
-    os.system('clear')
-    print("Welcome to Yuna Management Script!")
-    print("This script is used to manage Yuna.")
-    print("You can install or update dependencies, install models, configure Yuna, and more.")
-    print("This script is still under development.")
-    pass
+    windows['info'] = ptg.Window(
+    ptg.Label("[210 bold]========== Info =========="),
+    ptg.Label("Welcome to Yuna Management Script"),
+    ptg.Label("This script is used to manage Yuna."),
+    ptg.Label("You can install or update dependencies, install models, configure Yuna, and more."),
+    ptg.Label("This script is still under development."),
+    ptg.Label("For more information, refer to the README.md file."),
+    ptg.Label("You can support the development of Yuna by donating:"),
+    ptg.Button("Patreon", onclick=patreon),
+    ptg.Button("Back", onclick=lambda event: manager.remove(windows['info'])),
+    )
+    manager.add(windows['info'], assign=True)
+    manager.focus(windows['info'])
 
 def goodbye(event):
     os.system('clear')
@@ -202,12 +209,10 @@ def donate(event):
     ptg.Label("Yuna is an open source project. You can support the development of Yuna by donating"),
     ptg.Button("Patreon", onclick=patreon),
     ptg.Button("Ko-Fi", onclick=kofi),
+    ptg.Button("Back", onclick=lambda event: manager.remove(windows['donate'])),
     )
     manager.add(windows['donate'], assign=True)
     manager.focus(windows['donate'])
-
-
-    
 
 main_menu = ptg.Window(
     ptg.Label("[210 bold]========== Menu =========="),
@@ -222,5 +227,4 @@ main_menu = ptg.Window(
 )
 manager.add(header)
 manager.add(main_menu)
-#manager.add(footer)
 manager.run()

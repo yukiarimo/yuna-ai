@@ -107,7 +107,7 @@ class messageManager {
       this.inputText.value = '';
       const serverEndpoint = `${server_url + server_port}${url}`;
       const headers = { 'Content-Type': 'application/json' };
-      const body = JSON.stringify({ chat: selectedFilename, text: message, template: kanojo.buildKanojo() });
+      const body = JSON.stringify({ chat: selectedFilename, text: message, useHistory: kanojo.useHistory, template: kanojo.buildKanojo() });
 
       fetch(serverEndpoint, { method: 'POST', headers, body })
         .then(response => response.json())
@@ -154,16 +154,17 @@ class messageManager {
     const [imageDataURL, imageName, messageForImage] = imageData;
     const serverEndpoint = `${server_url + server_port}/image`;
     const headers = { 'Content-Type': 'application/json' };
-    const body = JSON.stringify({ image: imageDataURL, name: imageName, task: 'caption' });
+    const body = JSON.stringify({ image: imageDataURL, name: imageName, message: messageForImage, task: 'caption', chat: selectedFilename});
 
     fetch(serverEndpoint, { method: 'POST', headers, body })
       .then(response => response.ok ? response.json() : Promise.reject('Error sending captured image.'))
       .then(data => {
         this.removeTypingBubble();
-        const imageCaption = `*You can see ${data.message} in the image* ${messageForImage}`;
+        const imageCaption = `${messageForImage}<img src="${data.path}" alt="${imageName}">`;
+        this.createMessage(name1, imageCaption);
 
-        this.removeTypingBubble();
-        this.createMessage(name2, imageCaption);
+        const imageResponse = `${data.message}`;
+        this.createMessage(name2, imageResponse);
 
         return imageCaption;
       })
@@ -225,31 +226,34 @@ class HistoryManager {
       return; // Exit if no name is entered
     }
 
-    fetch(`${this.serverUrl + this.serverPort}/history`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chat: newFileName,
-        task: "create"
+    selectedFilename = newFileName;
+
+    fetch(`${server_url + server_port}/history`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          chat: newFileName,
+          task: "create"
+        })
       })
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then(responseData => {
-      console.log('File created:', responseData);
-      // Optionally, update UI or state to reflect the new file
-    })
-    .catch(error => {
-      console.error('An error occurred:', error);
-    });
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(responseData => {
+        alert(responseData);
+      })
+      .catch(error => {
+        console.error('An error occurred:', error);
+      });
 
     // Reload the page with a delay of 1 second
     setTimeout(() => {
-      location.reload();
+      //location.reload();
     }, 1000);
   }
 
@@ -457,8 +461,6 @@ function captureImage() {
   closePopupsAll();
 
   askYunaImage = messageManager.sendMessage('', [imageDataURL, imageName, messageForImage], '/image');
-
-  messageManager.sendMessage(askYunaImage, imageName, '/message');
 }
 
 // Modify the captureImage function to handle file uploads
@@ -478,23 +480,7 @@ async function captureImageViaFile() {
     const imageName = Date.now().toString();
 
     closePopupsAll();
-
-    try {
-      const response = await fetch(`${server_url+server_port}/image`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: imageDataURL, name: imageName, task: 'caption' })
-      });
-
-      const data = await response.json();
-      const imageCaption = data.message;
-      const askYunaImage = `*You can see ${imageCaption} in the image* ${messageForImage}`;
-
-      messageManager.sendMessage(askYunaImage, imageName, '/message');
-    } catch (error) {
-      console.error('Error:', error);
-      alert('Error sending uploaded image.');
-    }
+    messageManager.sendMessage('', [imageDataURL, imageName, messageForImage], '/image');
   };
 
   reader.readAsDataURL(file);

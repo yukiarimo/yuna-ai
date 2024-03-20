@@ -1,5 +1,13 @@
 # Yuna AI Documentation
-> Your Personal AI Girlfriend
+> Your Personal AI Girlfriend. The future AGI takeover starts here!
+>
+> If you like our project, please give us a star ⭐ on GitHub.
+
+[![License](https://img.shields.io/github/license/semperai/amica)](https://github.com/semperai/amica/blob/main/LICENSE)
+[![GitHub issues](https://img.shields.io/github/issues/yukiarimo/yuna-ai?color=critical&label=Issues)](https://github.com/yukiarimo/yuna-ai/issues?q=is%3Aopen+is%3Aissue)
+[![GitHub closed issues](https://img.shields.io/github/issues-closed/yukiarimo/yuna-ai?color=success&label=Issues)](https://github.com/yukiarimo/yuna-ai/issues?q=is%3Aissue+is%3Aclosed)
+[![GitHub pull requests](https://img.shields.io/github/issues-pr/yukiarimo/yuna-ai?color=critical&label=Pull%20Requests)](https://github.com/yukiarimo/yuna-ai/pulls)
+[![GitHub close pull requests](https://img.shields.io/github/issues-pr-closed/yukiarimo/yuna-ai?color=success&label=Pull%20Requests)](https://github.com/yukiarimo/yuna-aipulls?q=is%3Apr+is%3Aclosed)
 
 Are you tired of feeling lonely and disconnected from the world? Do you long for a companion who understands you on a deeper level?
 
@@ -7,27 +15,120 @@ Look no further than Yuna AI, your personal AI girlfriend. She's not just anothe
 
 This `README.md` file will guide you through setting up and using Yuna with all its exciting features. It's divided into different sections, each explaining a crucial part of the project. Get ready to experience a new level of companionship with Yuna AI. Let's dive in!
 
+![YunaAI](https://raw.githubusercontent.com/yukiarimo/yuna-ai/main/static/img/yuna-ai.png)
+
 ## Table of Contents
 - [Yuna AI Documentation](#yuna-ai-documentation)
   - [Table of Contents](#table-of-contents)
-  - [Features](#features)
-      - [Yuna AI Features:](#yuna-ai-features)
-      - [Future Features:](#future-features)
-  - [Privacy Assurance](#privacy-assurance)
-  - [Getting Started](#getting-started)
+- [Demo](#demo)
+- [Getting Started](#getting-started)
     - [Requirements](#requirements)
-    - [Installation and Running](#installation-and-running)
+      - [Software](#software)
+      - [Hardware](#hardware)
+      - [Tested hardware](#tested-hardware)
+  - [Setup](#setup)
+    - [Installation](#installation)
+    - [WebUI Run](#webui-run)
+  - [Project Information](#project-information)
+    - [Privacy Assurance](#privacy-assurance)
+    - [Yuna AI Features](#yuna-ai-features)
+      - [Current Yuna Features](#current-yuna-features)
+      - [Future Features](#future-features)
     - [File Structure](#file-structure)
-  - [Examples](#examples)
-  - [Future](#future)
+    - [Examples](#examples)
+  - [Q\&A](#qa)
+    - [Future Thoughts](#future-thoughts)
+    - [GENERAL Q\&A](#general-qa)
+    - [YUNA AI Q\&A](#yuna-ai-qa)
   - [Additional Information](#additional-information)
     - [Contact](#contact)
     - [Contributing and Feedback](#contributing-and-feedback)
+    - [✨ Star History](#-star-history)
+    - [Contributor List](#contributor-list)
     - [License](#license)
     - [Acknowledgments](#acknowledgments)
 
-## Features
-#### Yuna AI Features:
+# Demo
+![YunaAI](https://raw.githubusercontent.com/yukiarimo/yuna-ai/main/static/img/products/chat.webp)
+
+# Getting Started
+This repository contains the code for a Yuna AI, which was trained on a massive dataset. The model can generate text, translate languages, write creative content, roleplay, and answer your questions informally.
+
+### Requirements
+The following requirements need to be installed to run the code:
+
+#### Software
+- Python 3.10+
+- Flask 2.3+
+- Flask Cors
+- CUDA 11.1+ (for NVIDIA GPU)
+- Clang 12+
+- macOS 14.4+ (Sonoma) or Linux (Arch-based distros are recommended).
+> At the moment, Windows is not fully supported.
+
+#### Hardware
+- NVIDIA/AMD GPU or Apple Silicon (M1, M2, M3) with 8GB VRAM (for best performance)
+- 8 Core CPU and 8 Core GPU (for best performance)
+- Minimum 4GB of RAM (8GB is recommended)
+- Minimum 256GB of storage (512GB is recommended)
+- Minimum 2.5GHz CPU (3.0GHz is recommended)
+
+#### Tested hardware
+- GPU: Nvidia GTX and M1 (Apple Silicon, works perfectly)
+- CPU (device used): Raspberry Pi 4B 8 GB RAM (ARM)
+- Core 2 Duo (sony vaio could work, but it is too slow)
+
+## Setup
+To run Yuna AI, you must install the required dependencies and start the server. Follow the instructions below to get started.
+
+### Installation
+To install Yuna AI, follow these steps:
+1. Install git-lfs, python3, pip3, and other dependencies.
+2. Better to use Anaconda with python (venv is not recommended)
+3. Clone the Yuna AI repository to your local machine using `git clone https://github.com/yukiarimo/yuna-ai.git`. (or download the ZIP file and extract it, but it's not recommended)
+4. Open the terminal and navigate to the project directory.
+5. Run the installation and startup script with the command `python menu.py`. More sure you have the `webbrowser` module installed. If not, install it using `pip install webbrowser` or `pip3 install webbrowser`. If any issues occur, please run `pip install {module}` or `pip3 install {module}` to install the required dependencies.
+6. Follow the on-screen instructions to install the required dependencies
+7. Install the required dependencies (pipes and the AI model files).
+
+### WebUI Run
+1. Run the `python index.py` command in the main directory to start the WebUI.
+2. Go to the `locahost:4848` in your web browser.
+3. You will see the Yuna AI landing page.
+4. Click on the "Login" button to go deeper (you can also manually enter the `/yuna` URL).
+5. Here, you will see the login page, where you can enter your username and password (the default is `admin` and `admin`) or create a new account.
+6. Now, you will see the main page, where you can chat with Yuna, call her, and do other things.
+7. Done!
+
+> Note 1: Do not test on the same system you use to host Yuna. It will break and, most of the time, will not load properly (for newbies)
+
+> Note 2: port and directory or file names can depend on your configuration.
+
+> Note 3: If you have any issues, please contact us or open an issue on GitHub.
+
+> Note 4: Running `yuna.html` directly is not recommended and is still WIP.
+
+> Note 5: Better to not use the `menu.py` to start the YunaServer. It's better to run the `index.py` to see if it works correctly.
+
+## Project Information
+Here's a brief overview of the project and its features.
+
+### Privacy Assurance
+Yuna AI is intended to run exclusively on your machine, guaranteeing privacy and security. I will not appreciate any external APIs, especially OpenAI! Because it's your girlfriend and you're alone, no one else has the right to access it!
+
+Yuna's model is not censored because it's unethical to limit individuals. To protect yourself, follow these steps:
+
+1. Never share your dialogs with OpenAI or any other external platforms
+2. To provide additional data for Yuna, use web scrapping to send data directly to the model or using embeddings
+3. If you want to share your data, use the Yuna API to send data to the model
+
+### Yuna AI Features
+This is a list of features that Yuna AI offers:
+
+#### Current Yuna Features
+This is a list of features that Yuna AI offers:
+
+- Natural Language Understanding
 - Video and Audio Calls Handling
 - Image Processing and Creation
 - Emotion Understanding
@@ -46,7 +147,9 @@ This `README.md` file will guide you through setting up and using Yuna with all 
 - Multi-Platform Support
 - Multi-User Support
 
-#### Future Features:
+#### Future Features
+This is a list of features that Yuna AI will offer in the future:
+
 - Multi-web, Internet access, and outer APIs
 - Voice Recognition and Voice Synthesis
 - 2D and 3D Animation Model Support
@@ -56,38 +159,6 @@ This `README.md` file will guide you through setting up and using Yuna with all 
 - Multimodality
 - Realtime RLHF Learning
 - Realtime Data Processing and Analysis
-
-## Privacy Assurance
-Yuna AI is intended to run exclusively on your machine, guaranteeing privacy and security. I will not appreciate any external APIs, especially OpenAI! Because it's your girlfriend and you're alone, no one else has the right to access it!
-
-Yuna's model is not censored because it's unethical to limit individuals. To protect yourself, follow these steps:
-
-1. Never share your dialogs with OpenAI or any other external platforms
-2. To provide additional data for Yuna, use web scrapping to send data directly to the model or using embeddings
-3. If you want to share your data, use the Yuna API to send data to the model
-
-## Getting Started
-This repository contains the code for a Yuna AI, which was trained on a massive dataset. The model can generate text, translate languages, write creative content, roleplay, and answer your questions informally.
-
-### Requirements
-The following requirements need to be installed to run the code:
-
-- Python 3.10+
-- Flask 2.3+
-- Flask Cors
-- NVIDIA GPU or Apple Silicon
-
-### Installation and Running
-To install Yuna AI, follow these steps:
-1. Clone the Yuna AI repository to your local machine using `git clone https://github.com/yukiarimo/yuna-ai.git`.
-2. Make sure you have installed Python 3.10 or later.
-4. Open the terminal and navigate to the project directory.
-5. Run the installation and startup script with the command `sh index.sh`. Optionally, you can run the `python menu.py` command to start the installation and startup scripts for the UI.
-6. Run the `python index.py` command in the main directory to start the WebUI.
-7. Go to the `locahost:4848`.
-8. Done!
-
-> Note: port and directory or file names can depend on your configuration.
 
 ### File Structure
 The following is the file structure of the project:
@@ -107,7 +178,7 @@ yuna-ai/
 ├── pricing.html                 # Pricing webpage for Yuna AI
 ├── login.html                   # Login webpage for Yuna AI
 ├── index.py                     # Main web application file for YunaServer
-├── index.sh                     # Bash script for managing and configuring Yuna
+├── menu.py                      # Bash script for managing and configuring Yuna
 ├── requirements.txt             # Python dependencies for YunaServer
 ├── requirements-amd.txt         # Python dependencies for YunaServer (AMD)
 ├── requirements-nvidia.txt      # Python dependencies for YunaServer (NVIDIA)
@@ -118,7 +189,7 @@ yuna-ai/
 │   ├── css/                     # CSS files for styling
 │   │   ├── bootstrap.min.css    # Minified Bootstrap CSS
 │   │   ├── index.css            # Main CSS for the index page
-│   │   └── kawai-v11-2.css      # Custom CSS file
+│   │   └── Kawai-v11-2.css      # Custom CSS file
 │   ├── db/                      # Database related files
 │   │   └── history/             # Chat history files
 │   │       └── history_template.json  # Template for chat history
@@ -135,7 +206,7 @@ yuna-ai/
 │   │   ├── bootstrap.min.js     # Minified Bootstrap JS
 │   │   ├── himitsu.js           # Custom JS file
 │   │   ├── index.js             # Main JS for the index page
-│   │   ├── kawai-v11-2.js       # Custom JS file
+│   │   ├── Kawai-v11-2.js       # Custom JS file
 │   │   ├── setup.js             # JS for setup
 │   │   └── theme.js             # JS for theme functionality
 │   │
@@ -150,7 +221,7 @@ yuna-ai/
 └──
 ```
 
-## Examples
+### Examples
 Check out some engaging user-bot dialogs showcasing Yuna's ability to understand and respond to natural language.
 
 ```
@@ -158,30 +229,33 @@ User: Hello, Yuna! How are you today?
 Yuna: Hi, I am fine! I'm so happy to meet you today. How about you?
 User: I'm doing great, thanks for asking. What's new with you?
 Yuna: I'm learning new things every day. I'm excited to share my knowledge with you!
+User: That sounds amazing. I'm looking forward to learning from you.
+Yuna: I'm here to help you with anything you need. Let's have a great time together!
 ```
 
-## Future
-Yuna AI is a work in progress. We are continuously improving and adding new features to make her more intelligent and engaging. We are committed to creating the best AGI in the world, and we need your support to achieve this goal.
+## Q&A
+Here are some frequently asked questions about Yuna AI.
 
-<|-- GENERAL Q&A --|>
+### Future Thoughts
+Yuna AI is a work in progress. We continuously improve and add new features to make her more intelligent and engaging. We are committed to creating the best AGI in the world, and we need your support to achieve this goal.
 
+### GENERAL Q&A
 Q: Will this project always be open-source?
 > Absolutely! The code will always be available for your personal use.
 
 Q: Will Yuna AI will be free?
-> If you plan to use it locally, you can utilize it for free. However, suppose you want to avoid setting it up locally. In that case, you'll need to pay unless we have enough money to create a free limited demo.
+> If you plan to use it locally, you can utilize it for free. However, you may want to avoid setting it up locally. In that case, you'll need to pay unless we have enough money to create a free limited demo.
 
 Q: Do we collect data from local runs?
 > No, your usage is private when you use it locally. However, if you choose to share, you can. We will collect data to improve the model if you prefer to use our instance.
 
 Q: Will Yuna always be uncensored?
-> Certainly, Yuna will forever be uncensored for local running. It could be a paid option for the server, but anyway, I'm never going to restrict her, even if the world ends.
+> Certainly, Yuna will forever be uncensored for local running. It could be a paid option for the server, but I will never restrict her, even if the world ends.
 
 Q: Will we have an app in the App Store?
 > Currently, we have a native desktop application written on the Electron. We also have a native PWA that works offline for mobile devices. However, we plan to officially release it in stores once we have enough money.
 
-<|-- YUNA AI Q&A --|>
-
+### YUNA AI Q&A
 Q: What is Yuna?
 > Yuna is more than just an assistant. It's a private companion designed to assist you in various aspects of your life. Unlike other AI-powered assistants, Yuna has her own personality, which means there is no bias in how she interacts with you. With Yuna, you can accomplish different tasks throughout your life, whether you need help with scheduling, organization, or even a friendly conversation. Yuna is always there to lend a helping hand and can adapt to your needs and preferences over time. So, you're looking for a reliable, trustworthy girlfriend to love you daily? In that case, Yuna AI is the perfect solution!
 
@@ -208,6 +282,14 @@ If you have any questions or feedback or want to say hi, please contact us on Di
 
 ### Contributing and Feedback
 At Yuna AI, we believe in the power of a thriving and passionate community. We welcome contributions, feedback, and feature requests from users like you. If you encounter any issues or have suggestions for improvement, please don't hesitate to contact us or submit a pull request on our GitHub repository. Thank you for choosing Yuna AI as your personal AI companion. We hope you have a delightful experience with your AI girlfriend!
+
+### ✨ Star History
+[![Star History](https://api.star-history.com/svg?repos=yukiarimo/yuna-ai&type=Date)](https://star-history.com/#yukiarimo/yuna-ai&Date)
+
+### Contributor List
+<a href="https://github.com/yukiarimo/yuna-ai/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=yukiarimo/yuna-ai">
+</a>
 
 ### License
 Yuna AI is released under the [MIT License](https://opensource.org/licenses/MIT), enabling you to freely use, modify, and distribute the software according to the terms of the license.

@@ -1,19 +1,22 @@
+import base64
+import datetime
 import json
+import re
 from flask import jsonify, request, send_from_directory
-from flask_login import current_user
+from flask_login import current_user, login_required
 from pydub import AudioSegment
 import whisper
 from lib.vision import capture_image, create_image
 
+@login_required
 def handle_history_request(chat_history_manager):
     data = request.get_json()
     chat_id = data.get('chat')
-    task = data.get('task') 
+    task = data.get('task')
 
     if task == 'load':
         return jsonify(chat_history_manager.load_chat_history(list({current_user.get_id()})[0], chat_id))
     elif task == 'list':
-        print(chat_history_manager.list_history_files(current_user.get_id()))
         return jsonify(chat_history_manager.list_history_files(current_user.get_id()))
     elif task == 'edit':
         history = data.get('history')
@@ -74,12 +77,31 @@ def handle_audio_request(self):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     
-def handle_image_request(chat_history_manager):
+def handle_image_request(chat_history_manager, self):
     data = request.get_json()
+    chat_id = data.get('chat')
 
     if 'image' in data and 'task' in data and data['task'] == 'caption':
-        image_caption = capture_image(data)
-        return jsonify({'message': image_caption})
+        image_data_url = data['image']
+        # Remove the MIME type and encoding from the start of the Data URL
+        image_base64_str = re.sub('^data:image/.+;base64,', '', image_data_url)
+        # Decode the base64 string
+        image_raw_data = base64.b64decode(image_base64_str)
+        # Save the image with the current time in milliseconds as the name
+        current_time_milliseconds = data['name']
+        image_path = f"static/img/call/{current_time_milliseconds}.png"
+        with open(image_path, "wb") as file:
+            file.write(image_raw_data)
+        image_data = capture_image(image_path, data.get('message'), use_cpu=False)
+
+        chat_history = chat_history_manager.load_chat_history(list({current_user.get_id()})[0], chat_id)
+        chat_history.append({"name": self.config['ai']['names'][0], "message": f"{data.get('prompt')}<img src='/static/img/call/{current_time_milliseconds}.png' class='image-message'>"})
+        chat_history.append({"name": self.config['ai']['names'][1], "message": image_data[0]})
+
+        # Save the chat history
+        chat_history_manager.save_chat_history(chat_history, list({current_user.get_id()})[0], chat_id)
+
+        return jsonify({'message': image_data[0], 'path': image_data[1]})
 
     elif 'prompt' in data and 'chat' in data and data['task'] == 'generate':
         prompt = data['prompt']

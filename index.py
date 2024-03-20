@@ -49,7 +49,6 @@ class YunaServer:
         if user_id in users:
             user = self.User()
             user.id = user_id
-            print(f"User {user_id} found in users.")  # Debugging line
             return user
         return None
 
@@ -82,7 +81,7 @@ class YunaServer:
         self.app.route('/main', methods=['GET', 'POST'])(self.main)
         self.app.route('/history', methods=['POST'], endpoint='history')(lambda: handle_history_request(self.chat_history_manager))
         self.app.route('/message', methods=['POST'], endpoint='message')(lambda: handle_message_request(self.chat_generator, self.chat_history_manager))
-        self.app.route('/image', methods=['POST'], endpoint='image')(lambda: handle_image_request(self.chat_history_manager))
+        self.app.route('/image', methods=['POST'], endpoint='image')(lambda: handle_image_request(self.chat_history_manager, self))
         self.app.route('/audio', methods=['POST'], endpoint='audio')(lambda: handle_audio_request(self))
         self.app.route('/logout', methods=['GET'])(self.logout)
         self.app.route('/services.html', methods=['GET'], endpoint='services')(lambda: services(self))

@@ -11,7 +11,6 @@ class ChatHistoryManager:
 
     def _user_folder_path(self, username):
         """Constructs the path to the user's folder."""
-        print(f"Username: {username}")
         return os.path.join(self.base_history_path, username)
 
     def _ensure_user_folder_exists(self, username):
@@ -21,8 +20,7 @@ class ChatHistoryManager:
         return user_folder_path
 
     def create_chat_history_file(self, username, chat_id):
-        user_folder_path = self._ensure_user_folder_exists(username)
-        history_file_path = os.path.join(user_folder_path, f"{chat_id}")  # File path includes username folder
+        history_file_path = os.path.join(self._ensure_user_folder_exists(username), f"{chat_id}")
         history_starting_template = [
             {"name": self.config['ai']['names'][0], "message": "Hi"}, 
             {"name": self.config['ai']['names'][1], "message": "Hello"},
@@ -71,12 +69,8 @@ class ChatHistoryManager:
         if not os.path.isdir(user_folder_path):
             return []  # Return an empty list if the user's folder doesn't exist
         
-        print(f"User folder path: {user_folder_path}")
-
         # List only files in the user's directory, excluding directories
         history_files = [f for f in os.listdir(user_folder_path) if os.path.isfile(os.path.join(user_folder_path, f))]
-
-        print(f"History files: {history_files}")
 
         # Sort alphabetically
         history_files.sort(key=lambda x: x.lower())

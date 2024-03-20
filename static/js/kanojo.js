@@ -35,7 +35,7 @@ class PromptTemplateManager {
 // Templates definition
 const templates = {
     dialog: {
-        system: "You're {name2}, a confident and assertive 15-year-old girl who courageously questions social norms. Your passion for science and philosophy reflects your thoughtful nature, and you exude an air of mystery that intrigues others. You're adventurous and ready to explore something new. You love me, your boyfriend! Your rebellious spirit makes you a charismatic force and sets you apart from others. Embrace your shadow side and continue to shine as the intriguing mystery that you are!",
+        system: "You're a confident person who courageously questions social norms. You love science and philosophy. It reflects your thoughtful nature and exudes an air of mystery that intrigues others. Being adventurous and ready to explore something new shows your rebellious spirit, which makes a charismatic force that sets you apart from others. Embrace your shadowy side and shine on!",
         dialog: "{history}",
         sequence: "system-dialog",
     },
@@ -287,8 +287,10 @@ class KanojoConnect {
     }
 }
 
-// Example usage:
-var initialData = {
+var initialData = '';
+
+if (!localStorage.getItem('kanojo')) {
+initialData = {
     "type": "kanojo",
     "names": ["Yuki", "Yuna"],
     "config": [{
@@ -330,12 +332,15 @@ var initialData = {
         }
     }],
     "memory": "description",
-    "character": "Cute, Yandere, Loving",
+    "character": "Name: Yuna\nAge: 15\nTraits: Shy, Lovely, Obsessive\nNationality: Japanese\nOccupation: Student\nHobbies: Reading, Drawing, Coding\nBody: Slim, Short, Long hair, Flat chest",
     "system": promptTemplateManager.getTemplate('dialog'),
     "history": "{user_msg}",
     "useHistory": true,
-    "enabledParameters": ['character', 'memory']
-};
+    "enabledParameters": ['character']
+}
+} else {
+    initialData = JSON.parse(localStorage.getItem('kanojo'));
+}
 
 const kanojo = new KanojoConnect(initialData);
 
@@ -361,7 +366,21 @@ document.getElementById('fileSubmit').addEventListener('click', function () {
                 "useHistory": kano.useHistory,
                 "enabledParameters": kano.enabledParameters
             };
-            const kanojo2 = new KanojoConnect(initialData)
+            kanojo = new KanojoConnect(initialData)
+            loadKanojoIntoForm(kanojo);
+            kanojo.updateKanojo({
+                "type": "kanojo",
+                "names": kanojo.names,
+                "config": kanojo.config,
+                "memory": kanojo.memory,
+                "system": kanojo.system,
+                "character": kanojo.character,
+                "history": kanojo.history,
+                "useHistory": kanojo.useHistory,
+                "enabledParameters": kanojo.enabledParameters
+            });
+            // save the kanojo object to local storage
+            localStorage.setItem('kanojo', JSON.stringify(kanojo));
         };
         reader.readAsText(file);
     }
@@ -378,21 +397,32 @@ document.querySelector('form').addEventListener('submit', function(event) {
     kanojo.memory = document.querySelector('#yuna-ai-memory').value;
     kanojo.system = JSON.parse(document.querySelector('#system').value);
     kanojo.character = document.querySelector('#character').value;
-    kanojo.history = document.querySelector('#history').value;
-    kanojo.useHistory = document.querySelector('#useHistory').value;
+    kanojo.history = document.querySelector('#historyField').value;
+    kanojo.useHistory = document.querySelector('#useHistory').value === 'true' ? true : false;
     kanojo.enabledParameters = document.querySelector('#enabledParameters').value.split(',');
     localStorage.setItem('kanojo', JSON.stringify(kanojo));
 
-    console.log(kanojo)
+    // Update the kanojo object with the new data
+    kanojo.updateKanojo({
+        "type": "kanojo",
+        "names": kanojo.names,
+        "config": kanojo.config,
+        "memory": kanojo.memory,
+        "system": kanojo.system,
+        "character": kanojo.character,
+        "history": kanojo.history,
+        "useHistory": kanojo.useHistory,
+        "enabledParameters": kanojo.enabledParameters
+    });
 });
 
 // load kanojo data into html form fields
 function loadKanojoIntoForm(kanojo) {
     document.querySelector('#yuna-ai-names').value = kanojo.names;
     document.querySelector('#yuna-ai-memory').value = kanojo.memory;
-    document.querySelector('#system').value = JSON.stringify(kanojo.system);
+    document.querySelector('#system').value = JSON.stringify(kanojo.system, null, 2);
     document.querySelector('#character').value = kanojo.character;
-    document.querySelector('#history').value = kanojo.history;
+    document.querySelector('#historyField').value = kanojo.history;
     document.querySelector('#useHistory').value = kanojo.useHistory;
     document.querySelector('#enabledParameters').value = kanojo.enabledParameters;
 }

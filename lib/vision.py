@@ -3,10 +3,9 @@ import os
 from diffusers import StableDiffusionPipeline
 from PIL import Image
 from datetime import datetime
-import torch
 from PIL import Image
-from lib.visioninit import Moondream
-from transformers import CodeGenTokenizerFast as Tokenizer
+import torch
+from transformers import AutoModelForCausalLM, AutoTokenizer
 
 if os.path.exists("static/config.json"):
     with open("static/config.json", 'r') as file:
@@ -33,27 +32,16 @@ def create_image(prompt):
 
     return image_name
 
-def capture_image(image_path, prompt=None, use_cpu=False):
-    # print arguments
-    print("Arguments:")
-    print("  image_path:", image_path)
-    print("  prompt:", prompt)
-    print("  use_cpu:", use_cpu)
-
-    device = torch.device("cpu") if use_cpu else (torch.device("cuda") if torch.cuda.is_available() else (torch.device("mps") if torch.backends.mps.is_available() else torch.device("cpu")))
-    dtype = torch.float32 if use_cpu else (torch.float16 if torch.cuda.is_available() or torch.backends.mps.is_available() else torch.float32)
-    
-    if device != torch.device("cpu"):
-        print("Using device:", device)
-
-    model_id = "vikhyatk/moondream1"
-    tokenizer = Tokenizer.from_pretrained(model_id)
-    moondream = Moondream.from_pretrained(model_id).to(device=device, dtype=dtype)
-    moondream.eval()
+def capture_image(image_path=None, prompt=None, use_cpu=False):
+    model_id = f"{agi_model_dir}/yuna-vision"
+    model = AutoModelForCausalLM.from_pretrained(
+        model_id, 
+        trust_remote_code=True,
+        torch_dtype=torch.float16
+    ).to(config["server"]["device"])
+    tokenizer = AutoTokenizer.from_pretrained(model_id)
 
     image = Image.open(image_path)
-    image_embeds = moondream.encode_image(image)
-
-    print(">", prompt)
-    answer = moondream.answer_question(image_embeds, prompt, tokenizer)
+    enc_image = model.encode_image(image)
+    answer = model.answer_question(enc_image, prompt, tokenizer)
     return [answer, image_path]

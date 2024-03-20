@@ -107,7 +107,7 @@ class messageManager {
       this.inputText.value = '';
       const serverEndpoint = `${server_url + server_port}${url}`;
       const headers = { 'Content-Type': 'application/json' };
-      const body = JSON.stringify({ chat: selectedFilename, text: message, template: kanojo.buildKanojo() });
+      const body = JSON.stringify({ chat: selectedFilename, text: message, useHistory: kanojo.useHistory, template: kanojo.buildKanojo() });
 
       fetch(serverEndpoint, { method: 'POST', headers, body })
         .then(response => response.json())
@@ -154,7 +154,7 @@ class messageManager {
     const [imageDataURL, imageName, messageForImage] = imageData;
     const serverEndpoint = `${server_url + server_port}/image`;
     const headers = { 'Content-Type': 'application/json' };
-    const body = JSON.stringify({ image: imageDataURL, name: imageName, message: messageForImage, task: 'caption' });
+    const body = JSON.stringify({ image: imageDataURL, name: imageName, message: messageForImage, task: 'caption', chat: selectedFilename});
 
     fetch(serverEndpoint, { method: 'POST', headers, body })
       .then(response => response.ok ? response.json() : Promise.reject('Error sending captured image.'))
@@ -226,31 +226,34 @@ class HistoryManager {
       return; // Exit if no name is entered
     }
 
-    fetch(`${this.serverUrl + this.serverPort}/history`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chat: newFileName,
-        task: "create"
+    selectedFilename = newFileName;
+
+    fetch(`${server_url + server_port}/history`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          chat: newFileName,
+          task: "create"
+        })
       })
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then(responseData => {
-      console.log('File created:', responseData);
-      // Optionally, update UI or state to reflect the new file
-    })
-    .catch(error => {
-      console.error('An error occurred:', error);
-    });
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(responseData => {
+        alert(responseData);
+      })
+      .catch(error => {
+        console.error('An error occurred:', error);
+      });
 
     // Reload the page with a delay of 1 second
     setTimeout(() => {
-      location.reload();
+      //location.reload();
     }, 1000);
   }
 

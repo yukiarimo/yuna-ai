@@ -41,7 +41,7 @@
         "yuna_default_model": "yuna-ai-q5.gguf",
         "agi_model_dir": "lib/models/agi/",
         "art_default_model": "yuna_ai_anime.safetensors",
-        "device": "cpu"
+        "device": "mps"
     },
     "security": {
         "secret_key": "YourSecretKeyHere123!",

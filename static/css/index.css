@@ -211,7 +211,8 @@ body {
 }
 
 #msgCol {
-    background-image: url('/static/img/background.webp');
+    height: 100%;
+    background-image: linear-gradient(to right top, #004d7a, #008793);
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center top;

@@ -18,7 +18,7 @@ class ChatGenerator:
         )
         self.classifier = pipeline("text-classification", model=f"{config['server']['agi_model_dir']}yuna-emotion")
 
-    def generate(self, chat_id, speech=False, text="", template=None, chat_history_manager=None):
+    def generate(self, chat_id, speech=False, text="", template=None, chat_history_manager=None, useHistory=True):
         chat_history = chat_history_manager.load_chat_history(list({current_user.get_id()})[0], chat_id)
         response = ''
 
@@ -33,13 +33,15 @@ class ChatGenerator:
         text_of_history = ''
         history = ''
 
-        for item in chat_history:
-            name = item.get('name', '')
-            message = item.get('message', '')
-            if name and message:
-                history += f'{name}: {message}\n'
+        if useHistory == True:
+            for item in chat_history:
+                name = item.get('name', '')
+                message = item.get('message', '')
+                if name and message:
+                    history += f'{name}: {message}\n'
 
-        text_of_history = f"{history}Yuki: {text}\nYuna:"
+        # make something like "{history}Yuki: {text}\nYuna:" but with names 0 and 1 instead of Yuki and Yuna based on the config
+        text_of_history = f"{history}{self.config['ai']['names'][0]}: {text}\n{self.config['ai']['names'][1]}:"
 
         tokenized_history = self.model.tokenize(text_of_history.encode('utf-8'))
 

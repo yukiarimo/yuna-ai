@@ -82,7 +82,7 @@ class YunaServer:
         self.app.route('/history', methods=['POST'], endpoint='history')(lambda: handle_history_request(self.chat_history_manager))
         self.app.route('/message', methods=['POST'], endpoint='message')(lambda: handle_message_request(self.chat_generator, self.chat_history_manager))
         self.app.route('/image', methods=['POST'], endpoint='image')(lambda: handle_image_request(self.chat_history_manager, self))
-        self.app.route('/audio', methods=['POST'], endpoint='audio')(lambda: handle_audio_request(self))
+        self.app.route('/audio', methods=['GET', 'POST'], endpoint='audio')(lambda: handle_audio_request(self))
         self.app.route('/logout', methods=['GET'])(self.logout)
         self.app.route('/services.html', methods=['GET'], endpoint='services')(lambda: services(self))
 
@@ -173,6 +173,6 @@ app = yuna_server.app
 
 if __name__ == '__main__':
     if yuna_server.config["server"]["port"] != "":
-        app.run(host='0.0.0.0', port=yuna_server.config["server"]["port"])
+        app.run(host='0.0.0.0', port=yuna_server.config["server"]["port"], ssl_context=('cert.pem', 'key.pem'))
     else:
-        app.run(host='0.0.0.0', port=4848)
+        app.run(host='0.0.0.0', port=4848, ssl_context=('cert.pem', 'key.pem'))

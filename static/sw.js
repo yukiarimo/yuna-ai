@@ -3,11 +3,8 @@
 importScripts('/static/sw-toolbox.js');
 
 toolbox.precache([
+    "/",
     "/yuna.html",
-    "/static/js/offline/main-worker.js",
-    "/static/js/offline/main.js",
-    "/static/js/offline/thread.js",
-    "/static/js/offline/offline.js",
     "/static/js/setup.js",
     "/static/js/himitsu.js",
     "/static/js/index.js",
@@ -16,7 +13,8 @@ toolbox.precache([
     "/static/js/bootstrap/script.min.js",
     "/static/fonts/kawai-font.woff",
     "/static/img/yuna-ai.png",
-    "/static/img/yuna-girl-head.webp"
+    "/static/img/yuna-girl-head.webp",
+    '/static/img/yuna-girl.webp'
 ]);
 
 toolbox.router.get('/images/*', toolbox.cacheFirst);

@@ -8,6 +8,76 @@ var himitsuCopilot;
 var name1;
 var name2;
 var config_data;
+let isRecording = false;
+var isYunaListening = false;
+let mediaRecorder;
+let audioChunks = [];
+
+const buttonAudioRec = document.querySelector('#buttonAudioRec');
+const iconAudioRec = buttonAudioRec.querySelector('#iconAudioRec');
+
+buttonAudioRec.addEventListener('click', () => {
+  if (!isRecording) {
+    startRecording();
+  } else {
+    stopRecording();
+  }
+});
+
+function startRecording() {
+  navigator.mediaDevices.getUserMedia({ audio: true })
+    .then(stream => {
+      mediaRecorder = new MediaRecorder(stream);
+      mediaRecorder.start();
+      iconAudioRec.classList.remove('fa-microphone');
+      iconAudioRec.classList.add('fa-stop');
+      buttonAudioRec.classList.add('btn-danger');
+      buttonAudioRec.classList.remove('btn-secondary');
+      isRecording = true;
+
+      mediaRecorder.addEventListener('dataavailable', event => {
+        audioChunks.push(event.data);
+      });
+
+      mediaRecorder.addEventListener('stop', () => {
+        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+        sendAudioToServer(audioBlob);
+        audioChunks = [];
+      });
+    })
+    .catch(error => {
+      console.error('Error accessing the microphone', error);
+    });
+}
+
+function stopRecording() {
+  mediaRecorder.stop();
+  iconAudioRec.classList.add('fa-microphone');
+  iconAudioRec.classList.remove('fa-stop');
+  buttonAudioRec.classList.remove('btn-danger');
+  buttonAudioRec.classList.add('btn-secondary');
+  isRecording = false;
+}
+
+function sendAudioToServer(audioBlob) {
+  const formData = new FormData();
+  formData.append('audio', audioBlob);
+
+  fetch('/audio', {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log('The text in video:', data.text);
+    // Here you can update the client with the transcription result
+    // For example, you could display the result in an HTML element
+    messageManager.sendMessage(data.text, imageData = '', url = '/message')
+  })
+  .catch(error => {
+    console.error('Error sending audio to server', error);
+  });
+}
 
 async function loadConfig() {
   const { ai: { names: [name1, name2] } } = await (await fetch('/static/config.json')).json();
@@ -99,7 +169,7 @@ class messageManager {
 
   sendMessage(message, imageData = '', url = '/message') {
     this.inputText = document.getElementById('input_text');
-    this.createMessage(name1, this.inputText.value);
+    this.createMessage(name1, message || this.inputText.value);
     this.createTypingBubble();
 
     if (url === '/message') {
@@ -107,14 +177,16 @@ class messageManager {
       this.inputText.value = '';
       const serverEndpoint = `${server_url + server_port}${url}`;
       const headers = { 'Content-Type': 'application/json' };
-      const body = JSON.stringify({ chat: selectedFilename, text: message, useHistory: kanojo.useHistory, template: kanojo.buildKanojo() });
+      const body = JSON.stringify({ chat: selectedFilename, text: message, useHistory: kanojo.useHistory, template: kanojo.buildKanojo(), speech: isYunaListening });
 
       fetch(serverEndpoint, { method: 'POST', headers, body })
         .then(response => response.json())
         .then(data => {
           this.removeTypingBubble();
           this.createMessage(name2, data.response);
-          playAudio('send');
+          if (isYunaListening) {
+            playAudio();
+          }
         })
         .catch(error => {
           this.handleError(error);
@@ -181,13 +253,18 @@ messageManager = new messageManager();
 function playAudio(audioType = 'tts') {
   const audioSource = document.getElementById("backgroundMusic");
   const audioMap = {
-    'tts': `audio/output.mp3?v=${Math.random()}`,
+    'tts': `/static/audio/audio.aiff?v=${Math.random()}`,
     'message': 'audio/sounds/message.mp3',
     'send': 'audio/sounds/send.mp3',
     'error': 'audio/sounds/error.mp3',
     'ringtone': 'audio/sounds/ringtone.mp3'
   };
   audioSource.src = audioMap[audioType];
+  // calculate the duration of the audio, play the audio and stop after that duration
+  audioSource.play();
+  audioSource.addEventListener('ended', () => {
+    audioSource.pause();
+  });
 }
 
 // Other functions (clearHistory, loadHistory, downloadHistory) go here if needed.
@@ -380,17 +457,70 @@ class HistoryManager {
 // Assuming server_url, server_port, and config_data are defined globally
 var historyManager = new HistoryManager();
 
-navigator.mediaDevices.getUserMedia({
-    video: true
-  })
-  .then(function (stream) {
-    var localVideo = document.getElementById('localVideo');
-    localVideo.srcObject = stream;
-  })
-  .catch(function (error) {
-    document.getElementById('localVideo').remove()
-    console.log('Error accessing the camera:', error);
+function initializeVideoStream() {
+  var localVideo = document.getElementById('localVideo');
+  var videoStream = null; // To hold the stream globally
+  var facingMode = "user"; // Default facing mode
+
+  // Function to start or restart the video stream with the given facingMode
+  function startVideo() {
+    // First, stop any existing video stream
+    if (videoStream) {
+      stopVideo();
+    }
+
+    // Request video stream with the current facingMode
+    navigator.mediaDevices.getUserMedia({
+      video: { facingMode: facingMode },
+      audio: false
+    })
+    .then(function(stream) {
+      videoStream = stream; // Assign the stream to the global variable
+      localVideo.srcObject = stream;
+    })
+    .catch(function(error) {
+      console.log('Error accessing the camera:', error);
+      localVideo.remove();
+    });
+  }
+
+  // Function to stop the video stream
+  function stopVideo() {
+    if (videoStream) {
+      videoStream.getTracks().forEach(function(track) {
+        track.stop();
+      });
+      videoStream = null; // Clear the global stream variable
+      localVideo.srcObject = null;
+    }
+  }
+
+  // Function to flip the camera
+  function flipCamera() {
+    // Toggle facingMode between "user" and "environment"
+    facingMode = facingMode === "user" ? "environment" : "user";
+    startVideo(); // Restart video with the new facingMode
+  }
+
+  // Add click event listener to the video element to flip the camera on click
+  localVideo.addEventListener('click', flipCamera);
+
+  // Start the video stream when the modal is shown
+  var videoCallModal = document.getElementById('videoCallModal');
+  videoCallModal.addEventListener('shown.bs.modal', function () {
+    isYunaListening = true;
+    startVideo();
   });
+
+  // Stop the video stream when the modal is hidden
+  videoCallModal.addEventListener('hidden.bs.modal', function () {
+    isYunaListening = false;
+    stopVideo();
+  });
+}
+
+// Initialize the video stream functionality after a delay
+setTimeout(initializeVideoStream, 3000);
 
 function closePopup(popupId) {
   var popup = document.getElementById(popupId);
@@ -449,11 +579,7 @@ function captureImage() {
   captureCanvas = document.getElementById('capture-canvas');
   imageDataURL = captureCanvas.toDataURL('image/png'); // Convert canvas to base64 data URL
 
-  var messageForImage = ''
-
-  if (isTTS.toString() == 'false') {
-    messageForImage = prompt('Enter a message for the image:');
-  }
+  messageForImage = prompt('Enter a message for the image:');
 
   // generate a random image name using current timestamp
   var imageName = new Date().getTime().toString();
@@ -681,41 +807,6 @@ function populateHistorySelect() {
   });
 }
 
-/*
-async function populateHistorySelect() {
-  loadConfig();
-  const historySelect = document.getElementById('chat-items');
-  const config = JSON.parse(localStorage.getItem('config'));
-
-  if (!config) {
-    setTimeout(() => location.reload(), 100);
-    return;
-  }
-
-  server_port = config.server.port;
-  server_url = config.server.url;
-
-  try {
-    const response = await fetch(`${server_url+server_port}/history`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ task: 'list' })
-    });
-
-    if (!response.ok) throw new Error('Error fetching history files.');
-
-    const data = await response.json();
-    console.log('History files:', data);
-    historySelect.insertAdjacentHTML('beforeend', data.map(filename => `...`).join(''));
-    
-    selectedFilename = config_data.server.default_history_file;
-    historyManager = new HistoryManager(server_url, server_port, config_data.server.default_history_file);
-  } catch (error) {
-    console.error('Error:', error);
-  }
-}
-*/
-
 function loadSelectedHistory(selectedFilename) {
   const messageContainer = document.getElementById('message-container');
   if (selectedFilename == undefined) {
@@ -758,16 +849,6 @@ function duplicateAndCategorizeChats() {
 
   collectionItems.append(generalChatsDiv, otherChatsDiv);
   document.getElementById('collectionItems').replaceWith(collectionItems);
-}
-
-function muteAudio() {
-  audioElement = document.getElementById("backgroundMusic");
-
-  if (audioElement) {
-    audioElement.muted = true
-  } else {
-    audioElement.muted = false
-  }
 }
 
 function fixDialogData() {

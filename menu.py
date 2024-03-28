@@ -56,6 +56,7 @@ def start_yuna(event):
 def install_update_dependencies(event):
     windows['configure_gpu'] = ptg.Window(
         ptg.Label("[210 bold]========== Install =========="),
+        ptg.Label("Make sure to install torch before running the script."),
         ptg.Button("CPU", onclick=install_cpu),
         ptg.Button("NVIDIA GPU", onclick=install_nvidia),
         ptg.Button("AMD GPU", onclick=install_amd),
@@ -78,7 +79,7 @@ def install_nvidia(event):
     env = os.environ.copy()
     env["CMAKE_ARGS"] = "-DLLAMA_CUBLAS=on"
     subprocess.check_call([sys.executable, "-m", "pip", "install", "llama-cpp-python"], env=env)
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements-nvidia.txt"])
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"])
     print("NVIDIA dependencies installed!")
     if 'configure_gpu' in windows:
         manager.remove(windows['configure_gpu'])
@@ -93,7 +94,7 @@ def install_amd(event):
     env["CMAKE_ARGS"] = "-DLLAMA_HIPBLAS=ON -DCMAKE_C_COMPILER=/opt/rocm/llvm/bin/clang -DCMAKE_CXX_COMPILER=/opt/rocm/llvm/bin/clang++ -DCMAKE_PREFIX_PATH=/opt/rocm -DAMDGPU_TARGETS=gfx1100"
     env["FORCE_CMAKE"] = "1"
     subprocess.check_call([sys.executable, "-m", "pip", "install", "llama-cpp-python"], env=env)
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements-amd.txt"])
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"])
     print("AMD dependencies installed!")
     if 'configure_gpu' in windows:
         manager.remove(windows['configure_gpu'])
@@ -104,7 +105,7 @@ def install_metal(event):
     env = os.environ.copy()
     env["CMAKE_ARGS"] = "-DLLAMA_METAL=on"
     subprocess.check_call([sys.executable, "-m", "pip", "install", "llama-cpp-python"], env=env)
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements-macos.txt"])
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"])
     print("Metal dependencies installed!")
     if 'configure_gpu' in windows:
         manager.remove(windows['configure_gpu'])
@@ -162,7 +163,7 @@ def install_emotion(event):
 
 def install_yuna(event):
     print("Installing Yuna model...")
-    subprocess.check_call(["wget", "https://huggingface.co/yukiarimo/yuna-ai/resolve/main/yuna-ggml-q5.gguf", "-P", "lib/models/yuna/"])
+    subprocess.check_call(["wget", "https://huggingface.co/yukiarimo/yuna-ai-v2/resolve/main/yuna-ai-v2-q6_k.gguf", "-P", "lib/models/yuna/"])
 
 def clear_models(event):
     windows['clear_models'] = ptg.Window(

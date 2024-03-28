@@ -2,7 +2,7 @@
   "name": "yuna-ai",
   "productName": "Yuna AI",
   "version": "1.0.0",
-  "description": "Your Personal AI girlfriend",
+  "description": "Your Private Companion",
   "main": "src/index.js",
   "scripts": {
     "start": "electron-forge start",

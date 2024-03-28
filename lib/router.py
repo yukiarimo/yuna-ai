@@ -1,12 +1,15 @@
 import base64
 import datetime
 import json
+import os
 import re
 from flask import jsonify, request, send_from_directory
 from flask_login import current_user, login_required
 from pydub import AudioSegment
 import whisper
 from lib.vision import capture_image, create_image
+
+model = whisper.load_model(name="tiny.en", device="cpu")
 
 @login_required
 def handle_history_request(chat_history_manager):
@@ -41,41 +44,18 @@ def handle_message_request(chat_generator, chat_history_manager, chat_id=None, s
     speech = data.get('speech')
     text = data.get('text')
     template = data.get('template')
-
-    # Print all the data received from the client in the terminal for debugging in the table format
-    print(f"""
-    chat_id: {chat_id}
-    speech: {speech}
-    text: {text}
-    template: {template}
-    """)
-
     response = chat_generator.generate(chat_id, speech, text, template, chat_history_manager)
-
-    print('response -> ', response)
-
     return jsonify({'response': response})
 
 def handle_audio_request(self):
-    audio_data = request.files['audio']
+    if 'audio' not in request.files:
+        return jsonify({'error': 'No audio file'}), 400
 
-    try:
-        # Save the audio file
-        audio_path = 'audio.wav'
-        audio_data.save(audio_path)
+    audio_file = request.files['audio']
+    audio_file.save('static/audio/audio.wav')
 
-        # Convert the audio to MP3
-        mp3_path = 'audio.mp3'
-        sound = AudioSegment.from_wav(audio_path)
-        sound.export(mp3_path, format='mp3')
-
-        print('Audio saved')
-
-        result = whisper.transcribe("audio.mp3")
-
-        return jsonify({'message': result["text"]})
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+    result = model.transcribe('static/audio/audio.wav')
+    return jsonify({'text': result['text']})
     
 def handle_image_request(chat_history_manager, self):
     data = request.get_json()

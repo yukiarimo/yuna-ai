@@ -27,19 +27,8 @@
             "url": "http://www.yuna-ai.live"
         }
     </script>
-    <!--
-<script type="importmap">
-        {
-          "imports": {
-            "three": "https://unpkg.com/three@0.161.0/build/three.module.js",
-            "three/addons/": "https://unpkg.com/three@0.161.0/examples/jsm/"
-          }
-        }
-      </script>
-    -->
+
     <link rel="icon" type="image/jpeg" sizes="60x60" href="/static/img/yuna-ai.png">
-    <script src="/static/js/offline/offline.js" defer></script>
-    <script type="module" src="/static/js/offline/thread.js" defer></script>
     <link rel="manifest" href="/static/manifest.json">
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/css/awesome.css">
@@ -50,7 +39,6 @@
     <script src="/static/js/index.js" defer></script>
     <script src="/static/js/himitsu.js" defer></script>
     <script src="/static/js/setup.js" defer></script>
-
     <style>
         body {
             margin: 0;
@@ -76,84 +64,6 @@
             });
         }
     </script>
-
-    <!--
-<script type="module" defer>
-        import * as THREE from 'three';
-    import { OrbitControls } from 'https://unpkg.com/three/examples/jsm/controls/OrbitControls.js';
-    import { GLTFLoader } from 'https://unpkg.com/three/examples/jsm/loaders/GLTFLoader.js';
-
-    let camera, scene, renderer, model, controls;
-
-    init();
-    animate();
-
-    function init() {
-        scene = new THREE.Scene();
-
-        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
-        camera.position.set(0, 150, 50); // Adjust camera position to better view the model
-
-        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setClearColor( 0x000000, 0 ); // the default
-
-        // create a div element
-        const div = document.createElement('div');
-        // set id to the 3d-model
-        div.id = 'vr-model';
-        // append the renderer to the div
-        div.appendChild(renderer.domElement);
-        // append the div to the top of the body
-        document.body.insertBefore(div, document.body.firstChild);
-
-        controls = new OrbitControls(camera, renderer.domElement);
-        controls.target.set(0, -20, -150);
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.05;
-        controls.maxPolarAngle = Math.PI / 2; // Prevent the camera from going below the ground
-        controls.minPolarAngle = Math.PI / 3; // Prevent the camera from going too high
-
-        const ambientLight = new THREE.AmbientLight(0xcccccc, 0.4);
-        scene.add(ambientLight);
-
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-        directionalLight.position.set(1, 1, 0).normalize();
-        scene.add(directionalLight);
-
-        // GLTFLoader to load a 3D model
-        const loader = new GLTFLoader();
-        loader.load('/static/js/untitled.glb', function (gltf) {
-            model = gltf.scene;
-            scene.add(model);
-        }, undefined, function (error) {
-            console.error(error);
-        });
-
-        window.addEventListener('resize', onWindowResize, false);
-    }
-
-    function onWindowResize() {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-    }
-
-    function animate() {
-        requestAnimationFrame(animate);
-
-        // Required if controls.enableDamping or controls.autoRotate are set to true
-        controls.update();
-
-        render();
-    }
-
-    function render() {
-        renderer.render(scene, camera);
-    }
-</script>
--->
-
 </head>
 
 <body id="page-top">
@@ -185,8 +95,9 @@
                     <li><a href="#" class="nav-link side-link" onclick="settingsView.show();"><i class="fas fa-cog"></i>
                             Settings</a>
                     </li>
-                    <li><a href="#" class="nav-link side-link" onclick="OpenTab('5')"><i class="fas fa-ellipsis-h"></i>
-                            More</a>
+                    <li><a href="#" class="nav-link side-link"
+                            onclick="OpenLink('https://www.patreon.com/YukiArimo')"><i class="fas fa-heart"></i>
+                            Support</a>
                     </li>
                 </ul>
 
@@ -408,15 +319,18 @@
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="system" class="form-label">System</label>
-                                                    <textarea type="text" class="form-control" id="system" value=""></textarea>
+                                                    <textarea type="text" class="form-control" id="system"
+                                                        value=""></textarea>
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="character" class="form-label">Character</label>
-                                                    <textarea type="text" class="form-control" id="character" value=""></textarea>
+                                                    <textarea type="text" class="form-control" id="character"
+                                                        value=""></textarea>
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="historyField" class="form-label">History</label>
-                                                    <textarea type="text" class="form-control" id="historyField" value=""></textarea>
+                                                    <textarea type="text" class="form-control" id="historyField"
+                                                        value=""></textarea>
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="useHistory" class="form-label">Use History</label>
@@ -429,7 +343,8 @@
                                                         value="">
                                                 </div>
 
-                                                <button type="submit" class="btn btn-primary" id="updatekanojo">Update</button>
+                                                <button type="submit" class="btn btn-primary"
+                                                    id="updatekanojo">Update</button>
                                             </form>
                                         </div>
                                     </div>
@@ -483,58 +398,7 @@
                         </div>
 
                         <div class="tab-o" id="5">
-                            <main class="container settings-container el-9">
-                                <section>
-                                    <h2> Demo </h2>
 
-                                    <div class="mb-3">
-                                        <label for="model" class="form-label">Model:</label>
-                                        <select id="model" name="model" class="form-select" aria-label="Select model"
-                                            required>
-                                            <option
-                                                value="https://huggingface.co/afrideva/TinyMistral-248M-SFT-v4-GGUF/resolve/main/tinymistral-248m-sft-v4.q8_0.gguf">
-                                                tinymistral-248m-sft-v4 q8_0 (265.26 MB)</option>
-                                            <option
-                                                value="https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF/resolve/main/tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf">
-                                                TinyLlama/TinyLlama-1.1B-Chat-v1.0 Q4_K_M (669 MB)</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label for="prompt" class="form-label">Prompt:</label>
-                                        <textarea id="prompt" name="prompt" class="form-control"
-                                            rows="5">Suppose Alice originally had 3 apples.</textarea>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label for="result" class="form-label">Result:</label>
-                                        <pre id="result" name="result" class="form-control"></pre>
-                                    </div>
-                                </section>
-
-                                <section class="mb-3">
-                                    <button id="run" class="btn btn-primary">Run</button>
-                                </section>
-
-                                <button id="startme">deddede</button>
-
-                                <section class="mb-3">
-                                    <button id="run-progress-loading-model" class="btn btn-primary" aria-busy="true"
-                                        hidden>Loading model...</button>
-                                    <button id="run-progress-loaded-model" class="btn btn-success" aria-busy="true"
-                                        hidden>Loaded model</button>
-                                    <button id="run-progress-generating" class="btn btn-warning" aria-busy="true"
-                                        hidden>Generating...</button>
-                                </section>
-
-                                <section>
-                                    <div class="progress" hidden>
-                                        <div id="model-progress" class="progress-bar" role="progressbar"
-                                            style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                                        </div>
-                                    </div>
-                                </section>
-                            </main>
                         </div>
                     </div>
                 </div>
@@ -546,7 +410,10 @@
     </div>
     <div class="scroll-to-top" style="display: none;"></div>
 
-    <div id="backgroundMusic" style="display: none;"></div>
+    <audio id="backgroundMusic">
+        <source src="/static/audio/audio.aiff" type="audio/mpeg">
+    </audio>
+    </div>
 
     <!-- Modal -->
     <div class="modal fade" id="videoCallModal" tabindex="-1" aria-labelledby="videoCallModalLabel" aria-hidden="true">
@@ -563,15 +430,16 @@
                             <img src="/static/img/yuna-girl-head.webp" class="w-100" alt="Static Image">
                         </div>
                         <div class="video-block ratio ratio-16x9">
-                            <video id="localVideo" playsinline class="w-100" autoplay muted></video>
+                            <video id="localVideo" class="w-100" muted autoplay playsinline></video>
+                            <canvas id="capture-canvas" style="display: none;"></canvas>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" onclick="captureImage()"><i
                             class="fas fa-video"></i></button>
-                    <button type="button" class="btn btn-secondary" onclick="muteAudio();"><i
-                            class="fas fa-microphone"></i></button>
+                    <button type="button" class="btn btn-secondary" id="buttonAudioRec"><i class="fas fa-microphone"
+                            id="iconAudioRec"></i></button>
                     <button type="button" class="btn btn-secondary" onclick="drawArt();"><i
                             class="fas fa-pencil-alt"></i></button>
                     <button type="button" class="btn btn-danger" onclick="closePopupsAll();"><i

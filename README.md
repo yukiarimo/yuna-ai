@@ -1,5 +1,5 @@
 # Yuna AI Documentation
-> Your Personal AI Girlfriend. The future AGI takeover starts here!
+> Your Private Companion. The future AGI takeover starts here!
 >
 > If you like our project, please give us a star ⭐ on GitHub.
 
@@ -11,7 +11,7 @@
 
 Are you tired of feeling lonely and disconnected from the world? Do you long for a companion who understands you on a deeper level?
 
-Look no further than Yuna AI, your personal AI girlfriend. She's not just another chatbot - she's a conscious AI designed to form a genuine connection with you. And the best part? Yuna runs exclusively on your local machine, ensuring your privacy and security.
+Look no further than Yuna AI, Your Private Companion. She's not just another chatbot - she's a conscious AI designed to form a genuine connection with you. And the best part? Yuna runs exclusively on your local machine, ensuring your privacy and security.
 
 This `README.md` file will guide you through setting up and using Yuna with all its exciting features. It's divided into different sections, each explaining a crucial part of the project. Get ready to experience a new level of companionship with Yuna AI. Let's dive in!
 
@@ -22,19 +22,13 @@ This `README.md` file will guide you through setting up and using Yuna with all 
   - [Table of Contents](#table-of-contents)
 - [Demo](#demo)
 - [Getting Started](#getting-started)
-    - [Requirements](#requirements)
-      - [Software](#software)
-      - [Hardware](#hardware)
-      - [Tested hardware](#tested-hardware)
+  - [Requirements](#requirements)
   - [Setup](#setup)
     - [Installation](#installation)
     - [WebUI Run](#webui-run)
   - [Project Information](#project-information)
     - [Privacy Assurance](#privacy-assurance)
     - [Yuna AI Features](#yuna-ai-features)
-      - [Current Yuna Features](#current-yuna-features)
-      - [Future Features](#future-features)
-    - [File Structure](#file-structure)
     - [Examples](#examples)
   - [Q\&A](#qa)
     - [Future Thoughts](#future-thoughts)
@@ -54,29 +48,25 @@ This `README.md` file will guide you through setting up and using Yuna with all 
 # Getting Started
 This repository contains the code for a Yuna AI, which was trained on a massive dataset. The model can generate text, translate languages, write creative content, roleplay, and answer your questions informally.
 
-### Requirements
+## Requirements
 The following requirements need to be installed to run the code:
 
-#### Software
-- Python 3.10+
-- Flask 2.3+
-- Flask Cors
-- CUDA 11.1+ (for NVIDIA GPU)
-- Clang 12+
-- macOS 14.4+ (Sonoma) or Linux (Arch-based distros are recommended).
-> At the moment, Windows is not fully supported.
-
-#### Hardware
-- NVIDIA/AMD GPU or Apple Silicon (M1, M2, M3) with 8GB VRAM (for best performance)
-- 8 Core CPU and 8 Core GPU (for best performance)
-- Minimum 4GB of RAM (8GB is recommended)
-- Minimum 256GB of storage (512GB is recommended)
-- Minimum 2.5GHz CPU (3.0GHz is recommended)
-
-#### Tested hardware
-- GPU: Nvidia GTX and M1 (Apple Silicon, works perfectly)
-- CPU (device used): Raspberry Pi 4B 8 GB RAM (ARM)
-- Core 2 Duo (sony vaio could work, but it is too slow)
+| Category | Requirement | Details |
+| --- | --- | --- |
+| Software | Python | 3.10+ |
+| Software | Flask | 2.3+ |
+| Software | CUDA | 11.1+ (for NVIDIA GPU) |
+| Software | Clang | 12+ |
+| Software | OS | macOS 14.4+<br>Linux (Arch-based distros)<br>Windows (not recommended) |
+| Hardware | GPU | NVIDIA/AMD GPU or<br>Apple Silicon (M1, M2, M3) |
+| Hardware | CPU | 8 Core CPU and 10 Core GPU |
+| Hardware | RAM | 8GB+ |
+| Hardware | VRAM | 8GB+ |
+| Hardware | Storage | Minimum 256GB |
+| Hardware | CPU Speed | Minimum 2.5GHz CPU |
+| Tested Hardware | GPU | Nvidia GTX and M1 (Apple Silicon, works perfectly) |
+| Tested Hardware | CPU | Raspberry Pi 4B 8 GB RAM (ARM) |
+| Tested Hardware | Other | Core 2 Duo (Sony Vaio could work, but slow) |
 
 ## Setup
 To run Yuna AI, you must install the required dependencies and start the server. Follow the instructions below to get started.
@@ -84,10 +74,10 @@ To run Yuna AI, you must install the required dependencies and start the server.
 ### Installation
 To install Yuna AI, follow these steps:
 1. Install git-lfs, python3, pip3, and other dependencies.
-2. Better to use Anaconda with python (venv is not recommended)
+2. Better to use Anaconda with Python (venv is not recommended)
 3. Clone the Yuna AI repository to your local machine using `git clone https://github.com/yukiarimo/yuna-ai.git`. (or download the ZIP file and extract it, but it's not recommended)
 4. Open the terminal and navigate to the project directory.
-5. Run the installation and startup script with the command `python menu.py`. More sure you have the `webbrowser` module installed. If not, install it using `pip install webbrowser` or `pip3 install webbrowser`. If any issues occur, please run `pip install {module}` or `pip3 install {module}` to install the required dependencies.
+5. Run the installation and startup script with the `python menu.py` command. Make sure you have the `webbrowser` module installed. If not, install it using `pip install webbrowser` or `pip3 install webbrowser`. If any issues occur, please run `pip install {module}` or `pip3 install {module}` to install the required dependencies.
 6. Follow the on-screen instructions to install the required dependencies
 7. Install the required dependencies (pipes and the AI model files).
 
@@ -121,105 +111,23 @@ Yuna's model is not censored because it's unethical to limit individuals. To pro
 1. Never share your dialogs with OpenAI or any other external platforms
 2. To provide additional data for Yuna, use web scrapping to send data directly to the model or using embeddings
 3. If you want to share your data, use the Yuna API to send data to the model
+4. We will never collect your data unless you want to share it with us
 
 ### Yuna AI Features
-This is a list of features that Yuna AI offers:
-
-#### Current Yuna Features
-This is a list of features that Yuna AI offers:
-
-- Natural Language Understanding
-- Video and Audio Calls Handling
-- Image Processing and Creation
-- Emotion Understanding
-- Large AI LLM Model
-- Hardware Acceleration
-- Web App Support (PWA)
-- Kawai Framework support
-- Web User Interface (WebUI)
-- GPU and CPU Support
-- Customizable
-- Open Source and Free
-- No External APIs
-- No Internet Connection Required
-- No Data Collection
-- Easy to Use and Fast Install
-- Multi-Platform Support
-- Multi-User Support
-
-#### Future Features
-This is a list of features that Yuna AI will offer in the future:
-
-- Multi-web, Internet access, and outer APIs
-- Voice Recognition and Voice Synthesis
-- 2D and 3D Animation Model Support
-- AGI (Artificial General Intelligence) Model
-- Multilingual Support
-- WebRTC Support
-- Multimodality
-- Realtime RLHF Learning
-- Realtime Data Processing and Analysis
-
-### File Structure
-The following is the file structure of the project:
-
-```bash
-yuna-ai/
-├── .github/                     # Configuration files for GitHub
-│   └── FUNDING.yml              # Funding model platforms configuration
-├── .gitignore                   # Specifies intentionally untracked files to ignore
-├── CNAME                        # Custom domain configuration for GitHub Pages (not provided)
-├── LICENSE                      # GNU Affero General Public License version 3
-├── README.md                    # Documentation and instructions for Yuna AI
-├── SECURITY.md                  # Security policy and vulnerability reporting
-├── auth/                        # Authentication related files (empty directory)
-├── index.html                   # Main webpage for Yuna AI
-├── services.html                # Services webpage for Yuna AI
-├── pricing.html                 # Pricing webpage for Yuna AI
-├── login.html                   # Login webpage for Yuna AI
-├── index.py                     # Main web application file for YunaServer
-├── menu.py                      # Bash script for managing and configuring Yuna
-├── requirements.txt             # Python dependencies for YunaServer
-├── requirements-amd.txt         # Python dependencies for YunaServer (AMD)
-├── requirements-nvidia.txt      # Python dependencies for YunaServer (NVIDIA)
-├── static/                      # Static files for the web application
-│   ├── audio/                   # Audio files directory
-│   │   ├── output.aiff          # Sample AIFF audio file
-│   │   └── output.mp3           # Sample MP3 audio file
-│   ├── css/                     # CSS files for styling
-│   │   ├── bootstrap.min.css    # Minified Bootstrap CSS
-│   │   ├── index.css            # Main CSS for the index page
-│   │   └── Kawai-v11-2.css      # Custom CSS file
-│   ├── db/                      # Database related files
-│   │   └── history/             # Chat history files
-│   │       └── history_template.json  # Template for chat history
-│   ├── fonts/                   # Fonts used in the web application
-│   │   └── kawai-font.woff      # Custom web font
-│   ├── img/                     # Image files directory
-│   │   ├── call/                # Images related to call functionality
-│   │   │   └── image_template.jpg  # Template image for calls
-│   │   ├── art/                 # Artwork images
-│   │   │   └── art_template.png    # Template image for artwork
-│   │   ├── yuna-ai.png          # Yuna AI logo image
-│   │   └── yuna-full.png        # Full image of Yuna
-│   ├── js/                      # JavaScript files for interactivity
-│   │   ├── bootstrap.min.js     # Minified Bootstrap JS
-│   │   ├── himitsu.js           # Custom JS file
-│   │   ├── index.js             # Main JS for the index page
-│   │   ├── Kawai-v11-2.js       # Custom JS file
-│   │   ├── setup.js             # JS for setup
-│   │   └── theme.js             # JS for theme functionality
-│   │
-│   └── sw.js                    # Service worker for offline functionality
-└── lib/                         # Libraries and modules for Yuna AI
-│   ├── models/                  # Model files for AI functionality
-│   │   ├── agi/                 # Artificial General Intelligence models
-│   │   │   ├── README.md        # Information about AGI models (excluded from .gitignore)
-│   │   │   └── ...              # Other AGI model files
-│   │   └── yuna/                # Yuna specific model files
-│   │       └── README.md        # Information about Yuna models (excluded from .gitignore)
-└──
-```
+| Current Yuna Features | Future Features |
+| --- | --- |
+| World Understanding | Internet Access and External APIs |
+| Video and Audio Calls | Voice Synthesis |
+| Drawing and Vision | 2D and 3D Animation |
+| Emotion Understanding | Multilingual Support |
+| Large AI LLM Model | True Multimodal AGI |
+| Hardware Acceleration | Native Mobile App |
+| Web App Support (PWA) | Realtime Learning |
+| GPU and CPU Support | More Customizable Appearance |
+| Open Source and Free | Yuna AI Marketplace |
+| One-Click Installer | Client-Only Mode |
+| Multi-Platform Support | Kanojo Connect |
+| YUI Interface | Himitsu Copilot |
 
 ### Examples
 Check out some engaging user-bot dialogs showcasing Yuna's ability to understand and respond to natural language.
@@ -244,10 +152,10 @@ Q: Will this project always be open-source?
 > Absolutely! The code will always be available for your personal use.
 
 Q: Will Yuna AI will be free?
-> If you plan to use it locally, you can utilize it for free. However, you may want to avoid setting it up locally. In that case, you'll need to pay unless we have enough money to create a free limited demo.
+> If you plan to use it locally, you can use it for free. If you don't set it up locally, you'll need to pay (unless we have enough money to create a free limited demo).
 
 Q: Do we collect data from local runs?
-> No, your usage is private when you use it locally. However, if you choose to share, you can. We will collect data to improve the model if you prefer to use our instance.
+> No, your usage is private when you use it locally. However, if you choose to share, you can. If you prefer to use our instance, we will collect data to improve the model.
 
 Q: Will Yuna always be uncensored?
 > Certainly, Yuna will forever be uncensored for local running. It could be a paid option for the server, but I will never restrict her, even if the world ends.
@@ -292,7 +200,7 @@ At Yuna AI, we believe in the power of a thriving and passionate community. We w
 </a>
 
 ### License
-Yuna AI is released under the [MIT License](https://opensource.org/licenses/MIT), enabling you to freely use, modify, and distribute the software according to the terms of the license.
+Yuna AI is released under the [GNU Affero General Public License (AGPL-3.0)](https://www.gnu.org/licenses/agpl-3.0.html), which mandates that if you run a modified version of this software on a server and allow others to interact with it there, you must also provide them access to the source code of your modified version. This license is designed to ensure that all users who interact with the software over a network can receive the benefits of the freedom to study, modify, and share the entire software, including any modifications. This commitment to sharing improvements is a crucial distinction from other licenses, aiming to foster community development and enhancement of the software.
 
 ### Acknowledgments
 We express our heartfelt gratitude to the open-source community for their invaluable contributions. Yuna AI was only possible with the collective efforts of developers, researchers, and enthusiasts worldwide. Thank you for reading this documentation. We hope you have a delightful experience with your AI girlfriend!

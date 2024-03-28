@@ -1,3 +1,9 @@
 {
-    "liveServer.settings.multiRootWorkspaceName": "yuna-ai"
+    "liveServer.settings.multiRootWorkspaceName": "yuna-ai",
+    "liveServer.settings.https": {
+        "passphrase": "",
+        "enable": true,
+        "cert": "/Users/yuki/Documents/server.crt",
+        "key": "/Users/yuki/Documents/server.key"
+    }
 }

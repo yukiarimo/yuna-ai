@@ -3,15 +3,30 @@ import os
 from diffusers import StableDiffusionPipeline
 from PIL import Image
 from datetime import datetime
-from PIL import Image
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
+from .yvision.moondream import Moondream
+from transformers import CodeGenTokenizerFast as Tokenizer
+
+use_cpu = False
+
+device = torch.device("cpu") if use_cpu else (torch.device("cuda") if torch.cuda.is_available() else (torch.device("mps") if torch.backends.mps.is_available() else torch.device("cpu")))
+dtype = torch.float32 if use_cpu else (torch.float16 if torch.cuda.is_available() or torch.backends.mps.is_available() else torch.float32)
+
+if device != torch.device("cpu"):
+    print("Using device:", device)
 
 if os.path.exists("static/config.json"):
     with open("static/config.json", 'r') as file:
         config = json.load(file)
 
 agi_model_dir = config["server"]["agi_model_dir"]
+model_id = f"{agi_model_dir}/yuna-vision"
+
+if config["ai"]["vision"] == True:
+    tokenizer = Tokenizer.from_pretrained(model_id)
+    moondream = Moondream.from_pretrained(model_id).to(device=device, dtype=dtype)
+    moondream.eval()
 
 if config["ai"]["art"] == True:
     art = StableDiffusionPipeline.from_single_file(f'{agi_model_dir}art/{config["server"]["art_default_model"]}', safety_checker=None, load_safety_checker=None, guidance_scale=7.5, noise_scale=0.05, device=config["server"]["device"])
@@ -33,15 +48,7 @@ def create_image(prompt):
     return image_name
 
 def capture_image(image_path=None, prompt=None, use_cpu=False):
-    model_id = f"{agi_model_dir}/yuna-vision"
-    model = AutoModelForCausalLM.from_pretrained(
-        model_id, 
-        trust_remote_code=True,
-        torch_dtype=torch.float16
-    ).to(config["server"]["device"])
-    tokenizer = AutoTokenizer.from_pretrained(model_id)
-
     image = Image.open(image_path)
-    enc_image = model.encode_image(image)
-    answer = model.answer_question(enc_image, prompt, tokenizer)
+    image_embeds = moondream.encode_image(image)
+    answer = moondream.answer_question(image_embeds, prompt, tokenizer)
     return [answer, image_path]

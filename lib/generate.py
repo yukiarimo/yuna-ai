@@ -13,7 +13,7 @@ class ChatGenerator:
             n_ctx=config["ai"]["context_length"],
             seed=config["ai"]["seed"],
             n_batch=config["ai"]["batch_size"],
-            n_gpu_layers=1,
+            n_gpu_layers=config["ai"]["gpu_layers"],
             verbose=False
         )
         self.classifier = pipeline("text-classification", model=f"{config['server']['agi_model_dir']}yuna-emotion")
@@ -56,30 +56,18 @@ class ChatGenerator:
 
         if template == None:
             print('template is none')
-        
-        if self.config["ai"]["stream"] == True:
-            response = self.model(
-            response,
-            stream=True,
-            top_k=self.config["ai"]["top_k"],
-            top_p=self.config["ai"]["top_p"],
-            temperature=self.config["ai"]["temperature"],
-            repeat_penalty=self.config["ai"]["repetition_penalty"],
-            max_tokens=self.config["ai"]["max_new_tokens"],
-            stop=self.config["ai"]["stop"],
-            )
-        else:
-            print('00--------------------00\n', response, '\n00--------------------00')
-            response = self.model(
-            response,
-            stream=False,
-            top_k=self.config["ai"]["top_k"],
-            top_p=self.config["ai"]["top_p"],
-            temperature=self.config["ai"]["temperature"],
-            repeat_penalty=self.config["ai"]["repetition_penalty"],
-            max_tokens=self.config["ai"]["max_new_tokens"],
-            stop=self.config["ai"]["stop"],
-            )
+
+        print('00--------------------00\n', response, '\n00--------------------00')
+        response = self.model(
+        response,
+        stream=False,
+        top_k=self.config["ai"]["top_k"],
+        top_p=self.config["ai"]["top_p"],
+        temperature=self.config["ai"]["temperature"],
+        repeat_penalty=self.config["ai"]["repetition_penalty"],
+        max_tokens=self.config["ai"]["max_new_tokens"],
+        stop=self.config["ai"]["stop"],
+        )
         
         # Assuming the dictionary is stored in a variable named 'response'
         response = response['choices'][0]['text']
@@ -104,7 +92,7 @@ class ChatGenerator:
 
             response = response + f" {response_add}"
 
-        if template != "himitsuCopilot" and template != "himitsuCopilotGen" and template != "summary" and template != None:
+        if template != None:
             chat_history.append({"name": "Yuki", "message": text})
             chat_history.append({"name": "Yuna", "message": response})
             chat_history_manager.save_chat_history(chat_history, list({current_user.get_id()})[0], chat_id)
@@ -112,6 +100,7 @@ class ChatGenerator:
         if speech==True:
             chat_history_manager.generate_speech(response)
 
+        print('response -> ', response)
         return response
     
     def clearText(self, text):

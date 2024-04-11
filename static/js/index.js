@@ -153,7 +153,7 @@ class messageManager {
   }
 
   createTypingBubble() {
-    const typingBubble = `<div class="block-message-1" id="circle-loader"><div class="circle-loader"></div></div>`;;
+    const typingBubble = `<div id="circle-loader"><img src="/static/img/loader.gif"></div>`;
     this.messageContainer.insertAdjacentHTML('beforeend', typingBubble);
     scrollMsg();
   }
@@ -161,6 +161,7 @@ class messageManager {
   removeTypingBubble() {
     const bubble = document.getElementById('circle-loader');
     bubble?.remove();
+    scrollMsg();
   }
 
   scrollMsg() {
@@ -271,7 +272,8 @@ function playAudio(audioType = 'tts') {
 function formatMessage(messageData) {
   const messageDiv = document.createElement('div');
   loadConfig();
-  messageDiv.classList.add('p-2', 'mb-2');
+  messageDiv.classList.add('message', 'p-2', 'mb-2');
+  messageDiv.id = 'message1';
 
   const classes = messageData.name == name1 || messageData.name == 'Yuki'
     ? ['block-message-2', 'text-end', 'bg-primary', 'text-white'] 
@@ -279,15 +281,91 @@ function formatMessage(messageData) {
   messageDiv.classList.add(...classes);
 
   const messageText = document.createElement('pre');
-  messageText.classList.add('m-0');
+  messageText.classList.add('message-text', 'm-0');
   messageText.innerHTML = messageData.message;
 
+  const menuToggleBtn = document.createElement('button');
+  menuToggleBtn.classList.add('menu-toggle-btn');
+  menuToggleBtn.innerHTML = '<i class="fas fa-ellipsis-v"></i>';
+
+  const messageMenu = document.createElement('div');
+  messageMenu.classList.add('message-menu');
+
+  const closeBtn = document.createElement('button');
+  closeBtn.classList.add('close-btn');
+  closeBtn.textContent = 'Close';
+
+  const deleteBtn = document.createElement('button');
+  deleteBtn.classList.add('delete-btn');
+  deleteBtn.textContent = 'Delete message';
+
+  messageMenu.appendChild(closeBtn);
+  messageMenu.appendChild(deleteBtn);
+
   messageDiv.appendChild(messageText);
+  messageDiv.appendChild(menuToggleBtn);
+  messageDiv.appendChild(messageMenu);
 
   scrollMsg();
+  setMessagePopoverListeners()
 
   return messageDiv;
 }
+
+function setMessagePopoverListeners() {
+  // Select all message bubbles
+  const messageBubbles = document.querySelectorAll('.message');
+
+  // Iterate over each message bubble
+  messageBubbles.forEach(message => {
+    // Add click event listener to each message bubble
+    message.addEventListener('click', function(event) {
+      // Prevent event from bubbling up to avoid triggering click events on parent elements
+      event.stopPropagation();
+
+      // Close all open message menus
+      document.querySelectorAll('.message-menu').forEach(menu => {
+        menu.style.display = 'none';
+      });
+
+      // Toggle the display of the current message's menu
+      const currentMenu = this.querySelector('.message-menu');
+      currentMenu.style.display = currentMenu.style.display === 'block' ? 'none' : 'block';
+    });
+  });
+
+  // Add a global click listener to close all message menus when clicking outside
+  document.addEventListener('click', function() {
+    document.querySelectorAll('.message-menu').forEach(menu => {
+      menu.style.display = 'none';
+    });
+  });
+
+  // Select all delete buttons
+  const deleteButtons = document.querySelectorAll('.delete-btn');
+
+  // Add click event listener to each delete button
+  deleteButtons.forEach(button => {
+    button.addEventListener('click', function(event) {
+      // Prevent event from bubbling up to avoid triggering click events on parent elements
+      event.stopPropagation();
+
+      // Get the message text to be deleted
+      const messageText = this.closest('.message').querySelector('.message-text').textContent;
+
+      // Call the deleteMessageFromHistory function with the message text
+      deleteMessageFromHistory(messageText);
+
+      // reload the page
+      setTimeout(function () {
+        location.reload()
+      }, 300);
+    });
+  });
+}
+
+// run the setMessagePopoverListeners function with a delay of 1 second
+setTimeout(setMessagePopoverListeners, 1000);
 
 class HistoryManager {
   constructor(serverUrl, serverPort, defaultHistoryFile) {
@@ -612,6 +690,105 @@ async function captureImageViaFile() {
   reader.readAsDataURL(file);
 }
 
+function captureAudioViaFile() {
+  const audioUpload = document.getElementById('audioUpload');
+  const file = audioUpload.files[0];
+
+  if (!file) {
+    alert('No file selected.');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onloadend = async function () {
+    const audioDataURL = reader.result;
+    const audioName = Date.now().toString();
+
+    closePopupsAll();
+  };
+
+  const formData = new FormData();
+
+  formData.append('audio', file);
+
+  fetch('/audio', {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log('The text in video:', data.text);
+  })
+
+  reader.readAsDataURL(file);
+}
+
+function captureVideoViaFile() {
+  const videoUpload = document.getElementById('videoUpload');
+  const file = videoUpload.files[0];
+
+  if (!file) {
+    alert('No file selected.');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onloadend = async function () {
+    const videoDataURL = reader.result;
+    const videoName = Date.now().toString();
+
+    closePopupsAll();
+  }
+
+  const formData = new FormData();
+
+  formData.append('audio', file);
+
+  fetch('/audio', {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log('The text in video:', data.text);
+  })
+
+  reader.readAsDataURL(file);
+}
+
+function captureTextViaFile() {
+  const textUpload = document.getElementById('textUpload');
+  const file = textUpload.files[0];
+
+  if (!file) {
+    alert('No file selected.');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onloadend = async function () {
+    const textDataURL = reader.result;
+    const textName = Date.now().toString();
+
+    closePopupsAll();
+  }
+
+  const formData = new FormData();
+
+  formData.append('audio', file);
+
+  fetch('/text', {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log('The text in video:', data.text);
+  })
+
+  reader.readAsDataURL(file);
+}
+
 // Function to fetch and populate chat history file options
 function populateHistorySelect() {
   loadConfig();
@@ -881,13 +1058,20 @@ var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
   });
 });
 
-function handleTextFileClick() {
-  console.log('Text file option clicked');
-  // Add your code here to handle text file selection
-}
-
 function handleImageFileClick() {
   document.getElementById('imageUpload').click();
+}
+
+function handleAudioFileClick() {
+  document.getElementById('audioUpload').click();
+}
+
+function handleVideoFileClick() {
+  document.getElementById('videoUpload').click();
+}
+
+function handleTextFileClick() {
+  document.getElementById('textUpload').click();
 }
 
 document.addEventListener('DOMContentLoaded', (event) => {
@@ -928,3 +1112,38 @@ function updateMsgCount() {
 }
 
 updateMsgCount();
+
+function deleteMessageFromHistory(message) {
+  let fileName = selectedFilename;
+
+  if (confirm("Are you sure you want to delete this file?")) {
+    fetch(`${server_url + server_port}/history`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          chat: fileName,
+          task: "delete_message",
+          text: message
+        })
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(responseData => {
+        console.log(responseData);
+      })
+      .catch(error => {
+        console.error('An error occurred:', error);
+      });
+
+    // reload the page with delay of 1 second
+    //setTimeout(function () {
+    //  location.reload()
+    //}, 100);
+  }
+}

@@ -16,6 +16,7 @@ html,
 
 body {
     background-color: #212529 !important;
+    height: auto;
 }
 
 .block-o {
@@ -27,7 +28,8 @@ body {
 }
 
 #profile-card {
-    overflow-y: auto !important;
+    overflow-y: scroll;
+    height: 100vh;
 }
 
 #vr-model {
@@ -96,23 +98,14 @@ img {
     width: 100%;
 }
 
-.circle-loader {
-    width: 25px;
-    height: 25px;
-    border-radius: 50%;
-    background: linear-gradient(0deg, black 50%, white 50%);
-    border: 1px solid black;
-    animation: spin 2s linear infinite;
+#circle-loader {
+    width: 100px;
+    height: 100px;
 }
 
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
+#circle-loader img {
+    width: 100%;
+    height: 100%;
 }
 
 .edit-popup {
@@ -179,7 +172,7 @@ body {
     background-color: var(--dark-tertiary) !important;
 }
 
-.navbar-nav > .nav-item {
+.navbar-nav>.nav-item {
     background-color: var(--dark-tertiary) !important;
     width: 40px !important;
     height: 40px !important;
@@ -568,7 +561,7 @@ input:checked~.slider .off-label {
 }
 
 .input-field:focus {
-  outline: none;
+    outline: none;
 }
 
 .header {
@@ -875,4 +868,18 @@ body {
 /* Hide the outline that appears on input focus */
 .search-input:focus {
     outline: none;
+}
+
+.message-menu {
+    display: none;
+    position: relative;
+    right: 0;
+    border: 1px solid #ccc;
+    z-index: 1;
+}
+
+.menu-toggle-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
 }

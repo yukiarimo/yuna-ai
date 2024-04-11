@@ -35,9 +35,14 @@ def handle_history_request(chat_history_manager):
         new_chat_id_name = data.get('name')
         chat_history_manager.rename_chat_history_file(list({current_user.get_id()})[0], chat_id, new_chat_id_name)
         return jsonify({'response': 'History renamed successfully'})
+    elif task == 'delete_message':
+        text = data.get('text')
+        chat_history_manager.delete_message(list({current_user.get_id()})[0], chat_id, text)
+        return jsonify({'response': 'Message deleted successfully'})
     else:
         return jsonify({'error': 'Invalid task parameter'}), 400
-        
+
+@login_required
 def handle_message_request(chat_generator, chat_history_manager, chat_id=None, speech=None, text=None, template=None):
     data = request.get_json()
     chat_id = data.get('chat')
@@ -47,6 +52,7 @@ def handle_message_request(chat_generator, chat_history_manager, chat_id=None, s
     response = chat_generator.generate(chat_id, speech, text, template, chat_history_manager)
     return jsonify({'response': response})
 
+@login_required
 def handle_audio_request(self):
     if 'audio' not in request.files:
         return jsonify({'error': 'No audio file'}), 400
@@ -56,7 +62,8 @@ def handle_audio_request(self):
 
     result = model.transcribe('static/audio/audio.wav')
     return jsonify({'text': result['text']})
-    
+
+@login_required
 def handle_image_request(chat_history_manager, self):
     data = request.get_json()
     chat_id = data.get('chat')
@@ -102,3 +109,6 @@ def handle_image_request(chat_history_manager, self):
     
 def services(self):
     return send_from_directory('.', 'services.html')
+
+def about(self):
+    return send_from_directory('.', 'about.html')

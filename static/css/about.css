@@ -1,0 +1,218 @@
+* {
+    font-family: "kawai-font" !important;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+body {
+    margin: 0;
+    background-image: url('/static/img/space.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    height: 100vh;
+    width: 100vw;
+    /* Center the content */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Arial', sans-serif;
+}
+
+.modal-body {
+    color: black;
+}
+
+p {
+    margin-bottom: 0;
+}
+
+#waifu-card-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.waifu-card {
+    background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 500px;
+    height: auto;
+    max-height: 90vh;
+    position: relative;
+    overflow: hidden;
+    margin: auto;
+    background-size: cover;
+    background-position: center;
+}
+
+.waifu-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-image: url('/static/img/holographic-background.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    opacity: 0.9;
+    border-radius: 15px;
+}
+
+.waifu-card img {
+    max-width: 100%;
+    max-height: 60vh;
+    border-radius: 10px;
+    position: relative;
+    z-index: 2;
+}
+
+.waifu-info {
+    position: relative;
+    z-index: 2;
+    margin-top: 20px;
+}
+
+.waifu-title {
+    color: #333;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.waifu-description {
+    color: #666;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.cute-element {
+    color: #ff69b4;
+    font-size: 30px;
+    margin: 5px 0;
+}
+
+.detail-panel {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 10px;
+    border-radius: 10px;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: auto;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.detail-text {
+    font-size: 12px;
+    color: #333;
+    line-height: 1.4;
+    text-align: left;
+}
+
+/* Floating info blocks */
+.info-blocks {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    text-align: left;
+    color: #333;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+}
+
+.info-block {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 5px 0;
+    font-size: 14px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 5px 10px;
+    border-radius: 10px;
+}
+
+.info-block p:first-child {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+/* Waifu Title Block */
+.waifu-title-block {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Adjustments for image and text spacing */
+.waifu-card img {
+    max-width: 100%;
+    max-height: 70vh;
+    border-radius: 10px;
+    position: relative;
+    z-index: 1;
+}
+
+.waifu-info {
+    position: relative;
+    z-index: 1;
+    margin-top: 10px;
+    color: white;
+}
+
+.waifu-description {
+    color: white;
+    font-size: 24px;
+    font-weight: lighter;
+}
+
+/* Ensure the card is not too tall */
+.waifu-card {
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.modal-content {
+    background-color: #fff0f5; /* Light pink background */
+    border-radius: 15px; /* Rounded corners for the modal */
+}
+
+.modal-title {
+    color: #ff69b4; /* Cute pink color for the title */
+}
+
+.btn-primary {
+    background-color: #ff69b4; /* Match the button color to the title */
+    border-color: #ff69b4;
+}
+
+.btn-primary:hover {
+    background-color: #ff5f9d; /* A slightly darker pink on hover */
+    border-color: #ff5f9d;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+    .waifu-card {
+        width: 90%;
+        margin: 20px auto;
+    }
+}
+
+@font-face {
+    font-family: "kawai-font";
+    src: url("/static/fonts/kawai-font.woff") format("woff");
+    font-style: normal;
+    font-weight: normal;
+}

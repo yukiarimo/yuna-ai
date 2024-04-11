@@ -77,6 +77,25 @@ class ChatHistoryManager:
     def generate_speech(self, response):
         os.system(f'say -o static/audio/audio.aiff "{response}"')
 
+    def delete_message(self, username, chat_id, target_message):
+        chat_history = self.load_chat_history(username, chat_id)
+        
+        target_index = None
+        for i, message in enumerate(chat_history):
+            if message['message'].strip() == target_message.strip():
+                target_index = i
+                break
+        
+        # If the target message is found, delete it and the next message
+        if target_index is not None:
+            # Delete the target message
+            del chat_history[target_index]
+            # Check if there is a next message and delete it
+            if target_index < len(chat_history):
+                del chat_history[target_index]
+
+        self.save_chat_history(chat_history, username, chat_id)
+
     def get_encryption_key(self):
         if 'encryption_key' not in self.config['security'] or not self.config['security']['encryption_key']:
             new_key = Fernet.generate_key()

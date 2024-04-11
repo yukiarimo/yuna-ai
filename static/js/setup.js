@@ -128,7 +128,7 @@ document.addEventListener("keydown", function (event) {
   }
 
   // Check if Shift key is pressed along with the key and is not in the input field
-  if (event.shiftKey && document.activeElement !== document.getElementById('input_text')) {
+  if (document.activeElement != document.getElementsByTagName('input') && document.activeElement != document.getElementsByTagName('textarea') && event.shiftKey) {
     switch (event.key) {
       case "H":
         event.preventDefault(); // Prevent any default action
@@ -179,7 +179,7 @@ document.addEventListener("keydown", function (event) {
           navSidebar[j].classList.remove('active');
         }
         navSidebar[4].classList.add('active');
-        OpenTab('5')
+        settingsView.show();
         break;
       case "C":
         event.preventDefault(); // Prevent any default action
@@ -323,3 +323,9 @@ if (window.matchMedia("(max-width: 767px)").matches) {
     });
   });
 }
+
+document.querySelectorAll('.side-link')[3].addEventListener('click', function () {
+  ['character', 'system'].forEach(id => {
+    document.getElementById(id).style.height = `calc(${document.getElementById(id).scrollHeight}px + 3px)`;
+  });
+});

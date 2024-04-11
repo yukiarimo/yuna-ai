@@ -1,8 +1,9 @@
 import shutil
 from flask import Flask, get_flashed_messages, request, jsonify, send_from_directory, redirect, url_for, flash
 from flask_login import LoginManager, UserMixin, login_required, logout_user, login_user, current_user
+import requests
 from lib.generate import ChatGenerator, ChatHistoryManager
-from lib.router import handle_history_request, handle_image_request, handle_message_request, handle_audio_request, services
+from lib.router import handle_history_request, handle_image_request, handle_message_request, handle_audio_request, services, about
 from flask_cors import CORS
 import json
 import os
@@ -19,6 +20,7 @@ login_manager = LoginManager()
 class YunaServer:
     def __init__(self):
         self.app = Flask(__name__, static_folder='static')
+        self.app.config['WTF_CSRF_ENABLED'] = False
         self.app.secret_key = 'Yuna_AI_Secret_Key'
         self.app.config['COMPRESS_ALGORITHM'] = ['br', 'gzip']
         self.app.config['COMPRESS_LEVEL'] = 6
@@ -34,9 +36,42 @@ class YunaServer:
         self.chat_history_manager = ChatHistoryManager(self.config)
         self.app.errorhandler(404)(self.page_not_found)
 
+        @self.app.after_request
+        def add_cors_headers(response):
+            response.headers['Access-Control-Allow-Origin'] = '*'
+            response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
+            response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+            return response
+
     @staticmethod
     def page_not_found(self):
         return f'This page does not exist.', 404
+    
+    def search(self):
+        search_query = request.json['query']
+        url = 'https://www.google.com/search?q=' + search_query
+
+        # Send a GET request to the URL with additional headers
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1',
+            'Sec-Fetch-Dest': 'document',
+            'Sec-Fetch-Mode': 'navigate',
+            'Sec-Fetch-Site': 'none',
+            'Sec-Fetch-User': '?1',
+            'Cache-Control': 'max-age=0',
+        }
+        response = requests.get(url, headers=headers)
+
+        # Get the HTML content from the response
+        html_content = response.text
+
+        # Return the HTML content as plain text
+        return html_content, 200, {'Content-Type': 'text/plain'}
 
     # User model
     class User(UserMixin):
@@ -76,6 +111,8 @@ class YunaServer:
         self.app.route('/<path:filename>')(self.custom_static)
         self.app.route('/yuna')(self.yuna_server)
         self.app.route('/yuna.html')(self.yuna_server)
+        self.app.route('/services.html', methods=['GET'], endpoint='services')(lambda: services(self))
+        self.app.route('/about.html', methods=['GET'], endpoint='about')(lambda: about(self))
         self.app.route('/apple-touch-icon.png')(self.image_pwa)
         self.app.route('/flash-messages')(self.flash_messages)
         self.app.route('/main', methods=['GET', 'POST'])(self.main)
@@ -84,7 +121,7 @@ class YunaServer:
         self.app.route('/image', methods=['POST'], endpoint='image')(lambda: handle_image_request(self.chat_history_manager, self))
         self.app.route('/audio', methods=['GET', 'POST'], endpoint='audio')(lambda: handle_audio_request(self))
         self.app.route('/logout', methods=['GET'])(self.logout)
-        self.app.route('/services.html', methods=['GET'], endpoint='services')(lambda: services(self))
+        self.app.route('/search', methods=['POST'])(self.search)
 
     def custom_static(self, filename):
         if not filename.startswith('static/') and not filename.startswith('/favicon.ico') and not filename.startswith('/manifest.json'):

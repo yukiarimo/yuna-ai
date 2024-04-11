@@ -39,6 +39,7 @@
     <script src="/static/js/index.js" defer></script>
     <script src="/static/js/himitsu.js" defer></script>
     <script src="/static/js/setup.js" defer></script>
+    <script src="/static/js/search.js" defer></script>
     <style>
         body {
             margin: 0;
@@ -117,6 +118,12 @@
                         </button>
                         <ul class="navbar-nav flex-nowrap ms-auto">
                             <li class="nav-item d-flex justify-content-center align-items-center rounded-circle">
+                                <a class="btn btn-link" href="#" onclick="promptTemplatePopup.show()"
+                                    aria-label="Prompts">
+                                    <i class="fas fa-code"></i>
+                                </a>
+                            </li>
+                            <li class="nav-item d-flex justify-content-center align-items-center rounded-circle">
                                 <a class="btn btn-link" href="#" data-bs-toggle="modal" aria-label="Search"
                                     data-bs-target="#searchModal">
                                     <i class="fas fa-search"></i>
@@ -164,17 +171,24 @@
                             <div class="search-container input-wrapper ui-container">
                                 <div class="search-bar">
                                     <!-- a button to open popup-->
-                                    <button class="search-button icon-left" aria-label="promptTemplatePopup"
-                                        onclick="promptTemplatePopup.show()">
-                                        <i class="fas fa-search"></i>
+                                    <button class="search-button icon-left attach-button" data-bs-toggle="popover"
+                                        aria-label="Attach File" data-bs-placement="bottom" data-bs-html="true"
+                                        data-bs-content="<a class='btn btn-outline-primary btn-sm dropdown-item' onclick='bookCreate()'>Create Book</a><a class='btn btn-outline-info btn-sm dropdown-item' onclick='drawArt();'>Draw Art</a><a class='btn btn-outline-success btn-sm dropdown-item' onclick='requestRecentAudio()'>Talk / Sing</a><a class='btn btn-outline-danger btn-sm dropdown-item' onclick='sora()'>Sora</a>">
+                                        <i class="fas fa-pencil-ruler"></i>
                                     </button>
                                     <button class="search-button icon-left attach-button" data-bs-toggle="popover"
                                         aria-label="Attach File" data-bs-placement="bottom" data-bs-html="true"
-                                        data-bs-content="<a class='btn btn-outline-primary btn-sm dropdown-item' onclick='handleTextFileClick()'>Text File</a><a class='btn btn-outline-info btn-sm dropdown-item' onclick='handleImageFileClick()'>Image File</a>">
+                                        data-bs-content="<a class='btn btn-outline-primary btn-sm dropdown-item' onclick='handleTextFileClick()'>Text File</a><a class='btn btn-outline-info btn-sm dropdown-item' onclick='handleImageFileClick()'>Image File</a><a class='btn btn-outline-success btn-sm dropdown-item' onclick='handleAudioFileClick()'>Audio File</a><a class='btn btn-outline-danger btn-sm dropdown-item' onclick='handleVideoFileClick()'>Video File</a>">
                                         <i class="fas fa-folder"></i>
                                     </button>
+                                    <input type="file" id="textUpload" accept=".txt" style="display: none;"
+                                        onchange="captureTextViaFile()">
                                     <input type="file" id="imageUpload" accept="image/*" style="display: none;"
                                         onchange="captureImageViaFile()">
+                                    <input type="file" id="audioUpload" accept="audio/*" style="display: none;"
+                                        onchange="captureAudioViaFile()">
+                                    <input type="file" id="videoUpload" accept="video/*" style="display: none;"
+                                        onchange="captureVideoViaFile()">
                                     <input id="input_text" type="text" class="input-field" placeholder="Ask Yuna..."
                                         type="text" class="search-input">
 
@@ -553,9 +567,110 @@
 
                                         <div class="list-group-item" style="background-color: transparent;">
                                             <h6>Account</h6>
-                                            <p>This will give you a lot of benefits.</p>
-                                            <button class="btn btn-primary text-white"
-                                                onclick="OpenLink('/services.html')">Go Premium</button>
+
+                                            <div class="card shadow-lg o-hidden border-0 my-5">
+                                                <div class="card-body p-0">
+                                                    <div class="row">
+                                                        <div class="col-lg-6">
+                                                            <div class="p-5">
+                                                                <form method="post" class="user" action="/main">
+                                                                    <h2 class="text-center text-dark mb-4">
+                                                                        Change Password</h2>
+                                                                    <input type="hidden" name="action"
+                                                                        value="change_password">
+                                                                    <div class="mb-3">
+                                                                        <input class="form-control form-control-user"
+                                                                            type="password" name="current_password"
+                                                                            placeholder="Current Password" required>
+                                                                    </div>
+                                                                    <div class="mb-3">
+                                                                        <input class="form-control form-control-user"
+                                                                            type="password" name="new_password"
+                                                                            placeholder="New Password" required>
+                                                                    </div>
+                                                                    <div class="mb-3">
+                                                                        <input class="form-control form-control-user"
+                                                                            type="password" name="confirm_new_password"
+                                                                            placeholder="Confirm New Password" required>
+                                                                    </div>
+                                                                    <button class="btn btn-primary btn-user w-100"
+                                                                        type="submit">Change
+                                                                        Password</button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-lg-6">
+                                                            <div class="p-5">
+                                                                <form method="post" class="user" action="/main">
+                                                                    <h2 class="text-center text-dark mb-4">
+                                                                        New User</h2>
+                                                                    <input type="hidden" name="action" value="register">
+                                                                    <div class="mb-3">
+                                                                        <input class="form-control form-control-user"
+                                                                            type="text" name="username"
+                                                                            placeholder="Username" required>
+                                                                    </div>
+                                                                    <div class="mb-3">
+                                                                        <input class="form-control form-control-user"
+                                                                            type="password" name="password"
+                                                                            placeholder="Password" required>
+                                                                    </div>
+                                                                    <button class="btn btn-primary btn-user w-100"
+                                                                        type="submit">Register</button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-lg-6">
+                                                            <div class="p-5">
+                                                                <form method="post" class="user" action="/main">
+                                                                    <h2 class="text-center text-dark mb-4">
+                                                                        Login</h2>
+                                                                    <input type="hidden" name="action" value="login">
+                                                                    <div class="mb-3">
+                                                                        <input class="form-control form-control-user"
+                                                                            type="text" name="username"
+                                                                            placeholder="Username" required>
+                                                                    </div>
+                                                                    <div class="mb-3">
+                                                                        <input class="form-control form-control-user"
+                                                                            type="password" name="password"
+                                                                            placeholder="Password" required>
+                                                                    </div>
+                                                                    <button class="btn btn-primary btn-user w-100"
+                                                                        type="submit">Login</button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-lg-6">
+                                                            <div class="p-5">
+                                                                <form method="post" class="user" action="/main">
+                                                                    <h2 class="text-center text-dark mb-4">
+                                                                        Delete Account</h2>
+                                                                    <input type="hidden" name="action"
+                                                                        value="delete_account">
+                                                                    <div class="mb-3">
+                                                                        <input class="form-control form-control-user"
+                                                                            type="text" name="username"
+                                                                            placeholder="Username" required>
+                                                                    </div>
+                                                                    <div class="mb-3">
+                                                                        <input class="form-control form-control-user"
+                                                                            type="password" name="password"
+                                                                            placeholder="Password" required>
+                                                                    </div>
+                                                                    <button class="btn btn-primary btn-user w-100"
+                                                                        type="submit">Delete
+                                                                        Account</button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                         </div>
                                     </div>
                                 </div>

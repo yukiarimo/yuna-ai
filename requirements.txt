@@ -13,3 +13,4 @@ Flask-Compress
 einops
 timm
 Pillow
+article-parser

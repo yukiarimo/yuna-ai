@@ -30,10 +30,10 @@
 
     <link rel="icon" type="image/jpeg" sizes="60x60" href="/static/img/yuna-ai.png">
     <link rel="manifest" href="/static/manifest.json">
-    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/static/css/awesome.css">
-    <link rel="stylesheet" href="/static/css/kawai-v11-2.css">
-    <link rel="stylesheet" href="/static/css/index.css">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" rel="preload" as="style" media="all">
+    <link rel="stylesheet" href="/static/css/awesome.css" rel="preload" as="style" media="all">
+    <link rel="stylesheet" href="/static/css/kawai-v11-2.css" media="all">
+    <link rel="stylesheet" href="/static/css/index.css" media="all">
     <script src="/static/js/kawai-v11-2.js" defer></script>
     <script src="/static/js/kanojo.js" defer></script>
     <script src="/static/js/index.js" defer></script>
@@ -198,7 +198,7 @@
                                     </div>
 
                                     <div class="form-check form-switch" id="himitsuToggle">
-                                        <input class="form-check-input" type="checkbox" id="customSwitch"
+                                        <input class="form-check-input" type="checkbox" id="customSwitch" aria-label="Himitsu Copilot"
                                             onclick="changeHimitsuState()">
                                     </div>
 
@@ -231,6 +231,7 @@
                                                 <h1 class="m-0 fw-bold">Chats</h1>
                                                 <button class="add-button"
                                                     onclick="historyManager.createHistoryFile();">+</button>
+                                                <button class="add-button" onclick="historyManager.importHistory();">Load</button>
                                             </div>
                                             <ul class="list-group" id="chat-items">
                                                 <!-- Will be added dynamically -->
@@ -359,6 +360,13 @@
 
                                                 <button type="submit" class="btn btn-primary"
                                                     id="updatekanojo">Update</button>
+
+                                                <!-- for export and import -->
+                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                                    data-bs-target="#fileModal">Import</button>
+
+                                                <button type="button" class="btn btn-primary"
+                                                    onclick="kanojo.exportKanojoFile()">Export</button>
                                             </form>
                                         </div>
                                     </div>
@@ -407,6 +415,48 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <!-- Prompt Templates Section -->
+                                    <div class="row mt-4">
+                                        <div class="col-md-12">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">Prompt Templates</h5>
+                                                    <div class="mb-3">
+                                                        <label for="promptTemplateSelect" class="form-label">Select
+                                                            Prompt Template</label>
+                                                        <select class="form-select" id="promptTemplateSelect"></select>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="promptTemplateName" class="form-label">Prompt
+                                                            Template Name</label>
+                                                        <input type="text" class="form-control" id="promptTemplateName">
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="promptTemplateContent" class="form-label">Prompt
+                                                            Template Content</label>
+                                                        <textarea class="form-control" id="promptTemplateContent"
+                                                            rows="5"></textarea>
+                                                    </div>
+                                                    <button type="button" class="btn btn-primary"
+                                                        id="savePromptTemplate">Save</button>
+                                                    <button type="button" class="btn btn-secondary"
+                                                        id="cancelPromptTemplate">Cancel</button>
+                                                    <button type="button" class="btn btn-danger"
+                                                        id="deletePromptTemplate">Delete</button>
+                                                    <button type="button" class="btn btn-primary"
+                                                        id="exportSinglePromptTemplate">Export</button>
+                                                    <button type="button" class="btn btn-primary"
+                                                        id="exportPromptTemplates">Export All</button>
+                                                    <button type="button" class="btn btn-primary"
+                                                        id="importSinglePromptTemplate">Import</button>
+                                                    <button type="button" class="btn btn-primary"
+                                                        id="importPromptTemplates">Import All</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
@@ -478,6 +528,7 @@
                         <button id="searchButton" class="btn btn-outline-light rounded-pill ms-2">Search</button>
                     </div>
                     <div id="requestResults" class="alert alert-info d-none"></div>
+                    <div id="answerResults"></div>
                     <div id="results" class="row row-cols-1 row-cols-md-3 g-4"></div>
                 </div>
                 <div class="modal-footer">
@@ -720,7 +771,7 @@
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-6">
-                            <select id='promptTemplateSelect'></select>
+                            <p>test</p>
                         </div>
                     </div>
                 </div>

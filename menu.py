@@ -216,6 +216,13 @@ def donate(event):
     manager.focus(windows['donate'])
 
 main_menu = ptg.Window(
+    ptg.Label("""
+██    ██ ██    ██ ███   ██ ███████   ███████ ██
+ ██  ██  ██    ██ ████  ██ ██   ██   ██   ██ ██
+  ████   ██    ██ ██ ██ ██ ███████   ███████ ██
+   ██    ██    ██ ██  ████ ██   ██   ██   ██ ██
+   ██    ████████ ██   ███ ██   ██   ██   ██ ██
+    """),
     ptg.Label("[210 bold]========== Menu =========="),
     ptg.Button("Start Yuna", onclick=start_yuna),
     ptg.Button("Install or Update dependencies", onclick=install_update_dependencies),

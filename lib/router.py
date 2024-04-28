@@ -6,8 +6,10 @@ import re
 from flask import jsonify, request, send_from_directory
 from flask_login import current_user, login_required
 from pydub import AudioSegment
+import requests
 import whisper
 from lib.vision import capture_image, create_image
+from lib.agiTextWorker import agiTextWorker
 
 model = whisper.load_model(name="tiny.en", device="cpu")
 
@@ -25,6 +27,10 @@ def handle_history_request(chat_history_manager):
         history = data.get('history')
         chat_history_manager.save_chat_history(history, list({current_user.get_id()})[0], chat_id)
         return jsonify({'response': 'History edited successfully'})
+    elif task == 'save':
+        history = data.get('history')
+        chat_history_manager.save_chat_history(history, list({current_user.get_id()})[0], chat_id)
+        return jsonify({'response': 'History saved successfully'})
     elif task == 'create':
         chat_history_manager.create_chat_history_file(list({current_user.get_id()})[0], chat_id)
         return jsonify({'response': 'History created successfully'})
@@ -106,7 +112,66 @@ def handle_image_request(chat_history_manager, self):
         return jsonify({'message': yuna_image_message})
     else:
         return jsonify({'error': 'Invalid task parameter'}), 400
-    
+
+@login_required
+def handle_textfile_request(self):
+    if 'text' not in request.files:
+        return jsonify({'error': 'No text file'}), 400
+
+    text_file = request.files['text']
+    text_file.save('static/text/text.txt')
+
+    return jsonify({'response': 'Text file uploaded successfully'})
+
+def handle_search_request(self):
+    data = request.get_json()
+    search_query = data.get('query')
+    url = search_query
+    processData = data.get('processData')
+
+    if processData == True:
+        url = data.get('url')
+
+    if processData == False:
+        # Send a GET request to the URL with additional headers
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1',
+            'Sec-Fetch-Dest': 'document',
+            'Sec-Fetch-Mode': 'navigate',
+            'Sec-Fetch-Site': 'none',
+            'Sec-Fetch-User': '?1',
+            'Cache-Control': 'max-age=0',
+        }
+        response = requests.get(url, headers=headers)
+
+        # Get the HTML content from the response
+        html_content = response.text
+
+        # Return the HTML content as plain text
+        return html_content, 200, {'Content-Type': 'text/plain'}
+    else:
+        from trafilatura import fetch_url, extract
+        from agiTextWorker import agiTextWorker
+
+        downloaded = fetch_url(url)
+
+        result = extract(downloaded)
+        result = str(result)
+
+        # save the result to a file
+        with open('output.txt', 'w') as f:
+            f.write(result)
+
+        # process the file with the agiTextWorker
+        worker = agiTextWorker()
+        response = worker.processTextFile('output.txt', f'Question: {search_query}. Instruction: Please summarize this article with bullet points shortly.')
+        return response
+
 def services(self):
     return send_from_directory('.', 'services.html')
 

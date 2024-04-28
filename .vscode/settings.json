@@ -3,7 +3,7 @@
     "liveServer.settings.https": {
         "passphrase": "",
         "enable": true,
-        "cert": "/Users/yuki/Documents/server.crt",
-        "key": "/Users/yuki/Documents/server.key"
+        "cert": "/Users/yuki/Documents/Github/yuna-ai/cert.pem",
+        "key": "/Users/yuki/Documents/Github/yuna-ai/key.pem"
     }
 }

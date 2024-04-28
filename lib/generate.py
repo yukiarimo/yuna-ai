@@ -16,7 +16,7 @@ class ChatGenerator:
             n_gpu_layers=config["ai"]["gpu_layers"],
             verbose=False
         )
-        self.classifier = pipeline("text-classification", model=f"{config['server']['agi_model_dir']}yuna-emotion")
+        self.classifier = pipeline("text-classification", model=f"{config['server']['agi_model_dir']}yuna-emotion") if config["ai"]["emotions"] else ""
 
     def generate(self, chat_id, speech=False, text="", template=None, chat_history_manager=None, useHistory=True):
         chat_history = chat_history_manager.load_chat_history(list({current_user.get_id()})[0], chat_id)

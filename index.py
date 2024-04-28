@@ -1,7 +1,6 @@
 import shutil
 from flask import Flask, get_flashed_messages, request, jsonify, send_from_directory, redirect, url_for, flash
 from flask_login import LoginManager, UserMixin, login_required, logout_user, login_user, current_user
-import requests
 from lib.generate import ChatGenerator, ChatHistoryManager
 from lib.router import handle_history_request, handle_image_request, handle_message_request, handle_audio_request, services, about
 from flask_cors import CORS
@@ -46,32 +45,6 @@ class YunaServer:
     @staticmethod
     def page_not_found(self):
         return f'This page does not exist.', 404
-    
-    def search(self):
-        search_query = request.json['query']
-        url = 'https://www.google.com/search?q=' + search_query
-
-        # Send a GET request to the URL with additional headers
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-            'Accept-Language': 'en-US,en;q=0.5',
-            'Accept-Encoding': 'gzip, deflate, br',
-            'Connection': 'keep-alive',
-            'Upgrade-Insecure-Requests': '1',
-            'Sec-Fetch-Dest': 'document',
-            'Sec-Fetch-Mode': 'navigate',
-            'Sec-Fetch-Site': 'none',
-            'Sec-Fetch-User': '?1',
-            'Cache-Control': 'max-age=0',
-        }
-        response = requests.get(url, headers=headers)
-
-        # Get the HTML content from the response
-        html_content = response.text
-
-        # Return the HTML content as plain text
-        return html_content, 200, {'Content-Type': 'text/plain'}
 
     # User model
     class User(UserMixin):

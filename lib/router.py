@@ -1,17 +1,11 @@
 import base64
-import datetime
-import json
-import os
 import re
 from flask import jsonify, request, send_from_directory
 from flask_login import current_user, login_required
-from pydub import AudioSegment
-import requests
-import whisper
 from lib.vision import capture_image, create_image
 from lib.agiTextWorker import agiTextWorker
-
-model = whisper.load_model(name="tiny.en", device="cpu")
+from lib.search import search_web
+from lib.audio import transcribe_audio, load_model, speak_text
 
 @login_required
 def handle_history_request(chat_history_manager):
@@ -60,14 +54,30 @@ def handle_message_request(chat_generator, chat_history_manager, chat_id=None, s
 
 @login_required
 def handle_audio_request(self):
-    if 'audio' not in request.files:
-        return jsonify({'error': 'No audio file'}), 400
+    task = request.form['task']
 
-    audio_file = request.files['audio']
-    audio_file.save('static/audio/audio.wav')
+    if task == 'transcribe':
+        if 'audio' not in request.files:
+            return jsonify({'error': 'No audio file'}), 400
 
-    result = model.transcribe('static/audio/audio.wav')
-    return jsonify({'text': result['text']})
+        audio_file = request.files['audio']
+        save_dir_audio = 'static/audio/audio.wav'
+        audio_file.save(save_dir_audio)
+
+        result = transcribe_audio(save_dir_audio)
+        return jsonify({'text': result})
+
+    elif task == 'tts':
+        xtts_checkpoint = "/Users/yuki/Documents/Github/yuna-ai/lib/models/agi/yuna-talk/yuna-talk.pth"
+        xtts_config = "/Users/yuki/Documents/Github/yuna-ai/lib/models/agi/yuna-talk/config.json"
+        xtts_vocab = "/Users/yuki/Documents/Github/yuna-ai/lib/models/agi/yuna-talk/vocab.json"
+        load_model(xtts_checkpoint, xtts_config, xtts_vocab)
+
+        print("Running TTS...")
+        text = """Huh? Is this a mistake? I looked over at Mom and Dad. They looked…amazed. Was this for real? In the world of Oudegeuz, we have magic. I was surprised when I first awakened to it—there wasn’t any in my last world, after all."""
+        result = speak_text(text, "/Users/yuki/Downloads/orig.wav", "response.wav")
+
+    return jsonify({'response': result})
 
 @login_required
 def handle_image_request(chat_history_manager, self):
@@ -114,15 +124,6 @@ def handle_image_request(chat_history_manager, self):
         return jsonify({'error': 'Invalid task parameter'}), 400
 
 @login_required
-def handle_textfile_request(self):
-    if 'text' not in request.files:
-        return jsonify({'error': 'No text file'}), 400
-
-    text_file = request.files['text']
-    text_file.save('static/text/text.txt')
-
-    return jsonify({'response': 'Text file uploaded successfully'})
-
 def handle_search_request(self):
     data = request.get_json()
     search_query = data.get('query')
@@ -132,45 +133,23 @@ def handle_search_request(self):
     if processData == True:
         url = data.get('url')
 
-    if processData == False:
-        # Send a GET request to the URL with additional headers
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-            'Accept-Language': 'en-US,en;q=0.5',
-            'Accept-Encoding': 'gzip, deflate, br',
-            'Connection': 'keep-alive',
-            'Upgrade-Insecure-Requests': '1',
-            'Sec-Fetch-Dest': 'document',
-            'Sec-Fetch-Mode': 'navigate',
-            'Sec-Fetch-Site': 'none',
-            'Sec-Fetch-User': '?1',
-            'Cache-Control': 'max-age=0',
-        }
-        response = requests.get(url, headers=headers)
+    result = search_web(search_query, url, processData) 
 
-        # Get the HTML content from the response
-        html_content = response.text
+    return jsonify({'message': result})
 
-        # Return the HTML content as plain text
-        return html_content, 200, {'Content-Type': 'text/plain'}
-    else:
-        from trafilatura import fetch_url, extract
-        from agiTextWorker import agiTextWorker
+@login_required
+def handle_textfile_request(self):
+    if 'text' not in request.files:
+        return jsonify({'error': 'No text file'}), 400
 
-        downloaded = fetch_url(url)
+    text_file = request.files['text']
+    query = request.form['query']
+    text_file.save('static/text/text.txt')
 
-        result = extract(downloaded)
-        result = str(result)
+    textWorker = agiTextWorker()
+    result = textWorker.processTextFile('static/text/text.txt', query)
 
-        # save the result to a file
-        with open('output.txt', 'w') as f:
-            f.write(result)
-
-        # process the file with the agiTextWorker
-        worker = agiTextWorker()
-        response = worker.processTextFile('output.txt', f'Question: {search_query}. Instruction: Please summarize this article with bullet points shortly.')
-        return response
+    return jsonify({'response': result})
 
 def services(self):
     return send_from_directory('.', 'services.html')

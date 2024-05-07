@@ -1,13 +1,12 @@
 import shutil
 from flask import Flask, get_flashed_messages, request, jsonify, send_from_directory, redirect, url_for, flash
-from flask_login import LoginManager, UserMixin, login_required, logout_user, login_user, current_user
+from flask_login import LoginManager, UserMixin, login_required, logout_user, login_user, current_user, login_manager
 from lib.generate import ChatGenerator, ChatHistoryManager
-from lib.router import handle_history_request, handle_image_request, handle_message_request, handle_audio_request, services, about
+from lib.router import handle_history_request, handle_image_request, handle_message_request, handle_audio_request, services, about, handle_search_request
 from flask_cors import CORS
 import json
 import os
 from itsdangerous import URLSafeTimedSerializer
-from flask_login import login_manager
 from flask_compress import Compress
 
 with open('static/config.json', 'r') as config_file:
@@ -94,7 +93,7 @@ class YunaServer:
         self.app.route('/image', methods=['POST'], endpoint='image')(lambda: handle_image_request(self.chat_history_manager, self))
         self.app.route('/audio', methods=['GET', 'POST'], endpoint='audio')(lambda: handle_audio_request(self))
         self.app.route('/logout', methods=['GET'])(self.logout)
-        self.app.route('/search', methods=['POST'])(self.search)
+        self.app.route('/search', methods=['POST'], endpoint='search')(lambda: handle_search_request(self))
 
     def custom_static(self, filename):
         if not filename.startswith('static/') and not filename.startswith('/favicon.ico') and not filename.startswith('/manifest.json'):
@@ -174,7 +173,6 @@ class YunaServer:
     
     @login_required
     def yuna_server(self):        
-        # send flash message "Hello, {username}!"
         flash(f'Hello, {current_user.get_id()}!')
         return send_from_directory('.', 'yuna.html')
 

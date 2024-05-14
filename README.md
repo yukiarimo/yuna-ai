@@ -27,8 +27,7 @@ This `README.md` file will guide you through setting up and using Yuna with all 
   - [Table of Contents](#table-of-contents)
 - [Demo](#demo)
   - [Screenshots](#screenshots)
-  - [Teaser](#teaser)
-  - [Introduction](#introduction)
+  - [Watch](#watch)
 - [Getting Started](#getting-started)
   - [Requirements](#requirements)
   - [Setup](#setup)
@@ -65,11 +64,10 @@ This `README.md` file will guide you through setting up and using Yuna with all 
 ## Screenshots
 ![YunaAI](https://raw.githubusercontent.com/yukiarimo/yuna-ai/main/static/img/products/chat.webp)
 
-## Teaser
-<iframe width="560" height="315" src="https://www.youtube.com/embed/QNntjPfJT0M?si=WaMALyw2jMtwRb1c" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+## Watch
+Teaser - https://www.youtube.com/embed/QNntjPfJT0M?si=WaMALyw2jMtwRb1c
 
-## Introduction
-<iframe width="560" height="315" src="https://www.youtube.com/embed/pyg6y5U1I24?si=kF6Ko5CB_Gb-Vh68" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+Introduction - https://www.youtube.com/embed/pyg6y5U1I24?si=kF6Ko5CB_Gb-Vh68
 
 # Getting Started
 This repository contains the code for a Yuna AI, which was trained on a massive dataset. The model can generate text, translate languages, write creative content, roleplay, and answer your questions informally.

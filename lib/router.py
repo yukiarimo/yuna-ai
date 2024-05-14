@@ -52,10 +52,13 @@ def handle_message_request(chat_generator, chat_history_manager, chat_id=None, s
     response = chat_generator.generate(chat_id, speech, text, template, chat_history_manager)
     return jsonify({'response': response})
 
-@login_required
 def handle_audio_request(self):
     task = request.form['task']
 
+    # debug the request
+    print(request.form)
+    print(request.files)
+    
     if task == 'transcribe':
         if 'audio' not in request.files:
             return jsonify({'error': 'No audio file'}), 400
@@ -68,11 +71,6 @@ def handle_audio_request(self):
         return jsonify({'text': result})
 
     elif task == 'tts':
-        xtts_checkpoint = "/Users/yuki/Documents/Github/yuna-ai/lib/models/agi/yuna-talk/yuna-talk.pth"
-        xtts_config = "/Users/yuki/Documents/Github/yuna-ai/lib/models/agi/yuna-talk/config.json"
-        xtts_vocab = "/Users/yuki/Documents/Github/yuna-ai/lib/models/agi/yuna-talk/vocab.json"
-        load_model(xtts_checkpoint, xtts_config, xtts_vocab)
-
         print("Running TTS...")
         text = """Huh? Is this a mistake? I looked over at Mom and Dad. They looked…amazed. Was this for real? In the world of Oudegeuz, we have magic. I was surprised when I first awakened to it—there wasn’t any in my last world, after all."""
         result = speak_text(text, "/Users/yuki/Downloads/orig.wav", "response.wav")

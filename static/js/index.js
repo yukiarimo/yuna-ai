@@ -62,6 +62,7 @@ function stopRecording() {
 function sendAudioToServer(audioBlob) {
   const formData = new FormData();
   formData.append('audio', audioBlob);
+  formData.append('task', 'transcribe');
 
   fetch('/audio', {
     method: 'POST',
@@ -69,9 +70,6 @@ function sendAudioToServer(audioBlob) {
   })
   .then(response => response.json())
   .then(data => {
-    console.log('The text in video:', data.text);
-    // Here you can update the client with the transcription result
-    // For example, you could display the result in an HTML element
     messageManager.sendMessage(data.text, imageData = '', url = '/message')
   })
   .catch(error => {
@@ -401,7 +399,8 @@ class HistoryManager {
         return response.json();
       })
       .then(responseData => {
-        alert(responseData);
+        alert("New history file created successfully.");
+        location.reload();
       })
       .catch(error => {
         console.error('An error occurred:', error);
@@ -766,6 +765,7 @@ function captureAudioViaFile() {
   const formData = new FormData();
 
   formData.append('audio', file);
+  formData.append('task', 'transcribe');
 
   fetch('/audio', {
     method: 'POST',
@@ -828,6 +828,7 @@ function captureVideoViaFile() {
 
   const formData = new FormData();
   formData.append('audio', file);
+  formData.append('task', 'transcribe');
 
   fetch('/audio', {
     method: 'POST',

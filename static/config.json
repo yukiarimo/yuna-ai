@@ -13,8 +13,8 @@
         "repetition_penalty": 1.11,
         "last_n_tokens": 128,
         "seed": -1,
-        "top_k": 100,
-        "top_p": 1,
+        "top_k": 60,
+        "top_p": 0.9,
         "stop": [
             "Yuki:",
             "\nYuki:",
@@ -41,7 +41,9 @@
         "yuna_default_model": "yuna-ai-v2-q6_k.gguf",
         "agi_model_dir": "lib/models/agi/",
         "art_default_model": "yuna_ai_anime.safetensors",
-        "device": "mps"
+        "device": "mps",
+        "yuna_text_mode": "native",
+        "yuna_audio_mode": "fast"
     },
     "security": {
         "secret_key": "YourSecretKeyHere123!",

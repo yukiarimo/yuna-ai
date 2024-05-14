@@ -62,6 +62,7 @@ function stopRecording() {
 function sendAudioToServer(audioBlob) {
   const formData = new FormData();
   formData.append('audio', audioBlob);
+  formData.append('task', 'transcribe');
 
   fetch('/audio', {
     method: 'POST',
@@ -69,9 +70,6 @@ function sendAudioToServer(audioBlob) {
   })
   .then(response => response.json())
   .then(data => {
-    console.log('The text in video:', data.text);
-    // Here you can update the client with the transcription result
-    // For example, you could display the result in an HTML element
     messageManager.sendMessage(data.text, imageData = '', url = '/message')
   })
   .catch(error => {
@@ -286,6 +284,7 @@ function formatMessage(messageData) {
 
   const menuToggleBtn = document.createElement('button');
   menuToggleBtn.classList.add('menu-toggle-btn');
+  menuToggleBtn.setAttribute('aria-label', 'Message Bubble Menu');
   menuToggleBtn.innerHTML = '<i class="fas fa-ellipsis-v"></i>';
 
   const messageMenu = document.createElement('div');
@@ -369,7 +368,7 @@ setTimeout(setMessagePopoverListeners, 1000);
 
 class HistoryManager {
   constructor(serverUrl, serverPort, defaultHistoryFile) {
-    this.serverUrl = serverUrl || 'http://localhost:';
+    this.serverUrl = serverUrl || 'https://localhost:';
     this.serverPort = serverPort || 4848;
     this.defaultHistoryFile = defaultHistoryFile || 'history_template.json';
     this.messageContainer = document.getElementById('message-container');
@@ -400,7 +399,8 @@ class HistoryManager {
         return response.json();
       })
       .then(responseData => {
-        alert(responseData);
+        alert("New history file created successfully.");
+        location.reload();
       })
       .catch(error => {
         console.error('An error occurred:', error);
@@ -438,6 +438,47 @@ class HistoryManager {
       })
       .catch(error => console.error('Error fetching history for download:', error));
   }
+
+  async importHistory() {
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = '.json';
+  
+    fileInput.onchange = async () => {
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+  
+      await new Promise((resolve) => {
+        reader.onload = () => {
+          resolve();
+        };
+        reader.readAsText(file);
+      });
+  
+      const historyData = reader.result;
+      const filename = prompt('Enter a name for the new file (with .json):');
+  
+      try {
+        const response = await fetch(`${server_url + server_port}/history`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat: filename,
+            task: 'save',
+            history: historyData,
+          }),
+        });
+  
+        await response.json();
+        alert('History imported successfully.');
+        location.reload();
+      } catch (error) {
+        console.error('Error sending edited history:', error);
+      }
+    };
+  
+    fileInput.click();
+  }  
 
   editHistory() {
     this.fetchHistory('load')
@@ -668,9 +709,17 @@ function captureImage() {
 }
 
 // Modify the captureImage function to handle file uploads
-async function captureImageViaFile() {
-  const imageUpload = document.getElementById('imageUpload');
-  const file = imageUpload.files[0];
+async function captureImageViaFile(image=null, imagePrompt=null) {
+  var imageUpload = '';
+  var file = '';
+  if (image && !imagePrompt) {
+    imageUpload = document.getElementById('imageUpload');
+    file = imageUpload.files[0];
+    console.log('here');
+  } else if (imagePrompt && image) {
+    file = image;
+    console.log('here2');
+  }
 
   if (!file) {
     alert('No file selected.');
@@ -680,7 +729,13 @@ async function captureImageViaFile() {
   const reader = new FileReader();
   reader.onloadend = async function () {
     const imageDataURL = reader.result;
-    const messageForImage = prompt('Enter a message for the image:');
+    var messageForImage = '';
+    if (imagePrompt) {
+      messageForImage = imagePrompt;
+    } else {
+      messageForImage = prompt('Enter a message for the image:');
+    }
+
     const imageName = Date.now().toString();
 
     closePopupsAll();
@@ -710,6 +765,7 @@ function captureAudioViaFile() {
   const formData = new FormData();
 
   formData.append('audio', file);
+  formData.append('task', 'transcribe');
 
   fetch('/audio', {
     method: 'POST',
@@ -732,17 +788,47 @@ function captureVideoViaFile() {
     return;
   }
 
-  const reader = new FileReader();
-  reader.onloadend = async function () {
-    const videoDataURL = reader.result;
-    const videoName = Date.now().toString();
+  const videoFrames = [];
 
-    closePopupsAll();
-  }
+  const video = document.createElement('video');
+  video.src = URL.createObjectURL(file);
+
+  video.addEventListener('loadedmetadata', function() {
+    const duration = video.duration;
+    let currentTime = 0;
+
+    function captureFrame() {
+      if (currentTime <= duration) {
+        video.currentTime = currentTime;
+        video.addEventListener('seeked', function() {
+          const canvas = document.createElement('canvas');
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          const frameDataURL = canvas.toDataURL('image/jpeg');
+          videoFrames.push(frameDataURL);
+          currentTime += 30;
+          captureFrame();
+        }, { once: true });
+      } else {
+        closePopupsAll();
+      }
+    }
+
+    captureFrame();
+  });
+
+  console.log('Frames captured:', videoFrames);
+  console.log('first frame:', videoFrames[0]);
+
+  // capture first frame using captureImageViaFile(image) function
+  captureRessult = captureImageViaFile(videoFrames[0], 'Describe the image');
+  console.log('Capture result:', captureRessult);
 
   const formData = new FormData();
-
   formData.append('audio', file);
+  formData.append('task', 'transcribe');
 
   fetch('/audio', {
     method: 'POST',
@@ -751,9 +837,7 @@ function captureVideoViaFile() {
   .then(response => response.json())
   .then(data => {
     console.log('The text in video:', data.text);
-  })
-
-  reader.readAsDataURL(file);
+  });
 }
 
 function captureTextViaFile() {
@@ -858,9 +942,6 @@ function populateHistorySelect() {
 
             // Get the action (the button's text content)
             let action = this.textContent;
-
-            // You can now use fileName and action for whatever you need
-            console.log(`Action: ${action}, File Name: ${fileName}`);
 
             // Handle the action
             switch (action) {

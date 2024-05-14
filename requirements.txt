@@ -8,8 +8,10 @@ llama-cpp-python
 diffusers
 itsdangerous
 cryptography
-pytermgui
 Flask-Compress
 einops
 timm
 Pillow
+article-parser
+trafilatura
+accelerate

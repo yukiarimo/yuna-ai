@@ -13,3 +13,4 @@ static/img/art/*
 !static/img/art/art_template.png
 static/audio/*
 !static/audio/README.md
+.DS_Store

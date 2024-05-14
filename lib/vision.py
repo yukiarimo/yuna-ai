@@ -4,7 +4,6 @@ from diffusers import StableDiffusionPipeline
 from PIL import Image
 from datetime import datetime
 import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer
 from .yvision.moondream import Moondream
 from transformers import CodeGenTokenizerFast as Tokenizer
 

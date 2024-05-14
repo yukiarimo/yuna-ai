@@ -1,15 +1,11 @@
 import base64
-import datetime
-import json
-import os
 import re
 from flask import jsonify, request, send_from_directory
 from flask_login import current_user, login_required
-from pydub import AudioSegment
-import whisper
 from lib.vision import capture_image, create_image
-
-model = whisper.load_model(name="tiny.en", device="cpu")
+from lib.agiTextWorker import agiTextWorker
+from lib.search import search_web
+from lib.audio import transcribe_audio, load_model, speak_text
 
 @login_required
 def handle_history_request(chat_history_manager):
@@ -25,6 +21,10 @@ def handle_history_request(chat_history_manager):
         history = data.get('history')
         chat_history_manager.save_chat_history(history, list({current_user.get_id()})[0], chat_id)
         return jsonify({'response': 'History edited successfully'})
+    elif task == 'save':
+        history = data.get('history')
+        chat_history_manager.save_chat_history(history, list({current_user.get_id()})[0], chat_id)
+        return jsonify({'response': 'History saved successfully'})
     elif task == 'create':
         chat_history_manager.create_chat_history_file(list({current_user.get_id()})[0], chat_id)
         return jsonify({'response': 'History created successfully'})
@@ -52,16 +52,30 @@ def handle_message_request(chat_generator, chat_history_manager, chat_id=None, s
     response = chat_generator.generate(chat_id, speech, text, template, chat_history_manager)
     return jsonify({'response': response})
 
-@login_required
 def handle_audio_request(self):
-    if 'audio' not in request.files:
-        return jsonify({'error': 'No audio file'}), 400
+    task = request.form['task']
 
-    audio_file = request.files['audio']
-    audio_file.save('static/audio/audio.wav')
+    # debug the request
+    print(request.form)
+    print(request.files)
+    
+    if task == 'transcribe':
+        if 'audio' not in request.files:
+            return jsonify({'error': 'No audio file'}), 400
 
-    result = model.transcribe('static/audio/audio.wav')
-    return jsonify({'text': result['text']})
+        audio_file = request.files['audio']
+        save_dir_audio = 'static/audio/audio.wav'
+        audio_file.save(save_dir_audio)
+
+        result = transcribe_audio(save_dir_audio)
+        return jsonify({'text': result})
+
+    elif task == 'tts':
+        print("Running TTS...")
+        text = """Huh? Is this a mistake? I looked over at Mom and Dad. They looked…amazed. Was this for real? In the world of Oudegeuz, we have magic. I was surprised when I first awakened to it—there wasn’t any in my last world, after all."""
+        result = speak_text(text, "/Users/yuki/Downloads/orig.wav", "response.wav")
+
+    return jsonify({'response': result})
 
 @login_required
 def handle_image_request(chat_history_manager, self):
@@ -106,7 +120,35 @@ def handle_image_request(chat_history_manager, self):
         return jsonify({'message': yuna_image_message})
     else:
         return jsonify({'error': 'Invalid task parameter'}), 400
-    
+
+@login_required
+def handle_search_request(self):
+    data = request.get_json()
+    search_query = data.get('query')
+    url = search_query
+    processData = data.get('processData')
+
+    if processData == True:
+        url = data.get('url')
+
+    result = search_web(search_query, url, processData) 
+
+    return jsonify({'message': result})
+
+@login_required
+def handle_textfile_request(self):
+    if 'text' not in request.files:
+        return jsonify({'error': 'No text file'}), 400
+
+    text_file = request.files['text']
+    query = request.form['query']
+    text_file.save('static/text/text.txt')
+
+    textWorker = agiTextWorker()
+    result = textWorker.processTextFile('static/text/text.txt', query)
+
+    return jsonify({'response': result})
+
 def services(self):
     return send_from_directory('.', 'services.html')
 

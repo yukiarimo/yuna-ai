@@ -127,8 +127,11 @@ document.addEventListener("keydown", function (event) {
     return;
   }
 
+  var inputs = Array.from(document.getElementsByTagName('input'));
+  var textareas = Array.from(document.getElementsByTagName('textarea'));
+
   // Check if Shift key is pressed along with the key and is not in the input field
-  if (document.activeElement != document.getElementsByTagName('input') && document.activeElement != document.getElementsByTagName('textarea') && event.shiftKey) {
+  if (!inputs.includes(document.activeElement) && !textareas.includes(document.activeElement) && event.shiftKey) {
     switch (event.key) {
       case "H":
         event.preventDefault(); // Prevent any default action

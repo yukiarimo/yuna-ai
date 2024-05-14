@@ -190,7 +190,7 @@ class Moondream(PreTrainedModel):
         prompt,
         tokenizer,
         eos_text="<END>",
-        max_new_tokens=128,
+        max_new_tokens=256,
         **kwargs,
     ):
         eos_tokens = tokenizer(eos_text, add_special_tokens=False)[0].ids

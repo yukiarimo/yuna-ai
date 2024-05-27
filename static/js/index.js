@@ -166,33 +166,60 @@ class messageManager {
     this.messageContainer.scrollTop = this.messageContainer.scrollHeight;
   }
 
-  sendMessage(message, imageData = '', url = '/message') {
+  sendMessage(message, imageData = '', url = '/message', naked = false) {
     this.inputText = document.getElementById('input_text');
     this.createMessage(name1, message || this.inputText.value);
     this.createTypingBubble();
+    let fetchPromise;
 
     if (url === '/message') {
-      message = message || this.inputText.value;
-      this.inputText.value = '';
-      const serverEndpoint = `${server_url + server_port}${url}`;
-      const headers = { 'Content-Type': 'application/json' };
-      const body = JSON.stringify({ chat: selectedFilename, text: message, useHistory: kanojo.useHistory, template: kanojo.buildKanojo(), speech: isYunaListening });
+      if (naked == false) {
+        message = message || this.inputText.value;
+        this.inputText.value = '';
+        const serverEndpoint = `${server_url + server_port}${url}`;
+        const headers = { 'Content-Type': 'application/json' };
+        const body = JSON.stringify({ chat: selectedFilename, text: message, useHistory: kanojo.useHistory, template: kanojo.buildKanojo(), speech: isYunaListening, yunaConfig: config_data});
 
-      fetch(serverEndpoint, { method: 'POST', headers, body })
-        .then(response => response.json())
-        .then(data => {
-          this.removeTypingBubble();
-          this.createMessage(name2, data.response);
-          if (isYunaListening) {
-            playAudio();
-          }
-        })
-        .catch(error => {
-          this.handleError(error);
-        });
+        fetchPromise = fetch(serverEndpoint, { method: 'POST', headers, body })
+          .then(response => response.json())
+          .then(data => {
+            this.removeTypingBubble();
+            this.createMessage(name2, data.response);
+            if (isYunaListening) {
+              playAudio();
+            }
+
+            return data.response;
+          })
+          .catch(error => {
+            this.handleError(error);
+          });
+        }
+      else {
+        const serverEndpoint = `${server_url + server_port}${url}`;
+        const headers = { 'Content-Type': 'application/json' };
+        const body = JSON.stringify({ chat: selectedFilename, text: message, useHistory: kanojo.useHistory, speech: isYunaListening, yunaConfig: config_data });
+
+        fetchPromise = fetch(serverEndpoint, { method: 'POST', headers, body })
+          .then(response => response.json())
+          .then(data => {
+            this.removeTypingBubble();
+            this.createMessage(name2, data.response);
+            if (isYunaListening) {
+              playAudio();
+            }
+
+            return data.response;
+          })
+          .catch(error => {
+            this.handleError(error);
+          });
+      }
     } else if (url === '/image') {
-      this.sendImage(imageData);
+      fetchPromise = this.sendImage(imageData);
     }
+
+    return fetchPromise;
   }
 
   processResponse(response) {

@@ -1,4 +1,6 @@
 import base64
+import json
+import os
 import re
 from flask import jsonify, request, send_from_directory
 from flask_login import current_user, login_required
@@ -42,6 +44,9 @@ def handle_history_request(chat_history_manager):
     else:
         return jsonify({'error': 'Invalid task parameter'}), 400
 
+def read_users():
+    return {'admin': 'admin'}
+
 @login_required
 def handle_message_request(chat_generator, chat_history_manager, chat_id=None, speech=None, text=None, template=None):
     data = request.get_json()
@@ -49,8 +54,29 @@ def handle_message_request(chat_generator, chat_history_manager, chat_id=None, s
     speech = data.get('speech')
     text = data.get('text')
     template = data.get('template')
-    response = chat_generator.generate(chat_id, speech, text, template, chat_history_manager)
-    return jsonify({'response': response})
+    yunaConfig = data.get('yunaConfig')
+
+    if yunaConfig is not None:
+        yunaConfig = chat_generator.config
+
+    # Check if authentication credentials are provided in the request
+    auth_username = request.headers.get('X-Auth-Username')
+    auth_password = request.headers.get('X-Auth-Password')
+
+    if auth_username and auth_password:
+        # Authenticate the user using the provided credentials
+        users = read_users()
+        if users.get(auth_username) == auth_password:
+            # Authentication successful, proceed with generating the response
+            response = chat_generator.generate(chat_id, speech, text, template, chat_history_manager, yunaConfig=yunaConfig)
+            return jsonify({'response': response})
+        else:
+            # Authentication failed
+            return jsonify({'error': 'Invalid authentication credentials'}), 401
+    else:
+        # Authentication credentials not provided, fallback to session-based authentication
+        response = chat_generator.generate(chat_id, speech, text, template, chat_history_manager, yunaConfig=yunaConfig)
+        return jsonify({'response': response})
 
 def handle_audio_request(self):
     task = request.form['task']

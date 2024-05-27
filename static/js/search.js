@@ -121,6 +121,8 @@ document.getElementById('searchButton').addEventListener('click', function () {
             // Find all matches in the text snippet
             let matches = text_snippet.match(pattern);
 
+            console.log('Matches:', matches);
+
             // Print first three matched URLs
             for (let i = 0; i < matches.length && i < 3; i++) {
               let url = matches[i];

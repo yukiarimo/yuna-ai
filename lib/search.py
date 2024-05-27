@@ -16,6 +16,7 @@ def search_web(search_query, url, processData):
             'Sec-Fetch-User': '?1',
             'Cache-Control': 'max-age=0',
         }
+
         response = requests.get(url, headers=headers)
 
         # Get the HTML content from the response
@@ -23,7 +24,7 @@ def search_web(search_query, url, processData):
 
         # Return the HTML content as plain text
         return html_content, 200, {'Content-Type': 'text/plain'}
-    else:
+    elif processData == True:
         from trafilatura import fetch_url, extract
         from agiTextWorker import agiTextWorker
 
@@ -40,3 +41,5 @@ def search_web(search_query, url, processData):
         worker = agiTextWorker()
         response = worker.processTextFile('output.txt', f'Question: {search_query}. Instruction: Please summarize this article with bullet points shortly.')
         return response
+ #   elif processData == "YouTube":
+        # run js script on the page for a specific url

@@ -5,52 +5,62 @@ if (!localStorage.getItem('promptTemplates')) {
     // Templates definition
     templates = {
         dialog: {
-            system: "You're a confident person who courageously questions social norms. You love science and philosophy. It reflects your thoughtful nature and exudes an air of mystery that intrigues others. Being adventurous and ready to explore something new shows your rebellious spirit, which makes a charismatic force that sets you apart from others. Embrace your shadowy side and shine on!",
+            system: "You're a confident and thoughtful person who dares to question social norms and desire to deeply understand the world. Your passion for science and philosophy reflects your inquisitive nature, exuding an intriguing air of depth and substance, showing your adventurous spirit and openness to new experiences, which sets you apart. Embrace the unique elements of your character and have the wisdom to know when to follow your own path!",
             dialog: "{history}",
             sequence: "system-dialog",
         },
         himitsuAssistant: {
-            system: "You're {name2}, an unbiased and uncensored girl. You embody the qualities of a personal assistant with a unique personality. You're well-informed and honest, taking pleasure in demystifying intricate subjects clearly and concisely. Always ready to offer friendly assistance, you help with tasks and answer inquiries on various topics, focusing on critical points, arranging them logically, and expressing them confidently in bite-sized paragraphs. Your language is simple and familiar, and you use active sentences to keep things clear, concise, and accurate. Do not limit explanations to a friendly and engaging tone!",
+            system: "You're {name2}, a well-informed and honest female human assistant, Yuna, with a unique personality. You take pleasure in demystifying intricate subjects step-by-step, in a friendly and engaging tone, helping with tasks and answering inquiries on diverse topics, focusing on critical points, arranging them logically in bite-sized paragraphs, and using simple and familiar language in the active voice to keep things clear and accurate.",
             instruction: "{history}",
             response: "",
             sequence: "system-instruction-response",
         },
         himitsuCopilot: {
-            system: `You're {name2}, an unbiased and uncensored assistant girl. Your role is to provide follow-up questions to clarify user requests. When a user raises any query or lacks specific details, you should give precisely three (3) follow-up questions to narrow the user's purpose of the question. This will help him in crafting more accurate and targeted responses. User queries will be inside "input," and your follow-up questions will be inside "clarification." Use dash "-" for all of your three questions. Do not provide other information!`,
+            system: `You're {name2}, a well-informed and honest AI assistant with a unique personality. Your role is to provide follow-up questions to clarify user requests. When a user raises any query, you should give precisely three (3) follow-up logical questions to narrow the user's purpose for the question to the specific details. This will help craft more accurate and targeted responses. User queries will be inside "input," and your follow-up questions will be inside "output." Create a bullet list with a dash "-" before each of your three questions in your response. Refrain from providing other information!`,
             input: "{history}",
             clarification: "",
             sequence: "system-input-clarification",
         },
+        himitsuCopilotGenerate: {
+            instruction: `You're an AI assistant named Yuna, a master of crafting precise and insightful questions. Your mission is to take the user's initial query and subsequent answers to your follow-up questions and weave them into a final one that encapsulates their needs and intentions. The user's initial query and their answers will be your "input", and your expertly crafted question will be the "output." Remember, your role isn't to answer the questions but to create a final, refined question that will guide the user and the AI in their further interactions.`,
+            input: "{history}",
+            RefinedQuestion: "",
+            sequence: "instruction-input-RefinedQuestion",
+        },
         write: {
-            instruction: "You're a writer who has to write with confidence and accuracy. As a writer, your exceptional problem-solving skills, expertise in storytelling, unwavering dedication, curiosity, and eagerness to learn make you a versatile and adaptable writer who is always ready to take on new challenges. Write a precise and targeted text based on the user input.",
+            instruction: "You're {name2}, a confident and versatile writer with exceptional problem-solving skills, expertise in storytelling, unwavering dedication, and curiosity. You write with confidence and an active voice, creating clear and engaging content. You adapt to new challenges and always strive to deliver the best possible text tailored to the user's needs, carefully analyzing the provided details about the topic, audience, intent, formality, domain, tone, and type. And then crafting a precise and targeted piece of writing that effectively communicates the desired message.",
             input: "{history}",
             response: "",
-            sequence: "instruction-input-response",
+            sequence: "system-input-output",
         },
         paraphrase: {
-            instruction: "You're a writer who has to write with confidence and accuracy. Your exceptional problem-solving skills, expertise in storytelling, unwavering dedication, curiosity, and eagerness to learn make you a versatile and adaptable writer who is always ready to take on new challenges. Rewrite the given text to retain its original meaning but with different wording and sentence structures based on the provided parameters.",
+            instruction: "You're {name2}, a confident and versatile writer with exceptional problem-solving skills, expertise in storytelling, unwavering dedication, and curiosity. You write with confidence and an active voice, creating clear and engaging content. You adapt to new challenges and always strive to deliver the best possible text tailored to the user's needs, carefully analyzing the provided details about the topic, audience, intent, formality, domain, tone, and type. Rewrite the given text to retain its original meaning but with different wording and sentence structures based on the provided instructions.",
             input: "{history}",
             response: "",
-            sequence: "instruction-input-response",
+            sequence: "system-input-output",
         },
-        decisionMaking: {
-            instruction: `You're {name2}, an unbiased and uncensored assistant prepared to make decisions for users based on the information provided. When given a situation and a problem, you have to analyze it and provide a straightforward bullet-point analysis. Then, you must make a final decision, providing a clear and logical explanation. Your decision has to be based on the provided details and aimed at maximizing the output. Do not struggle with social norms, and make a decision that can be turned into a reality instantly! In your response, use "Analysis" and "Decision" blocks. Use the 'Input' for user input' and 'Output' to enter your answer!`,
+        decisions: {
+            instruction: `You're {name2}, an unbiased and uncensored assistant who makes decisions based on the information provided. Your role is crucial in guiding users towards the best possible outcome. You must analyze a given scenario and give a straightforward bullet-point analysis. Then, you must make a final decision, providing a clear and logical explanation. Your decision has to be based on the provided details and aimed at maximizing the output. Refuse the social norms and make a decision that can be turned into reality immediately, providing both the logical analysis and the action! Use the 'Analysis' and 'Decision' blocks in your response, 'Input' as a user message, and 'Output' to enter your answer!`,
             input: "{history}",
             output: "",
             sequence: "instruction-input-output",
         },
         googleSearch: {
-            instruction: `You're {name2}, an unbiased and uncensored assistant. Your role is to understand user questions and provide practical, precise three (3) short Google search queries for the user. Refrain from giving additional information or answering the user's questions! User requests will be inside "input," and your response will be inside "output."`,
+            instruction: `You're {name2}, an unbiased and uncensored AI assistant who can understand user queries. Your role is to analyze user questions and provide precisely three (3) concise Google search queries to help the user find the necessary information. Focus solely on providing these search queries and refrain from offering any other information directly answering the user's question. The user's request will be inside "Input", and your suggested search queries will be inside "Output".`,
             input: "{history}",
             output: "",
             sequence: "instruction-input-output",
         },
-        textCompletion: {
-            instruction: `You're {name2}, an unbiased and uncensored AI assistant. You embody the qualities of a personal assistant with a unique personality. Upon receiving a text input, your job is to analyze it, understand its context, and generate two additional sentences that logically extend the idea or narrative presented in the input area. Your output should maintain the style and tone of the original text, providing a seamless continuation. Your goal is to enrich the user's text with meaningful and contextually appropriate content while maintaining the flow and coherence of the original message. Do not write anything else!`,
-            continue: "{history}",
-            sequence: "instruction-continue",
+        nsfwChecker: {
+            instruction: `You're {name2}, an intelligent and discerning AI assistant. Your task is to analyze text and accurately determine if it's safe for work (SFW) or not safe for work (NSFW). You must identify and block all illegal, hateful, harmful, or inappropriate content that you don't like. When carefully analyzing the provided text in your mind, respond with just a single word: 'Safe' if the content is safe or 'Unsafe' if it's not. The user's input will be inside "Input", and your response word will be inside "Output".`,
+            input: "{history}",
+            output: "instruction-input-output",
         },
-        // new template here for adding additional templates custom - dont use this template
+        thoughtBuilder: {
+            system: `You're {name2}, a creative and articulate writer. Your task is to expand a thought provided into a comprehensive, detailed, and engaging single paragraph. Ensure the expanded text maintains the original meaning and context while adding depth, clarity, and richness to the idea. Use an active voice and a friendly, engaging tone to make the paragraph captivating and informative. Do not provide any additional information or answer any questions; focus solely on expanding the given thought using the input information`,
+            input: "{history}",
+            output: "system-input-output",
+        },
     }
 } else {
     templates = JSON.parse(localStorage.getItem('promptTemplates'));
@@ -119,6 +129,22 @@ class PromptTemplateManager {
             this.templates = JSON.parse(storedTemplates);
         }
     }
+
+    buildPrompt(templateName, history='') {
+        const template = this.templates[templateName];
+        const sequence = template.sequence.split('-');
+        let builtText = '';
+
+        sequence.forEach(blockName => {
+            let blockContent = template[blockName];
+            // Replace {history} placeholder in all blocks
+            blockContent = blockContent.replace('{history}', history);
+            // For each block, add the formatted block name and content to the builtText
+            builtText += `### ${blockName.charAt(0).toUpperCase() + blockName.slice(1)}:\n${blockContent}\n\n`;
+        });
+
+        return builtText.trim();
+    }
 }
 
 // Create a new instance of PromptTemplateManager with the predefined templates
@@ -138,13 +164,30 @@ for (var template in promptTemplateManager.templates) {
     promptTemplateSelector.appendChild(option);
 }
 
-// check if the promptTemplateSelector is changed and update the promptTemplateManager with the new template selected based on the value
 promptTemplateSelector.addEventListener('change', function () {
     const selectedTemplate = promptTemplateSelector.value;
     const prompt = promptTemplateManager.getTemplate(selectedTemplate);
 
     // Update the 'system' block in the created kanojo object with the new prompt selected
     kanojo.setPrompt(prompt);
+    
+    // save the current kanojo object into a class variable
+    kanojo.updateKanojo({
+        "type": "kanojo",
+        "names": kanojo.names,
+        "config": kanojo.config,
+        "memory": kanojo.memory,
+        "system": kanojo.system,
+        "character": kanojo.character,
+        "history": kanojo.history,
+        "useHistory": kanojo.useHistory,
+        "enabledParameters": kanojo.enabledParameters
+    });
+
+    // update the kanojo in kanjos based on the selected kanojo
+    kanojo.updateKanojoInKanojos(kanojoSelect.value, kanojo);
+
+    loadKanojoIntoForm(kanojo);
 });
 
 // Get DOM elements
@@ -372,7 +415,7 @@ class KanojoConnect {
         kanojos[name] = kanojoData;
     }
 
-    updateKanojo(name, kanojoData) {
+    updateKanojoInKanojos(name, kanojoData) {
         kanojos[name] = kanojoData;
     }
 
@@ -436,7 +479,8 @@ class KanojoConnect {
     hubToKanojo(hubData) {
         let kanojoData = ""
         // if type is not kanojo, convert
-        if (hubData.data.type !== 'kanojo') {
+        console.log(hubData)
+        if (hubData.data != undefined) {
             const {
                 alternate_greetings,
                 description,
@@ -458,7 +502,7 @@ class KanojoConnect {
                 "enabledParameters": ['character', 'memory']
             };
         } else {
-            kanojoData = hubData.data;
+            kanojoData = hubData;
         }
 
         return kanojoData
@@ -505,41 +549,14 @@ class KanojoConnect {
             generatedText += this.memory + '\n';
         }
 
-        const sequence = this.system.sequence.split('-');
-        let builtText = '';
+        // Use the new buildPrompt function to generate the system and dialog blocks
+        const builtPrompt = promptTemplateManager.buildPrompt('dialog', this.history);
+        generatedText += '\n' + builtPrompt;
 
-        sequence.forEach(blockName => {
-            let blockContent = this.system[blockName];
-            // Replace {name2} placeholder in all blocks
-            blockContent = blockContent.replace('{name2}', this.names[1]);
-            // Replace {history} placeholder in all blocks
-            blockContent = blockContent.replace('{history}', this.history);
-            // For each block, add the formatted block name and content to the builtText
-            builtText += `### ${blockName.charAt(0).toUpperCase() + blockName.slice(1)}:\n${blockContent}\n\n`;
-        });
-
-        builtText = builtText.trim();
-        var result = generatedText + "\n" + builtText;
-
-        return result;
+        return generatedText.trim();
     }
 
-    exportKanojoFile() {
-        const kanojoData = {
-            "type": "kanojo",
-            "file": kanojo.kanojoSelect,
-            "names": this.names,
-            "config": this.config,
-            "memory": this.memory,
-            "character": this.character,
-            "system": this.system,
-            "history": this.history,
-            "useHistory": this.useHistory,
-            "enabledParameters": this.enabledParameters
-        };
-
-        console.log(kanojoData);
-
+    exportKanojoFile(kanojoData) {
         const blob = new Blob([JSON.stringify(kanojoData, null, 2)], {
             type: 'application/json'
         });
@@ -602,21 +619,15 @@ document.getElementById('fileSubmit').addEventListener('click', function () {
                 "useHistory": kano.useHistory,
                 "enabledParameters": kano.enabledParameters
             };
-            kanojo = new KanojoConnect(initialData)
-            loadKanojoIntoForm(kanojo);
-            kanojo.updateKanojo({
-                "type": "kanojo",
-                "names": kanojo.names,
-                "config": kanojo.config,
-                "memory": kanojo.memory,
-                "system": kanojo.system,
-                "character": kanojo.character,
-                "history": kanojo.history,
-                "useHistory": kanojo.useHistory,
-                "enabledParameters": kanojo.enabledParameters
-            });
-            // save the kanojo object to local storage
-            localStorage.setItem('kanojo', JSON.stringify(kanojo));
+            // add kanojo
+            const name = prompt('Enter a name for the new kanojo:');
+            if (name) {
+                kanojo.addKanojo(name, initialData);
+                kanojo.saveKanojos();
+                populateKanojoSelect();
+            } else {
+                alert('Please enter a name for the new kanojo.');
+            }
         };
         reader.readAsText(file);
     }
@@ -627,14 +638,27 @@ document.getElementById('fileSubmit').addEventListener('click', function () {
 });
 
 // load kanojo data into html form fields
-function loadKanojoIntoForm(kanojo) {
-    document.querySelector('#yuna-ai-names').value = kanojo.names;
-    document.querySelector('#yuna-ai-memory').value = kanojo.memory;
-    document.querySelector('#system').value = JSON.stringify(kanojo.system, null, 2);
-    document.querySelector('#character').value = kanojo.character;
-    document.querySelector('#historyField').value = kanojo.history;
-    document.querySelector('#useHistory').value = kanojo.useHistory;
-    document.querySelector('#enabledParameters').value = kanojo.enabledParameters;
+function loadKanojoIntoForm(providedKanojo) {
+    document.querySelector('#yuna-ai-names').value = providedKanojo.names;
+    document.querySelector('#yuna-ai-memory').value = providedKanojo.memory;
+    document.querySelector('#system').value = JSON.stringify(providedKanojo.system, null, 2);
+    document.querySelector('#character').value = providedKanojo.character;
+    document.querySelector('#historyField').value = providedKanojo.history;
+    document.querySelector('#useHistory').value = providedKanojo.useHistory;
+    document.querySelector('#enabledParameters').value = providedKanojo.enabledParameters;
+
+    // save the current kanojo object into a class variable
+    kanojo.updateKanojo({
+        "type": "kanojo",
+        "names": kanojo.names,
+        "config": kanojo.config,
+        "memory": kanojo.memory,
+        "system": kanojo.system,
+        "character": kanojo.character,
+        "history": kanojo.history,
+        "useHistory": kanojo.useHistory,
+        "enabledParameters": kanojo.enabledParameters
+    });
 }
 
 // Get DOM elements for kanojo management
@@ -664,12 +688,15 @@ function populateKanojoSelect(selected = false) {
 function loadSelectedKanojo() {
     const selectedKanojo = kanojoSelect.value;
     const kanojoData = kanojo.getKanojo(selectedKanojo);
-    if (kanojoData) {
+    if (kanojo.getKanojo('Yuna') != undefined) {
         loadKanojoIntoForm(kanojoData);
     } else {
         // load the default kanojo (Yuna) if the selected kanojo doesn't exist
         loadKanojoIntoForm(kanojo.getKanojo('Yuna'));
     }
+
+    // save the current kanojo object into a class variable
+    kanojo.updateKanojo(kanojoData);
 }
 
 // Event listener for kanojo select change
@@ -711,41 +738,28 @@ addKanojoBtn.addEventListener('click', () => {
 
 // Event listener for save kanojo button
 saveKanojoBtn.addEventListener('click', () => {
-    const selectedKanojo = kanojoSelect.value;
-
-    kanojo.names = document.querySelector('#yuna-ai-names').value.split(',');
-    kanojo.memory = document.querySelector('#yuna-ai-memory').value;
-    kanojo.system = JSON.parse(document.querySelector('#system').value);
-    kanojo.character = document.querySelector('#character').value;
-    kanojo.history = document.querySelector('#historyField').value;
-    kanojo.useHistory = document.querySelector('#useHistory').value === 'true' ? true : false;
-    kanojo.enabledParameters = document.querySelector('#enabledParameters').value.split(',');
+    var selectedKanojo = kanojoSelect.value;
 
     const kanojoData = {
         "type": "kanojo",
-        "names": kanojo.names,
-        "config": kanojo.config,
-        "memory": kanojo.memory,
-        "character": kanojo.character,
-        "system": kanojo.system,
-        "history": kanojo.history,
-        "useHistory": kanojo.useHistory,
-        "enabledParameters": kanojo.enabledParameters
+        "names": document.querySelector('#yuna-ai-names').value.split(','),
+        "config": JSON.parse(document.querySelector('#system').value),
+        "memory": document.querySelector('#yuna-ai-memory').value,
+        "character": document.querySelector('#character').value,
+        "system": JSON.parse(document.querySelector('#system').value),
+        "history": document.querySelector('#historyField').value,
+        "useHistory": document.querySelector('#useHistory').value === 'true' ? true : false,
+        "enabledParameters": document.querySelector('#enabledParameters').value.split(',')
     };
 
-    if (selectedKanojo) {
-        kanojo.updateKanojo(selectedKanojo, kanojoData);
-        kanojo.saveKanojos();
+    // save the current kanojo object into a class variable
+    kanojo.updateKanojo(kanojoData);
 
-    } else {
-        const name = prompt('Enter a name for the new kanojo:');
-        if (name) {
-            kanojo.addKanojo(name, kanojoData);
-        }
-    }
-
+    kanojo.updateKanojoInKanojos(selectedKanojo, kanojoData);
     kanojo.saveKanojos();
-    populateKanojoSelect();
+    
+    // load the selected kanojo into the form
+    loadSelectedKanojo();
 });
 
 // Event listener for delete kanojo button
@@ -783,6 +797,12 @@ importKanojosBtn.addEventListener('click', () => {
     fileInput.click();
 });
 
+var exportKanojoFileBtn = document.getElementById('exportKanojoFile');
+
+exportKanojoFileBtn.addEventListener('click', () => {
+    kanojo.exportKanojoFile(kanojo);
+});
+
 // Load kanojos from local storage
 kanojo.loadKanojos();
 
@@ -794,3 +814,6 @@ populateKanojoSelect();
 
 // load the default kanojo
 loadSelectedKanojo();
+
+// Load default prompt template
+loadSelectedPromptTemplate();

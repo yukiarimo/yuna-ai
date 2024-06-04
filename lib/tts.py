@@ -18,8 +18,7 @@ def load_model(xtts_checkpoint, xtts_config, xtts_vocab):
 
 def run_tts(lang, tts_text, speaker_audio_file, output_audio):
     gpt_cond_latent, speaker_embedding = XTTS_MODEL.get_conditioning_latents(
-        audio_path=speaker_audio_file, 
-
+        audio_path=speaker_audio_file,
     )
 
     out = XTTS_MODEL.inference(
@@ -27,7 +26,6 @@ def run_tts(lang, tts_text, speaker_audio_file, output_audio):
         language=lang,
         gpt_cond_latent=gpt_cond_latent,
         speaker_embedding=speaker_embedding,
-
     )
 
     out_path = f"/Users/yuki/Documents/Github/yuna-ai/static/audio/{output_audio}"
@@ -87,16 +85,15 @@ def speak_text(text, reference_audio, output_audio, language="en"):
     
     print(f"Generated audio saved at: {output_audio}")
 
-xtts_checkpoint = "/Volumes/Yuki/AI/Models/Voice/TTS/suno/best_model.pth"
-xtts_config = "/Volumes/Yuki/AI/Models/Voice/TTS/suno/config.json"
-xtts_vocab = "/Volumes/Yuki/AI/Models/Voice/TTS/suno/vocab.json"
+xtts_checkpoint = "/Users/yuki/Downloads/yuna-talk-v2/yuna-small.pth"
+xtts_config = "/Users/yuki/Downloads/yuna-talk-v2/config.json"
+xtts_vocab = "/Users/yuki/Downloads/yuna-talk-v2/vocab.json"
 load_model(xtts_checkpoint, xtts_config, xtts_vocab)
 
 # run TTS
-tts_text = """I don’t care if strangers die in the street alone Spreading all the hatred has become a fashion show Even so you tell me to live my life happy"""
-speaker_audio_file = "/Users/yuki/Music/Ivy/audio/yuna-ai-v1-sing/hated.wav"
+tts_text = """IMPORTANT: You are using gradio version 4.7.1, however version 4.29 available, please upgrade."""
+speaker_audio_file = "/Users/yuki/Downloads/yuna-talk-v2/dataset/wavs/yuna-tamer-prepared_00000177.wav"
 output_audio = "output.wav"
-
 speak_text(tts_text, speaker_audio_file, output_audio)
 
 """
@@ -105,5 +102,5 @@ del checkpoint["optimizer"]
 for key in list(checkpoint["model"].keys()):
     if "dvae" in key:
         del checkpoint["model"][key]
-torch.save(checkpoint, "modelless.pth")
+torch.save(checkpoint, "yuna-small.pth")
 """

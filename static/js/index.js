@@ -12,6 +12,7 @@ let isRecording = false;
 var isYunaListening = false;
 let mediaRecorder;
 let audioChunks = [];
+var activeElement = null;
 
 const buttonAudioRec = document.querySelector('#buttonAudioRec');
 const iconAudioRec = buttonAudioRec.querySelector('#iconAudioRec');
@@ -150,10 +151,15 @@ class messageManager {
     scrollMsg();
   }
 
-  createTypingBubble() {
+  createTypingBubble(naked = false) {
     const typingBubble = `<div id="circle-loader"><img src="/static/img/loader.gif"></div>`;
-    this.messageContainer.insertAdjacentHTML('beforeend', typingBubble);
-    scrollMsg();
+
+    if (naked == false) {
+      this.messageContainer.insertAdjacentHTML('beforeend', typingBubble);
+      scrollMsg();
+    } else {
+      activeElement.insertAdjacentHTML('beforeend', typingBubble);
+    }
   }
 
   removeTypingBubble() {
@@ -169,7 +175,7 @@ class messageManager {
   sendMessage(message, imageData = '', url = '/message', naked = false) {
     this.inputText = document.getElementById('input_text');
     this.createMessage(name1, message || this.inputText.value);
-    this.createTypingBubble();
+    this.createTypingBubble(naked);
     let fetchPromise;
 
     if (url === '/message') {
@@ -204,7 +210,6 @@ class messageManager {
           .then(response => response.json())
           .then(data => {
             this.removeTypingBubble();
-            this.createMessage(name2, data.response);
             if (isYunaListening) {
               playAudio();
             }
@@ -1248,10 +1253,15 @@ function deleteMessageFromHistory(message) {
       .catch(error => {
         console.error('An error occurred:', error);
       });
-
-    // reload the page with delay of 1 second
-    //setTimeout(function () {
-    //  location.reload()
-    //}, 100);
   }
 }
+
+document.querySelectorAll('.creatorStudio-tabs').forEach(tab => {
+  tab.addEventListener('click', function () {
+      document.querySelectorAll('.tab-pane').forEach(pane => {
+          pane.classList.add('d-none');
+      });
+      const target = document.querySelector(this.getAttribute('data-bs-target'));
+      target.classList.remove('d-none');
+  });
+});

@@ -42,7 +42,7 @@
         "agi_model_dir": "lib/models/agi/",
         "art_default_model": "yuna_ai_anime.safetensors",
         "device": "mps",
-        "yuna_text_mode": "native",
+        "yuna_text_mode": "fast",
         "yuna_audio_mode": "fast"
     },
     "security": {

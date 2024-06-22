@@ -10,7 +10,7 @@
 
 body {
     margin: 0;
-    background-image: url('/static/img/space.jpg');
+    background-image: url('/static/img/space.webp');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -61,7 +61,7 @@ p {
     right: 0;
     bottom: 0;
     left: 0;
-    background-image: url('/static/img/holographic-background.png');
+    background-image: url('/static/img/holobg.webp');
     background-size: cover;
     background-repeat: no-repeat;
     opacity: 0.9;

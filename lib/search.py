@@ -1,45 +1,160 @@
-import requests
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.options import Options
+import urllib.parse
 
 def search_web(search_query, url, processData):
+    # Encode the search query to ensure it's a valid URL
+    encoded_query = urllib.parse.quote(search_query)
+    search_url = f'{url}/search?q={encoded_query}'
+
+    print(f"Search URL: {search_url}")  # Debugging line
+
     if processData == False:
-        # Send a GET request to the URL with additional headers
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-            'Accept-Language': 'en-US,en;q=0.5',
-            'Accept-Encoding': 'gzip, deflate, br',
-            'Connection': 'keep-alive',
-            'Upgrade-Insecure-Requests': '1',
-            'Sec-Fetch-Dest': 'document',
-            'Sec-Fetch-Mode': 'navigate',
-            'Sec-Fetch-Site': 'none',
-            'Sec-Fetch-User': '?1',
-            'Cache-Control': 'max-age=0',
+        # Setup Selenium
+        chrome_options = Options()
+        chrome_options.add_argument("--headless")  # Ensure GUI is off
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+
+        # Choose Chrome Browser
+        webdriver_service = Service(ChromeDriverManager().install())
+        driver = webdriver.Chrome(service=webdriver_service, options=chrome_options)
+
+        try:
+            driver.get(search_url)
+        except Exception as e:
+            print(f"Error navigating to {search_url}: {e}")
+            driver.quit()
+            return None, None, None
+
+        # Define JavaScript functions
+        extract_answer_js = """
+        function extractAnswer() {
+            var answerElement = document.querySelector('.kno-rdesc > span');
+            if (!answerElement) {
+                answerElement = document.querySelector('.hgKElc');
+            }
+
+            if (answerElement) {
+                return answerElement.textContent.trim();
+            } else {
+                return 'Answer not found.';
+            }
         }
+        return extractAnswer();
+        """
 
-        response = requests.get(url, headers=headers)
+        extract_search_results_js = """
+        function extractSearchResults() {
+            const searchResults = document.querySelectorAll('.g');
+            let results = [];
+            searchResults.forEach((result) => {
+                const linkElement = result.querySelector('.yuRUbf a');
+                const titleElement = result.querySelector('.yuRUbf a h3');
+                const descriptionElement = result.querySelector('.VwiC3b');
 
-        # Get the HTML content from the response
-        html_content = response.text
+                if (linkElement && titleElement && descriptionElement) {
+                    const link = linkElement.href;
+                    const title = titleElement.textContent.trim();
+                    const description = descriptionElement.textContent.trim();
 
-        # Return the HTML content as plain text
-        return html_content, 200, {'Content-Type': 'text/plain'}
-    elif processData == True:
-        from trafilatura import fetch_url, extract
-        from agiTextWorker import agiTextWorker
+                    results.push({
+                        'Link': link,
+                        'Title': title,
+                        'Description': description
+                    });
+                }
+            });
+            return results;
+        }
+        return extractSearchResults();
+        """
 
-        downloaded = fetch_url(url)
+        # Execute JavaScript and get the results
+        answer = driver.execute_script(extract_answer_js)
+        search_results = driver.execute_script(extract_search_results_js)
 
-        result = extract(downloaded)
-        result = str(result)
+        driver.quit()
 
-        # save the result to a file
-        with open('output.txt', 'w') as f:
-            f.write(result)
+        return answer, search_results, search_images(search_query, url)
 
-        # process the file with the agiTextWorker
-        worker = agiTextWorker()
-        response = worker.processTextFile('output.txt', f'Question: {search_query}. Instruction: Please summarize this article with bullet points shortly.')
-        return response
- #   elif processData == "YouTube":
-        # run js script on the page for a specific url
+def search_images(search_query, url):
+    # Encode the search query to ensure it's a valid URL
+    encoded_query = urllib.parse.quote(search_query)
+    image_search_url = f'{url}/search?q={encoded_query}&tbm=isch'
+
+    print(f"Image Search URL: {image_search_url}")  # Debugging line
+
+    # Setup Selenium
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")  # Ensure GUI is off
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+
+    # Choose Chrome Browser
+    webdriver_service = Service(ChromeDriverManager().install())
+    driver = webdriver.Chrome(service=webdriver_service, options=chrome_options)
+
+    try:
+        driver.get(image_search_url)
+    except Exception as e:
+        print(f"Error navigating to {image_search_url}: {e}")
+        driver.quit()
+        return None
+
+    extract_image_urls_js = """
+    var doc = document;
+    let scripts = doc.body.getElementsByTagName('script');
+    let targetScript;
+
+    for (let script of scripts) {
+        if (script.innerHTML.includes('google.kEXPI')) {
+            targetScript = script;
+            break;
+        }
+    }
+
+    if (targetScript) {
+        let text = targetScript.innerHTML;
+        let pattern = /"([^"]*\\.jpg)"/g;
+        let matches = text.match(pattern);
+        return matches ? matches.slice(0, 3).map(url => url.replace(/"/g, '')) : [];
+        } else {
+        return [];
+    }
+    """
+
+    image_urls = driver.execute_script(extract_image_urls_js)
+
+    # Print all matched URLs
+    for i, url in enumerate(image_urls):
+        print(f"Image URL {i+1}: {url}")
+
+    driver.quit()
+
+    return image_urls
+
+def get_html(url):
+    # Setup Selenium
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")  # Ensure GUI is off
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+
+    # Choose Chrome Browser
+    webdriver_service = Service(ChromeDriverManager().install())
+    driver = webdriver.Chrome(service=webdriver_service, options=chrome_options)
+
+    try:
+        driver.get(url)
+        html = driver.page_source
+    except Exception as e:
+        print(f"Error navigating to {url}: {e}")
+        driver.quit()
+        return None
+
+    driver.quit()
+
+    return html

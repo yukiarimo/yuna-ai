@@ -86,7 +86,7 @@ def speak_text(text, reference_audio, output_audio, mode, language="en"):
 
         for i, chunk in enumerate(chunks):
             audio_file = f"response_{i+1}.wav"
-            result = speak_text(chunk, f"/Users/yuki/Downloads/chapter2.wav", audio_file, "native")
+            result = speak_text(chunk, reference_audio, audio_file, "native")
             audio_files.append("/Users/yuki/Documents/Github/yuna-ai/static/audio/" + audio_file)
 
         # Concatenate the audio files with a 1-second pause in between
@@ -95,12 +95,19 @@ def speak_text(text, reference_audio, output_audio, mode, language="en"):
             combined += AudioSegment.from_wav(audio_file) + AudioSegment.silent(duration=1000)
 
         # Export the combined audio
-        combined.export("/Users/yuki/Documents/Github/yuna-ai/static/audio/audio.wav", format='aiff')
-        
-    elif mode == "fast":
-        os.system(f'say -o static/audio/audio.aiff "{text}"')
+        combined.export("/Users/yuki/Documents/Github/yuna-ai/static/audio/audio.wav", format='wav')
 
-    print(f"Generated audio saved at: {output_audio}")
+        # convert audio to aiff
+        audio = AudioSegment.from_wav("/Users/yuki/Documents/Github/yuna-ai/static/audio/audio.wav")
+        audio.export("/Users/yuki/Documents/Github/yuna-ai/static/audio/audio.mp3", format='mp3')
+    elif mode == "fast":
+        command = f'say -o /Users/yuki/Documents/Github/yuna-ai/static/audio/audio.aiff {repr(text)}'
+        print(command)
+        exit_status = os.system(command)
+
+        # convert audio to mp3
+        audio = AudioSegment.from_file("/Users/yuki/Documents/Github/yuna-ai/static/audio/audio.aiff")
+        audio.export("/Users/yuki/Documents/Github/yuna-ai/static/audio/audio.mp3", format='mp3')
 
 if config['server']['yuna_audio_mode'] == "native":
     xtts_checkpoint = "/Users/yuki/Documents/Github/yuna-ai/lib/models/agi/yuna-talk/yuna-talk.pth"

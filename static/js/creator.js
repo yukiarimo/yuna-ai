@@ -10,15 +10,15 @@ promptTemplateTextarea.value = defaultPromptTemplate;
 
 // Function to send the request to the server
 async function sendRequest() {
-    activeElement = document.getElementById('body-text-freeform-container')
+    activeElement = document.getElementById('body-text-freeform-container');
 
     const bodyText = bodyTextTextarea.value;
     const promptTemplate = promptTemplateTextarea.value.replace('{body_text}', bodyText);
 
-    let ResultMe = await messageManager.sendMessage(promptTemplate, '', '/message', true)
-    console.log(ResultMe)
+    // Clear the result textarea before starting
+    resultTextarea.value = '';
 
-    resultTextarea.value = ResultMe
+    messageManagerInstance.sendMessage(promptTemplate, false, imageData = '', url = '/message', naked = false, stream = true, outputElement = resultTextarea);
 }
 
 // Add an event listener to the submit button
@@ -38,15 +38,15 @@ presentationPromptTemplateTextarea.value = defaultPresentationPromptTemplate;
 
 // Function to send the request to the server for the Presentation tab
 async function sendPresentationRequest() {
-    activeElement = document.getElementById('user-input-presentation-container')
+    activeElement = document.getElementById('user-input-presentation-container');
 
     const userInput = presentationUserInputTextarea.value;
     const promptTemplate = presentationPromptTemplateTextarea.value.replace('{user_input}', userInput);
 
-    let presentationResult = await messageManager.sendMessage(promptTemplate, '', '/message', true);
-    console.log(presentationResult);
+    // Clear the output textarea before starting
+    presentationOutputTextarea.value = '';
 
-    presentationOutputTextarea.value = presentationResult;
+    // similar implementation as the previous function
 }
 
 // Function to copy the output text to the draft text area

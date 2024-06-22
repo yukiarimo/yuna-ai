@@ -13,6 +13,7 @@ def load_model(xtts_checkpoint, xtts_config, xtts_vocab):
     config.load_json(xtts_config)
     XTTS_MODEL = Xtts.init_from_config(config)
     XTTS_MODEL.load_checkpoint(config, checkpoint_path=xtts_checkpoint, vocab_path=xtts_vocab, use_deepspeed=False)
+    XTTS_MODEL.to(torch.device("mps"))
     if torch.cuda.is_available():
         XTTS_MODEL.cuda()
 
@@ -26,6 +27,7 @@ def run_tts(lang, tts_text, speaker_audio_file, output_audio):
         language=lang,
         gpt_cond_latent=gpt_cond_latent,
         speaker_embedding=speaker_embedding,
+        temperature=0.9,
     )
 
     out_path = f"/Users/yuki/Documents/Github/yuna-ai/static/audio/{output_audio}"
@@ -85,14 +87,15 @@ def speak_text(text, reference_audio, output_audio, language="en"):
     
     print(f"Generated audio saved at: {output_audio}")
 
-xtts_checkpoint = "/Users/yuki/Downloads/yuna-talk-v2/yuna-small.pth"
-xtts_config = "/Users/yuki/Downloads/yuna-talk-v2/config.json"
-xtts_vocab = "/Users/yuki/Downloads/yuna-talk-v2/vocab.json"
+xtts_checkpoint = "/Users/yuki/Downloads/suno2/best_model.pth"
+xtts_config = "/Users/yuki/Downloads/suno2/config.json"
+xtts_vocab = "/Users/yuki/Downloads/suno2/vocab.json"
 load_model(xtts_checkpoint, xtts_config, xtts_vocab)
 
 # run TTS
-tts_text = """IMPORTANT: You are using gradio version 4.7.1, however version 4.29 available, please upgrade."""
-speaker_audio_file = "/Users/yuki/Downloads/yuna-talk-v2/dataset/wavs/yuna-tamer-prepared_00000177.wav"
+tts_text = "Elon Musk is a renouned entrepreneur and the CEO of Tesla Inc. He is also the founder of SpaceX and Neuralink."
+speaker_audio_file = "/Users/yuki/Downloads/suno2/dataset/wavs/tamer-enhnew_00000135.wav"
+# speaker_audio_file = "/Users/yuki/Documents/AI/yuna-data/yuna-tamer-prepared.wav"
 output_audio = "output.wav"
 speak_text(tts_text, speaker_audio_file, output_audio)
 

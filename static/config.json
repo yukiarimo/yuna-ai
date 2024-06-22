@@ -6,15 +6,15 @@
         ],
         "emotions": false,
         "art": false,
-        "vision": false,
-        "max_new_tokens": 256,
+        "vision": true,
+        "max_new_tokens": 128,
         "context_length": 2048,
         "temperature": 0.7,
         "repetition_penalty": 1.11,
         "last_n_tokens": 128,
         "seed": -1,
         "top_k": 60,
-        "top_p": 0.9,
+        "top_p": 0.92,
         "stop": [
             "Yuki:",
             "\nYuki:",
@@ -29,7 +29,9 @@
         ],
         "batch_size": 512,
         "threads": 8,
-        "gpu_layers": -1
+        "gpu_layers": -1,
+        "flash_attn": true,
+        "use_mlock": true
     },
     "server": {
         "port": "",
@@ -38,11 +40,11 @@
         "default_history_file": "history_template.json",
         "images": "images/",
         "yuna_model_dir": "lib/models/yuna/",
-        "yuna_default_model": "yuna-ai-v2-q6_k.gguf",
+        "yuna_default_model": "yuna-ai-v3-q6_k.gguf",
         "agi_model_dir": "lib/models/agi/",
         "art_default_model": "yuna_ai_anime.safetensors",
         "device": "mps",
-        "yuna_text_mode": "fast",
+        "yuna_text_mode": "native",
         "yuna_audio_mode": "fast"
     },
     "security": {

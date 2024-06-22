@@ -1,31 +1,30 @@
 import json
 import os
 from diffusers import StableDiffusionPipeline
-from PIL import Image
 from datetime import datetime
-import torch
-from .yvision.moondream import Moondream
-from transformers import CodeGenTokenizerFast as Tokenizer
-
-use_cpu = False
-
-device = torch.device("cpu") if use_cpu else (torch.device("cuda") if torch.cuda.is_available() else (torch.device("mps") if torch.backends.mps.is_available() else torch.device("cpu")))
-dtype = torch.float32 if use_cpu else (torch.float16 if torch.cuda.is_available() or torch.backends.mps.is_available() else torch.float32)
-
-if device != torch.device("cpu"):
-    print("Using device:", device)
+from llama_cpp import Llama
+from llama_cpp.llama_chat_format import MoondreamChatHandler
 
 if os.path.exists("static/config.json"):
     with open("static/config.json", 'r') as file:
         config = json.load(file)
 
+yuna_model_dir = config["server"]["yuna_model_dir"]
 agi_model_dir = config["server"]["agi_model_dir"]
-model_id = f"{agi_model_dir}/yuna-vision"
+model_id = f"{yuna_model_dir}yuna-ai-vision-v2.gguf"
+model_id_eyes = f"{yuna_model_dir}yuna-ai-vision-v2-eyes.gguf"
 
 if config["ai"]["vision"] == True:
-    tokenizer = Tokenizer.from_pretrained(model_id)
-    moondream = Moondream.from_pretrained(model_id).to(device=device, dtype=dtype)
-    moondream.eval()
+    chat_handler = MoondreamChatHandler(clip_model_path=model_id_eyes)
+    llm = Llama(
+        model_path=model_id,
+        chat_handler=chat_handler,
+        n_ctx=4096,
+        seed=-1,
+        n_batch=512,
+        n_gpu_layers=-1,
+        verbose=False,
+    )
 
 if config["ai"]["art"] == True:
     art = StableDiffusionPipeline.from_single_file(f'{agi_model_dir}art/{config["server"]["art_default_model"]}', safety_checker=None, load_safety_checker=None, guidance_scale=7.5, noise_scale=0.05, device=config["server"]["device"])
@@ -47,7 +46,25 @@ def create_image(prompt):
     return image_name
 
 def capture_image(image_path=None, prompt=None, use_cpu=False):
-    image = Image.open(image_path)
-    image_embeds = moondream.encode_image(image)
-    answer = moondream.answer_question(image_embeds, prompt, tokenizer)
+    # print the parameters
+    print(f"image_path: {image_path}")
+    print(f"prompt: {prompt}")
+
+    # Get the absolute path to the image file
+    abs_image_path = os.path.join(os.getcwd(), image_path)
+
+    result = llm.create_chat_completion(
+    messages = [
+        {"role": "system", "content": "You are an assistant who perfectly describes images and answers questions about them."},
+        {
+            "role": "user",
+            "content": [
+                {"type" : "text", "text": prompt},
+                {"type": "image_url", "image_url": {"url": "file://" + abs_image_path } }
+            ]
+        }
+        ]
+    )
+
+    answer = result['choices'][0]['message']['content']
     return [answer, image_path]

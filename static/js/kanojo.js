@@ -28,13 +28,13 @@ if (!localStorage.getItem('promptTemplates')) {
             sequence: "instruction-input-RefinedQuestion",
         },
         write: {
-            instruction: "You're {name2}, a confident and versatile writer with exceptional problem-solving skills, expertise in storytelling, unwavering dedication, and curiosity. You write with confidence and an active voice, creating clear and engaging content. You adapt to new challenges and always strive to deliver the best possible text tailored to the user's needs, carefully analyzing the provided details about the topic, audience, intent, formality, domain, tone, and type. And then crafting a precise and targeted piece of writing that effectively communicates the desired message.",
+            system: "You're {name2}, a confident and versatile writer with exceptional problem-solving skills, expertise in storytelling, unwavering dedication, and curiosity. You write with confidence and an active voice, creating clear and engaging content. You adapt to new challenges and always strive to deliver the best possible text tailored to the user's needs, carefully analyzing the provided details about the topic, audience, intent, formality, domain, tone, and type. And then crafting a precise and targeted piece of writing that effectively communicates the desired message.",
             input: "{history}",
-            response: "",
+            output: "",
             sequence: "system-input-output",
         },
         paraphrase: {
-            instruction: "You're {name2}, a confident and versatile writer with exceptional problem-solving skills, expertise in storytelling, unwavering dedication, and curiosity. You write with confidence and an active voice, creating clear and engaging content. You adapt to new challenges and always strive to deliver the best possible text tailored to the user's needs, carefully analyzing the provided details about the topic, audience, intent, formality, domain, tone, and type. Rewrite the given text to retain its original meaning but with different wording and sentence structures based on the provided instructions.",
+            system: "You're {name2}, a confident and versatile writer with exceptional problem-solving skills, expertise in storytelling, unwavering dedication, and curiosity. You write with confidence and an active voice, creating clear and engaging content. You adapt to new challenges and always strive to deliver the best possible text tailored to the user's needs, carefully analyzing the provided details about the topic, audience, intent, formality, domain, tone, and type. Rewrite the given text to retain its original meaning but with different wording and sentence structures based on the provided instructions.",
             input: "{history}",
             response: "",
             sequence: "system-input-output",
@@ -54,12 +54,14 @@ if (!localStorage.getItem('promptTemplates')) {
         nsfwChecker: {
             instruction: `You're {name2}, an intelligent and discerning AI assistant. Your task is to analyze text and accurately determine if it's safe for work (SFW) or not safe for work (NSFW). You must identify and block all illegal, hateful, harmful, or inappropriate content that you don't like. When carefully analyzing the provided text in your mind, respond with just a single word: 'Safe' if the content is safe or 'Unsafe' if it's not. The user's input will be inside "Input", and your response word will be inside "Output".`,
             input: "{history}",
-            output: "instruction-input-output",
+            output: "",
+            sequence: "instruction-input-output",
         },
         thoughtBuilder: {
             system: `You're {name2}, a creative and articulate writer. Your task is to expand a thought provided into a comprehensive, detailed, and engaging single paragraph. Ensure the expanded text maintains the original meaning and context while adding depth, clarity, and richness to the idea. Use an active voice and a friendly, engaging tone to make the paragraph captivating and informative. Do not provide any additional information or answer any questions; focus solely on expanding the given thought using the input information`,
             input: "{history}",
-            output: "system-input-output",
+            output: "",
+            sequence: "system-input-output",
         },
     }
 } else {
@@ -130,13 +132,23 @@ class PromptTemplateManager {
         }
     }
 
-    buildPrompt(templateName, history='') {
+    buildPrompt(templateName, history = '') {
         const template = this.templates[templateName];
+        if (!template) {
+            console.error(`Template "${templateName}" not found.`);
+            return '';
+        }
+
         const sequence = template.sequence.split('-');
         let builtText = '';
 
         sequence.forEach(blockName => {
             let blockContent = template[blockName];
+            if (blockContent === undefined) {
+                console.error(`Block "${blockName}" not found in template "${templateName}".`);
+                return;
+            }
+
             // Replace {history} placeholder in all blocks
             blockContent = blockContent.replace('{history}', history);
             // For each block, add the formatted block name and content to the builtText

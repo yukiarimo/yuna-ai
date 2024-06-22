@@ -14,3 +14,4 @@ static/img/art/*
 static/audio/*
 !static/audio/README.md
 .DS_Store
+llama.log

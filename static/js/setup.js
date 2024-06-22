@@ -116,7 +116,7 @@ async function checkConfigData() {
 
 checkConfigData();
 // run openConfigParams() with 1 second delay
-setTimeout(openConfigParams, 1000);
+setTimeout(openConfigParams, 500);
 
 document.addEventListener("keydown", function (event) {
   // Prevent default action for Tab to avoid focusing on the next element
@@ -203,7 +203,7 @@ document.addEventListener("keydown", function (event) {
     // Check if the message input is focused
     if (document.activeElement === document.getElementById('input_text')) {
       // Send the message
-      messageManager.sendMessage('')
+      messageManagerInstance.sendMessage('')
     }
   }
 })
@@ -294,7 +294,6 @@ if (window.matchMedia("(max-width: 767px)").matches) {
 }
 
 // get the height of the #message-container and get the height of the .input-wrapper.ui-container and set the height of the #message-container to the height of the #message-container - the height of the .input-wrapper.ui-container
-// run the function kawaiAutoScale() with 1 second delay
 setTimeout(function () {
   var messageContainer = document.getElementById('message-container');
   var inputWrapper = document.getElementsByClassName('input-wrapper')[0];
@@ -317,7 +316,7 @@ function getVisibleHeight() {
 
 setTimeout(getVisibleHeight, 100);
 
-// check if mobile device
+// check if mobile device and add event listener to the sidebar links
 if (window.matchMedia("(max-width: 767px)").matches) {
   document.querySelectorAll('.side-link').forEach(function (element) {
     element.addEventListener('click', async function () {

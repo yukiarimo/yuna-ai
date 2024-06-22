@@ -169,7 +169,8 @@ install_all_agi_models() {
 # Function to install Vision model
 install_vision_model() {
     echo "Installing Vision model..."
-    git clone https://huggingface.co/yukiarimo/yuna-vision lib/models/agi/yuna-vision/
+    wget https://huggingface.co/yukiarimo/yuna-ai-vision-v2/resolve/main/yuna-ai-miru-v0.gguf -P lib/models/yuna/
+    wget https://huggingface.co/yukiarimo/yuna-ai-vision-v2/resolve/main/yuna-ai-miru-eye-v0.gguf -P lib/models/yuna/
 }
 
 # Function to install Art model

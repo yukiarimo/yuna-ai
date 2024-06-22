@@ -15,116 +15,136 @@ class ChatGenerator:
             seed=config["ai"]["seed"],
             n_batch=config["ai"]["batch_size"],
             n_gpu_layers=config["ai"]["gpu_layers"],
+            n_threads=config["ai"]["threads"],
+            use_mlock=config["ai"]["use_mlock"],
+            flash_attn=config["ai"]["flash_attn"],
             verbose=False
         ) if config["server"]["yuna_text_mode"] == "native" else ""
         self.classifier = pipeline("text-classification", model=f"{config['server']['agi_model_dir']}yuna-emotion") if config["ai"]["emotions"] else ""
 
-    def generate(self, chat_id, speech=False, text="", template=None, chat_history_manager=None, useHistory=True):
+    def generate(self, chat_id, speech=False, text="", template=None, chat_history_manager=None, useHistory=True, yunaConfig=None, stream=False):
+        # print all the parameters
+        print('chat_id -> ', chat_id)
+        print('speech -> ', speech)
+        print('text -> ', text)
+        print('template -> ', template)
+        print('chat_history_manager -> ', chat_history_manager)
+        print('useHistory -> ', useHistory)
+        print('yunaConfig -> ', yunaConfig)
+        print('stream -> ', stream)
+        print('current_user.get_id() -> ', current_user.get_id())
+
+        if yunaConfig is not None:
+            self.config = yunaConfig
+        else:
+            yunaConfig = self.config
+
         chat_history = chat_history_manager.load_chat_history(list({current_user.get_id()})[0], chat_id)
         response = ''
 
         if self.config["server"]["yuna_text_mode"] == "native":
-            max_length_all_input_and_output = self.config["ai"]["context_length"]
-            max_length_of_generated_tokens = self.config["ai"]["max_new_tokens"]
-            max_length_of_input_tokens = max_length_all_input_and_output - max_length_of_generated_tokens
+            if template is None:
+                print('into the model -> ', text)
+                response = self.model(
+                    text,
+                    stream=stream,
+                    top_k=yunaConfig["ai"]["top_k"],
+                    top_p=yunaConfig["ai"]["top_p"],
+                    temperature=yunaConfig["ai"]["temperature"],
+                    repeat_penalty=yunaConfig["ai"]["repetition_penalty"],
+                    max_tokens=yunaConfig["ai"]["max_new_tokens"],
+                    stop=yunaConfig["ai"]["stop"],
+                )
+                if stream:
+                    return (chunk['choices'][0]['text'] for chunk in response)
+                else:
+                    response = response['choices'][0]['text']
+                    response = self.clearText(str(response))
 
-            # Tokenize the history and prompt
-            tokenized_prompt = self.model.tokenize(template.encode('utf-8'))
+                    if self.config["ai"]["emotions"]:
+                        response = self.add_emotions(response)
 
-            # Load the chat history
-            text_of_history = ''
-            history = ''
+                    return response
+            else:
+                max_length_all_input_and_output = yunaConfig["ai"]["context_length"]
+                max_length_of_generated_tokens = yunaConfig["ai"]["max_new_tokens"]
+                max_length_of_input_tokens = max_length_all_input_and_output - max_length_of_generated_tokens
 
-            if useHistory == True:
-                for item in chat_history:
-                    name = item.get('name', '')
-                    message = item.get('message', '')
-                    if name and message:
-                        history += f'{name}: {message}\n'
+                tokenized_prompt = self.model.tokenize(template.encode('utf-8'))
 
-            text_of_history = f"{history}{self.config['ai']['names'][0]}: {text}\n{self.config['ai']['names'][1]}:"
+                text_of_history = self.get_history_text(chat_history, text, useHistory, yunaConfig)
+                tokenized_history = self.model.tokenize(text_of_history.encode('utf-8'))
 
-            tokenized_history = self.model.tokenize(text_of_history.encode('utf-8'))
+                max_length_of_history_tokens = max_length_of_input_tokens - len(tokenized_prompt)
+                cropped_history = tokenized_history[-max_length_of_history_tokens:]
 
-            # Calculate the maximum length for the history
-            max_length_of_history_tokens = max_length_of_input_tokens - len(tokenized_prompt)
+                if useHistory:
+                    response = template.replace('{user_msg}', self.model.detokenize(cropped_history).decode('utf-8'))
+                else:
+                    response = template.replace('{user_msg}', text)
 
-            # Crop the history to fit into the max_length_of_history_tokens counting from the end of the text
-            cropped_history = tokenized_history[-max_length_of_history_tokens:]
+                response = self.clearText(str(response))
 
-            # Replace the placeholder in the prompt with the cropped history
-            response = template.replace('{user_msg}', self.model.detokenize(cropped_history).decode('utf-8'))
+                if self.config["ai"]["emotions"]:
+                    response = self.add_emotions(response)
 
-            if template == None:
-                print('template is none')
+                print('into the model -> ', response)
+                response = self.model(
+                    response,
+                    stream=stream,
+                    top_k=yunaConfig["ai"]["top_k"],
+                    top_p=yunaConfig["ai"]["top_p"],
+                    temperature=yunaConfig["ai"]["temperature"],
+                    repeat_penalty=yunaConfig["ai"]["repetition_penalty"],
+                    max_tokens=yunaConfig["ai"]["max_new_tokens"],
+                    stop=yunaConfig["ai"]["stop"],
+                )
 
-            print('00--------------------00\n', response, '\n00--------------------00')
-            response = self.model(
-            response,
-            stream=False,
-            top_k=self.config["ai"]["top_k"],
-            top_p=self.config["ai"]["top_p"],
-            temperature=self.config["ai"]["temperature"],
-            repeat_penalty=self.config["ai"]["repetition_penalty"],
-            max_tokens=self.config["ai"]["max_new_tokens"],
-            stop=self.config["ai"]["stop"],
-            )
-            
-            # Assuming the dictionary is stored in a variable named 'response'
-            response = response['choices'][0]['text']
-            response = self.clearText(str(response))
+                if stream:
+                    return (chunk['choices'][0]['text'] for chunk in response)
+                else:
+                    response = response['choices'][0]['text']
+                    response = self.clearText(str(response))
 
-            if self.config["ai"]["emotions"]:
-                response_add = self.classifier(response)[0]['label']
+                    if self.config["ai"]["emotions"]:
+                        response = self.add_emotions(response)
 
-                # Replace words
-                replacement_dict = {
-                    "anger": "*angry*",
-                    "disgust": "*disgusted*",
-                    "fear": "*scared*",
-                    "joy": "*smiling*",
-                    "neutral": "",
-                    "sadness": "*sad*",
-                    "surprise": "*surprised*"
+                    return response
+
+        elif self.config["server"]["yuna_text_mode"] == "fast":
+            if template is None:
+                dataSendAPI = {
+                    "model": "/Users/yuki/Documents/Github/yuna-ai/lib/models/yuna/yukiarimo/yuna-ai/yuna-ai-v3-q6_k.gguf",
+                    "messages": [{"role": "user", "content": text}],
+                    "temperature": yunaConfig["ai"]["temperature"],
+                    "max_tokens": -1,
+                    "stop": yunaConfig["ai"]["stop"],
+                    "top_p": yunaConfig["ai"]["top_p"],
+                    "top_k": yunaConfig["ai"]["top_k"],
+                    "min_p": 0,
+                    "presence_penalty": 0,
+                    "frequency_penalty": 0,
+                    "logit_bias": {},
+                    "repeat_penalty": yunaConfig["ai"]["repetition_penalty"],
+                    "seed": yunaConfig["ai"]["seed"]
                 }
-
-                for word, replacement in replacement_dict.items():
-                    response_add = response_add.replace(word, replacement)
-
-                response = response + f" {response_add}"
-        else:
-            messages = []
-
-            for item in chat_history:
-                name = item.get('name', '')
-                message = item.get('message', '')
-                if name and message:
-                    role = "user" if name == self.config['ai']['names'][0] else "assistant"
-                    messages.append({
-                        "role": role,
-                        "content": message
-                    })
-
-            messages.append({
-                "role": "user",
-                "content": text
-            })
-
-            dataSendAPI = {
-                "model": "/Users/yuki/Documents/Github/yuna-ai/lib/models/yuna/yukiarimo/yuna-ai/yuna-ai-v3-q6_k.gguf",
-                "messages": messages,
-                "temperature": self.config["ai"]["temperature"],
-                "max_tokens": -1, # -1 for unlimited
-                "stop": self.config["ai"]["stop"],
-                "top_p": self.config["ai"]["top_p"],
-                "top_k": self.config["ai"]["top_k"],
-                "min_p": 0,
-                "presence_penalty": 0,
-                "frequency_penalty": 0,
-                "logit_bias": {},
-                "repeat_penalty": self.config["ai"]["repetition_penalty"],
-                "seed": self.config["ai"]["seed"]
-            }
+            else:
+                messages = self.get_messages(chat_history, text, yunaConfig)
+                dataSendAPI = {
+                    "model": "/Users/yuki/Documents/Github/yuna-ai/lib/models/yuna/yukiarimo/yuna-ai/yuna-ai-v3-q6_k.gguf",
+                    "messages": messages,
+                    "temperature": yunaConfig["ai"]["temperature"],
+                    "max_tokens": -1,
+                    "stop": yunaConfig["ai"]["stop"],
+                    "top_p": yunaConfig["ai"]["top_p"],
+                    "top_k": yunaConfig["ai"]["top_k"],
+                    "min_p": 0,
+                    "presence_penalty": 0,
+                    "frequency_penalty": 0,
+                    "logit_bias": {},
+                    "repeat_penalty": yunaConfig["ai"]["repetition_penalty"],
+                    "seed": yunaConfig["ai"]["seed"]
+                }
 
             url = "http://localhost:1234/v1/chat/completions"
             headers = {"Content-Type": "application/json"}
@@ -137,20 +157,102 @@ class ChatGenerator:
             else:
                 print(f"Request failed with status code: {response.status_code}")
 
-        if template != None:
-            chat_history.append({"name": "Yuki", "message": text})
-            chat_history.append({"name": "Yuna", "message": response})
-            chat_history_manager.save_chat_history(chat_history, list({current_user.get_id()})[0], chat_id)
-
-        if speech==True:
-            chat_history_manager.generate_speech(response)
+            return response
 
         print('response -> ', response)
+        if stream:
+            return ''.join(response) if isinstance(response, (list, type((lambda: (yield))()))) else response
         return response
     
+    def processTextFile(self, text_file, question, temperature=0.6, max_new_tokens=128, context_window=2048):
+        from langchain_community.document_loaders import TextLoader
+        from langchain.text_splitter import RecursiveCharacterTextSplitter
+        from langchain_community.vectorstores import Chroma
+        from langchain_community.embeddings import GPT4AllEmbeddings
+        from langchain.chains import RetrievalQA
+        from langchain_community.llms import LlamaCpp
+
+        # Load text file data
+        loader = TextLoader(text_file)
+        data = loader.load()
+
+        # Split text into chunks
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=0)
+        docs = text_splitter.split_documents(data)
+
+        # Generate embeddings locally using GPT4All
+        gpt4all_embeddings = GPT4AllEmbeddings()
+        vectorstore = Chroma.from_documents(documents=docs, embedding=gpt4all_embeddings)
+
+        # Load GPT4All model for inference  
+        llm = LlamaCpp(
+            model_path='/Users/yuki/Documents/Github/yuna-ai/lib/models/yuna/yukiarimo/yuna-ai/yuna-ai-v2-q6_k.gguf',
+            temperature=temperature,
+            max_new_tokens=max_new_tokens,
+            context_window=context_window,
+            verbose=False,
+        )
+
+        # Create retrieval QA chain
+        qa = RetrievalQA.from_chain_type(llm=llm, chain_type="stuff", retriever=vectorstore.as_retriever())
+
+        # Ask a question 
+        result = qa.invoke(question)
+        return result
+
+    def get_history_text(self, chat_history, text, useHistory, yunaConfig):
+        history = ''
+
+        if useHistory == True:
+            for item in chat_history:
+                name = item.get('name', '')
+                message = item.get('message', '')
+                if name and message:
+                    history += f'{name}: {message}\n'
+
+        return f"{history}{yunaConfig['ai']['names'][0]}: {text}\n{yunaConfig['ai']['names'][1]}:"
+
+    def get_messages(self, chat_history, text, yunaConfig):
+        messages = []
+
+        for item in chat_history:
+            name = item.get('name', '')
+            message = item.get('message', '')
+            if name and message:
+                role = "user" if name == yunaConfig['ai']['names'][0] else "assistant"
+                messages.append({
+                    "role": role,
+                    "content": message
+                })
+
+        messages.append({
+            "role": "user",
+            "content": text
+        })
+
+        return messages
+
+    def add_emotions(self, response):
+        response_add = self.classifier(response)[0]['label']
+
+        replacement_dict = {
+            "anger": "*angry*",
+            "disgust": "*disgusted*",
+            "fear": "*scared*",
+            "joy": "*smiling*",
+            "neutral": "",
+            "sadness": "*sad*",
+            "surprise": "*surprised*"
+        }
+
+        for word, replacement in replacement_dict.items():
+            response_add = response_add.replace(word, replacement)
+
+        return response + f" {response_add}"
+    
     def clearText(self, text):
-        pattern = r'<img.*?class="image-message">'
-        text = re.sub(pattern, '', text)
+        TAG_RE = re.compile(r'<[^>]+>')
+        text = TAG_RE.sub('', text)
 
         emoji_pattern = re.compile("["
                                u"\U0001F600-\U0001F64F"  # Emojis in the emoticons block

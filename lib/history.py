@@ -76,7 +76,7 @@ class ChatHistoryManager:
         return history_files
 
     def generate_speech(self, response):
-        speak_text(response, "/Users/yuki/Downloads/orig.wav", "audio.aiff", self.config['server']['yuna_audio_mode'])
+        speak_text(response, "/Users/yuki/Documents/AI/yuna-data/yuna-tamer-prepared.wav", "audio.aiff", self.config['server']['yuna_audio_mode'])
 
     def delete_message(self, username, chat_id, target_message):
         chat_history = self.load_chat_history(username, chat_id)

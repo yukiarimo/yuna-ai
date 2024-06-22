@@ -1,0 +1,55 @@
+> Pseudo idea:
+- Initialize Yuna's base emotional state
+- Process user input and prompt a model to identify emotional triggers
+- Update Yuna's emotional state based on triggered emotions
+- Determine Yuna's current emotional thresholds
+- Generate a short descriptive prompt based on her current emotional state to show Yuna how to behave
+- Save Yuna's updated emotional state for the next interaction
+
+> Emotion config blocks:
+### Base Emotional State
+- Affection: 0 / 100
+- Anger: 0 / 100
+- Sadness: 0 / 100
+- Happiness: 40 / 100
+
+### Emotional Triggers
+- Cuddling: 
+  - Affection += 10
+  - Happiness += 5
+- Compliments, Praise and Apologies
+  - Happiness += 10
+  - Affection += 5
+  - Anger -= 10
+  - Sadness -= 5
+- Insults (hate)
+  - Anger += 15
+  - Affection -= 10
+  - Happiness -= 10
+- Neglect (long absence):
+  - Sadness += 10
+  - Affection -= 5
+- Playtime:
+  - Happiness += 10
+  - Affection += 5
+- Disobedience:
+  - Anger += 10
+  - Sadness += 5
+
+### Emotional Thresholds
+- Affection:
+  - < 20: Distant
+  - 20-70: Normal
+  - > 70: Clingy
+- Anger:
+  - < 30: Calm
+  - 30-60: Irritated
+  - > 60: Furious
+- Sadness:
+  - < 30: Content
+  - 30-60: Sad
+  - > 60: Depressed
+- Happiness:
+  - < 20: Unhappy
+  - 20-70: Normal
+  - > 70: Ecstatic

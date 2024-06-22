@@ -159,24 +159,24 @@ async function sendGeneratedTextToServer(generatedText) {
 
     if (isHimitsu.toString() === 'true') {
       const data2 = await sendRequest(data.response, selectedTemplate);
-      messageManager.createMessage(name2, data2.response);
+      messageManagerInstance.createMessage(name2, data2.response);
     } else {
-      messageManager.createMessage(name2, data.response);
+      messageManagerInstance.createMessage(name2, data.response);
     }
 
-    messageManager.removeBr();
-    messageManager.removeTypingBubble();
+    messageManagerInstance.removeBr();
+    messageManagerInstance.removeTypingBubble();
     loadConfig();
-    messageManager.addBr();
+    messageManagerInstance.addBr();
     playAudio(audioType = 'message');
 
     if (isTTS.toString() === 'true') {
       playAudio();
     }
   } catch (error) {
-    messageManager.removeTypingBubble();
+    messageManagerInstance.removeTypingBubble();
     loadConfig();
-    messageManager.createMessage(name2, error);
+    messageManagerInstance.createMessage(name2, error);
     playAudio(audioType = 'error');
   }
 }

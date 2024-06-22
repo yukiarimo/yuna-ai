@@ -12,6 +12,16 @@ let isRecording = false;
 var isYunaListening = false;
 let mediaRecorder;
 let audioChunks = [];
+var activeElement = null;
+
+// Global variable to track the state of Streaming Chat Mode
+let isStreamingChatModeEnabled = false;
+
+// Function to handle the toggle switch change
+document.getElementById('streamingChatMode').addEventListener('change', function() {
+    isStreamingChatModeEnabled = this.checked;
+    console.log('Streaming Chat Mode is ' + (isStreamingChatModeEnabled ? 'enabled' : 'disabled'));
+});
 
 const buttonAudioRec = document.querySelector('#buttonAudioRec');
 const iconAudioRec = buttonAudioRec.querySelector('#iconAudioRec');
@@ -68,9 +78,14 @@ function sendAudioToServer(audioBlob) {
     method: 'POST',
     body: formData
   })
-  .then(response => response.json())
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
   .then(data => {
-    messageManager.sendMessage(data.text, imageData = '', url = '/message')
+    messageManagerInstance.sendMessage(data.text, kanojo.buildKanojo(),'', '/message', false, false, isStreamingChatModeEnabled);
   })
   .catch(error => {
     console.error('Error sending audio to server', error);
@@ -110,18 +125,17 @@ class messageManager {
   }
 
   displayMessages(messages) {
-    messageContainer = document.getElementById('message-container');
+    const messageContainer = document.getElementById('message-container');
   
     // Clear the existing content of messageContainer
     while (messageContainer.firstChild) {
       messageContainer.removeChild(messageContainer.firstChild);
     }
 
-    messages = messages
-    // check if the messages is an array or string
+    // Check if the messages is an array or string
     if (typeof messages === 'string') {      
       try {
-        messages = JSON.parse(`${messages}`);
+        messages = JSON.parse(messages);
       } catch (error) {
         console.error('Error parsing JSON:', error);
       }
@@ -129,69 +143,140 @@ class messageManager {
   
     // Loop through the messages and format each one
     messages.forEach(messageData => {
-      var formattedMessage = formatMessage(messageData);
+      const formattedMessage = formatMessage(messageData);
       messageContainer.appendChild(formattedMessage);
     });
   
-    messageContainer.innerHTML = messageContainer.innerHTML
-  
-    scrollMsg()
+    this.scrollMsg();
   }
 
-  createMessage(name, messageContent) {
+  createMessage(name, messageContent, isStreaming = false) {
     const messageContainer = document.getElementById('message-container');
     const messageData = {
-      name: name,
-      message: messageContent,
+        name: name,
+        message: isStreaming ? '' : messageContent,
     };
 
     const formattedMessage = formatMessage(messageData);
     messageContainer.appendChild(formattedMessage);
-    scrollMsg();
+    this.scrollMsg();
+
+    if (isStreaming) {
+        return formattedMessage;
+    }
   }
 
-  createTypingBubble() {
+  updateMessageContent(messageElement, content) {
+    messageElement.innerHTML = content;
+    this.scrollMsg();
+  }
+
+  createTypingBubble(naked = false) {
     const typingBubble = `<div id="circle-loader"><img src="/static/img/loader.gif"></div>`;
-    this.messageContainer.insertAdjacentHTML('beforeend', typingBubble);
-    scrollMsg();
+
+    if (naked == false) {
+      this.messageContainer.insertAdjacentHTML('beforeend', typingBubble);
+      this.scrollMsg();
+    } else {
+      activeElement.insertAdjacentHTML('beforeend', typingBubble);
+    }
   }
 
   removeTypingBubble() {
     const bubble = document.getElementById('circle-loader');
     bubble?.remove();
-    scrollMsg();
+    this.scrollMsg();
   }
 
   scrollMsg() {
     this.messageContainer.scrollTop = this.messageContainer.scrollHeight;
   }
 
-  sendMessage(message, imageData = '', url = '/message') {
+  async sendMessage(message, template, imageData = '', url = '/message', naked = false, stream = isStreamingChatModeEnabled || false, outputElement = '') {
     this.inputText = document.getElementById('input_text');
-    this.createMessage(name1, message || this.inputText.value);
-    this.createTypingBubble();
+    const messageContent = message || this.inputText.value;
+    const userMessageElement = this.createMessage(name1, messageContent);
+    this.createTypingBubble(naked);
 
     if (url === '/message') {
-      message = message || this.inputText.value;
-      this.inputText.value = '';
-      const serverEndpoint = `${server_url + server_port}${url}`;
-      const headers = { 'Content-Type': 'application/json' };
-      const body = JSON.stringify({ chat: selectedFilename, text: message, useHistory: kanojo.useHistory, template: kanojo.buildKanojo(), speech: isYunaListening });
+        let result = '';
+        const decoder = new TextDecoder();
+        const serverEndpoint = `${server_url + server_port}${url}`;
+        const headers = { 'Content-Type': 'application/json' };
+        console.log({
+          chat: selectedFilename,
+          text: messageContent,
+          useHistory: kanojo.useHistory,
+          template: (typeof template !== 'undefined') ? template : (this.inputText.value ? kanojo.buildKanojo() : null),
+          speech: isYunaListening,
+          yunaConfig: config_data,
+          stream
+      });
 
-      fetch(serverEndpoint, { method: 'POST', headers, body })
-        .then(response => response.json())
-        .then(data => {
-          this.removeTypingBubble();
-          this.createMessage(name2, data.response);
-          if (isYunaListening) {
-            playAudio();
-          }
-        })
-        .catch(error => {
-          this.handleError(error);
+        const body = JSON.stringify({
+            chat: selectedFilename,
+            text: messageContent,
+            useHistory: kanojo.useHistory,
+            template: (typeof template !== 'undefined') ? template : (this.inputText.value ? kanojo.buildKanojo() : null),
+            speech: isYunaListening,
+            yunaConfig: config_data,
+            stream
         });
+
+        this.inputText.value = '';
+
+        try {
+            const response = await fetch(serverEndpoint, { method: 'POST', headers, body });
+
+            if (stream && isStreamingChatModeEnabled) {
+                const reader = response.body.getReader();
+
+                var isBubbleCreated = false
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    const chunk = decoder.decode(value, { stream: true });
+                    result += chunk;
+                    if (outputElement) {
+                        outputElement.value += chunk;
+                    } else {
+                        if (!isBubbleCreated) {
+                            this.createMessage(name2, "");
+                            isBubbleCreated = true;
+                        }
+                        
+                        let elements = document.querySelectorAll('.p-2.mb-2.block-message-1.text-start.bg-secondary.text-white');
+                        let lastElement = elements[elements.length - 1];
+                        let preElement = lastElement.querySelector('pre');
+                        this.updateMessageContent(preElement, result);
+                    }
+                }
+
+                this.removeTypingBubble();
+                console.log('Final result:', result);
+            } else {
+                const data = await response.json();
+                this.removeTypingBubble();
+                this.createMessage(name2, data.response);
+            }
+
+            if (isYunaListening) {
+                playAudio();
+            }
+        } catch (error) {
+            this.handleError(error);
+        }
     } else if (url === '/image') {
-      this.sendImage(imageData);
+        this.sendImage(imageData);
+    }
+  }
+
+  updateTypingBubble(text) {
+    const bubble = document.getElementById('circle-loader');
+    if (bubble) {
+        bubble.innerHTML = text;
+        this.scrollMsg();
     }
   }
 
@@ -247,23 +332,29 @@ class messageManager {
 }
 
 // Create a new instance of the messageManager class
-messageManager = new messageManager();
+messageManagerInstance = new messageManager();
 
 function playAudio(audioType = 'tts') {
   const audioSource = document.getElementById("backgroundMusic");
   const audioMap = {
-    'tts': `/static/audio/audio.aiff?v=${Math.random()}`,
-    'message': 'audio/sounds/message.mp3',
-    'send': 'audio/sounds/send.mp3',
-    'error': 'audio/sounds/error.mp3',
-    'ringtone': 'audio/sounds/ringtone.mp3'
+    'tts': `/static/audio/audio.mp3?v=${Math.random()}`,
+    'message': '/audio/sounds/message.mp3',
+    'send': '/audio/sounds/send.mp3',
+    'error': '/audio/sounds/error.mp3',
+    'ringtone': '/audio/sounds/ringtone.mp3'
   };
   audioSource.src = audioMap[audioType];
-  // calculate the duration of the audio, play the audio and stop after that duration
-  audioSource.play();
-  audioSource.addEventListener('ended', () => {
-    audioSource.pause();
-  });
+  // Check if the audio type can be played
+  const canPlay = audioSource.canPlayType('audio/mpeg'); 
+  if (canPlay) {
+    // calculate the duration of the audio, play the audio and stop after that duration
+    audioSource.play();
+    audioSource.addEventListener('ended', () => {
+      audioSource.pause();
+    });
+  } else {
+    console.error(`Cannot play audio of type ${audioType}`);
+  }
 }
 
 // Other functions (clearHistory, loadHistory, downloadHistory) go here if needed.
@@ -358,13 +449,13 @@ function setMessagePopoverListeners() {
       // reload the page
       setTimeout(function () {
         location.reload()
-      }, 300);
+      }, 100);
     });
   });
 }
 
 // run the setMessagePopoverListeners function with a delay of 1 second
-setTimeout(setMessagePopoverListeners, 1000);
+setTimeout(setMessagePopoverListeners, 500);
 
 class HistoryManager {
   constructor(serverUrl, serverPort, defaultHistoryFile) {
@@ -408,8 +499,8 @@ class HistoryManager {
 
     // Reload the page with a delay of 1 second
     setTimeout(() => {
-      //location.reload();
-    }, 1000);
+      location.reload();
+    }, 300);
   }
 
   get selectedFilename() {
@@ -639,7 +730,7 @@ function initializeVideoStream() {
 }
 
 // Initialize the video stream functionality after a delay
-setTimeout(initializeVideoStream, 3000);
+setTimeout(initializeVideoStream, 2000);
 
 function closePopup(popupId) {
   var popup = document.getElementById(popupId);
@@ -705,7 +796,7 @@ function captureImage() {
 
   closePopupsAll();
 
-  askYunaImage = messageManager.sendMessage('', [imageDataURL, imageName, messageForImage], '/image');
+  askYunaImage = messageManagerInstance.sendMessage('', kanojo.buildKanojo(), [imageDataURL, imageName, messageForImage], '/image', false, false, isStreamingChatModeEnabled);
 }
 
 // Modify the captureImage function to handle file uploads
@@ -739,7 +830,7 @@ async function captureImageViaFile(image=null, imagePrompt=null) {
     const imageName = Date.now().toString();
 
     closePopupsAll();
-    messageManager.sendMessage('', [imageDataURL, imageName, messageForImage], '/image');
+    messageManagerInstance.sendMessage('', kanojo.buildKanojo(), [imageDataURL, imageName, messageForImage], '/image', false, false, isStreamingChatModeEnabled);
   };
 
   reader.readAsDataURL(file);
@@ -1082,7 +1173,7 @@ function loadSelectedHistory(selectedFilename) {
     return response.json();
   })
   .then(data => {
-    messageManager.displayMessages(data);
+    messageManagerInstance.displayMessages(data);
     closePopupsAll();
   })
   .catch(error => {
@@ -1189,7 +1280,7 @@ function updateMsgCount() {
   setTimeout(() => {
     document.getElementById('messageCount').textContent = document.querySelectorAll('#message-container .p-2.mb-2').length;
     document.getElementById('chatsCount').textContent = document.querySelectorAll('#chat-items .collection-item').length;
-  }, 500);
+  }, 400);
 }
 
 updateMsgCount();
@@ -1221,10 +1312,15 @@ function deleteMessageFromHistory(message) {
       .catch(error => {
         console.error('An error occurred:', error);
       });
-
-    // reload the page with delay of 1 second
-    //setTimeout(function () {
-    //  location.reload()
-    //}, 100);
   }
 }
+
+document.querySelectorAll('.creatorStudio-tabs').forEach(tab => {
+  tab.addEventListener('click', function () {
+      document.querySelectorAll('.tab-pane').forEach(pane => {
+          pane.classList.add('d-none');
+      });
+      const target = document.querySelector(this.getAttribute('data-bs-target'));
+      target.classList.remove('d-none');
+  });
+});

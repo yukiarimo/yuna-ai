@@ -1,11 +1,11 @@
 import base64
 import re
-from flask import jsonify, request, send_from_directory
+from flask import jsonify, request, send_from_directory, Response
 from flask_login import current_user, login_required
 from lib.vision import capture_image, create_image
-from lib.agiTextWorker import agiTextWorker
-from lib.search import search_web
-from lib.audio import transcribe_audio, load_model, speak_text
+from lib.search import get_html, search_web
+from lib.audio import transcribe_audio, speak_text
+from pydub import AudioSegment
 
 @login_required
 def handle_history_request(chat_history_manager):
@@ -42,6 +42,9 @@ def handle_history_request(chat_history_manager):
     else:
         return jsonify({'error': 'Invalid task parameter'}), 400
 
+def read_users():
+    return {'admin': 'admin'}
+
 @login_required
 def handle_message_request(chat_generator, chat_history_manager, chat_id=None, speech=None, text=None, template=None):
     data = request.get_json()
@@ -49,38 +52,106 @@ def handle_message_request(chat_generator, chat_history_manager, chat_id=None, s
     speech = data.get('speech')
     text = data.get('text')
     template = data.get('template')
-    response = chat_generator.generate(chat_id, speech, text, template, chat_history_manager)
-    return jsonify({'response': response})
+    useHistory = data.get('useHistory', True)
+    yunaConfig = data.get('yunaConfig')
+    stream = data.get('stream', False)
+    response = ""
+    user_id = list({current_user.get_id()})[0]
 
+    if yunaConfig is not None:
+        yunaConfig = chat_generator.config
+
+    response = chat_generator.generate(chat_id, speech, text, template, chat_history_manager, useHistory, yunaConfig, stream)
+
+    if stream:
+        def generate():
+            response_text = ''
+
+            for chunk in response:
+                response_text += chunk
+                yield chunk
+
+            print("Response text: ", response_text)
+
+            if template is not None and useHistory is not False:
+                # Save chat history after streaming response
+                chat_history = chat_history_manager.load_chat_history(user_id, chat_id)
+                chat_history.append({"name": "Yuki", "message": text})
+                chat_history.append({"name": "Yuna", "message": response_text})
+                chat_history_manager.save_chat_history(chat_history, user_id, chat_id)
+
+                if speech == True:
+                    chat_history_manager.generate_speech(response)
+    
+        return Response(generate(), mimetype='text/plain')
+    else:
+        if template is not None and useHistory is not False:
+            # Save chat history after non-streaming response
+            chat_history = chat_history_manager.load_chat_history(user_id, chat_id)
+            chat_history.append({"name": "Yuki", "message": text})
+            chat_history.append({"name": "Yuna", "message": response})
+            chat_history_manager.save_chat_history(chat_history, user_id, chat_id)
+
+            if speech == True:
+                chat_history_manager.generate_speech(response)
+        
+        return jsonify({'response': response})
+
+def check_audio_file(file_path):
+    try:
+        audio = AudioSegment.from_file(file_path)
+        print(f"Audio file duration: {audio.duration_seconds} seconds")
+        print(f"Audio file channels: {audio.channels}")
+        print(f"Audio file frame rate: {audio.frame_rate}")
+        return True
+    except Exception as e:
+        print(f"Error loading audio file: {e}")
+        return False
+
+@login_required
 def handle_audio_request(self):
-    task = request.form['task']
+    print("Handling audio request...")
+    task = request.form.get('task')
+    text = request.form.get('text')
+    result = ""
 
-    # debug the request
-    print(request.form)
-    print(request.files)
+    print(f"Task: {task}")
+    print(f"Text: {text}")
+    print(f"Request files: {request.files}")
+    print(f"Request form: {request.form}")
+    print(f"Request data: {request.data}")
     
     if task == 'transcribe':
         if 'audio' not in request.files:
+            print("No audio file in request")
             return jsonify({'error': 'No audio file'}), 400
 
         audio_file = request.files['audio']
         save_dir_audio = 'static/audio/audio.wav'
         audio_file.save(save_dir_audio)
 
+        # Example usage
+        if check_audio_file('static/audio/audio.wav'):
+            print("Audio file is valid")
+        else:
+            print("Audio file is corrupted")
+            
         result = transcribe_audio(save_dir_audio)
         return jsonify({'text': result})
 
     elif task == 'tts':
         print("Running TTS...")
-        text = """Huh? Is this a mistake? I looked over at Mom and Dad. They looked…amazed. Was this for real? In the world of Oudegeuz, we have magic. I was surprised when I first awakened to it—there wasn’t any in my last world, after all."""
-        result = speak_text(text, "/Users/yuki/Downloads/orig.wav", "response.wav")
+        result = speak_text(text, "/Users/yuki/Downloads/orig.wav", "response.wav", "fast")
 
     return jsonify({'response': result})
+
 
 @login_required
 def handle_image_request(chat_history_manager, self):
     data = request.get_json()
     chat_id = data.get('chat')
+    useHistory = data.get('useHistory', True)
+    speech = data.get('speech', False)
 
     if 'image' in data and 'task' in data and data['task'] == 'caption':
         image_data_url = data['image']
@@ -94,10 +165,15 @@ def handle_image_request(chat_history_manager, self):
         with open(image_path, "wb") as file:
             file.write(image_raw_data)
         image_data = capture_image(image_path, data.get('message'), use_cpu=False)
+        
+        if useHistory is not False:
+                # Save chat history after streaming response
+                chat_history = chat_history_manager.load_chat_history(list({current_user.get_id()})[0], chat_id)
+                chat_history.append({"name": self.config['ai']['names'][0], "message": f"{data.get('message')}<img src='/static/img/call/{current_time_milliseconds}.png' class='image-message'>"})
+                chat_history.append({"name": self.config['ai']['names'][1], "message": image_data[0]})
 
-        chat_history = chat_history_manager.load_chat_history(list({current_user.get_id()})[0], chat_id)
-        chat_history.append({"name": self.config['ai']['names'][0], "message": f"{data.get('prompt')}<img src='/static/img/call/{current_time_milliseconds}.png' class='image-message'>"})
-        chat_history.append({"name": self.config['ai']['names'][1], "message": image_data[0]})
+                if speech == True:
+                    chat_history_manager.generate_speech(image_data[0])
 
         # Save the chat history
         chat_history_manager.save_chat_history(chat_history, list({current_user.get_id()})[0], chat_id)
@@ -108,13 +184,13 @@ def handle_image_request(chat_history_manager, self):
         prompt = data['prompt']
         chat_id = data['chat']
 
-        chat_history = chat_history_manager.load_chat_history(chat_id)
+        chat_history = chat_history_manager.load_chat_history(list({current_user.get_id()})[0]. chat_id)
         chat_history.append({"name": self.config['ai']['names'][0], "message": prompt})
 
         created_image = create_image(prompt)
         chat_history.append({"name": self.config['ai']['names'][1], "message": f"Sure, here you go! <img src='img/art/{created_image}' class='image-message'>"})
 
-        chat_history_manager.save_chat_history(chat_history, chat_id)
+        chat_history_manager.save_chat_history(chat_history, list({current_user.get_id()})[0], chat_id)
         yuna_image_message = f"Sure, here you go! <img src='img/art/{created_image}' class='image-message'>"
 
         return jsonify({'message': yuna_image_message})
@@ -123,29 +199,36 @@ def handle_image_request(chat_history_manager, self):
 
 @login_required
 def handle_search_request(self):
-    data = request.get_json()
+    data = request.json
     search_query = data.get('query')
-    url = search_query
-    processData = data.get('processData')
+    processData = data.get('processData', False)
+    url = data.get('url')
+    task = data.get('task')
+    query = data.get('query')
 
-    if processData == True:
-        url = data.get('url')
+    if task == 'html':
+        # processing does here
+        return jsonify({'response': get_html(url)})
+    else:
+        answer, search_results, image_urls = search_web(search_query, url, processData)
 
-    result = search_web(search_query, url, processData) 
+        response = {
+            'message': [answer, search_results],
+            'images': image_urls
+        }
 
-    return jsonify({'message': result})
+        return jsonify(response)
 
 @login_required
-def handle_textfile_request(self):
+def handle_textfile_request(chat_generator, self):
     if 'text' not in request.files:
         return jsonify({'error': 'No text file'}), 400
 
     text_file = request.files['text']
     query = request.form['query']
-    text_file.save('static/text/text.txt')
+    text_file.save('static/text/content.txt')
 
-    textWorker = agiTextWorker()
-    result = textWorker.processTextFile('static/text/text.txt', query)
+    result = chat_generator.processTextFile('static/text/content.txt', query)
 
     return jsonify({'response': result})
 

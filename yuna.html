@@ -40,6 +40,7 @@
     <script src="/static/js/himitsu.js" defer></script>
     <script src="/static/js/setup.js" defer></script>
     <script src="/static/js/search.js" defer></script>
+    <script src="/static/js/creator.js" defer></script>
     <style>
         body {
             margin: 0;
@@ -93,6 +94,8 @@
                             Explore</a>
                     <li><a href="#" class="nav-link side-link" onclick="OpenTab('4')"><i class="fas fa-user"></i>
                             Profile</a></li>
+                    <li><a href="#" class="nav-link side-link" onclick="OpenTab('5')"><i class="fas fa-user"></i>
+                            Create</a></li>
                     <li><a href="#" class="nav-link side-link" onclick="settingsView.show();"><i class="fas fa-cog"></i>
                             Settings</a>
                     </li>
@@ -198,12 +201,12 @@
                                     </div>
 
                                     <div class="form-check form-switch" id="himitsuToggle">
-                                        <input class="form-check-input" type="checkbox" id="customSwitch" aria-label="Himitsu Copilot"
-                                            onclick="changeHimitsuState()">
+                                        <input class="form-check-input" type="checkbox" id="customSwitch"
+                                            aria-label="Himitsu Copilot" onclick="changeHimitsuState()">
                                     </div>
 
                                     <button class="search-button icon-right" aria-label="Send">
-                                        <i class="fas fa-arrow-up" onclick="messageManager.sendMessage('')"></i>
+                                        <i class="fas fa-arrow-up" onclick="messageManagerInstance.sendMessage('')"></i>
                                     </button>
                                 </div>
                             </div>
@@ -231,7 +234,8 @@
                                                 <h1 class="m-0 fw-bold">Chats</h1>
                                                 <button class="add-button"
                                                     onclick="historyManager.createHistoryFile();">+</button>
-                                                <button class="add-button" onclick="historyManager.importHistory();">Load</button>
+                                                <button class="add-button"
+                                                    onclick="historyManager.importHistory();">Load</button>
                                             </div>
                                             <ul class="list-group" id="chat-items">
                                                 <!-- Will be added dynamically -->
@@ -357,19 +361,27 @@
                                                     <input type="text" class="form-control" id="enabledParameters"
                                                         value="">
                                                 </div>
-
-                                                <button type="submit" class="btn btn-primary"
-                                                    id="updatekanojo">Update</button>
-
-                                                <!-- for export and import -->
-                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                                    data-bs-target="#fileModal">Import</button>
-
-                                                <button type="button" class="btn btn-primary"
-                                                    onclick="kanojo.exportKanojoFile()">Export</button>
                                             </form>
                                         </div>
                                     </div>
+
+                                    <!-- Add a select element for choosing kanojos -->
+                                    <div class="mb-3">
+                                        <label for="kanojoSelect" class="form-label">Select Kanojo</label>
+                                        <select class="form-select" id="kanojoSelect"></select>
+                                    </div>
+
+                                    <!-- Add buttons for managing kanojos -->
+                                    <button type="button" class="btn btn-primary" id="saveKanojo">Save</button>
+                                    <button type="button" class="btn btn-primary" id="addKanojo">Add</button>
+                                    <button type="button" class="btn btn-secondary" id="deleteKanojo">Delete</button>
+                                    <button type="button" class="btn btn-primary" id="exportKanojos">Bulk
+                                        Export</button>
+                                    <button type="button" class="btn btn-primary" id="importKanojos">Bulk
+                                        Import</button>
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                        data-bs-target="#fileModal">Import</button>
+                                    <button type="button" class="btn btn-primary" id="exportKanojoFile">Export</button>
 
                                     <!-- Skills and Events -->
                                     <div class="row mt-4">
@@ -406,9 +418,20 @@
                                                             <input class="form-check-input" type="checkbox"
                                                                 id="updateEmojiHistory">
                                                             <label class="form-check-label"
-                                                                for="updateEmojiHistory">Enable
-                                                                Himitsu
-                                                                Copilot</label>
+                                                                for="updateEmojiHistory">Enable Himitsu Copilot</label>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="mb-3">
+                                                        <label for="streamingChatMode" class="form-label">Streaming Chat
+                                                            Mode</label>
+                                                        <!-- toggle switch -->
+                                                        <div class="form-check form-switch">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                id="streamingChatMode">
+                                                            <label class="form-check-label"
+                                                                for="streamingChatMode">Enable Streaming Chat
+                                                                Mode</label>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -456,26 +479,127 @@
                                             </div>
                                         </div>
                                     </div>
-
+                                    <div class="row mt-4"></div>
+                                    <div class="row mt-4"></div>
                                 </div>
                             </div>
                         </div>
 
                         <div class="tab-o" id="5">
+                            <div class="coll-lo">
+                                <div class="block-card settings-container el-9">
+                                    <ul class="nav nav-tabs" role="tablist">
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link active creatorStudio-tabs" id="freeform-tab"
+                                                data-bs-toggle="tab" data-bs-target="#freeform" type="button" role="tab"
+                                                aria-controls="freeform" aria-selected="true">Freeform</button>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link creatorStudio-tabs" id="presentation-tab"
+                                                data-bs-toggle="tab" data-bs-target="#presentation" type="button"
+                                                role="tab" aria-controls="presentation"
+                                                aria-selected="false">Presentation</button>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link creatorStudio-tabs" id="article-tab"
+                                                data-bs-toggle="tab" data-bs-target="#article" type="button" role="tab"
+                                                aria-controls="article" aria-selected="false">Article</button>
+                                        </li>
+                                    </ul>
+                                    <div class="tab-content">
+                                        <div class="tab-pane fade show active" id="freeform" role="tabpanel"
+                                            aria-labelledby="freeform-tab">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="">
+                                                        <h3 class="section-heading">Prompt Template</h3>
+                                                        <textarea
+                                                            class="form-control textarea prompt-template"></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6" id="body-text-freeform-container">
+                                                    <div class="">
+                                                        <h3 class="section-heading">Body Text</h3>
+                                                        <textarea class="form-control textarea body-text"></textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
 
+                                            <button type="button" id="send-create-freeform"
+                                                class="btn btn-primary">Submit</button>
+
+                                            <div class="row mt-3">
+                                                <div class="col-12">
+                                                    <div class="">
+                                                        <h3 class="section-heading">Result</h3>
+                                                        <textarea
+                                                            class="form-control textarea result-container"></textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="tab-pane fade d-none" id="presentation" role="tabpanel"
+                                            aria-labelledby="presentation-tab">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="">
+                                                        <h3 class="section-heading">Prompt Template</h3>
+                                                        <textarea class="form-control textarea"
+                                                            id="presentation-prompt-template"></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6" id="user-input-presentation-container">
+                                                    <div class="">
+                                                        <h3 class="section-heading">User Input</h3>
+                                                        <textarea class="form-control textarea user-input"
+                                                            id="presentation-user-input"></textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <button type="button" id="send-create-freeform"
+                                                class="btn btn-primary">Generate</button>
+
+                                            <div class="row mt-3">
+                                                <div class="col-md-6">
+                                                    <div class="">
+                                                        <h3 class="section-heading">Output Text</h3>
+                                                        <textarea class="form-control textarea output-text"
+                                                            id="presentation-output-text"></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="">
+                                                        <h3 class="section-heading">Draft Text</h3>
+                                                        <textarea class="form-control textarea draft-text"
+                                                            id="presentation-draft-text"></textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <button type="button" id="copy-to-draft" class="btn btn-primary">Copy to
+                                                Draft</button>
+                                        </div>
+
+                                        <div class="tab-pane fade d-none" id="article" role="tabpanel"
+                                            aria-labelledby="article-tab">
+                                            <!-- Placeholder for Article tab content -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <!--<a class="border rounded-circle d-inline scroll-to-top" href="#page-top"
-        style="width: 50px; height: 50px; display: flex; justify-content: center; align-items: center;"><i
-            class="fas fa-angle-up"></i></a>-->
+    </div>
     </div>
     <div class="scroll-to-top" style="display: none;"></div>
 
     <audio id="backgroundMusic">
-        <source src="/static/audio/audio.aiff" type="audio/mpeg">
+        <source src="/static/audio/audio.mp3" type="audio/mpeg">
     </audio>
     </div>
 
@@ -530,6 +654,7 @@
                     <div id="requestResults" class="alert alert-info d-none"></div>
                     <div id="answerResults"></div>
                     <div id="results" class="row row-cols-1 row-cols-md-3 g-4"></div>
+                    <div id="analysisResult" class="row row-cols-1 row-cols-md-3 g-4"></div>
                 </div>
                 <div class="modal-footer">
                     <!-- Close button -->

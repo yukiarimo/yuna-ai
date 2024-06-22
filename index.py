@@ -2,7 +2,7 @@ import shutil
 from flask import Flask, get_flashed_messages, request, jsonify, send_from_directory, redirect, url_for, flash
 from flask_login import LoginManager, UserMixin, login_required, logout_user, login_user, current_user, login_manager
 from lib.generate import ChatGenerator, ChatHistoryManager
-from lib.router import handle_history_request, handle_image_request, handle_message_request, handle_audio_request, services, about, handle_search_request
+from lib.router import handle_history_request, handle_image_request, handle_message_request, handle_audio_request, services, about, handle_search_request, handle_textfile_request
 from flask_cors import CORS
 import json
 import os
@@ -20,9 +20,17 @@ class YunaServer:
         self.app = Flask(__name__, static_folder='static')
         self.app.config['WTF_CSRF_ENABLED'] = False
         self.app.secret_key = 'Yuna_AI_Secret_Key'
-        self.app.config['COMPRESS_ALGORITHM'] = ['br', 'gzip']
-        self.app.config['COMPRESS_LEVEL'] = 6
-        self.app.config['COMPRESS_MIMETYPES'] = ['text/html', 'text/css', 'text/xml', 'application/json', 'application/javascript']
+        self.app.config['COMPRESS_MIMETYPES'] = [
+            'text/html', 
+            'text/css', 
+            'text/xml', 
+            'application/json', 
+            'application/javascript',
+            'text/javascript',
+            'application/x-javascript'
+        ]
+        self.app.config['COMPRESS_LEVEL'] = 9 # Gzip compression level (1-9)
+        self.app.config['COMPRESS_MIN_SIZE'] = 0
         Compress(self.app)
         login_manager.init_app(self.app)
         login_manager.login_view = 'main'
@@ -92,6 +100,7 @@ class YunaServer:
         self.app.route('/message', methods=['POST'], endpoint='message')(lambda: handle_message_request(self.chat_generator, self.chat_history_manager))
         self.app.route('/image', methods=['POST'], endpoint='image')(lambda: handle_image_request(self.chat_history_manager, self))
         self.app.route('/audio', methods=['GET', 'POST'], endpoint='audio')(lambda: handle_audio_request(self))
+        self.app.route('/analyze', methods=['POST'], endpoint='textfile')(lambda: handle_textfile_request(self.chat_generator, self))
         self.app.route('/logout', methods=['GET'])(self.logout)
         self.app.route('/search', methods=['POST'], endpoint='search')(lambda: handle_search_request(self))
 
@@ -180,7 +189,4 @@ yuna_server = YunaServer()
 app = yuna_server.app
 
 if __name__ == '__main__':
-    if yuna_server.config["server"]["port"] != "":
-        app.run(host='0.0.0.0', port=yuna_server.config["server"]["port"], ssl_context=('cert.pem', 'key.pem'))
-    else:
-        app.run(host='0.0.0.0', port=4848, ssl_context=('cert.pem', 'key.pem'))
+    app.run(host='0.0.0.0', port=4848 if yuna_server.config["server"]["port"] == "" else yuna_server.config["server"]["port"], ssl_context=('cert.pem', 'key.pem'))

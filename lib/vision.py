@@ -11,8 +11,8 @@ if os.path.exists("static/config.json"):
 
 yuna_model_dir = config["server"]["yuna_model_dir"]
 agi_model_dir = config["server"]["agi_model_dir"]
-model_id = f"{yuna_model_dir}yuna-ai-vision-v2.gguf"
-model_id_eyes = f"{yuna_model_dir}yuna-ai-vision-v2-eyes.gguf"
+model_id = f"{yuna_model_dir}yuna-ai-miru-v0.gguf"
+model_id_eyes = f"{yuna_model_dir}yuna-ai-miru-eye-v0.gguf"
 
 if config["ai"]["vision"] == True:
     chat_handler = MoondreamChatHandler(clip_model_path=model_id_eyes)

@@ -13,6 +13,7 @@ var isYunaListening = false;
 let mediaRecorder;
 let audioChunks = [];
 var activeElement = null;
+//kawaiAutoScale();
 
 // Global variable to track the state of Streaming Chat Mode
 let isStreamingChatModeEnabled = false;

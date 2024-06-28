@@ -231,6 +231,10 @@ function kawaiAutoScale() {
 window.addEventListener('load', kawaiAutoScale);
 window.addEventListener('resize', kawaiAutoScale);
 
+setTimeout(function() {
+    kawaiAutoScale();
+}, 10);
+
 // Call this function to initialize the theme when the page loads
 initializeTheme();
 

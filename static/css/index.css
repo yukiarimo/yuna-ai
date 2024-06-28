@@ -8,6 +8,11 @@
     user-select: none;
 }
 
+:root {
+    --bg-dark-my-color: #2d2c38;
+    --bs-btn-bg: #18bc9c !important;
+}
+
 body,
 html,
 .modal {
@@ -141,8 +146,16 @@ img {
     box-shadow: 2px 2px 5px #888888;
 }
 
-textarea {
+textarea, #useHistory, #enabledParameters, #kanojoSelect, #yuna-ai-names, #promptTemplateSelect, #promptTemplateName {
     width: -webkit-fill-available;
+    background: var(--bg-dark-my-color) !important;
+    color: white !important;
+    outline: none !important;
+}
+
+a {
+    outline: none !important;
+    border: none !important;
 }
 
 .image-message {
@@ -316,6 +329,17 @@ button {
 
 .block-message-1 {
     background-color: #212529 !important;
+    border-top-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+.block-message-2 {
+    border-top-right-radius: 12px;
+    border-bottom-left-radius: 12px;
+}
+
+li.nav-item.d-flex.justify-content-center.align-items-center.rounded-circle > a.btn.btn-link {
+    padding: 0 !important;
 }
 
 .icon img {
@@ -783,7 +807,7 @@ body {
     border-radius: 10px;
 }
 
-.sidebar-menu .active {
+.sidebar-menu .active, .btn-primary, .bg-primary {
     background-color: #18bc9c !important;
 }
 

@@ -218,13 +218,6 @@ var callYuna = {
   }
 };
 
-var promptTemplatePopup = {
-  show: function () {
-    var myModal = new bootstrap.Modal(document.getElementById('promptTemplatePopup'), {});
-    myModal.show();
-  }
-};
-
 var settingsView = {
   show: function () {
     var myModal = new bootstrap.Modal(document.getElementById('settingsModal'), {});
@@ -299,8 +292,6 @@ setTimeout(function () {
   var inputWrapper = document.getElementsByClassName('input-wrapper')[0];
   messageContainer.style.height = `calc(${messageContainer.innerHeight}px - ${inputWrapper.innerHeight}px)`;
 }, 200);
-
-kawaiAutoScale();
 
 function getVisibleHeight() {
   var elem = document.getElementById('message-container');

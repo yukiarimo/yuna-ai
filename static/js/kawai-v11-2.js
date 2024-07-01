@@ -193,6 +193,18 @@ function toggleTheme() {
     }
 }
 
+function getVisibleHeight() {
+    var elem = document.getElementById('message-container');
+    var inputWrapper = document.querySelector('.input-wrapper');
+    var bob = document.querySelector('.topbar-o');
+  
+    elem.style.height = `calc(100% - ${bob.offsetHeight}px - ${inputWrapper.offsetHeight}px)`;
+  
+    const topbarElement = document.querySelector('.topbar-o');
+    const style = window.getComputedStyle(topbarElement);
+    const bottomMargin = style.marginBottom;
+  }
+
 // Function to set margin-top for .block-o dynamically
 function kawaiAutoScale() {
     var topbar = document.querySelector('.topbar-o');

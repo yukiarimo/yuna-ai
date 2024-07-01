@@ -4,7 +4,6 @@ importScripts('/static/sw-toolbox.js');
 
 toolbox.precache([
     "/",
-    "/yuna.html",
     "/static/js/setup.js",
     "/static/js/himitsu.js",
     "/static/js/index.js",

@@ -3,8 +3,7 @@
 
 <head data-bs-theme="dark">
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=yes, user-scalable=no" ,
-        viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Yuna AI</title>
     <meta name="theme-color" content="#212529">
@@ -115,48 +114,47 @@
             <div id="content">
                 <nav class="navbar navbar-expand shadow mb-4 topbar static-top navbar-light topbar-o fixed-top">
                     <div class="container-fluid">
-                        <button class="sidebarToggle btn btn-link rounded-circle me-3" aria-label="Menu"
-                            id="sidebarToggleTop" type="button" onclick="toggleSidebar(); kawaiAutoScale()">
-                            <i class="fas fa-bars"></i>
-                        </button>
+                        <ul class="navbar-nav">
+                            <!-- Toggle Sidebar -->
+                            <li
+                                class="nav-item d-flex justify-content-center sidebarToggle align-items-center rounded-circle">
+                                <a class="btn btn-link" href="#" onclick="toggleSidebar(); kawaiAutoScale();"
+                                    aria-label="Settings">
+                                    <i class="fas fa-bars"></i>
+                                </a>
+                            </li>
+                        </ul>
                         <ul class="navbar-nav flex-nowrap ms-auto">
-                            <li class="nav-item d-flex justify-content-center align-items-center rounded-circle">
-                                <a class="btn btn-link" href="#" onclick="promptTemplatePopup.show()"
-                                    aria-label="Prompts">
-                                    <i class="fas fa-code"></i>
-                                </a>
-                            </li>
-                            <li class="nav-item d-flex justify-content-center align-items-center rounded-circle">
-                                <a class="btn btn-link" href="#" data-bs-toggle="modal" aria-label="Search"
-                                    data-bs-target="#searchModal">
-                                    <i class="fas fa-search"></i>
-                                </a>
-                            </li>
-                            <li
-                                class="nav-item d-flex justify-content-center align-items-center rounded-circle mx-1 dropdown no-arrow">
-                                <a class="btn btn-link" aria-expanded="false" data-bs-toggle="dropdown"
-                                    aria-label="Notifications" href="#">
-                                    <i class="fas fa-bell fa-fw"></i>
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-end dropdown-list animated--grow-in">
-                                    <!-- Dynamic HTML elements will be added here -->
-                                </div>
-                            </li>
-                            <li
-                                class="nav-item d-flex justify-content-center align-items-center rounded-circle dropdown no-arrow">
-                                <a class="btn btn-link" aria-expanded="false" data-bs-toggle="dropdown" href="#">
+                            <!-- Profile Dropdown -->
+                            <li class="nav-item dropdown no-arrow">
+                                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <img class="border rounded-circle img-profile" src="/static/img/yuna-girl-head.webp"
                                         alt="Profile Picture" style="height: 26px;">
                                 </a>
-                                <div class="dropdown-menu shadow dropdown-menu-end animated--grow-in">
-                                    <a class="dropdown-item" onclick="callYuna.show();" href="#"><i
-                                            class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Call</a><a
-                                        class="dropdown-item" onclick="OpenTab('4')" href="#"><i
-                                            class="fas fa-cogs fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Profile</a><a
-                                        class="dropdown-item" onclick="OpenTab('4')" href="#"><i
-                                            class="fas fa-list fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Activity</a>
-                                    <div class="dropdown-divider"></div><a class="dropdown-item" href="/logout"><i
-                                            class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Logout</a>
+                                <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                                    aria-labelledby="userDropdown">
+                                    <!-- Settings -->
+                                    <a class="dropdown-item" href="#" onclick="settingsView.show();">
+                                        <i class="fas fa-cog fa-sm fa-fw mr-2 text-gray-400"></i>
+                                        Settings
+                                    </a>
+                                    <!-- Search -->
+                                    <a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                        data-bs-target="#searchModal">
+                                        <i class="fas fa-search fa-sm fa-fw mr-2 text-gray-400"></i>
+                                        Search
+                                    </a>
+                                    <!-- Notifications -->
+                                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#notificationModal">
+                                        <i class="fas fa-bell fa-sm fa-fw mr-2 text-gray-400"></i>
+                                        Notifications
+                                    </a>
+                                    <!-- Call -->
+                                    <a class="dropdown-item" href="#" onclick="callYuna.show();">
+                                        <i class="fas fa-phone fa-sm fa-fw mr-2 text-gray-400"></i>
+                                        Call
+                                    </a>
                                 </div>
                             </li>
                         </ul>
@@ -214,39 +212,48 @@
 
                         <div class="tab-o" id="2">
                             <div class="coll-lo">
-                                <div class="block-card settings-container el-9">
-                                    <ul class="nav nav-tabs" id="myTab" role="tablist">
-                                        <li class="nav-item" role="presentation">
-                                            <button class="nav-link active" id="chats-tab" data-bs-toggle="tab"
-                                                data-bs-target="#chats" type="button" role="tab" aria-controls="chats"
-                                                aria-selected="true">Chats</button>
-                                        </li>
-                                        <li class="nav-item" role="presentation">
-                                            <button class="nav-link" id="collections-tab" data-bs-toggle="tab"
-                                                data-bs-target="#collections" type="button" role="tab"
-                                                aria-controls="collections" aria-selected="false">Collections</button>
-                                        </li>
-                                    </ul>
-                                    <div class="tab-content" id="myTabContent">
-                                        <div class="tab-pane fade show active" id="chats" role="tabpanel"
-                                            aria-labelledby="chats-tab">
-                                            <div class="header">
-                                                <h1 class="m-0 fw-bold">Chats</h1>
-                                                <button class="add-button"
-                                                    onclick="historyManager.createHistoryFile();">+</button>
-                                                <button class="add-button"
-                                                    onclick="historyManager.importHistory();">Load</button>
+                                <div class="card settings-container el-9">
+                                    <div class="card-body">
+                                        <ul class="nav nav-pills nav-fill mb-3" id="myTab" role="tablist">
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link active" id="chats-tab" data-bs-toggle="pill"
+                                                    data-bs-target="#chats" type="button" role="tab"
+                                                    aria-controls="chats" aria-selected="true">Chats</button>
+                                            </li>
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link" id="collections-tab" data-bs-toggle="pill"
+                                                    data-bs-target="#collections" type="button" role="tab"
+                                                    aria-controls="collections"
+                                                    aria-selected="false">Collections</button>
+                                            </li>
+                                        </ul>
+                                        <div class="tab-content" id="myTabContent">
+                                            <div class="tab-pane fade show active" id="chats" role="tabpanel"
+                                                aria-labelledby="chats-tab">
+                                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                                    <h5 class="m-0 fw-bold">Chats</h5>
+                                                    <div>
+                                                        <button class="btn btn-primary btn-sm me-2"
+                                                            onclick="historyManager.createHistoryFile();">
+                                                            <i class="fas fa-plus"></i> Add
+                                                        </button>
+                                                        <button class="btn btn-secondary btn-sm"
+                                                            onclick="historyManager.importHistory();">
+                                                            <i class="fas fa-upload"></i> Load
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <ul class="list-group" id="chat-items">
+                                                    <!-- Will be added dynamically -->
+                                                </ul>
                                             </div>
-                                            <ul class="list-group" id="chat-items">
-                                                <!-- Will be added dynamically -->
-                                            </ul>
-                                        </div>
-                                        <div class="tab-pane fade" id="collections" role="tabpanel"
-                                            aria-labelledby="collections-tab">
-                                            <div class="header m-0 fw-bold">Collections</div>
-                                            <ul class="collection-list" id="collectionItems">
-                                                <!-- Collections content -->
-                                            </ul>
+                                            <div class="tab-pane fade" id="collections" role="tabpanel"
+                                                aria-labelledby="collections-tab">
+                                                <h5 class="mb-3 fw-bold">Collections</h5>
+                                                <ul class="list-group" id="collectionItems">
+                                                    <!-- Collections content -->
+                                                </ul>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -256,45 +263,44 @@
                         <div class="tab-o" id="3">
                             <div class="coll-lo">
                                 <div class="block-card settings-container el-9">
-                                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                    <ul class="nav nav-pills nav-fill mb-3" id="settingsTab" role="tablist">
                                         <li class="nav-item" role="presentation">
-                                            <button class="nav-link active" id="account-tab" data-bs-toggle="tab"
-                                                data-bs-target="#account" type="button" role="tab"
-                                                aria-controls="account" aria-selected="true">Himitsu</button>
+                                            <button class="nav-link active" id="himitsu-tab" data-bs-toggle="pill"
+                                                data-bs-target="#himitsu" type="button" role="tab"
+                                                aria-controls="himitsu" aria-selected="true">Himitsu</button>
                                         </li>
                                         <li class="nav-item" role="presentation">
-                                            <button class="nav-link" id="params-tab" data-bs-toggle="tab"
-                                                data-bs-target="#params" type="button" role="tab" aria-controls="params"
+                                            <button class="nav-link" id="kanojo-tab" data-bs-toggle="pill"
+                                                data-bs-target="#kanojo" type="button" role="tab" aria-controls="kanojo"
                                                 aria-selected="false">Kanojo Connect</button>
                                         </li>
                                     </ul>
-                                    <div class="tab-content" id="myTabContent">
-                                        <div class="tab-pane fade show active" id="account" role="tabpanel"
-                                            aria-labelledby="account-tab">
-                                            <h3 class="section-heading">Dark Mode</h3>
-                                            <div class="input-group">
+                                    <div class="tab-content" id="settingsTabContent">
+                                        <div class="tab-pane fade show active" id="himitsu" role="tabpanel"
+                                            aria-labelledby="himitsu-tab">
+                                            <div class="mb-3">
+                                                <h5 class="mb-3">Dark Mode</h5>
                                                 <div class="form-check form-switch">
                                                     <input class="form-check-input" type="checkbox" id="darkModeSwitch"
                                                         onclick="toggleTheme()" checked>
-                                                    <label class="form-check-label" for="darkModeSwitch"></label>
+                                                    <label class="form-check-label" for="darkModeSwitch">Enable Dark
+                                                        Mode</label>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="tab-pane fade" id="api" role="tabpanel" aria-labelledby="api-tab">
-                                            <h3 class="section-heading">AI Data Usage</h3>
-
-                                            <div class="list-group">
-                                                <span class="list-group-item list-group-item-action">This
-                                                    feature</span>
-                                            </div>
-
-                                            <div class="input-group">
+                                        <div class="tab-pane fade" id="kanojo" role="tabpanel"
+                                            aria-labelledby="kanojo-tab">
+                                            <div class="mb-3">
+                                                <h5 class="mb-3">AI Data Usage</h5>
+                                                <div class="list-group mb-3">
+                                                    <span class="list-group-item list-group-item-action">This
+                                                        feature</span>
+                                                </div>
                                                 <div class="form-check form-switch">
-                                                    <div class="form-check form-switch">
-                                                        <input class="form-check-input" type="checkbox"
-                                                            id="aiDataUsageSwitch" checked>
-                                                        <label class="form-check-label" for="aiDataUsageSwitch"></label>
-                                                    </div>
+                                                    <input class="form-check-input" type="checkbox"
+                                                        id="aiDataUsageSwitch" checked>
+                                                    <label class="form-check-label" for="aiDataUsageSwitch">Enable AI
+                                                        Data Usage</label>
                                                 </div>
                                             </div>
                                         </div>
@@ -302,6 +308,7 @@
                                 </div>
                             </div>
                         </div>
+
 
                         <div class="tab-o" id="4">
                             <div class="coll-lo">
@@ -315,8 +322,6 @@
                                                 <div class="card-body">
                                                     <div style="display: flex; flex-direction: row;">
                                                         <h5 class="card-title" id="yuna-name">Yuna Ai</h5>
-                                                        <button class="btn btn-success btn-sm"
-                                                            style="margin-left: 5px;">Free</button>
                                                     </div>
                                                     <p class="card-text">California, USA</p>
                                                     <button class="btn btn-primary">Upload Photo</button>
@@ -328,8 +333,8 @@
                                             <form>
                                                 <div class="mb-3">
                                                     <label for="yuna-ai-names" class="form-label">Names</label>
-                                                    <input type="text" class="form-control" id="yuna-ai-names"
-                                                        value="Yuna Ai">
+                                                    <textarea type="text" class="form-control" id="yuna-ai-names"
+                                                        value="Yuna Ai"></textarea>
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="memory" class="form-label">Memory</label>
@@ -353,13 +358,14 @@
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="useHistory" class="form-label">Use History</label>
-                                                    <input type="text" class="form-control" id="useHistory" value="">
+                                                    <textarea type="text" class="form-control" id="useHistory"
+                                                        value=""></textarea>
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="enabledParameters" class="form-label">Enabled
                                                         Parameters</label>
-                                                    <input type="text" class="form-control" id="enabledParameters"
-                                                        value="">
+                                                    <textarea type="text" class="form-control" id="enabledParameters"
+                                                        value=""></textarea>
                                                 </div>
                                             </form>
                                         </div>
@@ -453,7 +459,8 @@
                                                     <div class="mb-3">
                                                         <label for="promptTemplateName" class="form-label">Prompt
                                                             Template Name</label>
-                                                        <input type="text" class="form-control" id="promptTemplateName">
+                                                        <textarea type="text" class="form-control"
+                                                            id="promptTemplateName"></textarea>
                                                     </div>
                                                     <div class="mb-3">
                                                         <label for="promptTemplateContent" class="form-label">Prompt
@@ -487,104 +494,111 @@
 
                         <div class="tab-o" id="5">
                             <div class="coll-lo">
-                                <div class="block-card settings-container el-9">
-                                    <ul class="nav nav-tabs" role="tablist">
-                                        <li class="nav-item" role="presentation">
-                                            <button class="nav-link active creatorStudio-tabs" id="freeform-tab"
-                                                data-bs-toggle="tab" data-bs-target="#freeform" type="button" role="tab"
-                                                aria-controls="freeform" aria-selected="true">Freeform</button>
-                                        </li>
-                                        <li class="nav-item" role="presentation">
-                                            <button class="nav-link creatorStudio-tabs" id="presentation-tab"
-                                                data-bs-toggle="tab" data-bs-target="#presentation" type="button"
-                                                role="tab" aria-controls="presentation"
-                                                aria-selected="false">Presentation</button>
-                                        </li>
-                                        <li class="nav-item" role="presentation">
-                                            <button class="nav-link creatorStudio-tabs" id="article-tab"
-                                                data-bs-toggle="tab" data-bs-target="#article" type="button" role="tab"
-                                                aria-controls="article" aria-selected="false">Article</button>
-                                        </li>
-                                    </ul>
-                                    <div class="tab-content">
-                                        <div class="tab-pane fade show active" id="freeform" role="tabpanel"
-                                            aria-labelledby="freeform-tab">
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="">
-                                                        <h3 class="section-heading">Prompt Template</h3>
-                                                        <textarea
-                                                            class="form-control textarea prompt-template"></textarea>
+                                <div class="card settings-container el-9">
+                                    <div class="card-body">
+                                        <ul class="nav nav-pills nav-fill mb-4" role="tablist">
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link active" id="freeform-tab" data-bs-toggle="pill"
+                                                    data-bs-target="#freeform" type="button" role="tab"
+                                                    aria-controls="freeform" aria-selected="true">Freeform</button>
+                                            </li>
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link" id="presentation-tab" data-bs-toggle="pill"
+                                                    data-bs-target="#presentation" type="button" role="tab"
+                                                    aria-controls="presentation"
+                                                    aria-selected="false">Presentation</button>
+                                            </li>
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link" id="article-tab" data-bs-toggle="pill"
+                                                    data-bs-target="#article" type="button" role="tab"
+                                                    aria-controls="article" aria-selected="false">Article</button>
+                                            </li>
+                                        </ul>
+                                        <div class="tab-content">
+                                            <div class="tab-pane fade show active" id="freeform" role="tabpanel"
+                                                aria-labelledby="freeform-tab">
+                                                <div class="row g-4">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <h5 class="mb-3">Prompt Template</h5>
+                                                            <textarea class="form-control" id="freeform-prompt-template"
+                                                                rows="5"></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6" id="body-text-freeform-container">
+                                                        <div class="form-group">
+                                                            <h5 class="mb-3">Body Text</h5>
+                                                            <textarea class="form-control" rows="5"></textarea>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-6" id="body-text-freeform-container">
-                                                    <div class="">
-                                                        <h3 class="section-heading">Body Text</h3>
-                                                        <textarea class="form-control textarea body-text"></textarea>
-                                                    </div>
-                                                </div>
-                                            </div>
 
-                                            <button type="button" id="send-create-freeform"
-                                                class="btn btn-primary">Submit</button>
-
-                                            <div class="row mt-3">
-                                                <div class="col-12">
-                                                    <div class="">
-                                                        <h3 class="section-heading">Result</h3>
-                                                        <textarea
-                                                            class="form-control textarea result-container"></textarea>
-                                                    </div>
+                                                <div class="d-grid gap-2 mt-4">
+                                                    <button type="button" id="send-create-freeform"
+                                                        class="btn btn-primary">Submit</button>
                                                 </div>
-                                            </div>
-                                        </div>
 
-                                        <div class="tab-pane fade d-none" id="presentation" role="tabpanel"
-                                            aria-labelledby="presentation-tab">
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="">
-                                                        <h3 class="section-heading">Prompt Template</h3>
-                                                        <textarea class="form-control textarea"
-                                                            id="presentation-prompt-template"></textarea>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6" id="user-input-presentation-container">
-                                                    <div class="">
-                                                        <h3 class="section-heading">User Input</h3>
-                                                        <textarea class="form-control textarea user-input"
-                                                            id="presentation-user-input"></textarea>
+                                                <div class="row mt-4">
+                                                    <div class="col-12">
+                                                        <div class="form-group">
+                                                            <h5 class="mb-3">Result</h5>
+                                                            <textarea class="form-control" rows="5"></textarea>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            <button type="button" id="send-create-freeform"
-                                                class="btn btn-primary">Generate</button>
-
-                                            <div class="row mt-3">
-                                                <div class="col-md-6">
-                                                    <div class="">
-                                                        <h3 class="section-heading">Output Text</h3>
-                                                        <textarea class="form-control textarea output-text"
-                                                            id="presentation-output-text"></textarea>
+                                            <div class="tab-pane fade" id="presentation" role="tabpanel"
+                                                aria-labelledby="presentation-tab">
+                                                <div class="row g-4">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <h5 class="mb-3">Prompt Template</h5>
+                                                            <textarea class="form-control"
+                                                                id="presentation-prompt-template" rows="5"></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6" id="user-input-presentation-container">
+                                                        <div class="form-group">
+                                                            <h5 class="mb-3">User Input</h5>
+                                                            <textarea class="form-control" id="presentation-user-input"
+                                                                rows="5"></textarea>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-6">
-                                                    <div class="">
-                                                        <h3 class="section-heading">Draft Text</h3>
-                                                        <textarea class="form-control textarea draft-text"
-                                                            id="presentation-draft-text"></textarea>
+
+                                                <div class="d-grid gap-2 mt-4">
+                                                    <button type="button" id="send-create-presentation"
+                                                        class="btn btn-primary">Generate</button>
+                                                </div>
+
+                                                <div class="row g-4 mt-4">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <h5 class="mb-3">Output Text</h5>
+                                                            <textarea class="form-control" id="presentation-output-text"
+                                                                rows="5"></textarea>
+                                                        </div>
                                                     </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <h5 class="mb-3">Draft Text</h5>
+                                                            <textarea class="form-control" id="presentation-draft-text"
+                                                                rows="5"></textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="d-grid gap-2 mt-4">
+                                                    <button type="button" id="copy-to-draft"
+                                                        class="btn btn-secondary">Copy to Draft</button>
                                                 </div>
                                             </div>
 
-                                            <button type="button" id="copy-to-draft" class="btn btn-primary">Copy to
-                                                Draft</button>
-                                        </div>
-
-                                        <div class="tab-pane fade d-none" id="article" role="tabpanel"
-                                            aria-labelledby="article-tab">
-                                            <!-- Placeholder for Article tab content -->
+                                            <div class="tab-pane fade" id="article" role="tabpanel"
+                                                aria-labelledby="article-tab">
+                                                <!-- Placeholder for Article tab content -->
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -727,6 +741,10 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <div style="width: 100%; text-align: center; margin-top: 20px;">
+                                        <a href="/logout" class="btn btn-primary" style="width: 90%;">Logout</a>
+                                    </div>
                                 </div>
                                 <div class="tab-pane fade" id="v-pills-system" role="tabpanel"
                                     aria-labelledby="v-pills-system-tab">
@@ -744,13 +762,13 @@
                                         <div class="list-group-item" style="background-color: transparent;">
                                             <h6>Account</h6>
 
-                                            <div class="card shadow-lg o-hidden border-0 my-5">
+                                            <div class="card o-hidden border-0 my-5">
                                                 <div class="card-body p-0">
                                                     <div class="row">
                                                         <div class="col-lg-6">
                                                             <div class="p-5">
                                                                 <form method="post" class="user" action="/main">
-                                                                    <h2 class="text-center text-dark mb-4">
+                                                                    <h2 class="text-center mb-4">
                                                                         Change Password</h2>
                                                                     <input type="hidden" name="action"
                                                                         value="change_password">
@@ -779,7 +797,7 @@
                                                         <div class="col-lg-6">
                                                             <div class="p-5">
                                                                 <form method="post" class="user" action="/main">
-                                                                    <h2 class="text-center text-dark mb-4">
+                                                                    <h2 class="text-center mb-4">
                                                                         New User</h2>
                                                                     <input type="hidden" name="action" value="register">
                                                                     <div class="mb-3">
@@ -801,7 +819,7 @@
                                                         <div class="col-lg-6">
                                                             <div class="p-5">
                                                                 <form method="post" class="user" action="/main">
-                                                                    <h2 class="text-center text-dark mb-4">
+                                                                    <h2 class="text-center mb-4">
                                                                         Login</h2>
                                                                     <input type="hidden" name="action" value="login">
                                                                     <div class="mb-3">
@@ -823,7 +841,7 @@
                                                         <div class="col-lg-6">
                                                             <div class="p-5">
                                                                 <form method="post" class="user" action="/main">
-                                                                    <h2 class="text-center text-dark mb-4">
+                                                                    <h2 class="text-center mb-4">
                                                                         Delete Account</h2>
                                                                     <input type="hidden" name="action"
                                                                         value="delete_account">
@@ -883,30 +901,6 @@
         </div>
     </div>
 
-    <!-- promptTemplatePopup Modal -->
-    <div class="modal fade" id="promptTemplatePopup" tabindex="-1" aria-labelledby="promptTemplatePopupLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content bg-dark text-light">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="promptTemplatePopupLabel">Prompt Templates</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-6">
-                            <p>test</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div class="modal" tabindex="-1" role="dialog" id="fileModal">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -927,7 +921,42 @@
         </div>
     </div>
 
-    <script src="/static/js/bootstrap/bootstrap.bundle.min.js"></script>
+    <!-- Modal -->
+    <div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="notificationModalLabel">Notifications</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="dropdown-menu dropdown-menu-end dropdown-list animated--grow-in show"
+                        style="position: static; transform: none;">
+                        <!-- Notification items -->
+                        <a class="dropdown-item d-flex align-items-center" href="#">
+                            <div class="mr-3">
+                                <div class="icon-circle bg-primary">
+                                    <!-- Icon -->
+                                </div>
+                            </div>
+                            <div>
+                                <!-- Notification content -->
+                                <div class="small text-gray-500">December 12, 2021</div>
+                                <span class="font-weight-bold">A new monthly report is ready to download!</span>
+                            </div>
+                        </a>
+                        <!-- More notification items -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/bootstrap/bootstrap.min.js"></script>
     <script src="/static/js/bootstrap/script.min.js"></script>
 </body>
 

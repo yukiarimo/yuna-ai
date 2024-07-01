@@ -13,6 +13,7 @@ var isYunaListening = false;
 let mediaRecorder;
 let audioChunks = [];
 var activeElement = null;
+//kawaiAutoScale();
 
 // Global variable to track the state of Streaming Chat Mode
 let isStreamingChatModeEnabled = false;
@@ -449,7 +450,7 @@ function setMessagePopoverListeners() {
       // reload the page
       setTimeout(function () {
         location.reload()
-      }, 100);
+      }, 50);
     });
   });
 }
@@ -496,11 +497,6 @@ class HistoryManager {
       .catch(error => {
         console.error('An error occurred:', error);
       });
-
-    // Reload the page with a delay of 1 second
-    setTimeout(() => {
-      location.reload();
-    }, 300);
   }
 
   get selectedFilename() {
@@ -730,7 +726,7 @@ function initializeVideoStream() {
 }
 
 // Initialize the video stream functionality after a delay
-setTimeout(initializeVideoStream, 2000);
+setTimeout(initializeVideoStream, 500);
 
 function closePopup(popupId) {
   var popup = document.getElementById(popupId);
@@ -974,7 +970,7 @@ function populateHistorySelect() {
       // reload the page with delay of 1 second if config is not available
       setTimeout(function () {
         location.reload()
-      }, 100);
+      }, 50);
     }
 
     server_port = JSON.parse(localStorage.getItem('config')).server.port
@@ -1066,16 +1062,12 @@ function populateHistorySelect() {
                       return response.json();
                     })
                     .then(responseData => {
-                      console.log(responseData);
+                      alert(responseData);
+                      location.reload();
                     })
                     .catch(error => {
                       console.error('An error occurred:', error);
                     });
-
-                  // reload the page with delay of 1 second
-                  setTimeout(function () {
-                    location.reload()
-                  }, 100);
                 }
                 break;
               case 'Download':
@@ -1280,7 +1272,7 @@ function updateMsgCount() {
   setTimeout(() => {
     document.getElementById('messageCount').textContent = document.querySelectorAll('#message-container .p-2.mb-2').length;
     document.getElementById('chatsCount').textContent = document.querySelectorAll('#chat-items .collection-item').length;
-  }, 400);
+  }, 300);
 }
 
 updateMsgCount();
@@ -1324,3 +1316,35 @@ document.querySelectorAll('.creatorStudio-tabs').forEach(tab => {
       target.classList.remove('d-none');
   });
 });
+
+// Function to adjust textarea height
+function adjustTextareaHeight(textarea) {
+  textarea.style.height = 'auto';
+  textarea.style.height = textarea.scrollHeight + 'px';
+}
+
+// Function to initialize all textareas
+function initializeTextareas() {
+  const textareas = document.querySelectorAll('textarea');
+  textareas.forEach(textarea => {
+    // Disable manual resizing
+    textarea.style.resize = 'none';
+    
+    // Initial adjustment
+    adjustTextareaHeight(textarea);
+    
+    // Add event listeners for real-time updates
+    textarea.addEventListener('input', () => adjustTextareaHeight(textarea));
+    textarea.addEventListener('change', () => adjustTextareaHeight(textarea));
+    
+    // Create a MutationObserver to watch for changes in content
+    const observer = new MutationObserver(() => adjustTextareaHeight(textarea));
+    observer.observe(textarea, { childList: true, characterData: true, subtree: true });
+  });
+}
+
+// Run the initialization when the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', initializeTextareas);
+
+// Also run it immediately in case the script is loaded after the DOM
+initializeTextareas();

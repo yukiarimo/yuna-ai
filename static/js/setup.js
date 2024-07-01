@@ -28,7 +28,7 @@ function createFormGroup(id, value) {
   return `
     <div class="form-group" style="width: 100%;">
       <label for="${id}">${capitalize(id)}</label>
-      <input type="text" class="form-control" id="${id}" value="${value}">
+      <textarea type="text" class="form-control" id="${id}" value="${value}"></textarea>
     </div>
   `;
 }
@@ -116,7 +116,7 @@ async function checkConfigData() {
 
 checkConfigData();
 // run openConfigParams() with 1 second delay
-setTimeout(openConfigParams, 500);
+setTimeout(openConfigParams, 300);
 
 document.addEventListener("keydown", function (event) {
   // Prevent default action for Tab to avoid focusing on the next element
@@ -218,13 +218,6 @@ var callYuna = {
   }
 };
 
-var promptTemplatePopup = {
-  show: function () {
-    var myModal = new bootstrap.Modal(document.getElementById('promptTemplatePopup'), {});
-    myModal.show();
-  }
-};
-
 var settingsView = {
   show: function () {
     var myModal = new bootstrap.Modal(document.getElementById('settingsModal'), {});
@@ -299,20 +292,6 @@ setTimeout(function () {
   var inputWrapper = document.getElementsByClassName('input-wrapper')[0];
   messageContainer.style.height = `calc(${messageContainer.innerHeight}px - ${inputWrapper.innerHeight}px)`;
 }, 200);
-
-kawaiAutoScale();
-
-function getVisibleHeight() {
-  var elem = document.getElementById('message-container');
-  var inputWrapper = document.querySelector('.input-wrapper');
-  var bob = document.querySelector('.topbar-o');
-
-  elem.style.height = `calc(100% - ${bob.offsetHeight}px - ${inputWrapper.offsetHeight}px)`;
-
-  const topbarElement = document.querySelector('.topbar-o');
-  const style = window.getComputedStyle(topbarElement);
-  const bottomMargin = style.marginBottom;
-}
 
 setTimeout(getVisibleHeight, 100);
 

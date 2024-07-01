@@ -1,5 +1,5 @@
 // Get the necessary elements
-const promptTemplateTextarea = document.querySelector('.prompt-template');
+const promptTemplateTextarea = document.querySelector('#freeform-prompt-template');
 const bodyTextTextarea = document.querySelector('.body-text');
 const resultTextarea = document.querySelector('.result-container');
 const submitButton = document.getElementById('send-create-freeform');

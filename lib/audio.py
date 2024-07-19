@@ -15,6 +15,10 @@ if config['server']['yuna_audio_mode'] == "native":
     from TTS.tts.configs.xtts_config import XttsConfig
     from TTS.tts.models.xtts import Xtts
 
+if config['server']['yuna_audio_mode'] == "11labs":
+    from elevenlabs import VoiceSettings
+    from elevenlabs.client import ElevenLabs
+
 def transcribe_audio(audio_file):
     result = model.transcribe(audio_file)
     return result['text']
@@ -108,6 +112,26 @@ def speak_text(text, reference_audio, output_audio, mode, language="en"):
         # convert audio to mp3
         audio = AudioSegment.from_file("/Users/yuki/Documents/Github/yuna-ai/static/audio/audio.aiff")
         audio.export("/Users/yuki/Documents/Github/yuna-ai/static/audio/audio.mp3", format='mp3')
+    elif mode == "11labs":
+        client = ElevenLabs(
+            api_key=config['security']['11labs_key']
+        )
+
+        audio = client.generate(
+            text=text,
+            voice="Yuna Instant",
+            voice_settings=VoiceSettings(stability=0.40, similarity_boost=0.98, style=0.35, use_speaker_boost=True),
+            model="eleven_multilingual_v2"
+        )
+
+        # Convert generator to bytes
+        audio_bytes = b''.join(audio)
+
+        # Optionally, save the audio to a file
+        with open("/Users/yuki/Documents/Github/yuna-ai/static/audio/audio.mp3", "wb") as f:
+            f.write(audio_bytes)
+    else:
+        raise ValueError("Invalid mode for speaking text")
 
 if config['server']['yuna_audio_mode'] == "native":
     xtts_checkpoint = "/Users/yuki/Documents/Github/yuna-ai/lib/models/agi/yuna-talk/yuna-talk.pth"

@@ -234,6 +234,3 @@ def handle_textfile_request(chat_generator, self):
 
 def services(self):
     return send_from_directory('.', 'services.html')
-
-def about(self):
-    return send_from_directory('.', 'about.html')

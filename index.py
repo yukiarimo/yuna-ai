@@ -2,7 +2,7 @@ import shutil
 from flask import Flask, get_flashed_messages, request, jsonify, send_from_directory, redirect, url_for, flash
 from flask_login import LoginManager, UserMixin, login_required, logout_user, login_user, current_user, login_manager
 from lib.generate import ChatGenerator, ChatHistoryManager
-from lib.router import handle_history_request, handle_image_request, handle_message_request, handle_audio_request, services, about, handle_search_request, handle_textfile_request
+from lib.router import handle_history_request, handle_image_request, handle_message_request, handle_audio_request, services, handle_search_request, handle_textfile_request
 from flask_cors import CORS
 import json
 import os
@@ -92,7 +92,6 @@ class YunaServer:
         self.app.route('/yuna')(self.yuna_server)
         self.app.route('/yuna.html')(self.yuna_server)
         self.app.route('/services.html', methods=['GET'], endpoint='services')(lambda: services(self))
-        self.app.route('/about.html', methods=['GET'], endpoint='about')(lambda: about(self))
         self.app.route('/apple-touch-icon.png')(self.image_pwa)
         self.app.route('/flash-messages')(self.flash_messages)
         self.app.route('/main', methods=['GET', 'POST'])(self.main)

@@ -7,13 +7,13 @@
         "emotions": false,
         "art": false,
         "vision": false,
-        "max_new_tokens": 128,
-        "context_length": 2048,
+        "max_new_tokens": 64,
+        "context_length": 1024,
         "temperature": 0.7,
-        "repetition_penalty": 1.11,
+        "repetition_penalty": 1.1,
         "last_n_tokens": 128,
         "seed": -1,
-        "top_k": 60,
+        "top_k": 100,
         "top_p": 0.92,
         "stop": [
             "Yuki:",
@@ -45,10 +45,11 @@
         "art_default_model": "yuna_ai_anime.safetensors",
         "device": "mps",
         "yuna_text_mode": "native",
-        "yuna_audio_mode": "fast"
+        "yuna_audio_mode": "11labs"
     },
     "security": {
         "secret_key": "YourSecretKeyHere123!",
-        "encryption_key": "zWZnu-lxHCTgY_EqlH4raJjxNJIgPlvXFbdk45bca_I="
+        "encryption_key": "zWZnu-lxHCTgY_EqlH4raJjxNJIgPlvXFbdk45bca_I=",
+        "11labs_key": "Your11LabsKeyHere123!"
     }
 }

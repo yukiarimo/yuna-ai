@@ -94,8 +94,23 @@ function sendAudioToServer(audioBlob) {
 }
 
 async function loadConfig() {
-  const { ai: { names: [name1, name2] } } = await (await fetch('/static/config.json')).json();
-  document.getElementById('input_text').placeholder = `Ask ${name2}...`;
+  let config;
+  // Check if 'config' exists in localStorage
+  if (localStorage.getItem('config')) {
+    // Parse the 'config' from localStorage
+    config = JSON.parse(localStorage.getItem('config'));
+  } else {
+    // Fetch the config from '/static/config.json' and parse it
+    config = await (await fetch('/static/config.json')).json();
+    // Store the fetched config in localStorage for future use
+    localStorage.setItem('config', JSON.stringify(config));
+  }
+  // Extract names from the config
+  const { ai: { names: [first, second] } } = config;
+  name1 = first;
+  name2 = second;
+  // Set the placeholder using the second name
+  document.getElementById('input_text').placeholder = `Ask ${second}...`;
 }
 
 function changeHimitsuState() {
@@ -1174,22 +1189,55 @@ function loadSelectedHistory(selectedFilename) {
 }
 
 function duplicateAndCategorizeChats() {
-  const chatItems = document.querySelectorAll('#chat-items .collection-item');
-  const collectionItems = document.createElement('div');
-  collectionItems.id = 'collectionItems';
-  collectionItems.classList.add('list-group');
+  const chatList = document.querySelector('#chat-items');
+  const collectionItems = document.querySelector('#collectionItems');
+  
+  // Clear existing content in collectionItems
+  collectionItems.innerHTML = '';
 
-  const generalChatsDiv = document.createElement('div');
-  const otherChatsDiv = document.createElement('div');
+  // Create an object to store categorized chats
+  const categories = {
+      'Uncategorized': []
+  };
 
-  chatItems.forEach(item => {
-    const clonedItem = item.cloneNode(true);
-    const collectionName = clonedItem.querySelector('.collection-name').textContent;
-    (collectionName.includes(':general:') ? generalChatsDiv : otherChatsDiv).appendChild(clonedItem);
+  // Check if chatList exists and has items
+  const items = chatList && chatList.children.length > 0 
+      ? chatList.querySelectorAll('.collection-item') 
+      : document.querySelectorAll('.collection-item');
+
+  items.forEach(item => {
+      const chatName = item.querySelector('.collection-name').textContent;
+      const colonIndex = chatName.indexOf(':');
+      
+      if (colonIndex !== -1) {
+          const folder = chatName.substring(colonIndex + 1).split('.')[0]; // Get the part after ':' and before '.'
+          if (!categories[folder]) {
+              categories[folder] = [];
+          }
+          categories[folder].push(item.cloneNode(true));
+      } else {
+          categories['Uncategorized'].push(item.cloneNode(true));
+      }
   });
 
-  collectionItems.append(generalChatsDiv, otherChatsDiv);
-  document.getElementById('collectionItems').replaceWith(collectionItems);
+  // Create category blocks and add chats
+  for (const [category, chats] of Object.entries(categories)) {
+      if (chats.length === 0) continue; // Skip empty categories
+
+      const categoryBlock = document.createElement('div');
+      categoryBlock.className = 'category-block mb-3';
+      categoryBlock.innerHTML = `<h6 class="fw-bold">${category}</h6>`;
+
+      const categoryList = document.createElement('ul');
+      categoryList.className = 'list-group';
+
+      chats.forEach(chat => {
+          categoryList.appendChild(chat);
+      });
+
+      categoryBlock.appendChild(categoryList);
+      collectionItems.appendChild(categoryBlock);
+  }
 }
 
 function fixDialogData() {
@@ -1348,3 +1396,8 @@ document.addEventListener('DOMContentLoaded', initializeTextareas);
 
 // Also run it immediately in case the script is loaded after the DOM
 initializeTextareas();
+
+function resetEverything() {
+  localStorage.clear();
+  location.reload();
+}

@@ -1,11 +1,19 @@
 import base64
 import re
+import json
+import os
 from flask import jsonify, request, send_from_directory, Response
 from flask_login import current_user, login_required
 from lib.vision import capture_image, create_image
 from lib.search import get_html, search_web
 from lib.audio import transcribe_audio, speak_text
 from pydub import AudioSegment
+
+script_dir = os.path.dirname(os.path.abspath(__file__))
+config_path = os.path.join(script_dir, '..', 'static', 'config.json')
+
+with open(config_path) as config_file:
+    config = json.load(config_file)
 
 @login_required
 def handle_history_request(chat_history_manager):
@@ -76,7 +84,7 @@ def handle_message_request(chat_generator, chat_history_manager, chat_id=None, s
             if template is not None and useHistory is not False:
                 # Save chat history after streaming response
                 chat_history = chat_history_manager.load_chat_history(user_id, chat_id)
-                chat_history.append({"name": "Yuki", "message": text})
+                chat_history.append({"name": config['ai']['names'][0], "message": text})
                 chat_history.append({"name": "Yuna", "message": response_text})
                 chat_history_manager.save_chat_history(chat_history, user_id, chat_id)
 
@@ -88,7 +96,7 @@ def handle_message_request(chat_generator, chat_history_manager, chat_id=None, s
         if template is not None and useHistory is not False:
             # Save chat history after non-streaming response
             chat_history = chat_history_manager.load_chat_history(user_id, chat_id)
-            chat_history.append({"name": "Yuki", "message": text})
+            chat_history.append({"name": config['ai']['names'][0], "message": text})
             chat_history.append({"name": "Yuna", "message": response})
             chat_history_manager.save_chat_history(chat_history, user_id, chat_id)
 

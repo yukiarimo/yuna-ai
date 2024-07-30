@@ -263,12 +263,20 @@ function updateChatHistory(message, sender) {
     displayChatHistory();
 }
 
+fetch('../../static/config.json')
+    .then(response => response.json())
+    .then(data => {
+        // Get the first name in the names array
+        var aiName = data.ai.names[0];
+        var aiName2 = data.ai.names[1];
+
+
 function displayChatHistory() {
     var chatArea = document.getElementById('chatArea');
     chatArea.innerHTML = ''; // Clear previous chat bubbles
     chatHistory.forEach(function (entry) {
         var bubble = document.createElement('div');
-        bubble.className = 'chat-bubble ' + (entry.sender === 'Yuki' ? 'you' : 'yuna');
+        bubble.className = 'chat-bubble ' + (entry.sender === aiName ? 'you' : aiName2);
         bubble.textContent = entry.message;
         chatArea.appendChild(bubble);
     });
@@ -285,21 +293,22 @@ function startYunaChat() {
 submitButton.addEventListener('click', function () {
     var input = inputFieldYuna.value.trim();
     if (input) {
-        updateChatHistory(input, 'Yuki');
+        updateChatHistory(input, aiName);
         inputFieldYuna.value = '';
     }
 
     // Simulate Yuna's response
     setTimeout(function () {
-        updateChatHistory('I am a simple AI and cannot respond to that.', 'Yuna');
+        updateChatHistory('I am a simple AI and cannot respond to that.', aiName2);
     }, 1000);
 });
 
 inputFieldYuna.addEventListener('keypress', function (e) {
     if (e.key === 'Enter') {
-        updateChatHistory(inputFieldYuna.value, 'Yuki');
+        updateChatHistory(inputFieldYuna.value, aiName);
         inputFieldYuna.value = '';
     }
+    });
 });
 
 // Add a clear chat button

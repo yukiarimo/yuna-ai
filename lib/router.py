@@ -93,7 +93,7 @@ def handle_message_request(chat_generator, chat_history_manager, chat_id=None, s
             chat_history_manager.save_chat_history(chat_history, user_id, chat_id)
 
             if speech == True:
-                chat_history_manager.generate_speech(response)
+                speak_text(response)
         
         return jsonify({'response': response})
 
@@ -141,7 +141,7 @@ def handle_audio_request(self):
 
     elif task == 'tts':
         print("Running TTS...")
-        result = speak_text(text, "/Users/yuki/Downloads/orig.wav", "response.wav", "fast")
+        result = speak_text(text)
 
     return jsonify({'response': result})
 
@@ -164,7 +164,7 @@ def handle_image_request(chat_history_manager, self):
         image_path = f"static/img/call/{current_time_milliseconds}.png"
         with open(image_path, "wb") as file:
             file.write(image_raw_data)
-        image_data = capture_image(image_path, data.get('message'), use_cpu=False)
+        image_data = capture_image(image_path, data.get('message'), use_cpu=False, speech=speech)
         
         if useHistory is not False:
                 # Save chat history after streaming response
@@ -173,7 +173,7 @@ def handle_image_request(chat_history_manager, self):
                 chat_history.append({"name": self.config['ai']['names'][1], "message": image_data[0]})
 
                 if speech == True:
-                    chat_history_manager.generate_speech(image_data[0])
+                    speak_text(image_data[0])
 
         # Save the chat history
         chat_history_manager.save_chat_history(chat_history, list({current_user.get_id()})[0], chat_id)

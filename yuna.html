@@ -173,12 +173,12 @@
                                     <!-- a button to open popup-->
                                     <button class="search-button icon-left attach-button" data-bs-toggle="popover"
                                         aria-label="Attach File" data-bs-placement="bottom" data-bs-html="true"
-                                        data-bs-content="<a class='btn btn-outline-primary btn-sm dropdown-item' onclick='bookCreate()'>Create Book</a><a class='btn btn-outline-info btn-sm dropdown-item' onclick='drawArt();'>Draw Art</a><a class='btn btn-outline-success btn-sm dropdown-item' onclick='requestRecentAudio()'>Talk / Sing</a><a class='btn btn-outline-danger btn-sm dropdown-item' onclick='sora()'>Sora</a>">
+                                        data-bs-content="<a class='btn btn-outline-primary btn-sm dropdown-item' onclick='bookCreate()'>Story</a><a class='btn btn-outline-info btn-sm dropdown-item' onclick='drawArt();'>Art</a><a class='btn btn-outline-success btn-sm dropdown-item' onclick='requestRecentAudio()'>Talk</a>">
                                         <i class="fas fa-pencil-ruler"></i>
                                     </button>
                                     <button class="search-button icon-left attach-button" data-bs-toggle="popover"
                                         aria-label="Attach File" data-bs-placement="bottom" data-bs-html="true"
-                                        data-bs-content="<a class='btn btn-outline-primary btn-sm dropdown-item' onclick='handleTextFileClick()'>Text File</a><a class='btn btn-outline-info btn-sm dropdown-item' onclick='handleImageFileClick()'>Image File</a><a class='btn btn-outline-success btn-sm dropdown-item' onclick='handleAudioFileClick()'>Audio File</a><a class='btn btn-outline-danger btn-sm dropdown-item' onclick='handleVideoFileClick()'>Video File</a>">
+                                        data-bs-content="<a class='btn btn-outline-primary btn-sm dropdown-item' onclick='handleTextFileClick()'>Text</a><a class='btn btn-outline-info btn-sm dropdown-item' onclick='handleImageFileClick()'>Image</a><a class='btn btn-outline-success btn-sm dropdown-item' onclick='handleAudioFileClick()'>Audio</a><a class='btn btn-outline-danger btn-sm dropdown-item' onclick='handleVideoFileClick()'>Video</a>">
                                         <i class="fas fa-folder"></i>
                                     </button>
                                     <input type="file" id="textUpload" accept=".txt" style="display: none;"
@@ -416,14 +416,13 @@
                                                     <h5 class="card-title">Plugins</h5>
 
                                                     <div class="mb-3">
-                                                        <label for="uiuxDesign" class="form-label">Himitsu
-                                                            Assistant</label>
+                                                        <label for="uiuxDesign" class="form-label">News Flow</label>
                                                         <!-- toggle switch -->
                                                         <div class="form-check form-switch">
                                                             <input class="form-check-input" type="checkbox"
                                                                 id="updateEmojiHistory">
                                                             <label class="form-check-label"
-                                                                for="updateEmojiHistory">Enable Himitsu Copilot</label>
+                                                                for="updateEmojiHistory">Enable News Flow</label>
                                                         </div>
                                                     </div>
 
@@ -524,10 +523,10 @@
                                                                 rows="5"></textarea>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-6" id="body-text-freeform-container">
+                                                    <div class="col-md-6">
                                                         <div class="form-group">
                                                             <h5 class="mb-3">Body Text</h5>
-                                                            <textarea class="form-control" rows="5"></textarea>
+                                                            <textarea class="form-control" id="body-text-freeform-container" rows="5"></textarea>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -541,7 +540,7 @@
                                                     <div class="col-12">
                                                         <div class="form-group">
                                                             <h5 class="mb-3">Result</h5>
-                                                            <textarea class="form-control" rows="5"></textarea>
+                                                            <textarea class="form-control" id="result-create-freeform" rows="5"></textarea>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -698,7 +697,7 @@
                                     aria-controls="v-pills-general" aria-selected="true">General</button>
                                 <button class="nav-link" id="v-pills-system-tab" data-bs-toggle="pill"
                                     data-bs-target="#v-pills-system" type="button" role="tab"
-                                    aria-controls="v-pills-system" aria-selected="false">System</button>
+                                    aria-controls="v-pills-system" aria-selected="false">Account</button>
                                 <button class="nav-link" id="v-pills-ai-tab" data-bs-toggle="pill"
                                     data-bs-target="#v-pills-ai" type="button" role="tab" aria-controls="v-pills-ai"
                                     aria-selected="false">AI</button>
@@ -714,15 +713,12 @@
                                             <h6>General</h6>
                                             <div class="form-check form-switch">
                                                 <input class="form-check-input" type="checkbox" id="updateEmojiHistory">
-                                                <label class="form-check-label" for="updateEmojiHistory">Himitsu
-                                                    Copilot</label>
+                                                <label class="form-check-label" for="updateEmojiHistory">Keep call in the background</label>
                                             </div>
                                             <div class="form-check form-switch">
                                                 <input class="form-check-input" type="checkbox" id="updateEmojiTones">
-                                                <label class="form-check-label" for="updateEmojiTones">Offline
-                                                    Mode</label>
+                                                <label class="form-check-label" for="updateEmojiTones">Filter NSFW</label>
                                             </div>
-                                            <button id="enableOffline">Enable Offline Mode</button>
                                         </div>
 
                                         <div class="list-group-item" style="background-color: transparent;">
@@ -735,14 +731,13 @@
                                             </div>
                                             <div class="form-check form-switch">
                                                 <input class="form-check-input" type="checkbox" id="updateEmojiTones">
-                                                <label class="form-check-label" for="updateEmojiTones">Automatic
-                                                    Toggle</label>
+                                                <label class="form-check-label" for="updateEmojiTones">Share Data Analytics</label>
+                                            </div>
+
+                                            <div type="button" style="margin-top: 20px; width: 20%;">
+                                                <a href="#" onclick="resetEverything();" class="btn btn-secondary" style="width: 90%;">Reset</a>
                                             </div>
                                         </div>
-                                    </div>
-
-                                    <div style="width: 100%; text-align: center; margin-top: 20px;">
-                                        <a href="#" onclick="resetEverything();" class="btn btn-primary" style="width: 90%;">Reset</a>
                                     </div>
 
                                     <div style="width: 100%; text-align: center; margin-top: 20px;">
@@ -927,8 +922,8 @@
     <!-- Modal -->
     <div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel"
         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-dark">
                 <div class="modal-header">
                     <h5 class="modal-title" id="notificationModalLabel">Notifications</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>

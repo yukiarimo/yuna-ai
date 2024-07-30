@@ -51,8 +51,7 @@ def run_tts(lang, tts_text, speaker_audio_file, output_audio):
     torchaudio.save(out_path, torch.tensor(out["aiff"]).unsqueeze(0), 22000)
 
     return out_path, speaker_audio_file
-
-def speak_text(text, reference_audio, output_audio, mode, language="en"):
+def speak_text(text, reference_audio=config['server']['yuna_reference_audio'], output_audio=config['server']['output_audio_format'], mode=config['server']['yuna_audio_mode'], language="en"):
     if mode == "native":
         # Split the text into sentences
         sentences = text.replace("\n", " ").replace("?", "?|").replace(".", ".|").replace("...", "...|").split("|")
@@ -106,6 +105,13 @@ def speak_text(text, reference_audio, output_audio, mode, language="en"):
         audio.export("/Users/yuki/Documents/Github/yuna-ai/static/audio/audio.mp3", format='mp3')
     elif mode == "fast":
         command = f'say -o /Users/yuki/Documents/Github/yuna-ai/static/audio/audio.aiff {repr(text)}'
+        exit_status = os.system(command)
+
+        # convert audio to mp3
+        audio = AudioSegment.from_file("/Users/yuki/Documents/Github/yuna-ai/static/audio/audio.aiff")
+        audio.export("/Users/yuki/Documents/Github/yuna-ai/static/audio/audio.mp3", format='mp3')
+    elif mode == "fast-pv":
+        command = f'say -v Yuna -o /Users/yuki/Documents/Github/yuna-ai/static/audio/audio.aiff {repr(text)}'
         print(command)
         exit_status = os.system(command)
 

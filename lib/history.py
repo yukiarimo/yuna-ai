@@ -1,7 +1,6 @@
 import json
 import os
 from cryptography.fernet import Fernet, InvalidToken
-from lib.audio import speak_text
 
 class ChatHistoryManager:
     def __init__(self, config):
@@ -74,9 +73,6 @@ class ChatHistoryManager:
         # Sort alphabetically
         history_files.sort(key=lambda x: x.lower())
         return history_files
-
-    def generate_speech(self, response):
-        speak_text(response, "/Users/yuki/Documents/AI/yuna-data/yuna-tamer-prepared.wav", "audio.aiff", self.config['server']['yuna_audio_mode'])
 
     def delete_message(self, username, chat_id, target_message):
         chat_history = self.load_chat_history(username, chat_id)

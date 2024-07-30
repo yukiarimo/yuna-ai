@@ -13,7 +13,6 @@ var isYunaListening = false;
 let mediaRecorder;
 let audioChunks = [];
 var activeElement = null;
-//kawaiAutoScale();
 
 // Global variable to track the state of Streaming Chat Mode
 let isStreamingChatModeEnabled = false;
@@ -35,7 +34,7 @@ buttonAudioRec.addEventListener('click', () => {
   }
 });
 
-function startRecording() {
+function startRecording(withImage = false, imageDataURL, imageName, messageForImage) {
   navigator.mediaDevices.getUserMedia({ audio: true })
     .then(stream => {
       mediaRecorder = new MediaRecorder(stream);
@@ -52,7 +51,12 @@ function startRecording() {
 
       mediaRecorder.addEventListener('stop', () => {
         const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-        sendAudioToServer(audioBlob);
+
+        if (withImage) {
+          sendAudioToServer(audioBlob, true, imageDataURL, imageName, messageForImage);
+        } else {
+          sendAudioToServer(audioBlob);
+        }
         audioChunks = [];
       });
     })
@@ -70,7 +74,7 @@ function stopRecording() {
   isRecording = false;
 }
 
-function sendAudioToServer(audioBlob) {
+function sendAudioToServer(audioBlob, withImage = false, imageDataURL, imageName, messageForImage) {
   const formData = new FormData();
   formData.append('audio', audioBlob);
   formData.append('task', 'transcribe');
@@ -86,7 +90,11 @@ function sendAudioToServer(audioBlob) {
     return response.json();
   })
   .then(data => {
-    messageManagerInstance.sendMessage(data.text, kanojo.buildKanojo(),'', '/message', false, false, isStreamingChatModeEnabled);
+    if (withImage) {
+      askYunaImage = messageManagerInstance.sendMessage(data.text, kanojo.buildKanojo(), [imageDataURL, imageName, data.text], '/image', false, false, isStreamingChatModeEnabled);
+    } else {
+      messageManagerInstance.sendMessage(data.text, kanojo.buildKanojo(),'', '/message', false, false, isStreamingChatModeEnabled);
+    };
   })
   .catch(error => {
     console.error('Error sending audio to server', error);
@@ -211,8 +219,11 @@ class messageManager {
   async sendMessage(message, template, imageData = '', url = '/message', naked = false, stream = isStreamingChatModeEnabled || false, outputElement = '') {
     this.inputText = document.getElementById('input_text');
     const messageContent = message || this.inputText.value;
-    const userMessageElement = this.createMessage(name1, messageContent);
-    this.createTypingBubble(naked);
+    var userMessageElement;
+    if (template !== null) {
+      userMessageElement = this.createMessage(name1, messageContent);
+      this.createTypingBubble(naked);
+    }
 
     if (url === '/message') {
         let result = '';
@@ -273,8 +284,11 @@ class messageManager {
                 console.log('Final result:', result);
             } else {
                 const data = await response.json();
-                this.removeTypingBubble();
-                this.createMessage(name2, data.response);
+
+                if (template !== null) {
+                  this.removeTypingBubble();
+                  this.createMessage(name2, data.response);
+                }
             }
 
             if (isYunaListening) {
@@ -326,7 +340,7 @@ class messageManager {
     const [imageDataURL, imageName, messageForImage] = imageData;
     const serverEndpoint = `${server_url + server_port}/image`;
     const headers = { 'Content-Type': 'application/json' };
-    const body = JSON.stringify({ image: imageDataURL, name: imageName, message: messageForImage, task: 'caption', chat: selectedFilename});
+    const body = JSON.stringify({ image: imageDataURL, name: imageName, message: messageForImage, task: 'caption', chat: selectedFilename, speech: isYunaListening });
 
     fetch(serverEndpoint, { method: 'POST', headers, body })
       .then(response => response.ok ? response.json() : Promise.reject('Error sending captured image.'))
@@ -337,6 +351,9 @@ class messageManager {
 
         const imageResponse = `${data.message}`;
         this.createMessage(name2, imageResponse);
+
+        // play audio
+        playAudio();
 
         return imageCaption;
       })
@@ -477,7 +494,7 @@ class HistoryManager {
   constructor(serverUrl, serverPort, defaultHistoryFile) {
     this.serverUrl = serverUrl || 'https://localhost:';
     this.serverPort = serverPort || 4848;
-    this.defaultHistoryFile = defaultHistoryFile || 'history_template.json';
+    this.defaultHistoryFile = defaultHistoryFile || 'history_template:general.json';
     this.messageContainer = document.getElementById('message-container');
   }
 
@@ -784,7 +801,7 @@ async function drawArt() {
 }
 
 // Add an event listener to the "Capture Image" button
-function captureImage() {
+async function captureImage() {
   var localVideo = document.getElementById('localVideo');
   var captureCanvas = document.getElementById('capture-canvas');
   var captureContext = captureCanvas.getContext('2d');
@@ -800,14 +817,19 @@ function captureImage() {
   captureCanvas = document.getElementById('capture-canvas');
   imageDataURL = captureCanvas.toDataURL('image/png'); // Convert canvas to base64 data URL
 
-  messageForImage = prompt('Enter a message for the image:');
-
-  // generate a random image name using current timestamp
+  let messageForImage = '';
   var imageName = new Date().getTime().toString();
 
-  closePopupsAll();
+  if (isYunaListening) {
+    // Start recording
+    startRecording(true, imageDataURL, imageName, messageForImage);
 
-  askYunaImage = messageManagerInstance.sendMessage('', kanojo.buildKanojo(), [imageDataURL, imageName, messageForImage], '/image', false, false, isStreamingChatModeEnabled);
+    return true;
+  } else {
+    messageForImage = prompt('Enter a message for the image:');
+    closePopupsAll();
+    askYunaImage = messageManagerInstance.sendMessage(messageForImage, kanojo.buildKanojo(), [imageDataURL, imageName, messageForImage], '/image', false, false, isStreamingChatModeEnabled);
+  }
 }
 
 // Modify the captureImage function to handle file uploads
@@ -832,11 +854,7 @@ async function captureImageViaFile(image=null, imagePrompt=null) {
   reader.onloadend = async function () {
     const imageDataURL = reader.result;
     var messageForImage = '';
-    if (imagePrompt) {
-      messageForImage = imagePrompt;
-    } else {
-      messageForImage = prompt('Enter a message for the image:');
-    }
+    messageForImage = prompt('Enter a message for the image:');
 
     const imageName = Date.now().toString();
 
@@ -1296,25 +1314,45 @@ document.addEventListener('DOMContentLoaded', (event) => {
   });
 });
 
-async function checkMe() {
-  const response = await fetch('/flash-messages');
-  return response.json();
-}
-
 document.addEventListener('DOMContentLoaded', loadConfig);
 
-function importFlash(messages) {
-  const dropdownMenu = document.querySelector('.dropdown-menu.dropdown-menu-end.dropdown-list.animated--grow-in');
-  dropdownMenu.innerHTML = messages.map(message => `
-    <a class="dropdown-item d-flex align-items-center" href="#">
-      <div>
-        <span class="font-weight-bold">${message}</span>
-      </div>
-    </a>
-  `).join('');
+class NotificationManager {
+  constructor() {
+    this.dropdownMenu = document.querySelector('.dropdown-menu.dropdown-menu-end.dropdown-list.animated--grow-in');
+    this.messages = [];
+  }
+
+  add(message) {
+    this.messages.push(message);
+    this.render();
+  }
+
+  delete(message) {
+    this.messages = this.messages.filter(msg => msg !== message);
+    this.render();
+  }
+
+  clearAll() {
+    this.messages = [];
+    this.render();
+  }
+
+  render() {
+    this.dropdownMenu.innerHTML = this.messages.map(message => `
+      <a class="dropdown-item d-flex align-items-center" href="#">
+        <div>
+          <span class="font-weight-bold">${message}</span>
+        </div>
+      </a>
+    `).join('');
+  }
 }
 
-checkMe().then(importFlash).catch(console.error);
+// Create an instance of NotificationManager
+const notificationManagerInstance = new NotificationManager();
+
+// Call the add method
+notificationManagerInstance.add("Hello! Welcome to the chat room!");
 
 function updateMsgCount() {
   setTimeout(() => {

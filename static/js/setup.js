@@ -28,7 +28,7 @@ function createFormGroup(id, value) {
   return `
     <div class="form-group" style="width: 100%;">
       <label for="${id}">${capitalize(id)}</label>
-      <textarea type="text" class="form-control" id="${id}" value="${value}"></textarea>
+      <textarea type="text" class="form-control" id="${id}">${value}</textarea>
     </div>
   `;
 }

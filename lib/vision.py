@@ -4,15 +4,15 @@ from diffusers import StableDiffusionPipeline
 from datetime import datetime
 from llama_cpp import Llama
 from llama_cpp.llama_chat_format import MoondreamChatHandler
+from lib.audio import speak_text
 
 if os.path.exists("static/config.json"):
     with open("static/config.json", 'r') as file:
         config = json.load(file)
 
-yuna_model_dir = config["server"]["yuna_model_dir"]
-agi_model_dir = config["server"]["agi_model_dir"]
-model_id = f"{yuna_model_dir}yuna-ai-miru-v0.gguf"
-model_id_eyes = f"{yuna_model_dir}yuna-ai-miru-eye-v0.gguf"
+agi_model_dir = config["server"]["agi_model_dir"] + "vision/"
+model_id = f"{agi_model_dir}yuna-ai-miru-v0.gguf"
+model_id_eyes = f"{agi_model_dir}yuna-ai-miru-eye-v0.gguf"
 
 if config["ai"]["vision"] == True:
     chat_handler = MoondreamChatHandler(clip_model_path=model_id_eyes)
@@ -45,7 +45,7 @@ def create_image(prompt):
 
     return image_name
 
-def capture_image(image_path=None, prompt=None, use_cpu=False):
+def capture_image(image_path=None, prompt=None, use_cpu=False, speech=False):
     # print the parameters
     print(f"image_path: {image_path}")
     print(f"prompt: {prompt}")
@@ -67,4 +67,6 @@ def capture_image(image_path=None, prompt=None, use_cpu=False):
     )
 
     answer = result['choices'][0]['message']['content']
+    if speech:
+        speak_text(answer)
     return [answer, image_path]

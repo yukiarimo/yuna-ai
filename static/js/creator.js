@@ -1,12 +1,12 @@
 // Get the necessary elements
 const promptTemplateTextarea = document.querySelector('#freeform-prompt-template');
-const bodyTextTextarea = document.querySelector('.body-text');
-const resultTextarea = document.querySelector('.result-container');
+const bodyTextTextarea = document.querySelector('#body-text-freeform-container');
+const resultTextarea = document.querySelector('#result-create-freeform');
 const submitButton = document.getElementById('send-create-freeform');
 
 // Set the default text for the Prompt Template block
 const defaultPromptTemplate = promptTemplateManager.buildPrompt('himitsuAssistant');
-promptTemplateTextarea.value = defaultPromptTemplate;
+promptTemplateTextarea.value = defaultPromptTemplate.replace('### Instruction:\n', '### Instruction:\n{body_text}');
 
 // Function to send the request to the server
 async function sendRequest() {
@@ -18,7 +18,7 @@ async function sendRequest() {
     // Clear the result textarea before starting
     resultTextarea.value = '';
 
-    messageManagerInstance.sendMessage(promptTemplate, false, imageData = '', url = '/message', naked = false, stream = true, outputElement = resultTextarea);
+    messageManagerInstance.sendMessage(promptTemplate, null, imageData = '', url = '/message', naked = false, stream = true, outputElement = resultTextarea);
 }
 
 // Add an event listener to the submit button

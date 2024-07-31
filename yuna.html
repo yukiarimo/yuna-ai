@@ -193,13 +193,13 @@
                                         type="text" class="search-input">
 
                                     <div class="form-check form-switch" style="display: none;">
-                                        <input class="form-check-input" type="checkbox" id="customSwitch">
-                                        <label class="form-check label" for="customSwitch">Himitsu Copilot</label>
+                                        <input class="form-check-input" type="checkbox" id="himitsuToggle">
+                                        <label class="form-check label" for="himitsuToggle">Himitsu Copilot</label>
                                     </div>
 
                                     <div class="form-check form-switch" id="himitsuToggle">
-                                        <input class="form-check-input" type="checkbox" id="customSwitch"
-                                            aria-label="Himitsu Copilot" onclick="changeHimitsuState()">
+                                        <input class="form-check-input" type="checkbox" id="himitsuToggle"
+                                            aria-label="Himitsu Copilot">
                                     </div>
 
                                     <button class="search-button icon-right" aria-label="Send">
@@ -496,9 +496,9 @@
                                     <div class="card-body">
                                         <ul class="nav nav-pills nav-fill mb-4" role="tablist">
                                             <li class="nav-item" role="presentation">
-                                                <button class="nav-link active" id="freeform-tab" data-bs-toggle="pill"
-                                                    data-bs-target="#freeform" type="button" role="tab"
-                                                    aria-controls="freeform" aria-selected="true">Freeform</button>
+                                                <button class="nav-link active" id="naked-tab" data-bs-toggle="pill"
+                                                    data-bs-target="#naked" type="button" role="tab"
+                                                    aria-controls="naked" aria-selected="false">Naked</button>
                                             </li>
                                             <li class="nav-item" role="presentation">
                                                 <button class="nav-link" id="presentation-tab" data-bs-toggle="pill"
@@ -509,39 +509,25 @@
                                             <li class="nav-item" role="presentation">
                                                 <button class="nav-link" id="article-tab" data-bs-toggle="pill"
                                                     data-bs-target="#article" type="button" role="tab"
-                                                    aria-controls="article" aria-selected="false">Article</button>
+                                                    aria-controls="article" aria-selected="true">Article</button>
                                             </li>
                                         </ul>
                                         <div class="tab-content">
-                                            <div class="tab-pane fade show active" id="freeform" role="tabpanel"
-                                                aria-labelledby="freeform-tab">
+                                            <div class="tab-pane fade show active" id="naked" role="tabpanel"
+                                                aria-labelledby="naked-tab">
                                                 <div class="row g-4">
-                                                    <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <h5 class="mb-3">Prompt Template</h5>
-                                                            <textarea class="form-control" id="freeform-prompt-template"
-                                                                rows="5"></textarea>
+                                                    <div class="row mt-4">
+                                                        <div class="col-12">
+                                                            <div class="form-group">
+                                                                <h5 class="mb-3">Work Area</h5>
+                                                                <textarea class="form-control" id="naked-work-area"></textarea>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <h5 class="mb-3">Body Text</h5>
-                                                            <textarea class="form-control" id="body-text-freeform-container" rows="5"></textarea>
-                                                        </div>
-                                                    </div>
-                                                </div>
 
-                                                <div class="d-grid gap-2 mt-4">
-                                                    <button type="button" id="send-create-freeform"
-                                                        class="btn btn-primary">Submit</button>
-                                                </div>
-
-                                                <div class="row mt-4">
-                                                    <div class="col-12">
-                                                        <div class="form-group">
-                                                            <h5 class="mb-3">Result</h5>
-                                                            <textarea class="form-control" id="result-create-freeform" rows="5"></textarea>
-                                                        </div>
+                                                    <div class="d-grid gap-2 mt-4">
+                                                        <button type="button" id="send-create-naked"
+                                                            class="btn btn-primary">Create</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -567,7 +553,7 @@
 
                                                 <div class="d-grid gap-2 mt-4">
                                                     <button type="button" id="send-create-presentation"
-                                                        class="btn btn-primary">Generate</button>
+                                                        class="btn btn-primary">Create</button>
                                                 </div>
 
                                                 <div class="row g-4 mt-4">
@@ -595,7 +581,35 @@
 
                                             <div class="tab-pane fade" id="article" role="tabpanel"
                                                 aria-labelledby="article-tab">
-                                                <!-- Placeholder for Article tab content -->
+                                                <div class="row g-4">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <h5 class="mb-3">Prompt Template</h5>
+                                                            <textarea class="form-control" id="article-prompt-template"
+                                                                rows="5"></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <h5 class="mb-3">Body Text</h5>
+                                                            <textarea class="form-control" id="body-text-article-container" rows="5"></textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="d-grid gap-2 mt-4">
+                                                    <button type="button" id="send-create-article"
+                                                        class="btn btn-primary">Submit</button>
+                                                </div>
+
+                                                <div class="row mt-4">
+                                                    <div class="col-12">
+                                                        <div class="form-group">
+                                                            <h5 class="mb-3">Result</h5>
+                                                            <textarea class="form-control" id="result-create-article" rows="5"></textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -722,6 +736,16 @@
                                         </div>
 
                                         <div class="list-group-item" style="background-color: transparent;">
+                                            <h6>Data</h6>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" checked type="checkbox"
+                                                    id="updateEmojiHistory">
+                                                <label class="form-check-label" for="updateEmojiHistory">User Datat
+                                                    Collection</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="list-group-item" style="background-color: transparent;">
                                             <h6>Mode</h6>
                                             <div class="form-check form-switch">
                                                 <input class="form-check-input" onclick="toggleTheme()" checked
@@ -748,19 +772,7 @@
                                     aria-labelledby="v-pills-system-tab">
                                     <div class="list-group">
                                         <div class="list-group-item" style="background-color: transparent;">
-                                            <h6>Data</h6>
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" checked type="checkbox"
-                                                    id="updateEmojiHistory">
-                                                <label class="form-check-label" for="updateEmojiHistory">User Datat
-                                                    Collection</label>
-                                            </div>
-                                        </div>
-
-                                        <div class="list-group-item" style="background-color: transparent;">
                                             <h6>Account</h6>
-
-                                            <div class="card o-hidden border-0 my-5">
                                                 <div class="card-body p-0">
                                                     <div class="row">
                                                         <div class="col-lg-6">
@@ -861,8 +873,6 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-
                                         </div>
                                     </div>
                                 </div>

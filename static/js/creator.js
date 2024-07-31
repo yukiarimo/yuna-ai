@@ -1,8 +1,8 @@
 // Get the necessary elements
-const promptTemplateTextarea = document.querySelector('#freeform-prompt-template');
-const bodyTextTextarea = document.querySelector('#body-text-freeform-container');
-const resultTextarea = document.querySelector('#result-create-freeform');
-const submitButton = document.getElementById('send-create-freeform');
+const promptTemplateTextarea = document.querySelector('#article-prompt-template');
+const bodyTextTextarea = document.querySelector('#body-text-article-container');
+const resultTextarea = document.querySelector('#result-create-article');
+const submitButton = document.getElementById('send-create-article');
 
 // Set the default text for the Prompt Template block
 const defaultPromptTemplate = promptTemplateManager.buildPrompt('himitsuAssistant');
@@ -10,7 +10,7 @@ promptTemplateTextarea.value = defaultPromptTemplate.replace('### Instruction:\n
 
 // Function to send the request to the server
 async function sendRequest() {
-    activeElement = document.getElementById('body-text-freeform-container');
+    activeElement = document.getElementById('body-text-article-container');
 
     const bodyText = bodyTextTextarea.value;
     const promptTemplate = promptTemplateTextarea.value.replace('{body_text}', bodyText);
@@ -29,7 +29,7 @@ const presentationPromptTemplateTextarea = document.getElementById('presentation
 const presentationUserInputTextarea = document.getElementById('presentation-user-input');
 const presentationOutputTextarea = document.getElementById('presentation-output-text');
 const presentationDraftTextarea = document.getElementById('presentation-draft-text');
-const generateButton = document.getElementById('send-create-freeform');
+const generateButton = document.getElementById('send-create-article');
 const copyToDraftButton = document.getElementById('copy-to-draft');
 
 // Set the default text for the Presentation Prompt Template block

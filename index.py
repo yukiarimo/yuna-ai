@@ -1,5 +1,5 @@
 import shutil
-from flask import Flask, request, jsonify, send_from_directory, redirect, url_for
+from flask import Flask, request, jsonify, send_from_directory, redirect, url_for, make_response
 from flask_login import LoginManager, UserMixin, login_required, logout_user, login_user, current_user, login_manager
 from lib.generate import ChatGenerator, ChatHistoryManager
 from lib.router import handle_history_request, handle_image_request, handle_message_request, handle_audio_request, services, handle_search_request, handle_textfile_request
@@ -47,6 +47,13 @@ class YunaServer:
             response.headers['Access-Control-Allow-Origin'] = '*'
             response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
             response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+            return response
+    
+        def add_cache_headers(response):
+            # Don't cache if the response is an error
+            if response.status_code < 400:
+                # Cache for 5 minutes (300 seconds)
+                response.headers['Cache-Control'] = 'public, max-age=300'
             return response
 
     @staticmethod

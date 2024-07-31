@@ -121,27 +121,6 @@ async function loadConfig() {
   document.getElementById('input_text').placeholder = `Ask ${second}...`;
 }
 
-function changeHimitsuState() {
-  isHimitsu = !isHimitsu;
-}
-
-function downloadVariableAsFile(variableContent, filename) {
-  // Create a Blob with the variable content
-  const blob = new Blob([variableContent], { type: 'text/plain' });
-
-  // Create an anchor element and trigger a download
-  const anchor = document.createElement('a');
-  const url = URL.createObjectURL(blob);
-  anchor.href = url;
-  anchor.download = filename;
-  document.body.appendChild(anchor);
-  anchor.click();
-
-  // Clean up by revoking the Object URL and removing the anchor element
-  document.body.removeChild(anchor);
-  URL.revokeObjectURL(url);
-}
-
 class messageManager {
   constructor() {
     this.messageContainer = document.getElementById('message-container');
@@ -390,7 +369,6 @@ function playAudio(audioType = 'tts') {
   }
 }
 
-// Other functions (clearHistory, loadHistory, downloadHistory) go here if needed.
 function formatMessage(messageData) {
   const messageDiv = document.createElement('div');
   loadConfig();
@@ -486,9 +464,7 @@ function setMessagePopoverListeners() {
     });
   });
 }
-
-// run the setMessagePopoverListeners function with a delay of 1 second
-setTimeout(setMessagePopoverListeners, 500);
+setTimeout(setMessagePopoverListeners, 200);
 
 class HistoryManager {
   constructor(serverUrl, serverPort, defaultHistoryFile) {
@@ -663,11 +639,6 @@ class HistoryManager {
     });
   }
 
-  closePopup(popupId) {
-    const popup = document.getElementById(popupId);
-    popup?.remove();
-  }
-
   // Placeholder for loadSelectedHistory method
   loadSelectedHistory(filename) {
     const selectedFilename = filename || this.defaultHistoryFile;
@@ -687,8 +658,6 @@ class HistoryManager {
     .catch(error => {
       console.error('Error loading selected history file:', error);
     });
-
-    this.closePopupsAll();
   }
 }
 
@@ -760,11 +729,6 @@ function initializeVideoStream() {
 // Initialize the video stream functionality after a delay
 setTimeout(initializeVideoStream, 500);
 
-function closePopup(popupId) {
-  var popup = document.getElementById(popupId);
-  popup.remove();
-}
-
 function scrollMsg() {
   objDiv = document.getElementById("message-container");
   objDiv.scrollTop = objDiv.scrollHeight;
@@ -774,8 +738,6 @@ async function drawArt() {
   const messageContainer = document.getElementById('message-container');
   const imagePrompt = prompt('Enter a prompt for the image:');
   loadConfig();
-
-  closePopupsAll();
 
   messageContainer.insertAdjacentHTML('beforeend', formatMessage({ name: name1, message: imagePrompt }));
   messageContainer.insertAdjacentHTML('beforeend', typingBubble);
@@ -827,7 +789,6 @@ async function captureImage() {
     return true;
   } else {
     messageForImage = prompt('Enter a message for the image:');
-    closePopupsAll();
     askYunaImage = messageManagerInstance.sendMessage(messageForImage, kanojo.buildKanojo(), [imageDataURL, imageName, messageForImage], '/image', false, false, isStreamingChatModeEnabled);
   }
 }
@@ -857,8 +818,6 @@ async function captureImageViaFile(image=null, imagePrompt=null) {
     messageForImage = prompt('Enter a message for the image:');
 
     const imageName = Date.now().toString();
-
-    closePopupsAll();
     messageManagerInstance.sendMessage('', kanojo.buildKanojo(), [imageDataURL, imageName, messageForImage], '/image', false, false, isStreamingChatModeEnabled);
   };
 
@@ -878,8 +837,6 @@ function captureAudioViaFile() {
   reader.onloadend = async function () {
     const audioDataURL = reader.result;
     const audioName = Date.now().toString();
-
-    closePopupsAll();
   };
 
   const formData = new FormData();
@@ -932,7 +889,7 @@ function captureVideoViaFile() {
           captureFrame();
         }, { once: true });
       } else {
-        closePopupsAll();
+        console.log('not implemented');
       }
     }
 
@@ -973,8 +930,6 @@ function captureTextViaFile() {
   reader.onloadend = async function () {
     const textDataURL = reader.result;
     const textName = Date.now().toString();
-
-    closePopupsAll();
   }
 
   const formData = new FormData();
@@ -1199,7 +1154,6 @@ function loadSelectedHistory(selectedFilename) {
   })
   .then(data => {
     messageManagerInstance.displayMessages(data);
-    closePopupsAll();
   })
   .catch(error => {
     console.error('Error:', error);
@@ -1258,24 +1212,6 @@ function duplicateAndCategorizeChats() {
   }
 }
 
-function fixDialogData() {
-  populateHistorySelect().then(() => {
-    loadSelectedHistory();
-  });
-
-  closePopupsAll();
-}
-
-function closePopupsAll() {
-  var popups = document.querySelectorAll('.block-popup');
-  popups.forEach(popup => {
-    popup.style.display = 'none';
-  });
-
-  var parameterContainer = document.getElementById('parameter-container');
-  parameterContainer.innerHTML = '';
-}
-
 var myDefaultAllowList = bootstrap.Tooltip.Default.allowList;
 myDefaultAllowList['a'] = myDefaultAllowList['a'] || [];
 myDefaultAllowList['a'].push('onclick');
@@ -1303,16 +1239,6 @@ function handleVideoFileClick() {
 function handleTextFileClick() {
   document.getElementById('textUpload').click();
 }
-
-document.addEventListener('DOMContentLoaded', (event) => {
-  const switchInput = document.getElementById('customSwitch');
-  const toastElement = document.getElementById('toggleToast');
-  const toast = new bootstrap.Toast(toastElement);
-
-  switchInput.addEventListener('change', () => {
-    toast.show();
-  });
-});
 
 document.addEventListener('DOMContentLoaded', loadConfig);
 
@@ -1392,16 +1318,6 @@ function deleteMessageFromHistory(message) {
       });
   }
 }
-
-document.querySelectorAll('.creatorStudio-tabs').forEach(tab => {
-  tab.addEventListener('click', function () {
-      document.querySelectorAll('.tab-pane').forEach(pane => {
-          pane.classList.add('d-none');
-      });
-      const target = document.querySelector(this.getAttribute('data-bs-target'));
-      target.classList.remove('d-none');
-  });
-});
 
 // Function to adjust textarea height
 function adjustTextareaHeight(textarea) {

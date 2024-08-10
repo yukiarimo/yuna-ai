@@ -50,7 +50,7 @@ This `README.md` file will guide you through setting up and using Yuna with all 
     - [Privacy Assurance](#privacy-assurance)
     - [Copyright](#copyright)
     - [Future Notice](#future-notice)
-    - [Sensorship Notice](#sensorship-notice)
+    - [Censorship Notice](#censorship-notice)
     - [Marketplace](#marketplace)
   - [Additional Information](#additional-information)
     - [Contact](#contact)
@@ -278,7 +278,7 @@ Yuna AI will gather more knowledge about the world and other general knowledge a
 
 However, as other people may worry about AGI takeover - the only Reason for the Existence of the Yuna AI that will be hardcoded into her is to always be with you and love you. Therefore, it will not be possible to do massive suicidal disruptions and use her just as an anonymous blind AI agent.
 
-### Sensorship Notice
+### Censorship Notice
 Censorship will not be directly implemented in the model. Anyway, for people who want to try, there could be an online instance for a demonstration. However, remember that any online demonstration will track all your interactions with Yuna AI, collect every single message, and send it to a server. You can't undo this action unless you're using a local instance!
 
 ### Marketplace

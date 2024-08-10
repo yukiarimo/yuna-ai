@@ -129,7 +129,7 @@ install_models() {
     echo " 2. All AGI"
     echo " 3. Vision"
     echo " 4. Art"
-    echo " 5. Emotion"
+    echo " 5. Himitsu"
     echo " 6. Talk"
     echo " 7. Yuna"
     echo " 8. Go back"
@@ -143,7 +143,7 @@ install_models() {
         2) install_all_agi_models;;
         3) install_vision_model;;
         4) install_art_model;;
-        5) install_emotion_model;;
+        5) install_himitsu_model;;
         6) install_talk_model;;
         7) install_yuna_model;;
         8) return;;
@@ -163,37 +163,52 @@ install_all_agi_models() {
     echo "Installing all AGI models..."
     install_vision_model
     install_art_model
-    install_emotion_model
+    install_himitsu_model
 }
 
 # Function to install Vision model
 install_vision_model() {
     echo "Installing Vision model..."
-    wget https://huggingface.co/yukiarimo/yuna-ai-vision-v2/resolve/main/yuna-ai-miru-v0.gguf -P lib/models/agi/
-    wget https://huggingface.co/yukiarimo/yuna-ai-vision-v2/resolve/main/yuna-ai-miru-eye-v0.gguf -P lib/models/agi/
+    wget https://huggingface.co/yukiarimo/yuna-ai-vision-v2/resolve/main/yuna-ai-miru-v0.gguf -P lib/models/agi/miru/
+    wget https://huggingface.co/yukiarimo/yuna-ai-vision-v2/resolve/main/yuna-ai-miru-eye-v0.gguf -P lib/models/agi/miru/
 }
 
 # Function to install Art model
 install_art_model() {
     echo "Installing Art model..."
-    wget https://huggingface.co/yukiarimo/anyloli/resolve/main/any_loli.safetensors -P lib/models/agi/art/
+    echo "This is not implemented yet."
+    # wget https://huggingface.co/yukiarimo/anyloli/resolve/main/any_loli.safetensors -P lib/models/agi/art/
 }
 
-# Function to install Vision model
-install_emotion_model() {
-    echo "Installing Vision model..."
-    git clone https://huggingface.co/yukiarimo/yuna-emotion lib/models/agi/yuna-emotion/
+# Function to install Himitsu model
+install_himitsu_model() {
+    echo "Installing Himitsu model..."
+    echo "This is not implemented yet."
 }
 
+# Function to install Voice model
 install_talk_model() {
+    echo "Installing Voice model..."
+    echo "This model can be purchased on the Marketplace or you can use your own"
+    echo "Enter the Hugging Face model name (e.g., username/model): "
+    read model_name
     echo "Installing Talk Model"
-    git clone https://huggingface.co/yukiarimo/yuna-talk lib/models/agi/yuna-talk/
+    git clone https://huggingface.co/$model_name lib/models/agi/voice
 }
 
 # Function to install Yuna model
 install_yuna_model() {
-    echo "Installing Yuna model..."
-    wget https://huggingface.co/yukiarimo/yuna-ai-v3/resolve/main/yuna-ai-v3-q6_k.gguf -P lib/models/yuna/
+    echo "Select the version of the Yuna model to install (V1, V2, V3, V3-atomic):"
+    read -r version
+    version=$(echo "$version" | tr '[:upper:]' '[:lower:]')
+    
+    echo "Select the size of the Yuna model to install (Q3_K_M, Q4_K_M, Q5_K_M, Q6_K):"
+    read -r size
+    size=$(echo "$size" | tr '[:upper:]' '[:lower:]')
+
+    model_url="https://huggingface.co/yukiarimo/yuna-ai-${version}/resolve/main/yuna-ai-${version}-${size}.gguf"
+    echo "Installing Yuna model from $model_url..."
+    wget "$model_url" -P lib/models/yuna/
 }
 
 # Function to clear models

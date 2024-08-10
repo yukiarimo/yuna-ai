@@ -5,13 +5,13 @@ import torch
 import torchaudio
 from pydub import AudioSegment
 
-model = whisper.load_model(name="tiny.en", device="cpu")
+yunaListen = whisper.load_model(name="tiny.en", device="cpu")
 XTTS_MODEL = None
 
 with open('static/config.json', 'r') as config_file:
     config = json.load(config_file)
 
-if config['server']['yuna_audio_mode'] == "native":
+if config['server']['yuna_audio_mode'] == "coqui":
     from TTS.tts.configs.xtts_config import XttsConfig
     from TTS.tts.models.xtts import Xtts
 
@@ -19,8 +19,54 @@ if config['server']['yuna_audio_mode'] == "11labs":
     from elevenlabs import VoiceSettings
     from elevenlabs.client import ElevenLabs
 
+if config['server']['yuna_audio_mode'] == "native":
+    import soundfile as sf
+    from transformers import SpeechT5Processor, SpeechT5ForTextToSpeech, SpeechT5HifiGan
+    from speechbrain.inference import EncoderClassifier
+    import librosa
+    import numpy as np
+    from datasets import Dataset, Audio
+
+    # Load models and processor
+    vocoder = SpeechT5HifiGan.from_pretrained("microsoft/speecht5_hifigan")
+    processor = SpeechT5Processor.from_pretrained("/Users/yuki/Documents/Github/yuna-ai/lib/models/agi/checkpoint-1800")
+    model = SpeechT5ForTextToSpeech.from_pretrained("/Users/yuki/Documents/Github/yuna-ai/lib/models/agi/checkpoint-1800")
+
+    speaker_model = EncoderClassifier.from_hparams(
+        source="speechbrain/spkrec-xvect-voxceleb",
+        run_opts={"device": "cpu"},
+        savedir=os.path.join("./speechbrain-leb", "speechbrain/spkrec-xvect-voxceleb")
+    )
+
+    def create_speaker_embedding(waveform):
+        with torch.no_grad():
+            waveform_tensor = torch.tensor(waveform).unsqueeze(0).to(torch.float32)
+            speaker_embeddings = speaker_model.encode_batch(waveform_tensor)
+            speaker_embeddings = torch.nn.functional.normalize(speaker_embeddings, dim=2)
+            speaker_embeddings = speaker_embeddings.squeeze().cpu().numpy()
+        return speaker_embeddings
+
+    audio_array, sampling_rate = librosa.load("/Users/yuki/Documents/Github/yuna-ai/static/audio/" + config["server"]["yuna_audio_name"], sr=16000)
+
+    # Create a dictionary to mimic the dataset structure
+    custom_audio = {
+        "array": audio_array,
+        "sampling_rate": sampling_rate
+    }
+
+    # Create a Dataset object with the custom audio
+    dataset = Dataset.from_dict({"audio": [custom_audio]})
+
+    # Use the custom audio in the rest of the code
+    example = dataset[0]
+    audio = example["audio"]
+
+    # Create speaker embedding
+    speaker_embeddings = create_speaker_embedding(audio["array"])
+    speaker_embeddings = torch.tensor(speaker_embeddings).unsqueeze(0).to(torch.float32)
+
 def transcribe_audio(audio_file):
-    result = model.transcribe(audio_file)
+    result = yunaListen.transcribe(audio_file)
     return result['text']
 
 def load_model(xtts_checkpoint, xtts_config, xtts_vocab):
@@ -52,7 +98,7 @@ def run_tts(lang, tts_text, speaker_audio_file, output_audio):
 
     return out_path, speaker_audio_file
 def speak_text(text, reference_audio=config['server']['yuna_reference_audio'], output_audio=config['server']['output_audio_format'], mode=config['server']['yuna_audio_mode'], language="en"):
-    if mode == "native":
+    if mode == "coqui":
         # Split the text into sentences
         sentences = text.replace("\n", " ").replace("?", "?|").replace(".", ".|").replace("...", "...|").split("|")
 
@@ -89,7 +135,7 @@ def speak_text(text, reference_audio=config['server']['yuna_reference_audio'], o
 
         for i, chunk in enumerate(chunks):
             audio_file = f"response_{i+1}.wav"
-            result = speak_text(chunk, reference_audio, audio_file, "native")
+            result = speak_text(chunk, reference_audio, audio_file, "coqui")
             audio_files.append("/Users/yuki/Documents/Github/yuna-ai/static/audio/" + audio_file)
 
         # Concatenate the audio files with a 1-second pause in between
@@ -103,20 +149,34 @@ def speak_text(text, reference_audio=config['server']['yuna_reference_audio'], o
         # convert audio to aiff
         audio = AudioSegment.from_wav("/Users/yuki/Documents/Github/yuna-ai/static/audio/audio.wav")
         audio.export("/Users/yuki/Documents/Github/yuna-ai/static/audio/audio.mp3", format='mp3')
-    elif mode == "fast":
+    elif mode == "siri":
         command = f'say -o /Users/yuki/Documents/Github/yuna-ai/static/audio/audio.aiff {repr(text)}'
         exit_status = os.system(command)
 
         # convert audio to mp3
         audio = AudioSegment.from_file("/Users/yuki/Documents/Github/yuna-ai/static/audio/audio.aiff")
         audio.export("/Users/yuki/Documents/Github/yuna-ai/static/audio/audio.mp3", format='mp3')
-    elif mode == "fast-pv":
-        command = f'say -v Yuna -o /Users/yuki/Documents/Github/yuna-ai/static/audio/audio.aiff {repr(text)}'
+    elif mode == "siri-pv":
+        command = f'say -v {config["server"]["yuna_audio_name"]} -o /Users/yuki/Documents/Github/yuna-ai/static/audio/audio.aiff {repr(text)}'
         print(command)
         exit_status = os.system(command)
 
         # convert audio to mp3
         audio = AudioSegment.from_file("/Users/yuki/Documents/Github/yuna-ai/static/audio/audio.aiff")
+        audio.export("/Users/yuki/Documents/Github/yuna-ai/static/audio/audio.mp3", format='mp3')
+    elif mode == "native":
+        inputs = processor(text=text, return_tensors="pt")
+        spectrogram = model.generate_speech(inputs["input_ids"], speaker_embeddings)
+
+        with torch.no_grad():
+            speech = vocoder(spectrogram)
+
+        # Save the output as a WAV file
+        wav_path = "/Users/yuki/Documents/Github/yuna-ai/static/audio/audio.wav"
+        sf.write(wav_path, speech.cpu().numpy(), samplerate=16000)
+
+        # Convert WAV to MP3
+        audio = AudioSegment.from_wav(wav_path)
         audio.export("/Users/yuki/Documents/Github/yuna-ai/static/audio/audio.mp3", format='mp3')
     elif mode == "11labs":
         client = ElevenLabs(
@@ -139,7 +199,7 @@ def speak_text(text, reference_audio=config['server']['yuna_reference_audio'], o
     else:
         raise ValueError("Invalid mode for speaking text")
 
-if config['server']['yuna_audio_mode'] == "native":
+if config['server']['yuna_audio_mode'] == "coqui":
     xtts_checkpoint = "/Users/yuki/Documents/Github/yuna-ai/lib/models/agi/yuna-talk/yuna-talk.pth"
     xtts_config = "/Users/yuki/Documents/Github/yuna-ai/lib/models/agi/yuna-talk/config.json"
     xtts_vocab = "/Users/yuki/Documents/Github/yuna-ai/lib/models/agi/yuna-talk/vocab.json"

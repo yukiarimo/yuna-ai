@@ -1,16 +1,21 @@
 import json
 import re
 from flask_login import current_user
-from transformers import pipeline
 from llama_cpp import Llama
 from lib.history import ChatHistoryManager
 import requests
-from langchain_community.document_loaders import TextLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import Chroma
-from langchain_community.embeddings import GPT4AllEmbeddings
-from langchain.chains import RetrievalQA
-from langchain_community.llms import LlamaCpp
+
+# load config.json
+with open('config.json') as f:
+    config_agi = json.load(f)
+
+if config_agi["ai"]["agi"] == True:
+    from langchain_community.document_loaders import TextLoader
+    from langchain.text_splitter import RecursiveCharacterTextSplitter
+    from langchain_community.vectorstores import Chroma
+    from langchain_community.embeddings import GPT4AllEmbeddings
+    from langchain.chains import RetrievalQA
+    from langchain_community.llms import LlamaCpp
 
 class ChatGenerator:
     def __init__(self, config):
@@ -26,7 +31,6 @@ class ChatGenerator:
             flash_attn=config["ai"]["flash_attn"],
             verbose=False
         ) if config["server"]["yuna_text_mode"] == "native" else ""
-        self.classifier = pipeline("text-classification", model=f"{config['server']['agi_model_dir']}yuna-emotion") if config["ai"]["emotions"] else ""
 
     def generate(self, chat_id, speech=False, text="", template=None, chat_history_manager=None, useHistory=True, yunaConfig=None, stream=False):
         # print all the parameters
@@ -67,9 +71,6 @@ class ChatGenerator:
                     response = response['choices'][0]['text']
                     response = self.clearText(str(response))
 
-                    if self.config["ai"]["emotions"]:
-                        response = self.add_emotions(response)
-
                     return response
             else:
                 max_length_all_input_and_output = yunaConfig["ai"]["context_length"]
@@ -91,9 +92,6 @@ class ChatGenerator:
 
                 response = self.clearText(str(response))
 
-                if self.config["ai"]["emotions"]:
-                    response = self.add_emotions(response)
-
                 print('into the model -> ', response)
                 response = self.model(
                     response,
@@ -111,9 +109,6 @@ class ChatGenerator:
                 else:
                     response = response['choices'][0]['text']
                     response = self.clearText(str(response))
-
-                    if self.config["ai"]["emotions"]:
-                        response = self.add_emotions(response)
 
                     return response
 
@@ -230,24 +225,6 @@ class ChatGenerator:
         })
 
         return messages
-
-    def add_emotions(self, response):
-        response_add = self.classifier(response)[0]['label']
-
-        replacement_dict = {
-            "anger": "*angry*",
-            "disgust": "*disgusted*",
-            "fear": "*scared*",
-            "joy": "*smiling*",
-            "neutral": "",
-            "sadness": "*sad*",
-            "surprise": "*surprised*"
-        }
-
-        for word, replacement in replacement_dict.items():
-            response_add = response_add.replace(word, replacement)
-
-        return response + f" {response_add}"
     
     def clearText(self, text):
         TAG_RE = re.compile(r'<[^>]+>')

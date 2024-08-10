@@ -1,11 +1,19 @@
 import base64
 import re
+import json
+import os
 from flask import jsonify, request, send_from_directory, Response
 from flask_login import current_user, login_required
 from lib.vision import capture_image, create_image
 from lib.search import get_html, search_web
 from lib.audio import transcribe_audio, speak_text
 from pydub import AudioSegment
+
+script_dir = os.path.dirname(os.path.abspath(__file__))
+config_path = os.path.join(script_dir, '..', 'static', 'config.json')
+
+with open(config_path) as config_file:
+    config = json.load(config_file)
 
 @login_required
 def handle_history_request(chat_history_manager):
@@ -76,7 +84,7 @@ def handle_message_request(chat_generator, chat_history_manager, chat_id=None, s
             if template is not None and useHistory is not False:
                 # Save chat history after streaming response
                 chat_history = chat_history_manager.load_chat_history(user_id, chat_id)
-                chat_history.append({"name": "Yuki", "message": text})
+                chat_history.append({"name": config['ai']['names'][0], "message": text})
                 chat_history.append({"name": "Yuna", "message": response_text})
                 chat_history_manager.save_chat_history(chat_history, user_id, chat_id)
 
@@ -88,12 +96,12 @@ def handle_message_request(chat_generator, chat_history_manager, chat_id=None, s
         if template is not None and useHistory is not False:
             # Save chat history after non-streaming response
             chat_history = chat_history_manager.load_chat_history(user_id, chat_id)
-            chat_history.append({"name": "Yuki", "message": text})
+            chat_history.append({"name": config['ai']['names'][0], "message": text})
             chat_history.append({"name": "Yuna", "message": response})
             chat_history_manager.save_chat_history(chat_history, user_id, chat_id)
 
             if speech == True:
-                chat_history_manager.generate_speech(response)
+                speak_text(response)
         
         return jsonify({'response': response})
 
@@ -141,7 +149,7 @@ def handle_audio_request(self):
 
     elif task == 'tts':
         print("Running TTS...")
-        result = speak_text(text, "/Users/yuki/Downloads/orig.wav", "response.wav", "fast")
+        result = speak_text(text)
 
     return jsonify({'response': result})
 
@@ -164,7 +172,7 @@ def handle_image_request(chat_history_manager, self):
         image_path = f"static/img/call/{current_time_milliseconds}.png"
         with open(image_path, "wb") as file:
             file.write(image_raw_data)
-        image_data = capture_image(image_path, data.get('message'), use_cpu=False)
+        image_data = capture_image(image_path, data.get('message'), use_cpu=False, speech=speech)
         
         if useHistory is not False:
                 # Save chat history after streaming response
@@ -173,7 +181,7 @@ def handle_image_request(chat_history_manager, self):
                 chat_history.append({"name": self.config['ai']['names'][1], "message": image_data[0]})
 
                 if speech == True:
-                    chat_history_manager.generate_speech(image_data[0])
+                    speak_text(image_data[0])
 
         # Save the chat history
         chat_history_manager.save_chat_history(chat_history, list({current_user.get_id()})[0], chat_id)
@@ -234,6 +242,3 @@ def handle_textfile_request(chat_generator, self):
 
 def services(self):
     return send_from_directory('.', 'services.html')
-
-def about(self):
-    return send_from_directory('.', 'about.html')

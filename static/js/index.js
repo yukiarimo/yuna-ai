@@ -13,7 +13,6 @@ var isYunaListening = false;
 let mediaRecorder;
 let audioChunks = [];
 var activeElement = null;
-//kawaiAutoScale();
 
 // Global variable to track the state of Streaming Chat Mode
 let isStreamingChatModeEnabled = false;
@@ -35,7 +34,7 @@ buttonAudioRec.addEventListener('click', () => {
   }
 });
 
-function startRecording() {
+function startRecording(withImage = false, imageDataURL, imageName, messageForImage) {
   navigator.mediaDevices.getUserMedia({ audio: true })
     .then(stream => {
       mediaRecorder = new MediaRecorder(stream);
@@ -52,7 +51,12 @@ function startRecording() {
 
       mediaRecorder.addEventListener('stop', () => {
         const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-        sendAudioToServer(audioBlob);
+
+        if (withImage) {
+          sendAudioToServer(audioBlob, true, imageDataURL, imageName, messageForImage);
+        } else {
+          sendAudioToServer(audioBlob);
+        }
         audioChunks = [];
       });
     })
@@ -70,7 +74,7 @@ function stopRecording() {
   isRecording = false;
 }
 
-function sendAudioToServer(audioBlob) {
+function sendAudioToServer(audioBlob, withImage = false, imageDataURL, imageName, messageForImage) {
   const formData = new FormData();
   formData.append('audio', audioBlob);
   formData.append('task', 'transcribe');
@@ -86,7 +90,11 @@ function sendAudioToServer(audioBlob) {
     return response.json();
   })
   .then(data => {
-    messageManagerInstance.sendMessage(data.text, kanojo.buildKanojo(),'', '/message', false, false, isStreamingChatModeEnabled);
+    if (withImage) {
+      askYunaImage = messageManagerInstance.sendMessage(data.text, kanojo.buildKanojo(), [imageDataURL, imageName, data.text], '/image', false, false, isStreamingChatModeEnabled);
+    } else {
+      messageManagerInstance.sendMessage(data.text, kanojo.buildKanojo(),'', '/message', false, false, isStreamingChatModeEnabled);
+    };
   })
   .catch(error => {
     console.error('Error sending audio to server', error);
@@ -94,29 +102,23 @@ function sendAudioToServer(audioBlob) {
 }
 
 async function loadConfig() {
-  const { ai: { names: [name1, name2] } } = await (await fetch('/static/config.json')).json();
-  document.getElementById('input_text').placeholder = `Ask ${name2}...`;
-}
-
-function changeHimitsuState() {
-  isHimitsu = !isHimitsu;
-}
-
-function downloadVariableAsFile(variableContent, filename) {
-  // Create a Blob with the variable content
-  const blob = new Blob([variableContent], { type: 'text/plain' });
-
-  // Create an anchor element and trigger a download
-  const anchor = document.createElement('a');
-  const url = URL.createObjectURL(blob);
-  anchor.href = url;
-  anchor.download = filename;
-  document.body.appendChild(anchor);
-  anchor.click();
-
-  // Clean up by revoking the Object URL and removing the anchor element
-  document.body.removeChild(anchor);
-  URL.revokeObjectURL(url);
+  let config;
+  // Check if 'config' exists in localStorage
+  if (localStorage.getItem('config')) {
+    // Parse the 'config' from localStorage
+    config = JSON.parse(localStorage.getItem('config'));
+  } else {
+    // Fetch the config from '/static/config.json' and parse it
+    config = await (await fetch('/static/config.json')).json();
+    // Store the fetched config in localStorage for future use
+    localStorage.setItem('config', JSON.stringify(config));
+  }
+  // Extract names from the config
+  const { ai: { names: [first, second] } } = config;
+  name1 = first;
+  name2 = second;
+  // Set the placeholder using the second name
+  document.getElementById('input_text').placeholder = `Ask ${second}...`;
 }
 
 class messageManager {
@@ -196,8 +198,11 @@ class messageManager {
   async sendMessage(message, template, imageData = '', url = '/message', naked = false, stream = isStreamingChatModeEnabled || false, outputElement = '') {
     this.inputText = document.getElementById('input_text');
     const messageContent = message || this.inputText.value;
-    const userMessageElement = this.createMessage(name1, messageContent);
-    this.createTypingBubble(naked);
+    var userMessageElement;
+    if (template !== null) {
+      userMessageElement = this.createMessage(name1, messageContent);
+      this.createTypingBubble(naked);
+    }
 
     if (url === '/message') {
         let result = '';
@@ -258,8 +263,11 @@ class messageManager {
                 console.log('Final result:', result);
             } else {
                 const data = await response.json();
-                this.removeTypingBubble();
-                this.createMessage(name2, data.response);
+
+                if (template !== null) {
+                  this.removeTypingBubble();
+                  this.createMessage(name2, data.response);
+                }
             }
 
             if (isYunaListening) {
@@ -311,7 +319,7 @@ class messageManager {
     const [imageDataURL, imageName, messageForImage] = imageData;
     const serverEndpoint = `${server_url + server_port}/image`;
     const headers = { 'Content-Type': 'application/json' };
-    const body = JSON.stringify({ image: imageDataURL, name: imageName, message: messageForImage, task: 'caption', chat: selectedFilename});
+    const body = JSON.stringify({ image: imageDataURL, name: imageName, message: messageForImage, task: 'caption', chat: selectedFilename, speech: isYunaListening });
 
     fetch(serverEndpoint, { method: 'POST', headers, body })
       .then(response => response.ok ? response.json() : Promise.reject('Error sending captured image.'))
@@ -322,6 +330,9 @@ class messageManager {
 
         const imageResponse = `${data.message}`;
         this.createMessage(name2, imageResponse);
+
+        // play audio
+        playAudio();
 
         return imageCaption;
       })
@@ -358,7 +369,6 @@ function playAudio(audioType = 'tts') {
   }
 }
 
-// Other functions (clearHistory, loadHistory, downloadHistory) go here if needed.
 function formatMessage(messageData) {
   const messageDiv = document.createElement('div');
   loadConfig();
@@ -454,15 +464,13 @@ function setMessagePopoverListeners() {
     });
   });
 }
-
-// run the setMessagePopoverListeners function with a delay of 1 second
-setTimeout(setMessagePopoverListeners, 500);
+setTimeout(setMessagePopoverListeners, 200);
 
 class HistoryManager {
   constructor(serverUrl, serverPort, defaultHistoryFile) {
     this.serverUrl = serverUrl || 'https://localhost:';
     this.serverPort = serverPort || 4848;
-    this.defaultHistoryFile = defaultHistoryFile || 'history_template.json';
+    this.defaultHistoryFile = defaultHistoryFile || 'history_template:general.json';
     this.messageContainer = document.getElementById('message-container');
   }
 
@@ -631,11 +639,6 @@ class HistoryManager {
     });
   }
 
-  closePopup(popupId) {
-    const popup = document.getElementById(popupId);
-    popup?.remove();
-  }
-
   // Placeholder for loadSelectedHistory method
   loadSelectedHistory(filename) {
     const selectedFilename = filename || this.defaultHistoryFile;
@@ -655,8 +658,6 @@ class HistoryManager {
     .catch(error => {
       console.error('Error loading selected history file:', error);
     });
-
-    this.closePopupsAll();
   }
 }
 
@@ -728,11 +729,6 @@ function initializeVideoStream() {
 // Initialize the video stream functionality after a delay
 setTimeout(initializeVideoStream, 500);
 
-function closePopup(popupId) {
-  var popup = document.getElementById(popupId);
-  popup.remove();
-}
-
 function scrollMsg() {
   objDiv = document.getElementById("message-container");
   objDiv.scrollTop = objDiv.scrollHeight;
@@ -742,8 +738,6 @@ async function drawArt() {
   const messageContainer = document.getElementById('message-container');
   const imagePrompt = prompt('Enter a prompt for the image:');
   loadConfig();
-
-  closePopupsAll();
 
   messageContainer.insertAdjacentHTML('beforeend', formatMessage({ name: name1, message: imagePrompt }));
   messageContainer.insertAdjacentHTML('beforeend', typingBubble);
@@ -769,7 +763,7 @@ async function drawArt() {
 }
 
 // Add an event listener to the "Capture Image" button
-function captureImage() {
+async function captureImage() {
   var localVideo = document.getElementById('localVideo');
   var captureCanvas = document.getElementById('capture-canvas');
   var captureContext = captureCanvas.getContext('2d');
@@ -785,14 +779,18 @@ function captureImage() {
   captureCanvas = document.getElementById('capture-canvas');
   imageDataURL = captureCanvas.toDataURL('image/png'); // Convert canvas to base64 data URL
 
-  messageForImage = prompt('Enter a message for the image:');
-
-  // generate a random image name using current timestamp
+  let messageForImage = '';
   var imageName = new Date().getTime().toString();
 
-  closePopupsAll();
+  if (isYunaListening) {
+    // Start recording
+    startRecording(true, imageDataURL, imageName, messageForImage);
 
-  askYunaImage = messageManagerInstance.sendMessage('', kanojo.buildKanojo(), [imageDataURL, imageName, messageForImage], '/image', false, false, isStreamingChatModeEnabled);
+    return true;
+  } else {
+    messageForImage = prompt('Enter a message for the image:');
+    askYunaImage = messageManagerInstance.sendMessage(messageForImage, kanojo.buildKanojo(), [imageDataURL, imageName, messageForImage], '/image', false, false, isStreamingChatModeEnabled);
+  }
 }
 
 // Modify the captureImage function to handle file uploads
@@ -817,15 +815,9 @@ async function captureImageViaFile(image=null, imagePrompt=null) {
   reader.onloadend = async function () {
     const imageDataURL = reader.result;
     var messageForImage = '';
-    if (imagePrompt) {
-      messageForImage = imagePrompt;
-    } else {
-      messageForImage = prompt('Enter a message for the image:');
-    }
+    messageForImage = prompt('Enter a message for the image:');
 
     const imageName = Date.now().toString();
-
-    closePopupsAll();
     messageManagerInstance.sendMessage('', kanojo.buildKanojo(), [imageDataURL, imageName, messageForImage], '/image', false, false, isStreamingChatModeEnabled);
   };
 
@@ -845,8 +837,6 @@ function captureAudioViaFile() {
   reader.onloadend = async function () {
     const audioDataURL = reader.result;
     const audioName = Date.now().toString();
-
-    closePopupsAll();
   };
 
   const formData = new FormData();
@@ -899,7 +889,7 @@ function captureVideoViaFile() {
           captureFrame();
         }, { once: true });
       } else {
-        closePopupsAll();
+        console.log('not implemented');
       }
     }
 
@@ -940,8 +930,6 @@ function captureTextViaFile() {
   reader.onloadend = async function () {
     const textDataURL = reader.result;
     const textName = Date.now().toString();
-
-    closePopupsAll();
   }
 
   const formData = new FormData();
@@ -1166,7 +1154,6 @@ function loadSelectedHistory(selectedFilename) {
   })
   .then(data => {
     messageManagerInstance.displayMessages(data);
-    closePopupsAll();
   })
   .catch(error => {
     console.error('Error:', error);
@@ -1174,40 +1161,55 @@ function loadSelectedHistory(selectedFilename) {
 }
 
 function duplicateAndCategorizeChats() {
-  const chatItems = document.querySelectorAll('#chat-items .collection-item');
-  const collectionItems = document.createElement('div');
-  collectionItems.id = 'collectionItems';
-  collectionItems.classList.add('list-group');
+  const chatList = document.querySelector('#chat-items');
+  const collectionItems = document.querySelector('#collectionItems');
+  
+  // Clear existing content in collectionItems
+  collectionItems.innerHTML = '';
 
-  const generalChatsDiv = document.createElement('div');
-  const otherChatsDiv = document.createElement('div');
+  // Create an object to store categorized chats
+  const categories = {
+      'Uncategorized': []
+  };
 
-  chatItems.forEach(item => {
-    const clonedItem = item.cloneNode(true);
-    const collectionName = clonedItem.querySelector('.collection-name').textContent;
-    (collectionName.includes(':general:') ? generalChatsDiv : otherChatsDiv).appendChild(clonedItem);
+  // Check if chatList exists and has items
+  const items = chatList && chatList.children.length > 0 
+      ? chatList.querySelectorAll('.collection-item') 
+      : document.querySelectorAll('.collection-item');
+
+  items.forEach(item => {
+      const chatName = item.querySelector('.collection-name').textContent;
+      const colonIndex = chatName.indexOf(':');
+      
+      if (colonIndex !== -1) {
+          const folder = chatName.substring(colonIndex + 1).split('.')[0]; // Get the part after ':' and before '.'
+          if (!categories[folder]) {
+              categories[folder] = [];
+          }
+          categories[folder].push(item.cloneNode(true));
+      } else {
+          categories['Uncategorized'].push(item.cloneNode(true));
+      }
   });
 
-  collectionItems.append(generalChatsDiv, otherChatsDiv);
-  document.getElementById('collectionItems').replaceWith(collectionItems);
-}
+  // Create category blocks and add chats
+  for (const [category, chats] of Object.entries(categories)) {
+      if (chats.length === 0) continue; // Skip empty categories
 
-function fixDialogData() {
-  populateHistorySelect().then(() => {
-    loadSelectedHistory();
-  });
+      const categoryBlock = document.createElement('div');
+      categoryBlock.className = 'category-block mb-3';
+      categoryBlock.innerHTML = `<h6 class="fw-bold">${category}</h6>`;
 
-  closePopupsAll();
-}
+      const categoryList = document.createElement('ul');
+      categoryList.className = 'list-group';
 
-function closePopupsAll() {
-  var popups = document.querySelectorAll('.block-popup');
-  popups.forEach(popup => {
-    popup.style.display = 'none';
-  });
+      chats.forEach(chat => {
+          categoryList.appendChild(chat);
+      });
 
-  var parameterContainer = document.getElementById('parameter-container');
-  parameterContainer.innerHTML = '';
+      categoryBlock.appendChild(categoryList);
+      collectionItems.appendChild(categoryBlock);
+  }
 }
 
 var myDefaultAllowList = bootstrap.Tooltip.Default.allowList;
@@ -1238,35 +1240,45 @@ function handleTextFileClick() {
   document.getElementById('textUpload').click();
 }
 
-document.addEventListener('DOMContentLoaded', (event) => {
-  const switchInput = document.getElementById('customSwitch');
-  const toastElement = document.getElementById('toggleToast');
-  const toast = new bootstrap.Toast(toastElement);
-
-  switchInput.addEventListener('change', () => {
-    toast.show();
-  });
-});
-
-async function checkMe() {
-  const response = await fetch('/flash-messages');
-  return response.json();
-}
-
 document.addEventListener('DOMContentLoaded', loadConfig);
 
-function importFlash(messages) {
-  const dropdownMenu = document.querySelector('.dropdown-menu.dropdown-menu-end.dropdown-list.animated--grow-in');
-  dropdownMenu.innerHTML = messages.map(message => `
-    <a class="dropdown-item d-flex align-items-center" href="#">
-      <div>
-        <span class="font-weight-bold">${message}</span>
-      </div>
-    </a>
-  `).join('');
+class NotificationManager {
+  constructor() {
+    this.dropdownMenu = document.querySelector('.dropdown-menu.dropdown-menu-end.dropdown-list.animated--grow-in');
+    this.messages = [];
+  }
+
+  add(message) {
+    this.messages.push(message);
+    this.render();
+  }
+
+  delete(message) {
+    this.messages = this.messages.filter(msg => msg !== message);
+    this.render();
+  }
+
+  clearAll() {
+    this.messages = [];
+    this.render();
+  }
+
+  render() {
+    this.dropdownMenu.innerHTML = this.messages.map(message => `
+      <a class="dropdown-item d-flex align-items-center" href="#">
+        <div>
+          <span class="font-weight-bold">${message}</span>
+        </div>
+      </a>
+    `).join('');
+  }
 }
 
-checkMe().then(importFlash).catch(console.error);
+// Create an instance of NotificationManager
+const notificationManagerInstance = new NotificationManager();
+
+// Call the add method
+notificationManagerInstance.add("Hello! Welcome to the chat room!");
 
 function updateMsgCount() {
   setTimeout(() => {
@@ -1307,16 +1319,6 @@ function deleteMessageFromHistory(message) {
   }
 }
 
-document.querySelectorAll('.creatorStudio-tabs').forEach(tab => {
-  tab.addEventListener('click', function () {
-      document.querySelectorAll('.tab-pane').forEach(pane => {
-          pane.classList.add('d-none');
-      });
-      const target = document.querySelector(this.getAttribute('data-bs-target'));
-      target.classList.remove('d-none');
-  });
-});
-
 // Function to adjust textarea height
 function adjustTextareaHeight(textarea) {
   textarea.style.height = 'auto';
@@ -1348,3 +1350,8 @@ document.addEventListener('DOMContentLoaded', initializeTextareas);
 
 // Also run it immediately in case the script is loaded after the DOM
 initializeTextareas();
+
+function resetEverything() {
+  localStorage.clear();
+  location.reload();
+}

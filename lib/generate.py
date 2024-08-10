@@ -5,6 +5,12 @@ from transformers import pipeline
 from llama_cpp import Llama
 from lib.history import ChatHistoryManager
 import requests
+from langchain_community.document_loaders import TextLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.vectorstores import Chroma
+from langchain_community.embeddings import GPT4AllEmbeddings
+from langchain.chains import RetrievalQA
+from langchain_community.llms import LlamaCpp
 
 class ChatGenerator:
     def __init__(self, config):
@@ -164,20 +170,13 @@ class ChatGenerator:
             return ''.join(response) if isinstance(response, (list, type((lambda: (yield))()))) else response
         return response
     
-    def processTextFile(self, text_file, question, temperature=0.6, max_new_tokens=128, context_window=2048):
-        from langchain_community.document_loaders import TextLoader
-        from langchain.text_splitter import RecursiveCharacterTextSplitter
-        from langchain_community.vectorstores import Chroma
-        from langchain_community.embeddings import GPT4AllEmbeddings
-        from langchain.chains import RetrievalQA
-        from langchain_community.llms import LlamaCpp
-
+    def processTextFile(text_file, question, temperature=0.8, max_new_tokens=128, context_window=256):
         # Load text file data
         loader = TextLoader(text_file)
         data = loader.load()
 
         # Split text into chunks
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=0)
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=200, chunk_overlap=0)
         docs = text_splitter.split_documents(data)
 
         # Generate embeddings locally using GPT4All
@@ -186,7 +185,7 @@ class ChatGenerator:
 
         # Load GPT4All model for inference  
         llm = LlamaCpp(
-            model_path='/Users/yuki/Documents/Github/yuna-ai/lib/models/yuna/yukiarimo/yuna-ai/yuna-ai-v2-q6_k.gguf',
+            model_path='/Users/yuki/Documents/Github/yuna-ai/lib/models/yuna/yuna-ai-v3-q6_k.gguf',
             temperature=temperature,
             max_new_tokens=max_new_tokens,
             context_window=context_window,

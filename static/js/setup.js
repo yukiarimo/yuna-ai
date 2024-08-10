@@ -28,7 +28,7 @@ function createFormGroup(id, value) {
   return `
     <div class="form-group" style="width: 100%;">
       <label for="${id}">${capitalize(id)}</label>
-      <textarea type="text" class="form-control" id="${id}" value="${value}"></textarea>
+      <textarea type="text" class="form-control" id="${id}">${value}</textarea>
     </div>
   `;
 }
@@ -92,7 +92,9 @@ async function checkConfigData() {
           port: server_port
         }
       } = config_data);
-      fixDialogData();
+      populateHistorySelect().then(() => {
+        loadSelectedHistory();
+      });
     }, 100);
   } else {
     try {
@@ -111,7 +113,6 @@ async function checkConfigData() {
     await delay(100);
     openConfigParams();
   }
-  closePopupsAll();
 }
 
 checkConfigData();
@@ -198,11 +199,11 @@ document.addEventListener("keydown", function (event) {
 
   // Check if Enter key is pressed
   if (event.key === "Enter") {
-    // Prevent default action for Enter to avoid submitting the form
-    event.preventDefault();
+    
     // Check if the message input is focused
     if (document.activeElement === document.getElementById('input_text')) {
       // Send the message
+      event.preventDefault();
       messageManagerInstance.sendMessage('')
     }
   }
@@ -229,29 +230,6 @@ var settingsView = {
 const tabs = document.querySelectorAll('.tab');
 // Get all content sections
 const sections = document.querySelectorAll('.section');
-
-// Function to remove active class from all tabs and hide all sections
-function resetActiveTabsAndHideSections() {
-  tabs.forEach(tab => {
-    tab.classList.remove('active');
-  });
-  sections.forEach(section => {
-    section.style.display = 'none';
-  });
-}
-
-// Function to initialize tabs functionality
-function initTabs() {
-  tabs.forEach((tab, index) => {
-    tab.addEventListener('click', () => {
-      resetActiveTabsAndHideSections();
-      // Add active class to the clicked tab
-      tab.classList.add('active');
-      // Display the corresponding section
-      sections[index].style.display = 'block';
-    });
-  });
-}
 
 if (window.matchMedia("(max-width: 428px)").matches) {
   document.getElementsByClassName('scroll-to-top')[0].style.display = 'none';

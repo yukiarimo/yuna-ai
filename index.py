@@ -1,8 +1,8 @@
 import shutil
-from flask import Flask, get_flashed_messages, request, jsonify, send_from_directory, redirect, url_for, flash
+from flask import Flask, request, jsonify, send_from_directory, redirect, url_for, make_response
 from flask_login import LoginManager, UserMixin, login_required, logout_user, login_user, current_user, login_manager
 from lib.generate import ChatGenerator, ChatHistoryManager
-from lib.router import handle_history_request, handle_image_request, handle_message_request, handle_audio_request, services, about, handle_search_request, handle_textfile_request
+from lib.router import handle_history_request, handle_image_request, handle_message_request, handle_audio_request, services, handle_search_request, handle_textfile_request
 from flask_cors import CORS
 import json
 import os
@@ -48,6 +48,13 @@ class YunaServer:
             response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
             response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
             return response
+    
+        def add_cache_headers(response):
+            # Don't cache if the response is an error
+            if response.status_code < 400:
+                # Cache for 5 minutes (300 seconds)
+                response.headers['Cache-Control'] = 'public, max-age=300'
+            return response
 
     @staticmethod
     def page_not_found(self):
@@ -92,9 +99,7 @@ class YunaServer:
         self.app.route('/yuna')(self.yuna_server)
         self.app.route('/yuna.html')(self.yuna_server)
         self.app.route('/services.html', methods=['GET'], endpoint='services')(lambda: services(self))
-        self.app.route('/about.html', methods=['GET'], endpoint='about')(lambda: about(self))
         self.app.route('/apple-touch-icon.png')(self.image_pwa)
-        self.app.route('/flash-messages')(self.flash_messages)
         self.app.route('/main', methods=['GET', 'POST'])(self.main)
         self.app.route('/history', methods=['POST'], endpoint='history')(lambda: handle_history_request(self.chat_history_manager))
         self.app.route('/message', methods=['POST'], endpoint='message')(lambda: handle_message_request(self.chat_generator, self.chat_history_manager))
@@ -129,11 +134,11 @@ class YunaServer:
             users = self.read_users()
             if action == 'register':
                 if username in users:
-                    flash('Username already exists')
+                    print('Username already exists')
                 else:
                     users[username] = password
                     self.write_users(users)
-                    flash('Registered successfully')
+                    print('Registered successfully')
                     os.makedirs(f'db/history/{username}', exist_ok=True)
             elif action == 'login':
                 if users.get(username) == password:
@@ -142,47 +147,43 @@ class YunaServer:
                     login_user(user)
                     return redirect(url_for('yuna_server'))
                 else:
-                    flash('Invalid username or password')
+                    print('Invalid username or password')
             elif action == 'change_password':
                 new_password = request.form['new_password']
                 if users.get(username) == password:
                     users[username] = new_password
                     self.write_users(users)
-                    flash('Password changed successfully')
+                    print('Password changed successfully')
                 else:
-                    flash('Invalid username or password')
+                    print('Invalid username or password')
             elif action == 'chane_username':
                 new_username = request.form['new_username']
                 if users.get(username) == password:
                     users[new_username] = password
                     del users[username]
                     self.write_users(users)
-                    flash('Username changed successfully')
+                    print('Username changed successfully')
                 else:
-                    flash('Invalid username or password')
+                    print('Invalid username or password')
             elif action == 'delete_account':
                 if users.get(username) == password:
                     del users[username]
                     self.write_users(users)
-                    flash('Account deleted successfully')
+                    print('Account deleted successfully')
                     logout_user()
                     shutil.rmtree(f'db/history/{username}')
                 else:
-                    flash('Invalid username or password')
+                    print('Invalid username or password')
 
         # return html from the file
         return send_from_directory('.', 'login.html')
 
     def render_index(self):
         return send_from_directory('.', 'index.html')
-
-    def flash_messages(self):
-        messages = get_flashed_messages()
-        return jsonify(messages)
     
     @login_required
     def yuna_server(self):        
-        flash(f'Hello, {current_user.get_id()}!')
+        print(f'Hello, {current_user.get_id()}!')
         return send_from_directory('.', 'yuna.html')
 
 yuna_server = YunaServer()

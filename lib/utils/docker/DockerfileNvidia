@@ -10,7 +10,7 @@ RUN pip install llama-cpp-python --extra-index-url https://abetlen.github.io/lla
 
 RUN pip3 install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu121
 
-RUN pip install --no-cache-dir -r docker/requirements-nvidia.txt
+RUN pip install --no-cache-dir -r lib/util/docker/requirements-nvidia.txt
 
 EXPOSE 4848
 

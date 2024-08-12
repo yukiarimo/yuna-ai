@@ -8,7 +8,7 @@ ADD . /app
 
 RUN pip3 install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cpu
 
-RUN pip install --no-cache-dir -r docker/requirements-cpu.txt
+RUN pip install --no-cache-dir -r lib/util/docker/requirements-cpu.txt
 
 EXPOSE 4848
 

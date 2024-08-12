@@ -145,7 +145,8 @@
                                         Search
                                     </a>
                                     <!-- Notifications -->
-                                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#notificationModal">
+                                    <a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                        data-bs-target="#notificationModal">
                                         <i class="fas fa-bell fa-sm fa-fw mr-2 text-gray-400"></i>
                                         Notifications
                                     </a>
@@ -520,7 +521,8 @@
                                                         <div class="col-12">
                                                             <div class="form-group">
                                                                 <h5 class="mb-3">Work Area</h5>
-                                                                <textarea class="form-control" id="naked-work-area"></textarea>
+                                                                <textarea class="form-control"
+                                                                    id="naked-work-area"></textarea>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -592,7 +594,8 @@
                                                     <div class="col-md-6">
                                                         <div class="form-group">
                                                             <h5 class="mb-3">Body Text</h5>
-                                                            <textarea class="form-control" id="body-text-article-container" rows="5"></textarea>
+                                                            <textarea class="form-control"
+                                                                id="body-text-article-container" rows="5"></textarea>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -606,7 +609,8 @@
                                                     <div class="col-12">
                                                         <div class="form-group">
                                                             <h5 class="mb-3">Result</h5>
-                                                            <textarea class="form-control" id="result-create-article" rows="5"></textarea>
+                                                            <textarea class="form-control" id="result-create-article"
+                                                                rows="5"></textarea>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -656,7 +660,7 @@
                             id="iconAudioRec"></i></button>
                     <button type="button" class="btn btn-secondary" onclick="drawArt();"><i
                             class="fas fa-pencil-alt"></i></button>
-                    <button type="button" class="btn btn-danger" onclick="closePopupsAll();"><i
+                    <button type="button" class="btn btn-danger" onclick="document.getElementById('videoCallModal').dispatchEvent(new Event('hidden.bs.modal'));"><i
                             class="fas fa-phone-slash"></i></button>
                 </div>
             </div>
@@ -727,11 +731,13 @@
                                             <h6>General</h6>
                                             <div class="form-check form-switch">
                                                 <input class="form-check-input" type="checkbox" id="updateEmojiHistory">
-                                                <label class="form-check-label" for="updateEmojiHistory">Keep call in the background</label>
+                                                <label class="form-check-label" for="updateEmojiHistory">Keep call in
+                                                    the background</label>
                                             </div>
                                             <div class="form-check form-switch">
                                                 <input class="form-check-input" type="checkbox" id="updateEmojiTones">
-                                                <label class="form-check-label" for="updateEmojiTones">Filter NSFW</label>
+                                                <label class="form-check-label" for="updateEmojiTones">Filter
+                                                    NSFW</label>
                                             </div>
                                         </div>
 
@@ -755,11 +761,13 @@
                                             </div>
                                             <div class="form-check form-switch">
                                                 <input class="form-check-input" type="checkbox" id="updateEmojiTones">
-                                                <label class="form-check-label" for="updateEmojiTones">Share Data Analytics</label>
+                                                <label class="form-check-label" for="updateEmojiTones">Share Data
+                                                    Analytics</label>
                                             </div>
 
                                             <div type="button" style="margin-top: 20px; width: 20%;">
-                                                <a href="#" onclick="resetEverything();" class="btn btn-secondary" style="width: 90%;">Reset</a>
+                                                <a href="#" onclick="resetEverything();" class="btn btn-secondary"
+                                                    style="width: 90%;">Reset</a>
                                             </div>
                                         </div>
                                     </div>
@@ -773,106 +781,106 @@
                                     <div class="list-group">
                                         <div class="list-group-item" style="background-color: transparent;">
                                             <h6>Account</h6>
-                                                <div class="card-body p-0">
-                                                    <div class="row">
-                                                        <div class="col-lg-6">
-                                                            <div class="p-5">
-                                                                <form method="post" class="user" action="/main">
-                                                                    <h2 class="text-center mb-4">
-                                                                        Change Password</h2>
-                                                                    <input type="hidden" name="action"
-                                                                        value="change_password">
-                                                                    <div class="mb-3">
-                                                                        <input class="form-control form-control-user"
-                                                                            type="password" name="current_password"
-                                                                            placeholder="Current Password" required>
-                                                                    </div>
-                                                                    <div class="mb-3">
-                                                                        <input class="form-control form-control-user"
-                                                                            type="password" name="new_password"
-                                                                            placeholder="New Password" required>
-                                                                    </div>
-                                                                    <div class="mb-3">
-                                                                        <input class="form-control form-control-user"
-                                                                            type="password" name="confirm_new_password"
-                                                                            placeholder="Confirm New Password" required>
-                                                                    </div>
-                                                                    <button class="btn btn-primary btn-user w-100"
-                                                                        type="submit">Change
-                                                                        Password</button>
-                                                                </form>
-                                                            </div>
+                                            <div class="card-body p-0">
+                                                <div class="row">
+                                                    <div class="col-lg-6">
+                                                        <div class="p-5">
+                                                            <form method="post" class="user" action="/main">
+                                                                <h2 class="text-center mb-4">
+                                                                    Change Password</h2>
+                                                                <input type="hidden" name="action"
+                                                                    value="change_password">
+                                                                <div class="mb-3">
+                                                                    <input class="form-control form-control-user"
+                                                                        type="password" name="current_password"
+                                                                        placeholder="Current Password" required>
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <input class="form-control form-control-user"
+                                                                        type="password" name="new_password"
+                                                                        placeholder="New Password" required>
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <input class="form-control form-control-user"
+                                                                        type="password" name="confirm_new_password"
+                                                                        placeholder="Confirm New Password" required>
+                                                                </div>
+                                                                <button class="btn btn-primary btn-user w-100"
+                                                                    type="submit">Change
+                                                                    Password</button>
+                                                            </form>
                                                         </div>
+                                                    </div>
 
-                                                        <div class="col-lg-6">
-                                                            <div class="p-5">
-                                                                <form method="post" class="user" action="/main">
-                                                                    <h2 class="text-center mb-4">
-                                                                        New User</h2>
-                                                                    <input type="hidden" name="action" value="register">
-                                                                    <div class="mb-3">
-                                                                        <input class="form-control form-control-user"
-                                                                            type="text" name="username"
-                                                                            placeholder="Username" required>
-                                                                    </div>
-                                                                    <div class="mb-3">
-                                                                        <input class="form-control form-control-user"
-                                                                            type="password" name="password"
-                                                                            placeholder="Password" required>
-                                                                    </div>
-                                                                    <button class="btn btn-primary btn-user w-100"
-                                                                        type="submit">Register</button>
-                                                                </form>
-                                                            </div>
+                                                    <div class="col-lg-6">
+                                                        <div class="p-5">
+                                                            <form method="post" class="user" action="/main">
+                                                                <h2 class="text-center mb-4">
+                                                                    New User</h2>
+                                                                <input type="hidden" name="action" value="register">
+                                                                <div class="mb-3">
+                                                                    <input class="form-control form-control-user"
+                                                                        type="text" name="username"
+                                                                        placeholder="Username" required>
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <input class="form-control form-control-user"
+                                                                        type="password" name="password"
+                                                                        placeholder="Password" required>
+                                                                </div>
+                                                                <button class="btn btn-primary btn-user w-100"
+                                                                    type="submit">Register</button>
+                                                            </form>
                                                         </div>
+                                                    </div>
 
-                                                        <div class="col-lg-6">
-                                                            <div class="p-5">
-                                                                <form method="post" class="user" action="/main">
-                                                                    <h2 class="text-center mb-4">
-                                                                        Login</h2>
-                                                                    <input type="hidden" name="action" value="login">
-                                                                    <div class="mb-3">
-                                                                        <input class="form-control form-control-user"
-                                                                            type="text" name="username"
-                                                                            placeholder="Username" required>
-                                                                    </div>
-                                                                    <div class="mb-3">
-                                                                        <input class="form-control form-control-user"
-                                                                            type="password" name="password"
-                                                                            placeholder="Password" required>
-                                                                    </div>
-                                                                    <button class="btn btn-primary btn-user w-100"
-                                                                        type="submit">Login</button>
-                                                                </form>
-                                                            </div>
+                                                    <div class="col-lg-6">
+                                                        <div class="p-5">
+                                                            <form method="post" class="user" action="/main">
+                                                                <h2 class="text-center mb-4">
+                                                                    Login</h2>
+                                                                <input type="hidden" name="action" value="login">
+                                                                <div class="mb-3">
+                                                                    <input class="form-control form-control-user"
+                                                                        type="text" name="username"
+                                                                        placeholder="Username" required>
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <input class="form-control form-control-user"
+                                                                        type="password" name="password"
+                                                                        placeholder="Password" required>
+                                                                </div>
+                                                                <button class="btn btn-primary btn-user w-100"
+                                                                    type="submit">Login</button>
+                                                            </form>
                                                         </div>
+                                                    </div>
 
-                                                        <div class="col-lg-6">
-                                                            <div class="p-5">
-                                                                <form method="post" class="user" action="/main">
-                                                                    <h2 class="text-center mb-4">
-                                                                        Delete Account</h2>
-                                                                    <input type="hidden" name="action"
-                                                                        value="delete_account">
-                                                                    <div class="mb-3">
-                                                                        <input class="form-control form-control-user"
-                                                                            type="text" name="username"
-                                                                            placeholder="Username" required>
-                                                                    </div>
-                                                                    <div class="mb-3">
-                                                                        <input class="form-control form-control-user"
-                                                                            type="password" name="password"
-                                                                            placeholder="Password" required>
-                                                                    </div>
-                                                                    <button class="btn btn-primary btn-user w-100"
-                                                                        type="submit">Delete
-                                                                        Account</button>
-                                                                </form>
-                                                            </div>
+                                                    <div class="col-lg-6">
+                                                        <div class="p-5">
+                                                            <form method="post" class="user" action="/main">
+                                                                <h2 class="text-center mb-4">
+                                                                    Delete Account</h2>
+                                                                <input type="hidden" name="action"
+                                                                    value="delete_account">
+                                                                <div class="mb-3">
+                                                                    <input class="form-control form-control-user"
+                                                                        type="text" name="username"
+                                                                        placeholder="Username" required>
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <input class="form-control form-control-user"
+                                                                        type="password" name="password"
+                                                                        placeholder="Password" required>
+                                                                </div>
+                                                                <button class="btn btn-primary btn-user w-100"
+                                                                    type="submit">Delete
+                                                                    Account</button>
+                                                            </form>
                                                         </div>
                                                     </div>
                                                 </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -941,20 +949,11 @@
                 <div class="modal-body">
                     <div class="dropdown-menu dropdown-menu-end dropdown-list animated--grow-in show"
                         style="position: static; transform: none;">
-                        <!-- Notification items -->
                         <a class="dropdown-item d-flex align-items-center" href="#">
-                            <div class="mr-3">
-                                <div class="icon-circle bg-primary">
-                                    <!-- Icon -->
-                                </div>
-                            </div>
                             <div>
-                                <!-- Notification content -->
-                                <div class="small text-gray-500">December 12, 2021</div>
-                                <span class="font-weight-bold">A new monthly report is ready to download!</span>
+                                <span class="font-weight-bold">Hello! Welcome to the chat room!</span>
                             </div>
                         </a>
-                        <!-- More notification items -->
                     </div>
                 </div>
                 <div class="modal-footer">

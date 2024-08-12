@@ -1,33 +1,29 @@
-import json
 import os
-from diffusers import StableDiffusionPipeline
-from datetime import datetime
 from llama_cpp import Llama
 from llama_cpp.llama_chat_format import MoondreamChatHandler
 from lib.audio import speak_text
+from lib.generate import get_config
 
-if os.path.exists("static/config.json"):
-    with open("static/config.json", 'r') as file:
-        config = json.load(file)
+config = get_config()
 
-agi_model_dir = config["server"]["agi_model_dir"] + "vision/"
-model_id = f"{agi_model_dir}yuna-ai-miru-v0.gguf"
-model_id_eyes = f"{agi_model_dir}yuna-ai-miru-eye-v0.gguf"
-
-if config["ai"]["vision"] == True:
-    chat_handler = MoondreamChatHandler(clip_model_path=model_id_eyes)
-    llm = Llama(
-        model_path=model_id,
-        chat_handler=chat_handler,
-        n_ctx=4096,
-        seed=-1,
-        n_batch=512,
-        n_gpu_layers=-1,
-        verbose=False,
-    )
+llm = Llama(
+    model_path="lib/models/agi/miru/" + config["server"]["miru_default_model"],
+    chat_handler=MoondreamChatHandler(clip_model_path="lib/models/agi/miru/" + config["server"]["eyes_default_model"]),
+    n_ctx=4096,
+    seed=config["ai"]["seed"],
+    n_batch=config["ai"]["batch_size"],
+    n_gpu_layers=config["ai"]["gpu_layers"],
+    n_threads=config["ai"]["threads"],
+    use_mlock=config["ai"]["use_mlock"],
+    flash_attn=config["ai"]["flash_attn"],
+    verbose=False,
+) if config["ai"]["miru"] == True else ""
 
 if config["ai"]["art"] == True:
-    art = StableDiffusionPipeline.from_single_file(f'{agi_model_dir}art/{config["server"]["art_default_model"]}', safety_checker=None, load_safety_checker=None, guidance_scale=7.5, noise_scale=0.05, device=config["server"]["device"])
+    from diffusers import StableDiffusionPipeline
+    from datetime import datetime
+
+    art = StableDiffusionPipeline.from_single_file(f'lib/models/agi/art/{config["server"]["art_default_model"]}', safety_checker=None, load_safety_checker=None, guidance_scale=7.5, noise_scale=0.05, device=config["server"]["device"])
     art.to(config["server"]["device"])
 
 def create_image(prompt):
@@ -40,7 +36,6 @@ def create_image(prompt):
     # Get the current time in milliseconds
     current_time_milliseconds = int((datetime.utcnow() - datetime(1970, 1, 1)).total_seconds() * 1000)
     image_name = str(current_time_milliseconds) + '-art' + '.png'
-
     image.save(f"static/img/art/{image_name}")
 
     return image_name

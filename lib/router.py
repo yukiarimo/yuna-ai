@@ -9,12 +9,6 @@ from lib.search import get_html, search_web
 from lib.audio import transcribe_audio, speak_text
 from pydub import AudioSegment
 
-script_dir = os.path.dirname(os.path.abspath(__file__))
-config_path = os.path.join(script_dir, '..', 'static', 'config.json')
-
-with open(config_path) as config_file:
-    config = json.load(config_file)
-
 @login_required
 def handle_history_request(chat_history_manager):
     data = request.get_json()
@@ -54,7 +48,7 @@ def read_users():
     return {'admin': 'admin'}
 
 @login_required
-def handle_message_request(chat_generator, chat_history_manager, chat_id=None, speech=None, text=None, template=None):
+def handle_message_request(chat_generator, chat_history_manager, config):
     data = request.get_json()
     chat_id = data.get('chat')
     speech = data.get('speech')
@@ -118,17 +112,10 @@ def check_audio_file(file_path):
 
 @login_required
 def handle_audio_request(self):
-    print("Handling audio request...")
     task = request.form.get('task')
     text = request.form.get('text')
     result = ""
 
-    print(f"Task: {task}")
-    print(f"Text: {text}")
-    print(f"Request files: {request.files}")
-    print(f"Request form: {request.form}")
-    print(f"Request data: {request.data}")
-    
     if task == 'transcribe':
         if 'audio' not in request.files:
             print("No audio file in request")
@@ -139,23 +126,15 @@ def handle_audio_request(self):
         audio_file.save(save_dir_audio)
 
         # Example usage
-        if check_audio_file('static/audio/audio.wav'):
-            print("Audio file is valid")
-        else:
-            print("Audio file is corrupted")
+        if not check_audio_file('static/audio/audio.wav'): print("Audio file is corrupted")
             
         result = transcribe_audio(save_dir_audio)
         return jsonify({'text': result})
-
-    elif task == 'tts':
-        print("Running TTS...")
-        result = speak_text(text)
-
+    elif task == 'tts': print(speak_text(text))
     return jsonify({'response': result})
 
-
 @login_required
-def handle_image_request(chat_history_manager, self):
+def handle_image_request(chat_history_manager, config, self):
     data = request.get_json()
     chat_id = data.get('chat')
     useHistory = data.get('useHistory', True)
@@ -177,8 +156,8 @@ def handle_image_request(chat_history_manager, self):
         if useHistory is not False:
                 # Save chat history after streaming response
                 chat_history = chat_history_manager.load_chat_history(list({current_user.get_id()})[0], chat_id)
-                chat_history.append({"name": self.config['ai']['names'][0], "message": f"{data.get('message')}<img src='/static/img/call/{current_time_milliseconds}.png' class='image-message'>"})
-                chat_history.append({"name": self.config['ai']['names'][1], "message": image_data[0]})
+                chat_history.append({"name": config['ai']['names'][0], "message": f"{data.get('message')}<img src='/static/img/call/{current_time_milliseconds}.png' class='image-message'>"})
+                chat_history.append({"name": config['ai']['names'][1], "message": image_data[0]})
 
                 if speech == True:
                     speak_text(image_data[0])

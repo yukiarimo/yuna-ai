@@ -2,12 +2,20 @@ import json
 import re
 from flask_login import current_user
 from llama_cpp import Llama
+
+def get_config(config=None):
+    if config is None:
+        with open('static/config.json', 'r') as config_file:
+            return json.load(config_file)
+    else:
+        with open('static/config', 'w') as config_file:
+            json.dump(config, config_file, indent=4)
+
 from lib.history import ChatHistoryManager
 import requests
 
 # load config.json
-with open('config.json') as f:
-    config_agi = json.load(f)
+config_agi = get_config()
 
 if config_agi["ai"]["agi"] == True:
     from langchain_community.document_loaders import TextLoader
@@ -21,7 +29,7 @@ class ChatGenerator:
     def __init__(self, config):
         self.config = config
         self.model = Llama(
-            model_path=config["server"]["yuna_model_dir"] + config["server"]["yuna_default_model"],
+            model_path="lib/models/yuna/" + config["server"]["yuna_default_model"],
             n_ctx=config["ai"]["context_length"],
             seed=config["ai"]["seed"],
             n_batch=config["ai"]["batch_size"],
@@ -165,7 +173,7 @@ class ChatGenerator:
             return ''.join(response) if isinstance(response, (list, type((lambda: (yield))()))) else response
         return response
     
-    def processTextFile(text_file, question, temperature=0.8, max_new_tokens=128, context_window=256):
+    def processTextFile(self, text_file, question, temperature=0.8, max_new_tokens=128, context_window=256):
         # Load text file data
         loader = TextLoader(text_file)
         data = loader.load()
@@ -180,7 +188,7 @@ class ChatGenerator:
 
         # Load GPT4All model for inference  
         llm = LlamaCpp(
-            model_path='/Users/yuki/Documents/Github/yuna-ai/lib/models/yuna/yuna-ai-v3-q6_k.gguf',
+            model_path="lib/models/yuna/" + self.config["server"]["yuna_default_model"],
             temperature=temperature,
             max_new_tokens=max_new_tokens,
             context_window=context_window,

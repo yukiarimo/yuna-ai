@@ -18,10 +18,7 @@ var activeElement = null;
 let isStreamingChatModeEnabled = false;
 
 // Function to handle the toggle switch change
-document.getElementById('streamingChatMode').addEventListener('change', function() {
-    isStreamingChatModeEnabled = this.checked;
-    console.log('Streaming Chat Mode is ' + (isStreamingChatModeEnabled ? 'enabled' : 'disabled'));
-});
+document.querySelector('#streamingChatMode').onchange = e => isStreamingChatModeEnabled = e.target.checked;
 
 const buttonAudioRec = document.querySelector('#buttonAudioRec');
 const iconAudioRec = buttonAudioRec.querySelector('#iconAudioRec');
@@ -209,16 +206,6 @@ class messageManager {
         const decoder = new TextDecoder();
         const serverEndpoint = `${server_url + server_port}${url}`;
         const headers = { 'Content-Type': 'application/json' };
-        console.log({
-          chat: selectedFilename,
-          text: messageContent,
-          useHistory: kanojo.useHistory,
-          template: (typeof template !== 'undefined') ? template : (this.inputText.value ? kanojo.buildKanojo() : null),
-          speech: isYunaListening,
-          yunaConfig: config_data,
-          stream
-      });
-
         const body = JSON.stringify({
             chat: selectedFilename,
             text: messageContent,
@@ -228,7 +215,6 @@ class messageManager {
             yunaConfig: config_data,
             stream
         });
-
         this.inputText.value = '';
 
         try {
@@ -260,7 +246,6 @@ class messageManager {
                 }
 
                 this.removeTypingBubble();
-                console.log('Final result:', result);
             } else {
                 const data = await response.json();
 
@@ -669,6 +654,8 @@ function initializeVideoStream() {
   var videoStream = null; // To hold the stream globally
   var facingMode = "user"; // Default facing mode
 
+  localVideo.style.transform = "scaleX(-1)";
+
   // Function to start or restart the video stream with the given facingMode
   function startVideo() {
     // First, stop any existing video stream
@@ -767,20 +754,23 @@ async function captureImage() {
   var localVideo = document.getElementById('localVideo');
   var captureCanvas = document.getElementById('capture-canvas');
   var captureContext = captureCanvas.getContext('2d');
-  messageContainer = document.getElementById('message-container');
+  var messageContainer = document.getElementById('message-container');
 
   // Set the canvas dimensions to match the video element
   captureCanvas.width = localVideo.videoWidth;
   captureCanvas.height = localVideo.videoHeight;
 
-  // Draw the current frame from the video onto the canvas
-  captureContext.drawImage(localVideo, 0, 0, captureCanvas.width, captureCanvas.height);
+  // Apply mirroring transformation to the canvas context
+  captureContext.save(); // Save the current state
+  captureContext.scale(-1, 1); // Flip horizontally
+  captureContext.drawImage(localVideo, -captureCanvas.width, 0, captureCanvas.width, captureCanvas.height); // Draw the video frame
+  captureContext.restore(); // Restore the original state
 
-  captureCanvas = document.getElementById('capture-canvas');
-  imageDataURL = captureCanvas.toDataURL('image/png'); // Convert canvas to base64 data URL
+  var imageDataURL = captureCanvas.toDataURL('image/png'); // Convert canvas to base64 data URL
 
   let messageForImage = '';
   var imageName = new Date().getTime().toString();
+
 
   if (isYunaListening) {
     // Start recording
@@ -797,19 +787,8 @@ async function captureImage() {
 async function captureImageViaFile(image=null, imagePrompt=null) {
   var imageUpload = '';
   var file = '';
-  if (image && !imagePrompt) {
-    imageUpload = document.getElementById('imageUpload');
-    file = imageUpload.files[0];
-    console.log('here');
-  } else if (imagePrompt && image) {
-    file = image;
-    console.log('here2');
-  }
-
-  if (!file) {
-    alert('No file selected.');
-    return;
-  }
+  file = image && !imagePrompt ? document.getElementById('imageUpload').files[0] : imagePrompt && image ? image : null;
+  if (!file) return alert('No file selected.');
 
   const reader = new FileReader();
   reader.onloadend = async function () {
@@ -844,14 +823,38 @@ function captureAudioViaFile() {
   formData.append('audio', file);
   formData.append('task', 'transcribe');
 
+  const userQuestion = prompt("What's your question?");
+
   fetch('/audio', {
     method: 'POST',
     body: formData
   })
   .then(response => response.json())
   .then(data => {
-    console.log('The text in video:', data.text);
-  })
+    const makeRAG = confirm("Do you want to make a RAG?");
+    if (!makeRAG) {
+      var ragMessage = `Context Audio: "${data.text}"\nQuestion: ${userQuestion}`
+      document.getElementById('input_text').value = ragMessage;
+      messageManagerInstance.sendMessage(ragMessage);
+    } else {
+      const textBlob = new Blob([data.text], { type: 'text/plain' });
+      const questionFormData = new FormData();
+      questionFormData.append('text', textBlob, 'content.txt');
+      questionFormData.append('query', userQuestion);
+
+      fetch('/analyze', {
+        method: 'POST',
+        body: questionFormData
+      })
+      .then(response => response.json())
+      .then(result => {
+        console.log(result);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+    }
+  });
 
   reader.readAsDataURL(file);
 }
@@ -896,12 +899,8 @@ function captureVideoViaFile() {
     captureFrame();
   });
 
-  console.log('Frames captured:', videoFrames);
-  console.log('first frame:', videoFrames[0]);
-
   // capture first frame using captureImageViaFile(image) function
   captureRessult = captureImageViaFile(videoFrames[0], 'Describe the image');
-  console.log('Capture result:', captureRessult);
 
   const formData = new FormData();
   formData.append('audio', file);
@@ -1119,8 +1118,6 @@ function populateHistorySelect() {
                     console.error('An error occurred:', error);
                   });
                 break;
-              default:
-                console.log(`Unknown action: ${action} for file: ${fileName}`);
             }
           });
         });
@@ -1148,7 +1145,6 @@ function loadSelectedHistory(selectedFilename) {
     body: JSON.stringify({ task: 'load', chat: selectedFilename })
   })
   .then(response => {
-    console.log();
     if (!response.ok) throw new Error('Error loading selected history file.');
     return response.json();
   })
@@ -1310,9 +1306,7 @@ function deleteMessageFromHistory(message) {
         }
         return response.json();
       })
-      .then(responseData => {
-        console.log(responseData);
-      })
+      .then(responseData => { alert(responseData); location.reload(); })
       .catch(error => {
         console.error('An error occurred:', error);
       });

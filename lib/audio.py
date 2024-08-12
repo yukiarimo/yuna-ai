@@ -5,7 +5,7 @@ import torch
 import torchaudio
 from pydub import AudioSegment
 
-yunaListen = whisper.load_model(name="tiny.en", device="cpu")
+yunaListen = whisper.load_model(name="tiny.en", device="cpu", in_memory=True)
 XTTS_MODEL = None
 
 with open('static/config.json', 'r') as config_file:
@@ -29,13 +29,13 @@ if config['server']['yuna_audio_mode'] == "native":
 
     # Load models and processor
     vocoder = SpeechT5HifiGan.from_pretrained("microsoft/speecht5_hifigan")
-    processor = SpeechT5Processor.from_pretrained("/Users/yuki/Documents/Github/yuna-ai/lib/models/agi/checkpoint-1800")
-    model = SpeechT5ForTextToSpeech.from_pretrained("/Users/yuki/Documents/Github/yuna-ai/lib/models/agi/checkpoint-1800")
+    processor = SpeechT5Processor.from_pretrained("lib/models/agi/voice/" + config['server']['voice_default_model'])
+    model = SpeechT5ForTextToSpeech.from_pretrained("lib/models/agi/voice/" + config['server']['voice_default_model'])
 
     speaker_model = EncoderClassifier.from_hparams(
         source="speechbrain/spkrec-xvect-voxceleb",
         run_opts={"device": "cpu"},
-        savedir=os.path.join("./speechbrain-leb", "speechbrain/spkrec-xvect-voxceleb")
+        savedir="lib/models/agi/voice/embeddings/"
     )
 
     def create_speaker_embedding(waveform):
@@ -66,7 +66,7 @@ if config['server']['yuna_audio_mode'] == "native":
     speaker_embeddings = torch.tensor(speaker_embeddings).unsqueeze(0).to(torch.float32)
 
 def transcribe_audio(audio_file):
-    result = yunaListen.transcribe(audio_file)
+    result = yunaListen.transcribe(audio=audio_file, verbose=None)
     return result['text']
 
 def load_model(xtts_checkpoint, xtts_config, xtts_vocab):

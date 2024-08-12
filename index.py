@@ -1,7 +1,7 @@
 import shutil
 from flask import Flask, request, jsonify, send_from_directory, redirect, url_for, make_response
 from flask_login import LoginManager, UserMixin, login_required, logout_user, login_user, current_user, login_manager
-from lib.generate import ChatGenerator, ChatHistoryManager
+from lib.generate import ChatGenerator, ChatHistoryManager, get_config
 from lib.router import handle_history_request, handle_image_request, handle_message_request, handle_audio_request, services, handle_search_request, handle_textfile_request
 from flask_cors import CORS
 import json
@@ -9,8 +9,7 @@ import os
 from itsdangerous import URLSafeTimedSerializer
 from flask_compress import Compress
 
-with open('static/config.json', 'r') as config_file:
-    config = json.load(config_file)
+config =  get_config()
 secret_key = config['security']['secret_key']
 serializer = URLSafeTimedSerializer(secret_key)
 login_manager = LoginManager()
@@ -37,9 +36,8 @@ class YunaServer:
         login_manager.user_loader(self.user_loader)
         CORS(self.app, resources={r"/*": {"origins": "*"}})
         self.configure_routes()
-        self.load_config()
-        self.chat_generator = ChatGenerator(self.config)
-        self.chat_history_manager = ChatHistoryManager(self.config)
+        self.chat_generator = ChatGenerator(config)
+        self.chat_history_manager = ChatHistoryManager(config)
         self.app.errorhandler(404)(self.page_not_found)
 
         @self.app.after_request
@@ -87,11 +85,6 @@ class YunaServer:
     def write_users(self, users):
         with open('db/admin/users.json', 'w') as f:
             json.dump(users, f)
-            
-    def load_config(self):
-        if os.path.exists("static/config.json"):
-            with open("static/config.json", 'r') as file:
-                self.config = json.load(file)
 
     def configure_routes(self):
         self.app.route('/')(self.render_index)
@@ -102,8 +95,8 @@ class YunaServer:
         self.app.route('/apple-touch-icon.png')(self.image_pwa)
         self.app.route('/main', methods=['GET', 'POST'])(self.main)
         self.app.route('/history', methods=['POST'], endpoint='history')(lambda: handle_history_request(self.chat_history_manager))
-        self.app.route('/message', methods=['POST'], endpoint='message')(lambda: handle_message_request(self.chat_generator, self.chat_history_manager))
-        self.app.route('/image', methods=['POST'], endpoint='image')(lambda: handle_image_request(self.chat_history_manager, self))
+        self.app.route('/message', methods=['POST'], endpoint='message')(lambda: handle_message_request(self.chat_generator, self.chat_history_manager, config))
+        self.app.route('/image', methods=['POST'], endpoint='image')(lambda: handle_image_request(self.chat_history_manager, config, self))
         self.app.route('/audio', methods=['GET', 'POST'], endpoint='audio')(lambda: handle_audio_request(self))
         self.app.route('/analyze', methods=['POST'], endpoint='textfile')(lambda: handle_textfile_request(self.chat_generator, self))
         self.app.route('/logout', methods=['GET'])(self.logout)
@@ -190,4 +183,4 @@ yuna_server = YunaServer()
 app = yuna_server.app
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=4848 if yuna_server.config["server"]["port"] == "" else yuna_server.config["server"]["port"], ssl_context=('cert.pem', 'key.pem'))
+    app.run(host='0.0.0.0', port=4848 if config["server"]["port"] == "" else config["server"]["port"], ssl_context=('cert.pem', 'key.pem'))

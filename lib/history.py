@@ -1,16 +1,15 @@
 import json
 import os
 from cryptography.fernet import Fernet, InvalidToken
-from lib.audio import speak_text
+from lib.generate import get_config
 
 class ChatHistoryManager:
     def __init__(self, config):
         self.config = config
-        self.base_history_path = "db/history"  # Base path for histories
 
     def _user_folder_path(self, username):
         """Constructs the path to the user's folder."""
-        return os.path.join(self.base_history_path, username)
+        return os.path.join("db/history", username)
 
     def _ensure_user_folder_exists(self, username):
         """Ensures that the user-specific folder exists."""
@@ -23,8 +22,6 @@ class ChatHistoryManager:
         history_starting_template = [
             {"name": self.config['ai']['names'][0], "message": "Hi"}, 
             {"name": self.config['ai']['names'][1], "message": "Hello"},
-            {"name": self.config['ai']['names'][0], "message": "How are you doing?"}, 
-            {"name": self.config['ai']['names'][1], "message": "I'm doing great! Thanks for asking!"}
         ]
         chat_history_json = json.dumps(history_starting_template)
         encrypted_chat_history = self.encrypt_data(chat_history_json)
@@ -50,6 +47,7 @@ class ChatHistoryManager:
         except FileNotFoundError:
             # The file does not exist, create a new chat history file
             self.create_chat_history_file(username, chat_id)
+            print(f"Chat history file for {chat_id} does not exist, creating a new one for {username}")
             return []
 
     def delete_chat_history_file(self, username, chat_id):
@@ -75,9 +73,6 @@ class ChatHistoryManager:
         history_files.sort(key=lambda x: x.lower())
         return history_files
 
-    def generate_speech(self, response):
-        speak_text(response, "/Users/yuki/Documents/AI/yuna-data/yuna-tamer-prepared.wav", "audio.aiff", self.config['server']['yuna_audio_mode'])
-
     def delete_message(self, username, chat_id, target_message):
         chat_history = self.load_chat_history(username, chat_id)
         
@@ -101,13 +96,9 @@ class ChatHistoryManager:
         if 'encryption_key' not in self.config['security'] or not self.config['security']['encryption_key']:
             new_key = Fernet.generate_key()
             self.config['security']['encryption_key'] = new_key.decode()
-            self.save_config()
+            get_config(self.config)
         key = self.config['security']['encryption_key']
         return key.encode()
-
-    def save_config(self):
-        with open('static/config', 'w') as config_file:
-            json.dump(self.config, config_file, indent=4)
 
     def encrypt_data(self, data):
         key = self.get_encryption_key()

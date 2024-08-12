@@ -28,7 +28,7 @@ function createFormGroup(id, value) {
   return `
     <div class="form-group" style="width: 100%;">
       <label for="${id}">${capitalize(id)}</label>
-      <textarea type="text" class="form-control" id="${id}" value="${value}"></textarea>
+      <textarea type="text" class="form-control" id="${id}">${value}</textarea>
     </div>
   `;
 }
@@ -92,7 +92,9 @@ async function checkConfigData() {
           port: server_port
         }
       } = config_data);
-      fixDialogData();
+      populateHistorySelect().then(() => {
+        loadSelectedHistory();
+      });
     }, 100);
   } else {
     try {
@@ -111,7 +113,6 @@ async function checkConfigData() {
     await delay(100);
     openConfigParams();
   }
-  closePopupsAll();
 }
 
 checkConfigData();
@@ -123,68 +124,74 @@ document.addEventListener("keydown", function (event) {
   if (event.key === "Tab") {
     event.preventDefault();
     toggleSidebar();
-    kawaiAutoScale()
+    kawaiAutoScale();
     return;
   }
 
   var inputs = Array.from(document.getElementsByTagName('input'));
   var textareas = Array.from(document.getElementsByTagName('textarea'));
 
-  // Check if Shift key is pressed along with the key and is not in the input field
-  if (!inputs.includes(document.activeElement) && !textareas.includes(document.activeElement) && event.shiftKey) {
+  // Check if Command key is pressed along with the key and is not in the input field
+  if (!inputs.includes(document.activeElement) && !textareas.includes(document.activeElement) && event.metaKey) {
+    var navSidebar = document.getElementsByClassName('side-link');
     switch (event.key) {
-      case "H":
+      case "1":
         event.preventDefault(); // Prevent any default action
-        var navSidebar = document.getElementsByClassName('side-link');
-
         for (let j = 0; j < navSidebar.length; j++) {
           navSidebar[j].classList.remove('active');
         }
         navSidebar[0].classList.add('active');
-        OpenTab('1')
-
+        OpenTab('1');
         break;
-      case "L":
+      case "2":
         event.preventDefault(); // Prevent any default action
-        var navSidebar = document.getElementsByClassName('side-link');
-
         for (let j = 0; j < navSidebar.length; j++) {
           navSidebar[j].classList.remove('active');
         }
         navSidebar[1].classList.add('active');
-        OpenTab('2')
+        OpenTab('2');
         break;
-      case "E":
+      case "3":
         event.preventDefault(); // Prevent any default action
-        var navSidebar = document.getElementsByClassName('side-link');
-
         for (let j = 0; j < navSidebar.length; j++) {
           navSidebar[j].classList.remove('active');
         }
         navSidebar[2].classList.add('active');
-        OpenTab('3')
+        OpenTab('3');
         break;
-      case "P":
+      case "4":
         event.preventDefault(); // Prevent any default action
-        var navSidebar = document.getElementsByClassName('side-link');
-
         for (let j = 0; j < navSidebar.length; j++) {
           navSidebar[j].classList.remove('active');
         }
         navSidebar[3].classList.add('active');
-        OpenTab('4')
+        OpenTab('4');
         break;
-      case "S":
+      case "5":
         event.preventDefault(); // Prevent any default action
-        var navSidebar = document.getElementsByClassName('side-link');
-
         for (let j = 0; j < navSidebar.length; j++) {
           navSidebar[j].classList.remove('active');
         }
         navSidebar[4].classList.add('active');
+        OpenTab('5');
+        break;
+      case "6":
+        event.preventDefault(); // Prevent any default action
+        for (let j = 0; j < navSidebar.length; j++) {
+          navSidebar[j].classList.remove('active');
+        }
+        navSidebar[5].classList.add('active');
         settingsView.show();
         break;
-      case "C":
+      case "7":
+        event.preventDefault(); // Prevent any default action
+        for (let j = 0; j < navSidebar.length; j++) {
+          navSidebar[j].classList.remove('active');
+        }
+        navSidebar[6].classList.add('active');
+        window.open('https://www.patreon.com/YukiArimo', '_blank');
+        break;
+      case "Y":
         event.preventDefault(); // Prevent any default action
         // check if callYuna is open
         if (document.getElementById('videoCallModal').classList.contains('show')) {
@@ -198,15 +205,14 @@ document.addEventListener("keydown", function (event) {
 
   // Check if Enter key is pressed
   if (event.key === "Enter") {
-    // Prevent default action for Enter to avoid submitting the form
-    event.preventDefault();
     // Check if the message input is focused
     if (document.activeElement === document.getElementById('input_text')) {
       // Send the message
-      messageManagerInstance.sendMessage('')
+      event.preventDefault();
+      messageManagerInstance.sendMessage('');
     }
   }
-})
+});
 
 var callYuna = {
   myModal: new bootstrap.Modal(document.getElementById('videoCallModal'), {}),
@@ -229,29 +235,6 @@ var settingsView = {
 const tabs = document.querySelectorAll('.tab');
 // Get all content sections
 const sections = document.querySelectorAll('.section');
-
-// Function to remove active class from all tabs and hide all sections
-function resetActiveTabsAndHideSections() {
-  tabs.forEach(tab => {
-    tab.classList.remove('active');
-  });
-  sections.forEach(section => {
-    section.style.display = 'none';
-  });
-}
-
-// Function to initialize tabs functionality
-function initTabs() {
-  tabs.forEach((tab, index) => {
-    tab.addEventListener('click', () => {
-      resetActiveTabsAndHideSections();
-      // Add active class to the clicked tab
-      tab.classList.add('active');
-      // Display the corresponding section
-      sections[index].style.display = 'block';
-    });
-  });
-}
 
 if (window.matchMedia("(max-width: 428px)").matches) {
   document.getElementsByClassName('scroll-to-top')[0].style.display = 'none';

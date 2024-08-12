@@ -1,5 +1,7 @@
 import base64
 import re
+import json
+import os
 from flask import jsonify, request, send_from_directory, Response
 from flask_login import current_user, login_required
 from lib.vision import capture_image, create_image
@@ -46,7 +48,7 @@ def read_users():
     return {'admin': 'admin'}
 
 @login_required
-def handle_message_request(chat_generator, chat_history_manager, chat_id=None, speech=None, text=None, template=None):
+def handle_message_request(chat_generator, chat_history_manager, config):
     data = request.get_json()
     chat_id = data.get('chat')
     speech = data.get('speech')
@@ -76,7 +78,7 @@ def handle_message_request(chat_generator, chat_history_manager, chat_id=None, s
             if template is not None and useHistory is not False:
                 # Save chat history after streaming response
                 chat_history = chat_history_manager.load_chat_history(user_id, chat_id)
-                chat_history.append({"name": "Yuki", "message": text})
+                chat_history.append({"name": config['ai']['names'][0], "message": text})
                 chat_history.append({"name": "Yuna", "message": response_text})
                 chat_history_manager.save_chat_history(chat_history, user_id, chat_id)
 
@@ -88,12 +90,12 @@ def handle_message_request(chat_generator, chat_history_manager, chat_id=None, s
         if template is not None and useHistory is not False:
             # Save chat history after non-streaming response
             chat_history = chat_history_manager.load_chat_history(user_id, chat_id)
-            chat_history.append({"name": "Yuki", "message": text})
+            chat_history.append({"name": config['ai']['names'][0], "message": text})
             chat_history.append({"name": "Yuna", "message": response})
             chat_history_manager.save_chat_history(chat_history, user_id, chat_id)
 
             if speech == True:
-                chat_history_manager.generate_speech(response)
+                speak_text(response)
         
         return jsonify({'response': response})
 
@@ -110,17 +112,10 @@ def check_audio_file(file_path):
 
 @login_required
 def handle_audio_request(self):
-    print("Handling audio request...")
     task = request.form.get('task')
     text = request.form.get('text')
     result = ""
 
-    print(f"Task: {task}")
-    print(f"Text: {text}")
-    print(f"Request files: {request.files}")
-    print(f"Request form: {request.form}")
-    print(f"Request data: {request.data}")
-    
     if task == 'transcribe':
         if 'audio' not in request.files:
             print("No audio file in request")
@@ -131,23 +126,15 @@ def handle_audio_request(self):
         audio_file.save(save_dir_audio)
 
         # Example usage
-        if check_audio_file('static/audio/audio.wav'):
-            print("Audio file is valid")
-        else:
-            print("Audio file is corrupted")
+        if not check_audio_file('static/audio/audio.wav'): print("Audio file is corrupted")
             
         result = transcribe_audio(save_dir_audio)
         return jsonify({'text': result})
-
-    elif task == 'tts':
-        print("Running TTS...")
-        result = speak_text(text, "/Users/yuki/Downloads/orig.wav", "response.wav", "fast")
-
+    elif task == 'tts': print(speak_text(text))
     return jsonify({'response': result})
 
-
 @login_required
-def handle_image_request(chat_history_manager, self):
+def handle_image_request(chat_history_manager, config, self):
     data = request.get_json()
     chat_id = data.get('chat')
     useHistory = data.get('useHistory', True)
@@ -164,16 +151,16 @@ def handle_image_request(chat_history_manager, self):
         image_path = f"static/img/call/{current_time_milliseconds}.png"
         with open(image_path, "wb") as file:
             file.write(image_raw_data)
-        image_data = capture_image(image_path, data.get('message'), use_cpu=False)
+        image_data = capture_image(image_path, data.get('message'), use_cpu=False, speech=speech)
         
         if useHistory is not False:
                 # Save chat history after streaming response
                 chat_history = chat_history_manager.load_chat_history(list({current_user.get_id()})[0], chat_id)
-                chat_history.append({"name": self.config['ai']['names'][0], "message": f"{data.get('message')}<img src='/static/img/call/{current_time_milliseconds}.png' class='image-message'>"})
-                chat_history.append({"name": self.config['ai']['names'][1], "message": image_data[0]})
+                chat_history.append({"name": config['ai']['names'][0], "message": f"{data.get('message')}<img src='/static/img/call/{current_time_milliseconds}.png' class='image-message'>"})
+                chat_history.append({"name": config['ai']['names'][1], "message": image_data[0]})
 
                 if speech == True:
-                    chat_history_manager.generate_speech(image_data[0])
+                    speak_text(image_data[0])
 
         # Save the chat history
         chat_history_manager.save_chat_history(chat_history, list({current_user.get_id()})[0], chat_id)
@@ -234,6 +221,3 @@ def handle_textfile_request(chat_generator, self):
 
 def services(self):
     return send_from_directory('.', 'services.html')
-
-def about(self):
-    return send_from_directory('.', 'about.html')

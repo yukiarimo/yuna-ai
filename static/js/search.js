@@ -22,9 +22,7 @@ document.getElementById('searchButton').addEventListener('click', function () {
     })
   })
   .then(response => response.json()) // Parse the JSON from the response
-  .then(data => {
-    console.log('Data:', data);
-  
+  .then(data => {  
     // Extract the message and results from the data
     var message = data.message[0];
     var results = data.message[1];

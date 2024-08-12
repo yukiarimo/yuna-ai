@@ -4,16 +4,19 @@
             "Yuki",
             "Yuna"
         ],
+        "hinmitsu": false,
+        "agi": false,
         "emotions": false,
         "art": false,
-        "vision": false,
-        "max_new_tokens": 128,
+        "miru": false,
+        "search": false,
+        "max_new_tokens": 512,
         "context_length": 2048,
         "temperature": 0.7,
-        "repetition_penalty": 1.11,
+        "repetition_penalty": 1.1,
         "last_n_tokens": 128,
         "seed": -1,
-        "top_k": 60,
+        "top_k": 100,
         "top_p": 0.92,
         "stop": [
             "Yuki:",
@@ -36,19 +39,23 @@
     "server": {
         "port": "",
         "url": "",
-        "history": "db/history/",
-        "default_history_file": "history_template.json",
+        "default_history_file": "history_template:general.json",
         "images": "images/",
-        "yuna_model_dir": "lib/models/yuna/",
-        "yuna_default_model": "yuna-ai-v3-q6_k.gguf",
-        "agi_model_dir": "lib/models/agi/",
+        "yuna_default_model": "yuna-ai-v3-q5_k_m.gguf",
+        "miru_default_model": "yuna-ai-miru-v0.gguf",
+        "eyes_default_model": "yuna-ai-miru-eye-v0.gguf",
+        "voice_default_model": "yuna-ai-voice-v1",
         "art_default_model": "yuna_ai_anime.safetensors",
         "device": "mps",
         "yuna_text_mode": "native",
-        "yuna_audio_mode": "fast"
+        "yuna_audio_mode": "siri",
+        "yuna_audio_name": "1.wav",
+        "yuna_reference_audio": "audio.mp3",
+        "output_audio_format": "audio.aiff"
     },
     "security": {
         "secret_key": "YourSecretKeyHere123!",
-        "encryption_key": "zWZnu-lxHCTgY_EqlH4raJjxNJIgPlvXFbdk45bca_I="
+        "encryption_key": "zWZnu-lxHCTgY_EqlH4raJjxNJIgPlvXFbdk45bca_I=",
+        "11labs_key": "Your11LabsKeyHere123!"
     }
 }

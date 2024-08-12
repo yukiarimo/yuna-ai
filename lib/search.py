@@ -1,8 +1,13 @@
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.chrome.options import Options
-import urllib.parse
+from lib.generate import get_config
+
+config = get_config()
+
+if config["ai"]["search"] == True:
+    from selenium import webdriver
+    from selenium.webdriver.chrome.service import Service
+    from webdriver_manager.chrome import ChromeDriverManager
+    from selenium.webdriver.chrome.options import Options
+    import urllib.parse
 
 def search_web(search_query, url, processData):
     # Encode the search query to ensure it's a valid URL

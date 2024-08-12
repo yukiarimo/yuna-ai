@@ -1,16 +1,35 @@
 import json
 import re
 from flask_login import current_user
-from transformers import pipeline
 from llama_cpp import Llama
+
+def get_config(config=None):
+    if config is None:
+        with open('static/config.json', 'r') as config_file:
+            return json.load(config_file)
+    else:
+        with open('static/config', 'w') as config_file:
+            json.dump(config, config_file, indent=4)
+
 from lib.history import ChatHistoryManager
 import requests
+
+# load config.json
+config_agi = get_config()
+
+if config_agi["ai"]["agi"] == True:
+    from langchain_community.document_loaders import TextLoader
+    from langchain.text_splitter import RecursiveCharacterTextSplitter
+    from langchain_community.vectorstores import Chroma
+    from langchain_community.embeddings import GPT4AllEmbeddings
+    from langchain.chains import RetrievalQA
+    from langchain_community.llms import LlamaCpp
 
 class ChatGenerator:
     def __init__(self, config):
         self.config = config
         self.model = Llama(
-            model_path=config["server"]["yuna_model_dir"] + config["server"]["yuna_default_model"],
+            model_path="lib/models/yuna/" + config["server"]["yuna_default_model"],
             n_ctx=config["ai"]["context_length"],
             seed=config["ai"]["seed"],
             n_batch=config["ai"]["batch_size"],
@@ -20,7 +39,6 @@ class ChatGenerator:
             flash_attn=config["ai"]["flash_attn"],
             verbose=False
         ) if config["server"]["yuna_text_mode"] == "native" else ""
-        self.classifier = pipeline("text-classification", model=f"{config['server']['agi_model_dir']}yuna-emotion") if config["ai"]["emotions"] else ""
 
     def generate(self, chat_id, speech=False, text="", template=None, chat_history_manager=None, useHistory=True, yunaConfig=None, stream=False):
         # print all the parameters
@@ -61,9 +79,6 @@ class ChatGenerator:
                     response = response['choices'][0]['text']
                     response = self.clearText(str(response))
 
-                    if self.config["ai"]["emotions"]:
-                        response = self.add_emotions(response)
-
                     return response
             else:
                 max_length_all_input_and_output = yunaConfig["ai"]["context_length"]
@@ -85,9 +100,6 @@ class ChatGenerator:
 
                 response = self.clearText(str(response))
 
-                if self.config["ai"]["emotions"]:
-                    response = self.add_emotions(response)
-
                 print('into the model -> ', response)
                 response = self.model(
                     response,
@@ -105,9 +117,6 @@ class ChatGenerator:
                 else:
                     response = response['choices'][0]['text']
                     response = self.clearText(str(response))
-
-                    if self.config["ai"]["emotions"]:
-                        response = self.add_emotions(response)
 
                     return response
 
@@ -164,20 +173,13 @@ class ChatGenerator:
             return ''.join(response) if isinstance(response, (list, type((lambda: (yield))()))) else response
         return response
     
-    def processTextFile(self, text_file, question, temperature=0.6, max_new_tokens=128, context_window=2048):
-        from langchain_community.document_loaders import TextLoader
-        from langchain.text_splitter import RecursiveCharacterTextSplitter
-        from langchain_community.vectorstores import Chroma
-        from langchain_community.embeddings import GPT4AllEmbeddings
-        from langchain.chains import RetrievalQA
-        from langchain_community.llms import LlamaCpp
-
+    def processTextFile(self, text_file, question, temperature=0.8, max_new_tokens=128, context_window=256):
         # Load text file data
         loader = TextLoader(text_file)
         data = loader.load()
 
         # Split text into chunks
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=0)
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=200, chunk_overlap=0)
         docs = text_splitter.split_documents(data)
 
         # Generate embeddings locally using GPT4All
@@ -186,7 +188,7 @@ class ChatGenerator:
 
         # Load GPT4All model for inference  
         llm = LlamaCpp(
-            model_path='/Users/yuki/Documents/Github/yuna-ai/lib/models/yuna/yukiarimo/yuna-ai/yuna-ai-v2-q6_k.gguf',
+            model_path="lib/models/yuna/" + self.config["server"]["yuna_default_model"],
             temperature=temperature,
             max_new_tokens=max_new_tokens,
             context_window=context_window,
@@ -231,24 +233,6 @@ class ChatGenerator:
         })
 
         return messages
-
-    def add_emotions(self, response):
-        response_add = self.classifier(response)[0]['label']
-
-        replacement_dict = {
-            "anger": "*angry*",
-            "disgust": "*disgusted*",
-            "fear": "*scared*",
-            "joy": "*smiling*",
-            "neutral": "",
-            "sadness": "*sad*",
-            "surprise": "*surprised*"
-        }
-
-        for word, replacement in replacement_dict.items():
-            response_add = response_add.replace(word, replacement)
-
-        return response + f" {response_add}"
     
     def clearText(self, text):
         TAG_RE = re.compile(r'<[^>]+>')

@@ -36,7 +36,6 @@
     <script src="/static/js/kawai-v11-2.js" defer></script>
     <script src="/static/js/kanojo.js" defer></script>
     <script src="/static/js/index.js" defer></script>
-    <script src="/static/js/himitsu.js" defer></script>
     <script src="/static/js/setup.js" defer></script>
     <script src="/static/js/search.js" defer></script>
     <script src="/static/js/creator.js" defer></script>
@@ -146,7 +145,8 @@
                                         Search
                                     </a>
                                     <!-- Notifications -->
-                                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#notificationModal">
+                                    <a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                        data-bs-target="#notificationModal">
                                         <i class="fas fa-bell fa-sm fa-fw mr-2 text-gray-400"></i>
                                         Notifications
                                     </a>
@@ -174,12 +174,12 @@
                                     <!-- a button to open popup-->
                                     <button class="search-button icon-left attach-button" data-bs-toggle="popover"
                                         aria-label="Attach File" data-bs-placement="bottom" data-bs-html="true"
-                                        data-bs-content="<a class='btn btn-outline-primary btn-sm dropdown-item' onclick='bookCreate()'>Create Book</a><a class='btn btn-outline-info btn-sm dropdown-item' onclick='drawArt();'>Draw Art</a><a class='btn btn-outline-success btn-sm dropdown-item' onclick='requestRecentAudio()'>Talk / Sing</a><a class='btn btn-outline-danger btn-sm dropdown-item' onclick='sora()'>Sora</a>">
+                                        data-bs-content="<a class='btn btn-outline-primary btn-sm dropdown-item' onclick='bookCreate()'>Story</a><a class='btn btn-outline-info btn-sm dropdown-item' onclick='drawArt();'>Art</a><a class='btn btn-outline-success btn-sm dropdown-item' onclick='requestRecentAudio()'>Talk</a>">
                                         <i class="fas fa-pencil-ruler"></i>
                                     </button>
                                     <button class="search-button icon-left attach-button" data-bs-toggle="popover"
                                         aria-label="Attach File" data-bs-placement="bottom" data-bs-html="true"
-                                        data-bs-content="<a class='btn btn-outline-primary btn-sm dropdown-item' onclick='handleTextFileClick()'>Text File</a><a class='btn btn-outline-info btn-sm dropdown-item' onclick='handleImageFileClick()'>Image File</a><a class='btn btn-outline-success btn-sm dropdown-item' onclick='handleAudioFileClick()'>Audio File</a><a class='btn btn-outline-danger btn-sm dropdown-item' onclick='handleVideoFileClick()'>Video File</a>">
+                                        data-bs-content="<a class='btn btn-outline-primary btn-sm dropdown-item' onclick='handleTextFileClick()'>Text</a><a class='btn btn-outline-info btn-sm dropdown-item' onclick='handleImageFileClick()'>Image</a><a class='btn btn-outline-success btn-sm dropdown-item' onclick='handleAudioFileClick()'>Audio</a><a class='btn btn-outline-danger btn-sm dropdown-item' onclick='handleVideoFileClick()'>Video</a>">
                                         <i class="fas fa-folder"></i>
                                     </button>
                                     <input type="file" id="textUpload" accept=".txt" style="display: none;"
@@ -194,13 +194,13 @@
                                         type="text" class="search-input">
 
                                     <div class="form-check form-switch" style="display: none;">
-                                        <input class="form-check-input" type="checkbox" id="customSwitch">
-                                        <label class="form-check label" for="customSwitch">Himitsu Copilot</label>
+                                        <input class="form-check-input" type="checkbox" id="himitsuToggle">
+                                        <label class="form-check label" for="himitsuToggle">Himitsu Copilot</label>
                                     </div>
 
                                     <div class="form-check form-switch" id="himitsuToggle">
-                                        <input class="form-check-input" type="checkbox" id="customSwitch"
-                                            aria-label="Himitsu Copilot" onclick="changeHimitsuState()">
+                                        <input class="form-check-input" type="checkbox" id="himitsuToggle"
+                                            aria-label="Himitsu Copilot">
                                     </div>
 
                                     <button class="search-button icon-right" aria-label="Send">
@@ -417,14 +417,13 @@
                                                     <h5 class="card-title">Plugins</h5>
 
                                                     <div class="mb-3">
-                                                        <label for="uiuxDesign" class="form-label">Himitsu
-                                                            Assistant</label>
+                                                        <label for="uiuxDesign" class="form-label">News Flow</label>
                                                         <!-- toggle switch -->
                                                         <div class="form-check form-switch">
                                                             <input class="form-check-input" type="checkbox"
                                                                 id="updateEmojiHistory">
                                                             <label class="form-check-label"
-                                                                for="updateEmojiHistory">Enable Himitsu Copilot</label>
+                                                                for="updateEmojiHistory">Enable News Flow</label>
                                                         </div>
                                                     </div>
 
@@ -498,9 +497,9 @@
                                     <div class="card-body">
                                         <ul class="nav nav-pills nav-fill mb-4" role="tablist">
                                             <li class="nav-item" role="presentation">
-                                                <button class="nav-link active" id="freeform-tab" data-bs-toggle="pill"
-                                                    data-bs-target="#freeform" type="button" role="tab"
-                                                    aria-controls="freeform" aria-selected="true">Freeform</button>
+                                                <button class="nav-link active" id="naked-tab" data-bs-toggle="pill"
+                                                    data-bs-target="#naked" type="button" role="tab"
+                                                    aria-controls="naked" aria-selected="false">Naked</button>
                                             </li>
                                             <li class="nav-item" role="presentation">
                                                 <button class="nav-link" id="presentation-tab" data-bs-toggle="pill"
@@ -511,39 +510,26 @@
                                             <li class="nav-item" role="presentation">
                                                 <button class="nav-link" id="article-tab" data-bs-toggle="pill"
                                                     data-bs-target="#article" type="button" role="tab"
-                                                    aria-controls="article" aria-selected="false">Article</button>
+                                                    aria-controls="article" aria-selected="true">Article</button>
                                             </li>
                                         </ul>
                                         <div class="tab-content">
-                                            <div class="tab-pane fade show active" id="freeform" role="tabpanel"
-                                                aria-labelledby="freeform-tab">
+                                            <div class="tab-pane fade show active" id="naked" role="tabpanel"
+                                                aria-labelledby="naked-tab">
                                                 <div class="row g-4">
-                                                    <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <h5 class="mb-3">Prompt Template</h5>
-                                                            <textarea class="form-control" id="freeform-prompt-template"
-                                                                rows="5"></textarea>
+                                                    <div class="row mt-4">
+                                                        <div class="col-12">
+                                                            <div class="form-group">
+                                                                <h5 class="mb-3">Work Area</h5>
+                                                                <textarea class="form-control"
+                                                                    id="naked-work-area"></textarea>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-6" id="body-text-freeform-container">
-                                                        <div class="form-group">
-                                                            <h5 class="mb-3">Body Text</h5>
-                                                            <textarea class="form-control" rows="5"></textarea>
-                                                        </div>
-                                                    </div>
-                                                </div>
 
-                                                <div class="d-grid gap-2 mt-4">
-                                                    <button type="button" id="send-create-freeform"
-                                                        class="btn btn-primary">Submit</button>
-                                                </div>
-
-                                                <div class="row mt-4">
-                                                    <div class="col-12">
-                                                        <div class="form-group">
-                                                            <h5 class="mb-3">Result</h5>
-                                                            <textarea class="form-control" rows="5"></textarea>
-                                                        </div>
+                                                    <div class="d-grid gap-2 mt-4">
+                                                        <button type="button" id="send-create-naked"
+                                                            class="btn btn-primary">Create</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -569,7 +555,7 @@
 
                                                 <div class="d-grid gap-2 mt-4">
                                                     <button type="button" id="send-create-presentation"
-                                                        class="btn btn-primary">Generate</button>
+                                                        class="btn btn-primary">Create</button>
                                                 </div>
 
                                                 <div class="row g-4 mt-4">
@@ -597,7 +583,37 @@
 
                                             <div class="tab-pane fade" id="article" role="tabpanel"
                                                 aria-labelledby="article-tab">
-                                                <!-- Placeholder for Article tab content -->
+                                                <div class="row g-4">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <h5 class="mb-3">Prompt Template</h5>
+                                                            <textarea class="form-control" id="article-prompt-template"
+                                                                rows="5"></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <h5 class="mb-3">Body Text</h5>
+                                                            <textarea class="form-control"
+                                                                id="body-text-article-container" rows="5"></textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="d-grid gap-2 mt-4">
+                                                    <button type="button" id="send-create-article"
+                                                        class="btn btn-primary">Submit</button>
+                                                </div>
+
+                                                <div class="row mt-4">
+                                                    <div class="col-12">
+                                                        <div class="form-group">
+                                                            <h5 class="mb-3">Result</h5>
+                                                            <textarea class="form-control" id="result-create-article"
+                                                                rows="5"></textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -644,7 +660,7 @@
                             id="iconAudioRec"></i></button>
                     <button type="button" class="btn btn-secondary" onclick="drawArt();"><i
                             class="fas fa-pencil-alt"></i></button>
-                    <button type="button" class="btn btn-danger" onclick="closePopupsAll();"><i
+                    <button type="button" class="btn btn-danger" onclick="document.getElementById('videoCallModal').dispatchEvent(new Event('hidden.bs.modal'));"><i
                             class="fas fa-phone-slash"></i></button>
                 </div>
             </div>
@@ -699,7 +715,7 @@
                                     aria-controls="v-pills-general" aria-selected="true">General</button>
                                 <button class="nav-link" id="v-pills-system-tab" data-bs-toggle="pill"
                                     data-bs-target="#v-pills-system" type="button" role="tab"
-                                    aria-controls="v-pills-system" aria-selected="false">System</button>
+                                    aria-controls="v-pills-system" aria-selected="false">Account</button>
                                 <button class="nav-link" id="v-pills-ai-tab" data-bs-toggle="pill"
                                     data-bs-target="#v-pills-ai" type="button" role="tab" aria-controls="v-pills-ai"
                                     aria-selected="false">AI</button>
@@ -715,15 +731,24 @@
                                             <h6>General</h6>
                                             <div class="form-check form-switch">
                                                 <input class="form-check-input" type="checkbox" id="updateEmojiHistory">
-                                                <label class="form-check-label" for="updateEmojiHistory">Himitsu
-                                                    Copilot</label>
+                                                <label class="form-check-label" for="updateEmojiHistory">Keep call in
+                                                    the background</label>
                                             </div>
                                             <div class="form-check form-switch">
                                                 <input class="form-check-input" type="checkbox" id="updateEmojiTones">
-                                                <label class="form-check-label" for="updateEmojiTones">Offline
-                                                    Mode</label>
+                                                <label class="form-check-label" for="updateEmojiTones">Filter
+                                                    NSFW</label>
                                             </div>
-                                            <button id="enableOffline">Enable Offline Mode</button>
+                                        </div>
+
+                                        <div class="list-group-item" style="background-color: transparent;">
+                                            <h6>Data</h6>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" checked type="checkbox"
+                                                    id="updateEmojiHistory">
+                                                <label class="form-check-label" for="updateEmojiHistory">User Datat
+                                                    Collection</label>
+                                            </div>
                                         </div>
 
                                         <div class="list-group-item" style="background-color: transparent;">
@@ -736,8 +761,13 @@
                                             </div>
                                             <div class="form-check form-switch">
                                                 <input class="form-check-input" type="checkbox" id="updateEmojiTones">
-                                                <label class="form-check-label" for="updateEmojiTones">Automatic
-                                                    Toggle</label>
+                                                <label class="form-check-label" for="updateEmojiTones">Share Data
+                                                    Analytics</label>
+                                            </div>
+
+                                            <div type="button" style="margin-top: 20px; width: 20%;">
+                                                <a href="#" onclick="resetEverything();" class="btn btn-secondary"
+                                                    style="width: 90%;">Reset</a>
                                             </div>
                                         </div>
                                     </div>
@@ -750,121 +780,107 @@
                                     aria-labelledby="v-pills-system-tab">
                                     <div class="list-group">
                                         <div class="list-group-item" style="background-color: transparent;">
-                                            <h6>Data</h6>
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" checked type="checkbox"
-                                                    id="updateEmojiHistory">
-                                                <label class="form-check-label" for="updateEmojiHistory">User Datat
-                                                    Collection</label>
-                                            </div>
-                                        </div>
-
-                                        <div class="list-group-item" style="background-color: transparent;">
                                             <h6>Account</h6>
-
-                                            <div class="card o-hidden border-0 my-5">
-                                                <div class="card-body p-0">
-                                                    <div class="row">
-                                                        <div class="col-lg-6">
-                                                            <div class="p-5">
-                                                                <form method="post" class="user" action="/main">
-                                                                    <h2 class="text-center mb-4">
-                                                                        Change Password</h2>
-                                                                    <input type="hidden" name="action"
-                                                                        value="change_password">
-                                                                    <div class="mb-3">
-                                                                        <input class="form-control form-control-user"
-                                                                            type="password" name="current_password"
-                                                                            placeholder="Current Password" required>
-                                                                    </div>
-                                                                    <div class="mb-3">
-                                                                        <input class="form-control form-control-user"
-                                                                            type="password" name="new_password"
-                                                                            placeholder="New Password" required>
-                                                                    </div>
-                                                                    <div class="mb-3">
-                                                                        <input class="form-control form-control-user"
-                                                                            type="password" name="confirm_new_password"
-                                                                            placeholder="Confirm New Password" required>
-                                                                    </div>
-                                                                    <button class="btn btn-primary btn-user w-100"
-                                                                        type="submit">Change
-                                                                        Password</button>
-                                                                </form>
-                                                            </div>
+                                            <div class="card-body p-0">
+                                                <div class="row">
+                                                    <div class="col-lg-6">
+                                                        <div class="p-5">
+                                                            <form method="post" class="user" action="/main">
+                                                                <h2 class="text-center mb-4">
+                                                                    Change Password</h2>
+                                                                <input type="hidden" name="action"
+                                                                    value="change_password">
+                                                                <div class="mb-3">
+                                                                    <input class="form-control form-control-user"
+                                                                        type="password" name="current_password"
+                                                                        placeholder="Current Password" required>
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <input class="form-control form-control-user"
+                                                                        type="password" name="new_password"
+                                                                        placeholder="New Password" required>
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <input class="form-control form-control-user"
+                                                                        type="password" name="confirm_new_password"
+                                                                        placeholder="Confirm New Password" required>
+                                                                </div>
+                                                                <button class="btn btn-primary btn-user w-100"
+                                                                    type="submit">Change
+                                                                    Password</button>
+                                                            </form>
                                                         </div>
+                                                    </div>
 
-                                                        <div class="col-lg-6">
-                                                            <div class="p-5">
-                                                                <form method="post" class="user" action="/main">
-                                                                    <h2 class="text-center mb-4">
-                                                                        New User</h2>
-                                                                    <input type="hidden" name="action" value="register">
-                                                                    <div class="mb-3">
-                                                                        <input class="form-control form-control-user"
-                                                                            type="text" name="username"
-                                                                            placeholder="Username" required>
-                                                                    </div>
-                                                                    <div class="mb-3">
-                                                                        <input class="form-control form-control-user"
-                                                                            type="password" name="password"
-                                                                            placeholder="Password" required>
-                                                                    </div>
-                                                                    <button class="btn btn-primary btn-user w-100"
-                                                                        type="submit">Register</button>
-                                                                </form>
-                                                            </div>
+                                                    <div class="col-lg-6">
+                                                        <div class="p-5">
+                                                            <form method="post" class="user" action="/main">
+                                                                <h2 class="text-center mb-4">
+                                                                    New User</h2>
+                                                                <input type="hidden" name="action" value="register">
+                                                                <div class="mb-3">
+                                                                    <input class="form-control form-control-user"
+                                                                        type="text" name="username"
+                                                                        placeholder="Username" required>
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <input class="form-control form-control-user"
+                                                                        type="password" name="password"
+                                                                        placeholder="Password" required>
+                                                                </div>
+                                                                <button class="btn btn-primary btn-user w-100"
+                                                                    type="submit">Register</button>
+                                                            </form>
                                                         </div>
+                                                    </div>
 
-                                                        <div class="col-lg-6">
-                                                            <div class="p-5">
-                                                                <form method="post" class="user" action="/main">
-                                                                    <h2 class="text-center mb-4">
-                                                                        Login</h2>
-                                                                    <input type="hidden" name="action" value="login">
-                                                                    <div class="mb-3">
-                                                                        <input class="form-control form-control-user"
-                                                                            type="text" name="username"
-                                                                            placeholder="Username" required>
-                                                                    </div>
-                                                                    <div class="mb-3">
-                                                                        <input class="form-control form-control-user"
-                                                                            type="password" name="password"
-                                                                            placeholder="Password" required>
-                                                                    </div>
-                                                                    <button class="btn btn-primary btn-user w-100"
-                                                                        type="submit">Login</button>
-                                                                </form>
-                                                            </div>
+                                                    <div class="col-lg-6">
+                                                        <div class="p-5">
+                                                            <form method="post" class="user" action="/main">
+                                                                <h2 class="text-center mb-4">
+                                                                    Login</h2>
+                                                                <input type="hidden" name="action" value="login">
+                                                                <div class="mb-3">
+                                                                    <input class="form-control form-control-user"
+                                                                        type="text" name="username"
+                                                                        placeholder="Username" required>
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <input class="form-control form-control-user"
+                                                                        type="password" name="password"
+                                                                        placeholder="Password" required>
+                                                                </div>
+                                                                <button class="btn btn-primary btn-user w-100"
+                                                                    type="submit">Login</button>
+                                                            </form>
                                                         </div>
+                                                    </div>
 
-                                                        <div class="col-lg-6">
-                                                            <div class="p-5">
-                                                                <form method="post" class="user" action="/main">
-                                                                    <h2 class="text-center mb-4">
-                                                                        Delete Account</h2>
-                                                                    <input type="hidden" name="action"
-                                                                        value="delete_account">
-                                                                    <div class="mb-3">
-                                                                        <input class="form-control form-control-user"
-                                                                            type="text" name="username"
-                                                                            placeholder="Username" required>
-                                                                    </div>
-                                                                    <div class="mb-3">
-                                                                        <input class="form-control form-control-user"
-                                                                            type="password" name="password"
-                                                                            placeholder="Password" required>
-                                                                    </div>
-                                                                    <button class="btn btn-primary btn-user w-100"
-                                                                        type="submit">Delete
-                                                                        Account</button>
-                                                                </form>
-                                                            </div>
+                                                    <div class="col-lg-6">
+                                                        <div class="p-5">
+                                                            <form method="post" class="user" action="/main">
+                                                                <h2 class="text-center mb-4">
+                                                                    Delete Account</h2>
+                                                                <input type="hidden" name="action"
+                                                                    value="delete_account">
+                                                                <div class="mb-3">
+                                                                    <input class="form-control form-control-user"
+                                                                        type="text" name="username"
+                                                                        placeholder="Username" required>
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <input class="form-control form-control-user"
+                                                                        type="password" name="password"
+                                                                        placeholder="Password" required>
+                                                                </div>
+                                                                <button class="btn btn-primary btn-user w-100"
+                                                                    type="submit">Delete
+                                                                    Account</button>
+                                                            </form>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-
                                         </div>
                                     </div>
                                 </div>
@@ -924,8 +940,8 @@
     <!-- Modal -->
     <div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel"
         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-dark">
                 <div class="modal-header">
                     <h5 class="modal-title" id="notificationModalLabel">Notifications</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -933,20 +949,11 @@
                 <div class="modal-body">
                     <div class="dropdown-menu dropdown-menu-end dropdown-list animated--grow-in show"
                         style="position: static; transform: none;">
-                        <!-- Notification items -->
                         <a class="dropdown-item d-flex align-items-center" href="#">
-                            <div class="mr-3">
-                                <div class="icon-circle bg-primary">
-                                    <!-- Icon -->
-                                </div>
-                            </div>
                             <div>
-                                <!-- Notification content -->
-                                <div class="small text-gray-500">December 12, 2021</div>
-                                <span class="font-weight-bold">A new monthly report is ready to download!</span>
+                                <span class="font-weight-bold">Hello! Welcome to the chat room!</span>
                             </div>
                         </a>
-                        <!-- More notification items -->
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -956,8 +963,7 @@
         </div>
     </div>
 
-    <script src="/static/js/bootstrap/bootstrap.min.js"></script>
-    <script src="/static/js/bootstrap/script.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
 </body>
 
 </html>

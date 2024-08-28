@@ -33,7 +33,7 @@ body {
     height: 100vh !important;
 }
 
-#profile-card {
+.profile-card {
     overflow-y: scroll;
     height: 100vh;
 }
@@ -185,7 +185,6 @@ button {
 .settings-container {
     margin: 50px auto;
     background-color: #1f1f1f;
-    padding: 20px;
     border-radius: 8px;
     margin-top: 50px !important;
 }

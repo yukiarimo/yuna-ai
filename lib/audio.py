@@ -46,7 +46,7 @@ if config['server']['yuna_audio_mode'] == "native":
             speaker_embeddings = speaker_embeddings.squeeze().cpu().numpy()
         return speaker_embeddings
 
-    audio_array, sampling_rate = librosa.load("/Users/yuki/Documents/Github/yuna-ai/static/audio/" + config["server"]["yuna_audio_name"], sr=16000)
+    audio_array, sampling_rate = librosa.load("/Users/yuki/Documents/Github/yuna-ai/static/audio/" + config["server"]["yuna_reference_audio"], sr=16000)
 
     # Create a dictionary to mimic the dataset structure
     custom_audio = {
@@ -157,7 +157,7 @@ def speak_text(text, reference_audio=config['server']['yuna_reference_audio'], o
         audio = AudioSegment.from_file("/Users/yuki/Documents/Github/yuna-ai/static/audio/audio.aiff")
         audio.export("/Users/yuki/Documents/Github/yuna-ai/static/audio/audio.mp3", format='mp3')
     elif mode == "siri-pv":
-        command = f'say -v {config["server"]["yuna_audio_name"]} -o /Users/yuki/Documents/Github/yuna-ai/static/audio/audio.aiff {repr(text)}'
+        command = f'say -v {config["server"]["yuna_reference_audio"]} -o /Users/yuki/Documents/Github/yuna-ai/static/audio/audio.aiff {repr(text)}'
         print(command)
         exit_status = os.system(command)
 

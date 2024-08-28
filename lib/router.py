@@ -215,7 +215,7 @@ def handle_textfile_request(chat_generator, self):
     query = request.form['query']
     text_file.save('static/text/content.txt')
 
-    result = chat_generator.processTextFile('static/text/content.txt', query)
+    result = chat_generator.processTextFile('static/text/content.txt', query, 0.6)
 
     return jsonify({'response': result})
 

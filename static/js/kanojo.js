@@ -698,6 +698,8 @@ function populateKanojoSelect(selected = false) {
 
 // Function to load the selected kanojo into the form
 function loadSelectedKanojo() {
+    settingsDefaultKanojo = JSON.parse(localStorage.getItem('config')).settings.default_kanojo
+
     const selectedKanojo = kanojoSelect.value;
     const kanojoData = kanojo.getKanojo(selectedKanojo);
     if (kanojo.getKanojo('Yuna') != undefined) {

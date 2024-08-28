@@ -13,12 +13,41 @@ var isYunaListening = false;
 let mediaRecorder;
 let audioChunks = [];
 var activeElement = null;
-
-// Global variable to track the state of Streaming Chat Mode
 let isStreamingChatModeEnabled = false;
+let isCustomConfigEnabled = false;
 
 // Function to handle the toggle switch change
-document.querySelector('#streamingChatMode').onchange = e => isStreamingChatModeEnabled = e.target.checked;
+document.querySelector('#streamingChatMode').onchange = e => {
+  isStreamingChatModeEnabled = e.target.checked;
+
+  // Retrieve the current configuration from localStorage
+  let config = JSON.parse(localStorage.getItem('config')) || {};
+
+  // Ensure the settings object exists
+  config.settings = config.settings || {};
+
+  // Update the settings.streaming value
+  config.settings.streaming = isStreamingChatModeEnabled;
+
+  // Save the updated configuration back to localStorage
+  localStorage.setItem('config', JSON.stringify(config));
+};
+
+document.querySelector('#customConfig').onchange = e => {
+  isCustomConfigEnabled = e.target.checked;
+
+  // Retrieve the current configuration from localStorage
+  let config = JSON.parse(localStorage.getItem('config')) || {};
+
+  // Ensure the settings object exists
+  config.settings = config.settings || {};
+
+  // Update the settings.streaming value
+  config.settings.customConfig = isCustomConfigEnabled;
+
+  // Save the updated configuration back to localStorage
+  localStorage.setItem('config', JSON.stringify(config));
+}
 
 const buttonAudioRec = document.querySelector('#buttonAudioRec');
 const iconAudioRec = buttonAudioRec.querySelector('#iconAudioRec');
@@ -192,27 +221,37 @@ class messageManager {
     this.messageContainer.scrollTop = this.messageContainer.scrollHeight;
   }
 
-  async sendMessage(message, template, imageData = '', url = '/message', naked = false, stream = isStreamingChatModeEnabled || false, outputElement = '') {
+  async sendMessage(message, template, imageData = '', url = '/message', naked = false, stream = isStreamingChatModeEnabled || false, outputElement = '', config = null) {
     this.inputText = document.getElementById('input_text');
     const messageContent = message || this.inputText.value;
     var userMessageElement;
-    if (template !== null) {
-      userMessageElement = this.createMessage(name1, messageContent);
-      this.createTypingBubble(naked);
-    }
 
     if (url === '/message') {
+      if (template !== null) {
+        userMessageElement = this.createMessage(name1, messageContent);
+        this.createTypingBubble(naked);
+        updateMsgCount();
+      }
+
         let result = '';
         const decoder = new TextDecoder();
         const serverEndpoint = `${server_url + server_port}${url}`;
         const headers = { 'Content-Type': 'application/json' };
+
+        var yunaConfig;
+        if (config === null) {
+            yunaConfig = isCustomConfigEnabled ? config_data : null;
+        } else {
+            yunaConfig = config;
+        }
+
         const body = JSON.stringify({
             chat: selectedFilename,
             text: messageContent,
             useHistory: kanojo.useHistory,
             template: (typeof template !== 'undefined') ? template : (this.inputText.value ? kanojo.buildKanojo() : null),
             speech: isYunaListening,
-            yunaConfig: config_data,
+            yunaConfig: yunaConfig,
             stream
         });
         this.inputText.value = '';
@@ -243,6 +282,7 @@ class messageManager {
                         let preElement = lastElement.querySelector('pre');
                         this.updateMessageContent(preElement, result);
                     }
+                    initializeTextareas();
                 }
 
                 this.removeTypingBubble();
@@ -261,6 +301,7 @@ class messageManager {
         } catch (error) {
             this.handleError(error);
         }
+        updateMsgCount();
     } else if (url === '/image') {
         this.sendImage(imageData);
     }
@@ -317,7 +358,9 @@ class messageManager {
         this.createMessage(name2, imageResponse);
 
         // play audio
-        playAudio();
+        if (isYunaListening) {
+          playAudio();
+        }
 
         return imageCaption;
       })
@@ -385,17 +428,51 @@ function formatMessage(messageData) {
   deleteBtn.classList.add('delete-btn');
   deleteBtn.textContent = 'Delete message';
 
+  const copyBtn = document.createElement('button');
+  copyBtn.classList.add('copy-btn');
+  copyBtn.textContent = 'Copy text';
+  copyBtn.addEventListener('click', () => {
+    navigator.clipboard.writeText(messageData.message).catch(err => {
+      console.error('Failed to copy text: ', err);
+    });
+  });
+
+  const regenerateBtn = document.createElement('button');
+  regenerateBtn.classList.add('regenerate-btn');
+  regenerateBtn.textContent = 'Regenerate';
+  regenerateBtn.addEventListener('click', () => {
+    navigator.clipboard.writeText(messageData.message).then(() => {
+      // Artificially click the delete button
+      deleteBtn.click();
+      // Call the regenerateMessage function with the message text
+      setTimeout(() => {
+        regenerateMessage(messageData.message);
+      }, 300);
+    }).catch(err => {
+      console.error('Failed to copy text: ', err);
+    });
+  });
+
   messageMenu.appendChild(closeBtn);
   messageMenu.appendChild(deleteBtn);
+  messageMenu.appendChild(copyBtn);
+  messageMenu.appendChild(regenerateBtn);
 
   messageDiv.appendChild(messageText);
   messageDiv.appendChild(menuToggleBtn);
   messageDiv.appendChild(messageMenu);
 
   scrollMsg();
-  setMessagePopoverListeners()
+  setMessagePopoverListeners();
 
   return messageDiv;
+}
+
+function regenerateMessage(messageText) {
+  const input_text = document.getElementById('input_text');
+  input_text.value = messageText;
+
+  messageManagerInstance.sendMessage('');
 }
 
 function setMessagePopoverListeners() {
@@ -441,11 +518,6 @@ function setMessagePopoverListeners() {
 
       // Call the deleteMessageFromHistory function with the message text
       deleteMessageFromHistory(messageText);
-
-      // reload the page
-      setTimeout(function () {
-        location.reload()
-      }, 50);
     });
   });
 }
@@ -483,10 +555,7 @@ class HistoryManager {
         }
         return response.json();
       })
-      .then(responseData => {
-        alert("New history file created successfully.");
-        location.reload();
-      })
+      .then(populateHistorySelect())
       .catch(error => {
         console.error('An error occurred:', error);
       });
@@ -573,8 +642,8 @@ class HistoryManager {
               <textarea class="block-scroll">${JSON.stringify(data, null, 2)}</textarea>
             </div>
             <div class="modal-footer">
-              <button class="block-button" onclick="historyManager.saveEditedHistory('${this.selectedFilename}')">Save</button>
-              <button class="block-button" onclick="historyManager.closePopup('${historyPopup.id}')">Cancel</button>
+              <button class="block-button" onclick="historyManagerInstance.saveEditedHistory('${this.selectedFilename}')">Save</button>
+              <button class="block-button" onclick="historyManagerInstance.closePopup('${historyPopup.id}')">Cancel</button>
             </div>
           </div>
         `;
@@ -625,29 +694,33 @@ class HistoryManager {
   }
 
   // Placeholder for loadSelectedHistory method
-  loadSelectedHistory(filename) {
-    const selectedFilename = filename || this.defaultHistoryFile;
-
-    fetch(`${this.serverUrl + this.serverPort}/history`, {
+  loadSelectedHistory(selectedFilename) {
+    const messageContainer = document.getElementById('message-container');
+    if (selectedFilename == undefined) {
+      selectedFilename = config_data.settings.default_history_file;
+    }
+  
+    fetch(`${server_url+server_port}/history`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        task: 'load',
-        chat: selectedFilename
-      }),
+      body: JSON.stringify({ task: 'load', chat: selectedFilename })
     })
-    .then(response => response.json())
+    .then(response => {
+      if (!response.ok) throw new Error('Error loading selected history file.');
+      return response.json();
+    })
     .then(data => {
-      this.displayMessages(data);
+      messageManagerInstance.displayMessages(data);
+      updateMsgCount();
     })
     .catch(error => {
-      console.error('Error loading selected history file:', error);
+      console.error('Error:', error);
     });
   }
 }
 
 // Assuming server_url, server_port, and config_data are defined globally
-var historyManager = new HistoryManager();
+var historyManagerInstance = new HistoryManager();
 
 function initializeVideoStream() {
   var localVideo = document.getElementById('localVideo');
@@ -784,10 +857,9 @@ async function captureImage() {
 }
 
 // Modify the captureImage function to handle file uploads
-async function captureImageViaFile(image=null, imagePrompt=null) {
-  var imageUpload = '';
+async function captureImageViaFile(inputElement, image=null, imagePrompt=null) {
   var file = '';
-  file = image && !imagePrompt ? document.getElementById('imageUpload').files[0] : imagePrompt && image ? image : null;
+  file = inputElement.files[0] || (image && !imagePrompt ? image : imagePrompt && image ? image : null);
   if (!file) return alert('No file selected.');
 
   const reader = new FileReader();
@@ -952,13 +1024,7 @@ function populateHistorySelect() {
   loadConfig();
   return new Promise((resolve, reject) => {
     var historySelect = document.getElementById('chat-items');
-
-    if (localStorage.getItem('config') == null) {
-      // reload the page with delay of 1 second if config is not available
-      setTimeout(function () {
-        location.reload()
-      }, 50);
-    }
+    historySelect.innerHTML = '';
 
     server_port = JSON.parse(localStorage.getItem('config')).server.port
     server_url = JSON.parse(localStorage.getItem('config')).server.url
@@ -1021,41 +1087,66 @@ function populateHistorySelect() {
             switch (action) {
               case 'Open':
                 selectedFilename = fileName;
-                loadSelectedHistory(fileName);
+                historyManagerInstance.loadSelectedHistory(fileName);
                 OpenTab('1');
                 break;
               case 'Edit':
                 selectedFilename = fileName;
 
-                alert('Edit History is not available yet.');
+                fetch(`${server_url + server_port}/history`, {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                      chat: fileName,
+                      task: "load"
+                    })
+                  })
+                  .then(response => response.json())
+                  .then(data => {
+                    var historyPopup = document.createElement('div');
+                    historyPopup.classList.add('block-popup', 'edit-popup');
+
+                    var popupContent = `
+                      <div class="modal-content">
+                        <div class="modal-header">Edit History</div>
+                        <div class="modal-body edit-history">
+                          <textarea class="block-scroll">${JSON.stringify(data, null, 2)}</textarea>
+                        </div>
+                        <div class="modal-footer">
+                          <button class="block-button" onclick="historyManagerInstance.saveEditedHistory('${fileName}')">Save</button>
+                          <button class="block-button" onclick="historyManagerInstance.closePopup('${historyPopup.id}')">Cancel</button>
+                        </div>
+                      </div>
+                    `;
+
+                    historyPopup.innerHTML = popupContent;
+                    document.body.appendChild(historyPopup);
+                  }
+                );
                 break;
               case 'Delete':
-                // continue only if the user confirms alert
-                if (confirm("Are you sure you want to delete this file?")) {
-                  fetch(`${server_url + server_port}/history`, {
-                      method: 'POST',
-                      headers: {
-                        'Content-Type': 'application/json',
-                      },
-                      body: JSON.stringify({
-                        chat: fileName,
-                        task: "delete"
-                      })
+                fetch(`${server_url + server_port}/history`, {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                      chat: fileName,
+                      task: "delete"
                     })
-                    .then(response => {
-                      if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                      }
-                      return response.json();
-                    })
-                    .then(responseData => {
-                      alert(responseData);
-                      location.reload();
-                    })
-                    .catch(error => {
-                      console.error('An error occurred:', error);
-                    });
-                }
+                  })
+                  .then(response => {
+                    if (!response.ok) {
+                      throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                  })
+                  .then(populateHistorySelect())
+                  .catch(error => {
+                    console.error('An error occurred:', error);
+                  });
                 break;
               case 'Download':
                 // request load history file from the server and download it as json file
@@ -1111,9 +1202,7 @@ function populateHistorySelect() {
                     }
                     return response.json();
                   })
-                  .then(responseData => {
-                    console.log(responseData);
-                  })
+                  .then(populateHistorySelect())
                   .catch(error => {
                     console.error('An error occurred:', error);
                   });
@@ -1122,7 +1211,7 @@ function populateHistorySelect() {
           });
         });
 
-        selectedFilename = config_data.server.default_history_file;
+        selectedFilename = config_data.settings.default_history_file;
       })
       .catch(error => {
         console.error('Error fetching history files:', error);
@@ -1130,29 +1219,6 @@ function populateHistorySelect() {
 
     // Resolve the promise when the operation is complete
     resolve();
-  });
-}
-
-function loadSelectedHistory(selectedFilename) {
-  const messageContainer = document.getElementById('message-container');
-  if (selectedFilename == undefined) {
-    selectedFilename = config_data.server.default_history_file;
-  }
-
-  fetch(`${server_url+server_port}/history`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ task: 'load', chat: selectedFilename })
-  })
-  .then(response => {
-    if (!response.ok) throw new Error('Error loading selected history file.');
-    return response.json();
-  })
-  .then(data => {
-    messageManagerInstance.displayMessages(data);
-  })
-  .catch(error => {
-    console.error('Error:', error);
   });
 }
 
@@ -1283,34 +1349,30 @@ function updateMsgCount() {
   }, 300);
 }
 
-updateMsgCount();
-
 function deleteMessageFromHistory(message) {
   let fileName = selectedFilename;
 
-  if (confirm("Are you sure you want to delete this file?")) {
-    fetch(`${server_url + server_port}/history`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          chat: fileName,
-          task: "delete_message",
-          text: message
-        })
+  fetch(`${server_url + server_port}/history`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        chat: fileName,
+        task: "delete_message",
+        text: message
       })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then(responseData => { alert(responseData); location.reload(); })
-      .catch(error => {
-        console.error('An error occurred:', error);
-      });
-  }
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(historyManagerInstance.loadSelectedHistory(fileName))
+    .catch(error => {
+      console.error('An error occurred:', error);
+    });
 }
 
 // Function to adjust textarea height
@@ -1344,8 +1406,3 @@ document.addEventListener('DOMContentLoaded', initializeTextareas);
 
 // Also run it immediately in case the script is loaded after the DOM
 initializeTextareas();
-
-function resetEverything() {
-  localStorage.clear();
-  location.reload();
-}

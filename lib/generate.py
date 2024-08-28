@@ -21,7 +21,7 @@ if config_agi["ai"]["agi"] == True:
     from langchain_community.document_loaders import TextLoader
     from langchain.text_splitter import RecursiveCharacterTextSplitter
     from langchain_community.vectorstores import Chroma
-    from langchain_community.embeddings import GPT4AllEmbeddings
+    from langchain_huggingface import HuggingFaceEmbeddings
     from langchain.chains import RetrievalQA
     from langchain_community.llms import LlamaCpp
 
@@ -31,12 +31,15 @@ class ChatGenerator:
         self.model = Llama(
             model_path="lib/models/yuna/" + config["server"]["yuna_default_model"],
             n_ctx=config["ai"]["context_length"],
+            last_n_tokens_size=config["ai"]["last_n_tokens_size"],
             seed=config["ai"]["seed"],
             n_batch=config["ai"]["batch_size"],
             n_gpu_layers=config["ai"]["gpu_layers"],
             n_threads=config["ai"]["threads"],
+            use_mmap=config["ai"]["use_mmap"],
             use_mlock=config["ai"]["use_mlock"],
             flash_attn=config["ai"]["flash_attn"],
+            offload_kqv=config["ai"]["offload_kqv"],
             verbose=False
         ) if config["server"]["yuna_text_mode"] == "native" else ""
 
@@ -173,7 +176,7 @@ class ChatGenerator:
             return ''.join(response) if isinstance(response, (list, type((lambda: (yield))()))) else response
         return response
     
-    def processTextFile(self, text_file, question, temperature=0.8, max_new_tokens=128, context_window=256):
+    def processTextFile(self, text_file, question, temperature):
         # Load text file data
         loader = TextLoader(text_file)
         data = loader.load()
@@ -182,16 +185,14 @@ class ChatGenerator:
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=200, chunk_overlap=0)
         docs = text_splitter.split_documents(data)
 
-        # Generate embeddings locally using GPT4All
-        gpt4all_embeddings = GPT4AllEmbeddings()
-        vectorstore = Chroma.from_documents(documents=docs, embedding=gpt4all_embeddings)
+        # Generate embeddings using HuggingFaceEmbeddings
+        huggingface_embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+        vectorstore = Chroma.from_documents(documents=docs, embedding=huggingface_embeddings)
 
         # Load GPT4All model for inference  
         llm = LlamaCpp(
-            model_path="lib/models/yuna/" + self.config["server"]["yuna_default_model"],
+            model_path="lib/models/yuna/yuna-ai-v3-q5_k_m.gguf",
             temperature=temperature,
-            max_new_tokens=max_new_tokens,
-            context_window=context_window,
             verbose=False,
         )
 
@@ -200,7 +201,7 @@ class ChatGenerator:
 
         # Ask a question 
         result = qa.invoke(question)
-        return result
+        return result['result']
 
     def get_history_text(self, chat_history, text, useHistory, yunaConfig):
         history = ''

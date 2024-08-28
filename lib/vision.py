@@ -10,13 +10,16 @@ llm = Llama(
     model_path="lib/models/agi/miru/" + config["server"]["miru_default_model"],
     chat_handler=MoondreamChatHandler(clip_model_path="lib/models/agi/miru/" + config["server"]["eyes_default_model"]),
     n_ctx=4096,
+    last_n_tokens_size=config["ai"]["last_n_tokens_size"],
     seed=config["ai"]["seed"],
     n_batch=config["ai"]["batch_size"],
     n_gpu_layers=config["ai"]["gpu_layers"],
     n_threads=config["ai"]["threads"],
+    use_mmap=config["ai"]["use_mmap"],
     use_mlock=config["ai"]["use_mlock"],
     flash_attn=config["ai"]["flash_attn"],
-    verbose=False,
+    offload_kqv=config["ai"]["offload_kqv"],
+    verbose=False
 ) if config["ai"]["miru"] == True else ""
 
 if config["ai"]["art"] == True:
@@ -50,14 +53,14 @@ def capture_image(image_path=None, prompt=None, use_cpu=False, speech=False):
 
     result = llm.create_chat_completion(
     messages = [
-        {"role": "system", "content": "You are an assistant who perfectly describes images and answers questions about them."},
-        {
-            "role": "user",
-            "content": [
-                {"type" : "text", "text": prompt},
-                {"type": "image_url", "image_url": {"url": "file://" + abs_image_path } }
-            ]
-        }
+            {"role": "system", "content": "You are an assistant who perfectly describes images and answers questions about them."},
+            {
+                "role": "user",
+                "content": [
+                    {"type" : "text", "text": prompt},
+                    {"type": "image_url", "image_url": {"url": "file://" + abs_image_path } }
+                ]
+            }
         ]
     )
 

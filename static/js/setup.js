@@ -2,6 +2,7 @@ function openConfigParams() {
   const parameterContainer = document.getElementById('parameter-container');
   parameterContainer.appendChild(createBlockList(config_data.ai, 'ai'));
   parameterContainer.appendChild(createBlockList(config_data.server, 'server'));
+  parameterContainer.appendChild(createBlockList(config_data.settings, 'settings'));
   return parameterContainer;
 }
 
@@ -48,8 +49,9 @@ function capitalize(str) {
 
 function saveConfigParams() {
   const reverseConfig = {
-    ai: extractValuesFromBlockList('.ai-block-list', ['names', 'emotions', 'art', 'max-new-tokens', 'context-length', 'temperature', 'repetition-penalty', 'last-n-tokens', 'seed', 'top-k', 'top-p', 'stop', 'stream', 'batch-size', 'threads', 'gpu-layers']),
-    server: extractValuesFromBlockList('.server-block-list', ['port', 'url', 'history', 'default-history-file', 'images', 'yuna-model-dir', 'yuna-default-model', 'agi-model-dir', 'art-default-model'])
+    ai: extractValuesFromBlockList('.ai-block-list', ['names', 'himitsu', 'agi', 'emotions', 'art', 'miru', 'search', 'max_new_tokens', 'context_length', 'temperature', 'repetition_penalty', 'last_n_tokens_size', 'seed', 'top_k', 'top_p', 'stop', 'batch_size', 'threads', 'gpu_layers', 'use_mmap', 'flash_attn', 'use_mlock', 'offload_kqv']),
+    server: extractValuesFromBlockList('.server-block-list', ['port', 'url', 'yuna_default_model', 'miru_default_model', 'eyes_default_model', 'voice_default_model', 'art_default_model', 'device', 'yuna_text_mode', 'yuna_audio_mode', 'yuna_reference_audio', 'output_audio_format']),
+    settings: extractValuesFromBlockList('.settings-block-list', ['streaming', 'news', 'default_history_file', 'default_kanojo', 'default_prompt_template', 'background_call', 'nsfw_filter', 'dark_mode'])
   };
 
   localStorage.setItem('config', JSON.stringify(reverseConfig));
@@ -93,7 +95,7 @@ async function checkConfigData() {
         }
       } = config_data);
       populateHistorySelect().then(() => {
-        loadSelectedHistory();
+        historyManagerInstance.loadSelectedHistory();
       });
     }, 100);
   } else {
@@ -293,3 +295,17 @@ document.querySelectorAll('.side-link')[3].addEventListener('click', function ()
     document.getElementById(id).style.height = `calc(${document.getElementById(id).scrollHeight}px + 3px)`;
   });
 });
+
+function applySettings() {
+  settingsData = JSON.parse(localStorage.getItem('config')).settings
+
+  if (settingsData.streaming) {
+    document.querySelector('#streamingChatMode').click()
+  }
+  
+  if (settingsData.customConfig) {
+    document.querySelector('#customConfig').click()
+  }
+}
+
+applySettings()

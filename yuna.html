@@ -185,7 +185,7 @@
                                     <input type="file" id="textUpload" accept=".txt" style="display: none;"
                                         onchange="captureTextViaFile()">
                                     <input type="file" id="imageUpload" accept="image/*" style="display: none;"
-                                        onchange="captureImageViaFile()">
+                                        onchange="captureImageViaFile(this)">
                                     <input type="file" id="audioUpload" accept="audio/*" style="display: none;"
                                         onchange="captureAudioViaFile()">
                                     <input type="file" id="videoUpload" accept="video/*" style="display: none;"
@@ -262,45 +262,48 @@
 
                         <div class="tab-o" id="3">
                             <div class="coll-lo">
-                                <div class="block-card settings-container el-9">
-                                    <ul class="nav nav-pills nav-fill mb-3" id="settingsTab" role="tablist">
-                                        <li class="nav-item" role="presentation">
-                                            <button class="nav-link active" id="himitsu-tab" data-bs-toggle="pill"
-                                                data-bs-target="#himitsu" type="button" role="tab"
-                                                aria-controls="himitsu" aria-selected="true">Himitsu</button>
-                                        </li>
-                                        <li class="nav-item" role="presentation">
-                                            <button class="nav-link" id="kanojo-tab" data-bs-toggle="pill"
-                                                data-bs-target="#kanojo" type="button" role="tab" aria-controls="kanojo"
-                                                aria-selected="false">Kanojo Connect</button>
-                                        </li>
-                                    </ul>
-                                    <div class="tab-content" id="settingsTabContent">
-                                        <div class="tab-pane fade show active" id="himitsu" role="tabpanel"
-                                            aria-labelledby="himitsu-tab">
-                                            <div class="mb-3">
-                                                <h5 class="mb-3">Dark Mode</h5>
-                                                <div class="form-check form-switch">
-                                                    <input class="form-check-input" type="checkbox" id="darkModeSwitch"
-                                                        onclick="toggleTheme()" checked>
-                                                    <label class="form-check-label" for="darkModeSwitch">Enable Dark
-                                                        Mode</label>
+                                <div class="card settings-container el-9">
+                                    <div class="card-body">
+                                        <ul class="nav nav-pills nav-fill mb-3" id="myTab" role="tablist">
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link active" id="himitsu-tab" data-bs-toggle="pill"
+                                                    data-bs-target="#himitsu" type="button" role="tab"
+                                                    aria-controls="himitsu" aria-selected="true">Himitsu</button>
+                                            </li>
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link" id="kanojo-tab" data-bs-toggle="pill"
+                                                    data-bs-target="#kanojo" type="button" role="tab"
+                                                    aria-controls="kanojo" aria-selected="false">Kanojo Connect</button>
+                                            </li>
+                                        </ul>
+                                        <div class="tab-content" id="myTabContent">
+                                            <div class="tab-pane fade show active" id="himitsu" role="tabpanel"
+                                                aria-labelledby="himitsu-tab">
+                                                <div class="mb-3">
+                                                    <h5 class="mb-3">Dark Mode</h5>
+                                                    <div class="form-check form-switch">
+                                                        <input class="form-check-input" type="checkbox"
+                                                            id="darkModeSwitch" onclick="toggleTheme()" checked>
+                                                        <label class="form-check-label" for="darkModeSwitch">Enable Dark
+                                                            Mode</label>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="tab-pane fade" id="kanojo" role="tabpanel"
-                                            aria-labelledby="kanojo-tab">
-                                            <div class="mb-3">
-                                                <h5 class="mb-3">AI Data Usage</h5>
-                                                <div class="list-group mb-3">
-                                                    <span class="list-group-item list-group-item-action">This
-                                                        feature</span>
-                                                </div>
-                                                <div class="form-check form-switch">
-                                                    <input class="form-check-input" type="checkbox"
-                                                        id="aiDataUsageSwitch" checked>
-                                                    <label class="form-check-label" for="aiDataUsageSwitch">Enable AI
-                                                        Data Usage</label>
+                                            <div class="tab-pane fade" id="kanojo" role="tabpanel"
+                                                aria-labelledby="kanojo-tab">
+                                                <div class="mb-3">
+                                                    <h5 class="mb-3">AI Data Usage</h5>
+                                                    <div class="list-group mb-3">
+                                                        <span class="list-group-item list-group-item-action">This
+                                                            feature</span>
+                                                    </div>
+                                                    <div class="form-check form-switch">
+                                                        <input class="form-check-input" type="checkbox"
+                                                            id="aiDataUsageSwitch" checked>
+                                                        <label class="form-check-label" for="aiDataUsageSwitch">Enable
+                                                            AI
+                                                            Data Usage</label>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -309,10 +312,9 @@
                             </div>
                         </div>
 
-
                         <div class="tab-o" id="4">
                             <div class="coll-lo">
-                                <div class="col-10 settings-container el-9" id="profile-card">
+                                <div class="col-10 settings-container el-9 profile-card">
                                     <div class="row">
                                         <!-- Profile Card -->
                                         <div class="col-md-4">
@@ -417,18 +419,20 @@
                                                     <h5 class="card-title">Plugins</h5>
 
                                                     <div class="mb-3">
-                                                        <label for="uiuxDesign" class="form-label">News Flow</label>
+                                                        <label for="customConfig" class="form-label">Custom
+                                                            Config</label>
                                                         <!-- toggle switch -->
                                                         <div class="form-check form-switch">
                                                             <input class="form-check-input" type="checkbox"
-                                                                id="updateEmojiHistory">
-                                                            <label class="form-check-label"
-                                                                for="updateEmojiHistory">Enable News Flow</label>
+                                                                id="customConfig">
+                                                            <label class="form-check-label" for="customConfig">Enable
+                                                                Custom Config</label>
                                                         </div>
                                                     </div>
 
                                                     <div class="mb-3">
-                                                        <label for="streamingChatMode" class="form-label">Streaming Chat
+                                                        <label for="streamingChatMode" class="form-label">Streaming
+                                                            Chat
                                                             Mode</label>
                                                         <!-- toggle switch -->
                                                         <div class="form-check form-switch">
@@ -493,7 +497,7 @@
 
                         <div class="tab-o" id="5">
                             <div class="coll-lo">
-                                <div class="card settings-container el-9">
+                                <div class="card settings-container profile-card el-9">
                                     <div class="card-body">
                                         <ul class="nav nav-pills nav-fill mb-4" role="tablist">
                                             <li class="nav-item" role="presentation">
@@ -660,7 +664,8 @@
                             id="iconAudioRec"></i></button>
                     <button type="button" class="btn btn-secondary" onclick="drawArt();"><i
                             class="fas fa-pencil-alt"></i></button>
-                    <button type="button" class="btn btn-danger" onclick="document.getElementById('videoCallModal').dispatchEvent(new Event('hidden.bs.modal'));"><i
+                    <button type="button" class="btn btn-danger"
+                        onclick="document.getElementById('videoCallModal').dispatchEvent(new Event('hidden.bs.modal'));"><i
                             class="fas fa-phone-slash"></i></button>
                 </div>
             </div>
@@ -766,8 +771,8 @@
                                             </div>
 
                                             <div type="button" style="margin-top: 20px; width: 20%;">
-                                                <a href="#" onclick="resetEverything();" class="btn btn-secondary"
-                                                    style="width: 90%;">Reset</a>
+                                                <a href="#" onclick="localStorage.clear(); location.reload();"
+                                                    class="btn btn-secondary" style="width: 90%;">Reset</a>
                                             </div>
                                         </div>
                                     </div>
@@ -894,14 +899,8 @@
                                                 <!-- Dynamic HTML elements will be added here -->
                                             </div>
 
-                                            <button class="btn" onclick="localStorage.clear()">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                            <button class="btn">
-                                                <i class="bi bi-x"></i>
-                                            </button>
-                                            <button class="btn" onclick="saveConfigParams()">
-                                                <i class="bi bi-check"></i>
+                                            <button class="btn btn-secondary" onclick="saveConfigParams()">
+                                                Save
                                             </button>
                                         </div>
                                     </div>

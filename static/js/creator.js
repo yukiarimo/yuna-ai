@@ -1,28 +1,26 @@
 // Get the necessary elements
-const promptTemplateTextarea = document.querySelector('#article-prompt-template');
-const bodyTextTextarea = document.querySelector('#body-text-article-container');
-const resultTextarea = document.querySelector('#result-create-article');
-const submitButton = document.getElementById('send-create-article');
+const promptTemplateTextareaArticle = document.querySelector('#article-prompt-template');
+const bodyTextTextareaArticle = document.querySelector('#body-text-article-container');
+const resultTextareaArticle = document.querySelector('#result-create-article');
+const submitButtonArticle = document.getElementById('send-create-article');
 
 // Set the default text for the Prompt Template block
 const defaultPromptTemplate = promptTemplateManager.buildPrompt('himitsuAssistant');
-promptTemplateTextarea.value = defaultPromptTemplate.replace('### Instruction:\n', '### Instruction:\n{body_text}');
+promptTemplateTextareaArticle.value = defaultPromptTemplate.replace('### Instruction:\n', '### Instruction:\n{body_text}');
 
 // Function to send the request to the server
-async function sendRequest() {
-    activeElement = document.getElementById('body-text-article-container');
-
-    const bodyText = bodyTextTextarea.value;
-    const promptTemplate = promptTemplateTextarea.value.replace('{body_text}', bodyText);
+async function sendRequestArticle() {
+    const bodyText = bodyTextTextareaArticle.value;
+    const promptTemplate = promptTemplateTextareaArticle.value.replace('{body_text}', bodyText);
 
     // Clear the result textarea before starting
-    resultTextarea.value = '';
+    resultTextareaArticle.value = '';
 
-    messageManagerInstance.sendMessage(promptTemplate, null, imageData = '', url = '/message', naked = false, stream = true, outputElement = resultTextarea);
+    messageManagerInstance.sendMessage(promptTemplate, null, imageData = '', url = '/message', naked = false, stream = true, outputElement = resultTextareaArticle);
 }
 
 // Add an event listener to the submit button
-submitButton.addEventListener('click', sendRequest);
+submitButtonArticle.addEventListener('click', sendRequestArticle);
 
 // Get the necessary elements for the Presentation tab
 const presentationPromptTemplateTextarea = document.getElementById('presentation-prompt-template');
@@ -38,8 +36,6 @@ presentationPromptTemplateTextarea.value = defaultPresentationPromptTemplate;
 
 // Function to send the request to the server for the Presentation tab
 async function sendPresentationRequest() {
-    activeElement = document.getElementById('user-input-presentation-container');
-
     const userInput = presentationUserInputTextarea.value;
     const promptTemplate = presentationPromptTemplateTextarea.value.replace('{user_input}', userInput);
 
@@ -57,3 +53,15 @@ function copyToDraft() {
 // Add event listeners to the buttons
 generateButton.addEventListener('click', sendPresentationRequest);
 copyToDraftButton.addEventListener('click', copyToDraft);
+
+// Function for naked mode
+const nakedWorkArea = document.querySelector('#naked-work-area');
+const submitButtonNaked = document.getElementById('send-create-naked');
+
+// Function to send the request to the server
+async function sendRequestNaked() {
+    messageManagerInstance.sendMessage(nakedWorkArea.value, null, imageData = '', url = '/message', naked = false, stream = true, outputElement = nakedWorkArea);
+}
+
+// Add an event listener to the submit button
+submitButtonNaked.addEventListener('click', sendRequestNaked);

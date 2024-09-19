@@ -262,7 +262,7 @@ The Yuna AI marketplace is a hub for exclusive content, models, and features. Yo
 Link: [Yuna AI Marketplace](https://patreon.com/YukiArimo)
 
 ### License
-Yuna AI is released under the [GNU Affero General Public License (AGPL-3.0)](https://www.gnu.org/licenses/agpl-3.0.html), promoting open-source development and community enhancement.
+Yuna AI is released under the [Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International Public License](https://creativecommons.org/licenses/by-nc-nd/4.0/), promoting open-source development and community enhancement.
 
 ### Acknowledgments
 Please note that the Yuna AI project is not affiliated with OpenAI or any other organization. It is an independent project developed by Yuki Arimo and the open-source community. While the project is designed to provide users with a unique and engaging AI experience, Yuna is not intended to be an everyday assistant or replacement for human interaction. Yuna AI Project is a non-profit project shared as a research preview and not intended for commercial use. Yes, it's free, but it's not a cash cow.

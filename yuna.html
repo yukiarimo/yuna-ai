@@ -91,7 +91,7 @@
                     <li><a href="#" class="nav-link side-link" onclick="OpenTab('3')"><i class="fas fa-compass"></i>
                             Explore</a>
                     <li><a href="#" class="nav-link side-link" onclick="OpenTab('4')"><i class="fas fa-user"></i>
-                            Profile</a></li>
+                            Kanojo</a></li>
                     <li><a href="#" class="nav-link side-link" onclick="OpenTab('5')"><i class="fas fa-user"></i>
                             Create</a></li>
                     <li><a href="#" class="nav-link side-link" onclick="settingsView.show();"><i class="fas fa-cog"></i>
@@ -325,7 +325,7 @@
                                                     <div style="display: flex; flex-direction: row;">
                                                         <h5 class="card-title" id="yuna-name">Yuna Ai</h5>
                                                     </div>
-                                                    <p class="card-text">California, USA</p>
+                                                    <p class="card-text">Calgary, Canada</p>
                                                     <button class="btn btn-primary">Upload Photo</button>
                                                 </div>
                                             </div>
@@ -334,66 +334,55 @@
                                         <div class="col-md-8">
                                             <form>
                                                 <div class="mb-3">
-                                                    <label for="yuna-ai-names" class="form-label">Names</label>
-                                                    <textarea type="text" class="form-control" id="yuna-ai-names"
-                                                        value="Yuna Ai"></textarea>
+                                                    <label for="yuna-ai-names" class="form-label">Name</label>
+                                                    <input type="text" class="form-control" id="kanojoName">
                                                 </div>
                                                 <div class="mb-3">
-                                                    <label for="memory" class="form-label">Memory</label>
-                                                    <textarea type="text" class="form-control" id="yuna-ai-memory"
-                                                        value=""></textarea>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label for="system" class="form-label">System</label>
-                                                    <textarea type="text" class="form-control" id="system"
-                                                        value=""></textarea>
+                                                    <label for="yuna-ai-memory" class="form-label">Memory</label>
+                                                    <textarea class="form-control" id="kanojoMemory"
+                                                        rows="3"></textarea>
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="character" class="form-label">Character</label>
-                                                    <textarea type="text" class="form-control" id="character"
-                                                        value=""></textarea>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label for="historyField" class="form-label">History</label>
-                                                    <textarea type="text" class="form-control" id="historyField"
-                                                        value=""></textarea>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label for="useHistory" class="form-label">Use History</label>
-                                                    <textarea type="text" class="form-control" id="useHistory"
-                                                        value=""></textarea>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label for="enabledParameters" class="form-label">Enabled
-                                                        Parameters</label>
-                                                    <textarea type="text" class="form-control" id="enabledParameters"
-                                                        value=""></textarea>
+                                                    <textarea class="form-control" id="kanojoCharacter" rows="5"></textarea>
                                                 </div>
                                             </form>
                                         </div>
                                     </div>
 
-                                    <!-- Add a select element for choosing kanojos -->
-                                    <div class="mb-3">
-                                        <label for="kanojoSelect" class="form-label">Select Kanojo</label>
-                                        <select class="form-select" id="kanojoSelect"></select>
+                                    <!-- Kanojo Management -->
+                                    <div class="row mt-4">
+                                        <div class="col-md-12">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">Kanojo Management</h5>
+                                                    <div class="mb-3">
+                                                        <label for="kanojoSelect" class="form-label">Select
+                                                            Kanojo</label>
+                                                        <select class="form-select" id="kanojoSelect"></select>
+                                                    </div>
+                                                    <button type="button" class="btn btn-primary"
+                                                        id="saveKanojo">Save</button>
+                                                    <button type="button" class="btn btn-primary"
+                                                        id="addKanojo">Add</button>
+                                                    <button type="button" class="btn btn-secondary"
+                                                        id="deleteKanojo">Delete</button>
+                                                    <button type="button" class="btn btn-primary"
+                                                        id="exportKanojos">Export All</button>
+                                                    <button type="button" class="btn btn-primary"
+                                                        id="importKanojos">Import All</button>
+                                                    <button type="button" class="btn btn-primary"
+                                                        id="exportSingleKanojo">Export Single</button>
+                                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                                        data-bs-target="#fileModal">Import Single</button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
 
-                                    <!-- Add buttons for managing kanojos -->
-                                    <button type="button" class="btn btn-primary" id="saveKanojo">Save</button>
-                                    <button type="button" class="btn btn-primary" id="addKanojo">Add</button>
-                                    <button type="button" class="btn btn-secondary" id="deleteKanojo">Delete</button>
-                                    <button type="button" class="btn btn-primary" id="exportKanojos">Bulk
-                                        Export</button>
-                                    <button type="button" class="btn btn-primary" id="importKanojos">Bulk
-                                        Import</button>
-                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                        data-bs-target="#fileModal">Import</button>
-                                    <button type="button" class="btn btn-primary" id="exportKanojoFile">Export</button>
-
-                                    <!-- Skills and Events -->
+                                    <!-- Customization -->
                                     <div class="row mt-4">
-                                        <!-- Skills Section -->
+                                        <!-- Emotional Profile Section -->
                                         <div class="col-md-6">
                                             <div class="card">
                                                 <div class="card-body">
@@ -412,35 +401,91 @@
                                             </div>
                                         </div>
 
-                                        <!-- Events Section -->
+                                        <!-- Plugins Section -->
                                         <div class="col-md-6">
                                             <div class="card">
                                                 <div class="card-body">
                                                     <h5 class="card-title">Plugins</h5>
 
-                                                    <div class="mb-3">
-                                                        <label for="customConfig" class="form-label">Custom
-                                                            Config</label>
+                                                    <div>
+                                                        <label for="testNonIntegrated" class="form-label">Function
+                                                            Calling</label>
+                                                        <!-- toggle switch -->
+                                                        <div class="form-check form-switch">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                id="testNonIntegrated">
+                                                            <label class="form-check-label"
+                                                                for="testNonIntegrated">Pseudo-API</label>
+                                                        </div>
+
+                                                        <div class="form-check form-switch">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                id="testNonIntegrated">
+                                                            <label class="form-check-label"
+                                                                for="testNonIntegrated">Embeddable Functions</label>
+                                                        </div>
+                                                    </div>
+
+                                                    <div>
+                                                        <label for="testNonIntegrated" class="form-label">Gaming</label>
+                                                        <!-- toggle switch -->
+                                                        <div class="form-check form-switch">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                id="testNonIntegrated">
+                                                            <label class="form-check-label"
+                                                                for="testNonIntegrated">Kiseki</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Settings Section -->
+                                    <div class="row mt-4">
+                                        <div class="col-md-12">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">Customization</h5>
+
+                                                    <div>
+                                                        <label for="customConfig"
+                                                            class="form-label">Configuration</label>
                                                         <!-- toggle switch -->
                                                         <div class="form-check form-switch">
                                                             <input class="form-check-input" type="checkbox"
                                                                 id="customConfig">
-                                                            <label class="form-check-label" for="customConfig">Enable
-                                                                Custom Config</label>
+                                                            <label class="form-check-label" for="customConfig">Custom
+                                                                Config</label>
                                                         </div>
                                                     </div>
 
-                                                    <div class="mb-3">
-                                                        <label for="streamingChatMode" class="form-label">Streaming
-                                                            Chat
-                                                            Mode</label>
+                                                    <div>
+                                                        <label for="streamingChatMode"
+                                                            class="form-label">Chatting</label>
                                                         <!-- toggle switch -->
                                                         <div class="form-check form-switch">
                                                             <input class="form-check-input" type="checkbox"
                                                                 id="streamingChatMode">
                                                             <label class="form-check-label"
-                                                                for="streamingChatMode">Enable Streaming Chat
-                                                                Mode</label>
+                                                                for="streamingChatMode">Streaming Messages</label>
+                                                        </div>
+                                                        <div class="form-check form-switch">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                id="useHistory">
+                                                            <label class="form-check-label" for="useHistory">Use
+                                                                History</label>
+                                                        </div>
+                                                    </div>
+
+                                                    <div>
+                                                        <label for="soundsMode" class="form-label">SFX</label>
+                                                        <!-- toggle switch -->
+                                                        <div class="form-check form-switch">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                id="soundsMode">
+                                                            <label class="form-check-label" for="soundsMode">Enable
+                                                                Sounds</label>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -462,8 +507,7 @@
                                                     <div class="mb-3">
                                                         <label for="promptTemplateName" class="form-label">Prompt
                                                             Template Name</label>
-                                                        <textarea type="text" class="form-control"
-                                                            id="promptTemplateName"></textarea>
+                                                        <input type="text" class="form-control" id="promptTemplateName">
                                                     </div>
                                                     <div class="mb-3">
                                                         <label for="promptTemplateContent" class="form-label">Prompt
@@ -478,19 +522,36 @@
                                                     <button type="button" class="btn btn-danger"
                                                         id="deletePromptTemplate">Delete</button>
                                                     <button type="button" class="btn btn-primary"
-                                                        id="exportSinglePromptTemplate">Export</button>
-                                                    <button type="button" class="btn btn-primary"
                                                         id="exportPromptTemplates">Export All</button>
-                                                    <button type="button" class="btn btn-primary"
-                                                        id="importSinglePromptTemplate">Import</button>
                                                     <button type="button" class="btn btn-primary"
                                                         id="importPromptTemplates">Import All</button>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row mt-4"></div>
-                                    <div class="row mt-4"></div>
+                                </div>
+
+                                <!-- File Import Modal -->
+                                <div class="modal fade" id="fileModal" tabindex="-1" aria-labelledby="fileModalLabel"
+                                    aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="fileModalLabel">Import Kanojo</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <input type="file" id="fileInput" accept=".json">
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Close</button>
+                                                <button type="button" class="btn btn-primary"
+                                                    id="fileSubmit">Submit</button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -1,11 +1,18 @@
 import json
 import os
-import whisper
 import torch
 import torchaudio
 from pydub import AudioSegment
+from transformers import pipeline
 
-yunaListen = whisper.load_model(name="tiny.en", device="cpu", in_memory=True)
+yunaListen = pipeline(
+    "automatic-speech-recognition",
+    model="openai/whisper-tiny",
+    torch_dtype=torch.float32,
+    device="mps", # or mps for Mac devices
+    model_kwargs={"attn_implementation": "sdpa"},
+)
+
 XTTS_MODEL = None
 
 with open('static/config.json', 'r') as config_file:
@@ -66,7 +73,12 @@ if config['server']['yuna_audio_mode'] == "native":
     speaker_embeddings = torch.tensor(speaker_embeddings).unsqueeze(0).to(torch.float32)
 
 def transcribe_audio(audio_file):
-    result = yunaListen.transcribe(audio=audio_file, verbose=None)
+    result = yunaListen(
+        audio_file,
+        chunk_length_s=30,
+        batch_size=24,
+        return_timestamps=False,
+    )
     return result['text']
 
 def load_model(xtts_checkpoint, xtts_config, xtts_vocab):

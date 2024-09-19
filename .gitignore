@@ -12,14 +12,13 @@ static/img/art/*
 !static/img/art/art_template.png
 static/audio/*
 !static/audio/README.md
+!static/audio/sfx/*
 lib/models/*
 !lib/models/agi/README.md
-!lib/models/agi/art/README.md
 !lib/models/agi/audio/README.md
-!lib/models/agi/himitsu/README.md
 !lib/models/agi/miru/README.md
 !lib/models/agi/uta/README.md
 !lib/models/agi/voice/README.md
 !lib/models/yuna/README.md
-.DS_Store
 llama.log
+.DS_Store

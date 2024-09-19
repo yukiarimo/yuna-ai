@@ -7,11 +7,10 @@
         "himitsu": false,
         "agi": false,
         "emotions": false,
-        "art": false,
         "miru": false,
         "search": false,
-        "max_new_tokens": 256,
-        "context_length": 1536,
+        "max_new_tokens": 512,
+        "context_length": 2048,
         "temperature": 0.7,
         "repetition_penalty": 1.1,
         "last_n_tokens_size": 128,
@@ -60,7 +59,8 @@
         "default_prompt_template": "dialog",
         "background_call": false,
         "nsfw_filter": false,
-        "dark_mode": true
+        "dark_mode": true,
+        "sounds": false
     },
     "security": {
         "secret_key": "YourSecretKeyHere123!",

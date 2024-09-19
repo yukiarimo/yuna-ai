@@ -184,7 +184,7 @@ button {
 
 .settings-container {
     margin: 50px auto;
-    background-color: #1f1f1f;
+    background: none !important;
     border-radius: 8px;
     margin-top: 50px !important;
 }

@@ -15,3 +15,5 @@ Pillow
 article-parser
 trafilatura
 accelerate
+langchain_huggingface
+langchain-community

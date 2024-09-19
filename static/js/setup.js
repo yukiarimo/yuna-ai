@@ -49,9 +49,9 @@ function capitalize(str) {
 
 function saveConfigParams() {
   const reverseConfig = {
-    ai: extractValuesFromBlockList('.ai-block-list', ['names', 'himitsu', 'agi', 'emotions', 'art', 'miru', 'search', 'max_new_tokens', 'context_length', 'temperature', 'repetition_penalty', 'last_n_tokens_size', 'seed', 'top_k', 'top_p', 'stop', 'batch_size', 'threads', 'gpu_layers', 'use_mmap', 'flash_attn', 'use_mlock', 'offload_kqv']),
+    ai: extractValuesFromBlockList('.ai-block-list', ['names', 'himitsu', 'agi', 'emotions', 'miru', 'search', 'max_new_tokens', 'context_length', 'temperature', 'repetition_penalty', 'last_n_tokens_size', 'seed', 'top_k', 'top_p', 'stop', 'batch_size', 'threads', 'gpu_layers', 'use_mmap', 'flash_attn', 'use_mlock', 'offload_kqv']),
     server: extractValuesFromBlockList('.server-block-list', ['port', 'url', 'yuna_default_model', 'miru_default_model', 'eyes_default_model', 'voice_default_model', 'art_default_model', 'device', 'yuna_text_mode', 'yuna_audio_mode', 'yuna_reference_audio', 'output_audio_format']),
-    settings: extractValuesFromBlockList('.settings-block-list', ['streaming', 'news', 'default_history_file', 'default_kanojo', 'default_prompt_template', 'background_call', 'nsfw_filter', 'dark_mode'])
+    settings: extractValuesFromBlockList('.settings-block-list', ['streaming', 'news', 'default_history_file', 'default_kanojo', 'default_prompt_template', 'background_call', 'nsfw_filter', 'dark_mode', 'sounds'])
   };
 
   localStorage.setItem('config', JSON.stringify(reverseConfig));
@@ -305,6 +305,10 @@ function applySettings() {
   
   if (settingsData.customConfig) {
     document.querySelector('#customConfig').click()
+  }
+
+  if (settingsData.sounds) {
+    document.querySelector('#soundsMode').click()
   }
 }
 

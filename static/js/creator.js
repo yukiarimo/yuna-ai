@@ -5,7 +5,7 @@ const resultTextareaArticle = document.querySelector('#result-create-article');
 const submitButtonArticle = document.getElementById('send-create-article');
 
 // Set the default text for the Prompt Template block
-const defaultPromptTemplate = promptTemplateManager.buildPrompt('himitsuAssistant');
+const defaultPromptTemplate = promptTemplateManager.buildKanojo('himitsuAssistant');
 promptTemplateTextareaArticle.value = defaultPromptTemplate.replace('### Instruction:\n', '### Instruction:\n{body_text}');
 
 // Function to send the request to the server

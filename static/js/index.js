@@ -15,6 +15,7 @@ let audioChunks = [];
 var activeElement = null;
 let isStreamingChatModeEnabled = false;
 let isCustomConfigEnabled = false;
+let soundsModeEnabled = false;
 
 // Function to handle the toggle switch change
 document.querySelector('#streamingChatMode').onchange = e => {
@@ -44,6 +45,22 @@ document.querySelector('#customConfig').onchange = e => {
 
   // Update the settings.streaming value
   config.settings.customConfig = isCustomConfigEnabled;
+
+  // Save the updated configuration back to localStorage
+  localStorage.setItem('config', JSON.stringify(config));
+}
+
+document.querySelector('#soundsMode').onchange = e => {
+  soundsModeEnabled = e.target.checked;
+
+  // Retrieve the current configuration from localStorage
+  let config = JSON.parse(localStorage.getItem('config')) || {};
+
+  // Ensure the settings object exists
+  config.settings = config.settings || {};
+
+  // Update the settings.streaming value
+  config.settings.sounds = soundsModeEnabled;
 
   // Save the updated configuration back to localStorage
   localStorage.setItem('config', JSON.stringify(config));
@@ -117,9 +134,9 @@ function sendAudioToServer(audioBlob, withImage = false, imageDataURL, imageName
   })
   .then(data => {
     if (withImage) {
-      askYunaImage = messageManagerInstance.sendMessage(data.text, kanojo.buildKanojo(), [imageDataURL, imageName, data.text], '/image', false, false, isStreamingChatModeEnabled);
+      askYunaImage = messageManagerInstance.sendMessage(data.text, kanojoManager.buildKanojo(), [imageDataURL, imageName, data.text], '/image', false, false, isStreamingChatModeEnabled);
     } else {
-      messageManagerInstance.sendMessage(data.text, kanojo.buildKanojo(),'', '/message', false, false, isStreamingChatModeEnabled);
+      messageManagerInstance.sendMessage(data.text, kanojoManager.buildKanojo(),'', '/message', false, false, isStreamingChatModeEnabled);
     };
   })
   .catch(error => {
@@ -190,6 +207,10 @@ class messageManager {
     messageContainer.appendChild(formattedMessage);
     this.scrollMsg();
 
+    if (name == name2) {
+        playAudio('message');
+    }
+
     if (isStreaming) {
         return formattedMessage;
     }
@@ -248,8 +269,8 @@ class messageManager {
         const body = JSON.stringify({
             chat: selectedFilename,
             text: messageContent,
-            useHistory: kanojo.useHistory,
-            template: (typeof template !== 'undefined') ? template : (this.inputText.value ? kanojo.buildKanojo() : null),
+            useHistory: kanojoManager.useHistory,
+            template: (typeof template !== 'undefined') ? template : (this.inputText.value ? kanojoManager.buildKanojo() : null),
             speech: isYunaListening,
             yunaConfig: yunaConfig,
             stream
@@ -375,13 +396,25 @@ class messageManager {
 messageManagerInstance = new messageManager();
 
 function playAudio(audioType = 'tts') {
+  if (!soundsModeEnabled && audioType != 'tts') {
+    return;
+  }
+
   const audioSource = document.getElementById("backgroundMusic");
   const audioMap = {
     'tts': `/static/audio/audio.mp3?v=${Math.random()}`,
-    'message': '/audio/sounds/message.mp3',
-    'send': '/audio/sounds/send.mp3',
-    'error': '/audio/sounds/error.mp3',
-    'ringtone': '/audio/sounds/ringtone.mp3'
+    'call': '/audio/sfx/app/ringtone.mp3',
+    'camera': '/audio/sfx/app/camera.mp3',
+    'confirm': '/audio/sfx/app/confirm.mp3',
+    'error': '/audio/sfx/app/error.mp3',
+    'keyboard': '/audio/sfx/app/keyboard.mp3',
+    'message': '/audio/sfx/app/message.mp3',
+    'mouseclick': '/audio/sfx/app/mouseclick.mp3',
+    'notification': '/audio/sfx/app/notification.mp3',
+    'popup': '/audio/sfx/app/popup.mp3',
+    'server': '/audio/sfx/app/server.mp3',
+    'welcome': '/audio/sfx/app/welcome.mp3',
+    'wrong': '/audio/sfx/app/wrong.mp3',
   };
   audioSource.src = audioMap[audioType];
   // Check if the audio type can be played
@@ -852,7 +885,7 @@ async function captureImage() {
     return true;
   } else {
     messageForImage = prompt('Enter a message for the image:');
-    askYunaImage = messageManagerInstance.sendMessage(messageForImage, kanojo.buildKanojo(), [imageDataURL, imageName, messageForImage], '/image', false, false, isStreamingChatModeEnabled);
+    askYunaImage = messageManagerInstance.sendMessage(messageForImage, kanojoManager.buildKanojo(), [imageDataURL, imageName, messageForImage], '/image', false, false, isStreamingChatModeEnabled);
   }
 }
 
@@ -869,7 +902,7 @@ async function captureImageViaFile(inputElement, image=null, imagePrompt=null) {
     messageForImage = prompt('Enter a message for the image:');
 
     const imageName = Date.now().toString();
-    messageManagerInstance.sendMessage('', kanojo.buildKanojo(), [imageDataURL, imageName, messageForImage], '/image', false, false, isStreamingChatModeEnabled);
+    messageManagerInstance.sendMessage('', kanojoManager.buildKanojo(), [imageDataURL, imageName, messageForImage], '/image', false, false, isStreamingChatModeEnabled);
   };
 
   reader.readAsDataURL(file);

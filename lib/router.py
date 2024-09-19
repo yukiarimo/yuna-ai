@@ -4,7 +4,7 @@ import json
 import os
 from flask import jsonify, request, send_from_directory, Response
 from flask_login import current_user, login_required
-from lib.vision import capture_image, create_image
+from lib.vision import capture_image
 from lib.search import get_html, search_web
 from lib.audio import transcribe_audio, speak_text
 from pydub import AudioSegment
@@ -166,21 +166,6 @@ def handle_image_request(chat_history_manager, config, self):
         chat_history_manager.save_chat_history(chat_history, list({current_user.get_id()})[0], chat_id)
 
         return jsonify({'message': image_data[0], 'path': image_data[1]})
-
-    elif 'prompt' in data and 'chat' in data and data['task'] == 'generate':
-        prompt = data['prompt']
-        chat_id = data['chat']
-
-        chat_history = chat_history_manager.load_chat_history(list({current_user.get_id()})[0]. chat_id)
-        chat_history.append({"name": self.config['ai']['names'][0], "message": prompt})
-
-        created_image = create_image(prompt)
-        chat_history.append({"name": self.config['ai']['names'][1], "message": f"Sure, here you go! <img src='img/art/{created_image}' class='image-message'>"})
-
-        chat_history_manager.save_chat_history(chat_history, list({current_user.get_id()})[0], chat_id)
-        yuna_image_message = f"Sure, here you go! <img src='img/art/{created_image}' class='image-message'>"
-
-        return jsonify({'message': yuna_image_message})
     else:
         return jsonify({'error': 'Invalid task parameter'}), 400
 

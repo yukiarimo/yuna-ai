@@ -57,7 +57,7 @@
         "default_history_file": "history_template:general.json",
         "default_kanojo": "Yuna",
         "default_prompt_template": "dialog",
-        "background_call": false,
+        "background_call": true,
         "nsfw_filter": false,
         "dark_mode": true,
         "sounds": false

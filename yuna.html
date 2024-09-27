@@ -92,8 +92,8 @@
                             Explore</a>
                     <li><a href="#" class="nav-link side-link" onclick="OpenTab('4')"><i class="fas fa-user"></i>
                             Kanojo</a></li>
-                    <li><a href="#" class="nav-link side-link" onclick="OpenTab('5')"><i class="fas fa-user"></i>
-                            Create</a></li>
+                    <li><a href="#" class="nav-link side-link" onclick="OpenTab('5')"><i class="fas fa-pencil-alt"></i>
+                            Studio</a></li>
                     <li><a href="#" class="nav-link side-link" onclick="settingsView.show();"><i class="fas fa-cog"></i>
                             Settings</a>
                     </li>
@@ -172,11 +172,6 @@
                             <div class="search-container input-wrapper ui-container">
                                 <div class="search-bar">
                                     <!-- a button to open popup-->
-                                    <button class="search-button icon-left attach-button" data-bs-toggle="popover"
-                                        aria-label="Attach File" data-bs-placement="bottom" data-bs-html="true"
-                                        data-bs-content="<a class='btn btn-outline-primary btn-sm dropdown-item' onclick='bookCreate()'>Story</a><a class='btn btn-outline-info btn-sm dropdown-item' onclick='drawArt();'>Art</a><a class='btn btn-outline-success btn-sm dropdown-item' onclick='requestRecentAudio()'>Talk</a>">
-                                        <i class="fas fa-pencil-ruler"></i>
-                                    </button>
                                     <button class="search-button icon-left attach-button" data-bs-toggle="popover"
                                         aria-label="Attach File" data-bs-placement="bottom" data-bs-html="true"
                                         data-bs-content="<a class='btn btn-outline-primary btn-sm dropdown-item' onclick='handleTextFileClick()'>Text</a><a class='btn btn-outline-info btn-sm dropdown-item' onclick='handleImageFileClick()'>Image</a><a class='btn btn-outline-success btn-sm dropdown-item' onclick='handleAudioFileClick()'>Audio</a><a class='btn btn-outline-danger btn-sm dropdown-item' onclick='handleVideoFileClick()'>Video</a>">
@@ -317,7 +312,7 @@
                                 <div class="col-10 settings-container el-9 profile-card">
                                     <div class="row">
                                         <!-- Profile Card -->
-                                        <div class="col-md-4">
+                                        <div class="col-md-2">
                                             <div class="card">
                                                 <img src="/static/img/yuna-girl-head.webp" class="card-img-top"
                                                     alt="Profile Picture">
@@ -326,12 +321,12 @@
                                                         <h5 class="card-title" id="yuna-name">Yuna Ai</h5>
                                                     </div>
                                                     <p class="card-text">Calgary, Canada</p>
-                                                    <button class="btn btn-primary">Upload Photo</button>
+                                                    <button class="btn btn-primary">Upload</button>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div class="col-md-8">
+                                        <div class="col-md-10">
                                             <form>
                                                 <div class="mb-3">
                                                     <label for="yuna-ai-names" class="form-label">Name</label>
@@ -344,7 +339,8 @@
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="character" class="form-label">Character</label>
-                                                    <textarea class="form-control" id="kanojoCharacter" rows="5"></textarea>
+                                                    <textarea class="form-control" id="kanojoCharacter"
+                                                        rows="5"></textarea>
                                                 </div>
                                             </form>
                                         </div>
@@ -697,41 +693,51 @@
         <source src="/static/audio/audio.mp3" type="audio/mpeg">
     </audio>
     </div>
-
-    <!-- Modal -->
+    <!-- Video Call Modal -->
     <div class="modal fade" id="videoCallModal" tabindex="-1" aria-labelledby="videoCallModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content bg-dark text-light">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="videoCallModalLabel">Video Call</h5>
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" id="videoCallModalLabel">
+                        <i class="fas fa-video me-2"></i>Video Call with Yuna
+                    </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                         aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <div class="d-flex flex-column flex-md-row h-100">
-                        <div class="video-block ratio ratio-16x9">
-                            <img src="/static/img/yuna-girl-head.webp" class="w-100" alt="Static Image">
+                <div class="modal-body p-0">
+                    <div class="row g-0">
+                        <div class="col-md-6 video-container">
+                            <div class="ratio ratio-16x9">
+                                <img src="/static/img/yuna-girl-head.webp" class="img-fluid rounded" alt="Yuna">
+                            </div>
                         </div>
-                        <div class="video-block ratio ratio-16x9">
-                            <video id="localVideo" class="w-100" muted autoplay playsinline></video>
-                            <canvas id="capture-canvas" style="display: none;"></canvas>
+                        <div class="col-md-6 video-container">
+                            <div class="ratio ratio-16x9">
+                                <video id="localVideo" class="rounded" muted autoplay playsinline></video>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="captureImage()"><i
-                            class="fas fa-video"></i></button>
-                    <button type="button" class="btn btn-secondary" id="buttonAudioRec"><i class="fas fa-microphone"
-                            id="iconAudioRec"></i></button>
-                    <button type="button" class="btn btn-secondary" onclick="drawArt();"><i
-                            class="fas fa-pencil-alt"></i></button>
-                    <button type="button" class="btn btn-danger"
-                        onclick="document.getElementById('videoCallModal').dispatchEvent(new Event('hidden.bs.modal'));"><i
-                            class="fas fa-phone-slash"></i></button>
+                <div class="modal-footer border-0 justify-content-center">
+                    <div class="call-controls">
+                        <button type="button" class="btn btn-outline-light rounded-circle me-2"
+                            onclick="captureImage()">
+                            <i class="fas fa-camera"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-light rounded-circle me-2" id="buttonAudioRec">
+                            <i class="fas fa-microphone" id="iconAudioRec"></i>
+                        </button>
+                        <button type="button" class="btn btn-danger rounded-circle"
+                            onclick="document.getElementById('videoCallModal').dispatchEvent(new Event('hidden.bs.modal'));">
+                            <i class="fas fa-phone-slash"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <canvas id="capture-canvas" style="display: none;"></canvas>
 
     <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -816,37 +822,20 @@
                                                     Collection</label>
                                             </div>
                                         </div>
-
-                                        <div class="list-group-item" style="background-color: transparent;">
-                                            <h6>Mode</h6>
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" onclick="toggleTheme()" checked
-                                                    type="checkbox" id="updateEmojiHistory">
-                                                <label class="form-check-label" for="updateEmojiHistory">Dark
-                                                    Mode</label>
-                                            </div>
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" type="checkbox" id="updateEmojiTones">
-                                                <label class="form-check-label" for="updateEmojiTones">Share Data
-                                                    Analytics</label>
-                                            </div>
-
-                                            <div type="button" style="margin-top: 20px; width: 20%;">
-                                                <a href="#" onclick="localStorage.clear(); location.reload();"
-                                                    class="btn btn-secondary" style="width: 90%;">Reset</a>
-                                            </div>
-                                        </div>
                                     </div>
 
                                     <div style="width: 100%; text-align: center; margin-top: 20px;">
                                         <a href="/logout" class="btn btn-primary" style="width: 90%;">Logout</a>
                                     </div>
+                                    <div style="width: 100%; text-align: center; margin-top: 20px;">
+                                        <a href="#" onclick="localStorage.clear(); location.reload();"
+                                            class="btn btn-secondary" style="width: 90%;">Reset</a>
+                                    </div>
                                 </div>
                                 <div class="tab-pane fade" id="v-pills-system" role="tabpanel"
                                     aria-labelledby="v-pills-system-tab">
-                                    <div class="list-group">
+                                    <div>
                                         <div class="list-group-item" style="background-color: transparent;">
-                                            <h6>Account</h6>
                                             <div class="card-body p-0">
                                                 <div class="row">
                                                     <div class="col-lg-6">

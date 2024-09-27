@@ -57,16 +57,27 @@ def handle_message_request(chat_generator, chat_history_manager, config):
     useHistory = data.get('useHistory', True)
     yunaConfig = data.get('yunaConfig')
     stream = data.get('stream', False)
+    kanojo = data.get('kanojo')  # Extracting kanojo from request
     response = ""
     user_id = list({current_user.get_id()})[0]
 
     if yunaConfig is not None:
         yunaConfig = chat_generator.config
 
-    response = chat_generator.generate(chat_id, speech, text, template, chat_history_manager, useHistory, yunaConfig, stream)
+    response = chat_generator.generate(
+        chat_id, 
+        speech, 
+        text, 
+        template, 
+        chat_history_manager, 
+        useHistory, 
+        yunaConfig, 
+        stream, 
+        kanojo=kanojo  # Passing kanojo to generate()
+    )
 
     if stream:
-        def generate():
+        def generate_stream():
             response_text = ''
 
             for chunk in response:
@@ -75,28 +86,46 @@ def handle_message_request(chat_generator, chat_history_manager, config):
 
             print("Response text: ", response_text)
 
-            if template is not None and useHistory is not False:
+            if kanojo is not None and useHistory:
                 # Save chat history after streaming response
                 chat_history = chat_history_manager.load_chat_history(user_id, chat_id)
-                chat_history.append({"name": config['ai']['names'][0], "message": text})
-                chat_history.append({"name": "Yuna", "message": response_text})
+                chat_history.append({"name": config['ai']['names'][0], "message": f"<yuki>{text}</yuki>"})
+                chat_history.append({"name": config['ai']['names'][1], "message": f"<yuna>{response_text}</yuna>"})
                 chat_history_manager.save_chat_history(chat_history, user_id, chat_id)
 
-                if speech == True:
-                    chat_history_manager.generate_speech(response)
-    
-        return Response(generate(), mimetype='text/plain')
+                if speech:
+                    chat_history_manager.generate_speech(response_text)
+            elif kanojo is None and useHistory:
+                # Save chat history without kanojo
+                chat_history = chat_history_manager.load_chat_history(user_id, chat_id)
+                chat_history.append({"name": config['ai']['names'][0], "message": text})
+                chat_history.append({"name": config['ai']['names'][1], "message": response_text})
+                chat_history_manager.save_chat_history(chat_history, user_id, chat_id)
+
+                if speech:
+                    chat_history_manager.generate_speech(response_text)
+
+        return Response(generate_stream(), mimetype='text/plain')
     else:
-        if template is not None and useHistory is not False:
-            # Save chat history after non-streaming response
+        if kanojo is not None and useHistory:
+            # Save chat history after non-streaming response with kanojo
             chat_history = chat_history_manager.load_chat_history(user_id, chat_id)
-            chat_history.append({"name": config['ai']['names'][0], "message": text})
-            chat_history.append({"name": "Yuna", "message": response})
+            chat_history.append({"name": config['ai']['names'][0], "message": f"<yuki>{text}</yuki>"})
+            chat_history.append({"name": config['ai']['names'][1], "message": f"<yuna>{response}</yuna>"})
             chat_history_manager.save_chat_history(chat_history, user_id, chat_id)
 
-            if speech == True:
+            if speech:
                 speak_text(response)
-        
+        elif kanojo is None and useHistory:
+            # Save chat history without kanojo
+            chat_history = chat_history_manager.load_chat_history(user_id, chat_id)
+            chat_history.append({"name": config['ai']['names'][0], "message": text})
+            chat_history.append({"name": config['ai']['names'][1], "message": response})
+            chat_history_manager.save_chat_history(chat_history, user_id, chat_id)
+
+            if speech:
+                speak_text(response)
+
         return jsonify({'response': response})
 
 def check_audio_file(file_path):

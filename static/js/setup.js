@@ -273,7 +273,6 @@ if (window.matchMedia("(max-width: 767px)").matches) {
 
 // get the height of the #message-container and get the height of the .input-wrapper.ui-container and set the height of the #message-container to the height of the #message-container - the height of the .input-wrapper.ui-container
 setTimeout(function () {
-  var messageContainer = document.getElementById('message-container');
   var inputWrapper = document.getElementsByClassName('input-wrapper')[0];
   messageContainer.style.height = `calc(${messageContainer.innerHeight}px - ${inputWrapper.innerHeight}px)`;
 }, 200);

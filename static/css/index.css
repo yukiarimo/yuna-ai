@@ -302,7 +302,6 @@ body {
 .modal-dialog {
     max-width: 90vw;
     height: 90vh;
-    margin: 5vh auto;
 }
 
 .modal-content {
@@ -525,7 +524,55 @@ body {
     height: 100px;
 }
 
-@media (max-width : 428px) {
+.video-container {
+    background-color: #1a1a1a;
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #6a5acd);
+    background-size: 400% 400%;
+    animation: gradient 15s ease infinite;
+    border-radius: 10px;
+}
+
+@keyframes gradient {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+.call-controls .btn {
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    line-height: 48px;
+}
+
+.modal-content {
+    overflow: hidden;
+}
+
+.modal-body {
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    position: relative;
+}
+
+.modal-body .row {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.video-container .ratio {
+    height: 100%;
+}
+
+@media (max-width : 440px) {
     .topbar-o {
         margin-bottom: 0 !important;
         padding: 0 !important;
@@ -550,5 +597,9 @@ body {
         /* overflow-y: auto; */
         z-index: 99999999;
         width: 100%;
+    }
+
+    .modal-dialog {
+        max-width: 96vw !important;
     }
 }

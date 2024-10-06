@@ -39,6 +39,7 @@
     <script src="/static/js/setup.js" defer></script>
     <script src="/static/js/search.js" defer></script>
     <script src="/static/js/creator.js" defer></script>
+    <script src="/static/js/diary.js" defer></script>
     <style>
         body {
             margin: 0;
@@ -84,29 +85,19 @@
                                 class="fas fa-comment-dots"></i>
                             Chats
                             <span class="badge badge-pill" id="messageCount">0</span></a></li>
-                    <li><a href="#" class="nav-link side-link" onclick="OpenTab('2')"><i class="fas fa-book-open"></i>
+                    <li><a href="#" class="nav-link side-link" onclick="OpenTab('2')"><i class="fas fa-compass"></i>
                             Library
                             <span class="badge badge-pill" id="chatsCount">0</span></a>
                     </li>
-                    <li><a href="#" class="nav-link side-link" onclick="OpenTab('3')"><i class="fas fa-compass"></i>
-                            Explore</a>
                     <li><a href="#" class="nav-link side-link" onclick="OpenTab('4')"><i class="fas fa-user"></i>
                             Kanojo</a></li>
                     <li><a href="#" class="nav-link side-link" onclick="OpenTab('5')"><i class="fas fa-pencil-alt"></i>
                             Studio</a></li>
-                    <li><a href="#" class="nav-link side-link" onclick="settingsView.show();"><i class="fas fa-cog"></i>
-                            Settings</a>
-                    </li>
                     <li><a href="#" class="nav-link side-link"
                             onclick="OpenLink('https://www.patreon.com/YukiArimo')"><i class="fas fa-heart"></i>
                             Support</a>
                     </li>
                 </ul>
-
-                <div class="toggle-theme">
-                    <button>Light</button>
-                    <button>Dark</button>
-                </div>
             </div>
         </nav>
         <div class="d-flex flex-column" id="content-wrapper" style="background-color: none !important;">
@@ -133,10 +124,10 @@
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                     aria-labelledby="userDropdown">
-                                    <!-- Settings -->
-                                    <a class="dropdown-item" href="#" onclick="settingsView.show();">
-                                        <i class="fas fa-cog fa-sm fa-fw mr-2 text-gray-400"></i>
-                                        Settings
+                                    <!-- Call -->
+                                    <a class="dropdown-item" href="#" onclick="callYuna.show();">
+                                        <i class="fas fa-phone fa-sm fa-fw mr-2 text-gray-400"></i>
+                                        Call
                                     </a>
                                     <!-- Search -->
                                     <a class="dropdown-item" href="#" data-bs-toggle="modal"
@@ -150,10 +141,10 @@
                                         <i class="fas fa-bell fa-sm fa-fw mr-2 text-gray-400"></i>
                                         Notifications
                                     </a>
-                                    <!-- Call -->
-                                    <a class="dropdown-item" href="#" onclick="callYuna.show();">
-                                        <i class="fas fa-phone fa-sm fa-fw mr-2 text-gray-400"></i>
-                                        Call
+                                    <!-- Settings -->
+                                    <a class="dropdown-item" href="#" onclick="settingsView.show();">
+                                        <i class="fas fa-cog fa-sm fa-fw mr-2 text-gray-400"></i>
+                                        Settings
                                     </a>
                                 </div>
                             </li>
@@ -207,112 +198,175 @@
 
                         <div class="tab-o" id="2">
                             <div class="coll-lo">
-                                <div class="card settings-container el-9">
-                                    <div class="card-body">
-                                        <ul class="nav nav-pills nav-fill mb-3" id="myTab" role="tablist">
-                                            <li class="nav-item" role="presentation">
-                                                <button class="nav-link active" id="chats-tab" data-bs-toggle="pill"
-                                                    data-bs-target="#chats" type="button" role="tab"
-                                                    aria-controls="chats" aria-selected="true">Chats</button>
-                                            </li>
-                                            <li class="nav-item" role="presentation">
-                                                <button class="nav-link" id="collections-tab" data-bs-toggle="pill"
-                                                    data-bs-target="#collections" type="button" role="tab"
-                                                    aria-controls="collections"
-                                                    aria-selected="false">Collections</button>
-                                            </li>
-                                        </ul>
-                                        <div class="tab-content" id="myTabContent">
-                                            <div class="tab-pane fade show active" id="chats" role="tabpanel"
-                                                aria-labelledby="chats-tab">
-                                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                                    <h5 class="m-0 fw-bold">Chats</h5>
-                                                    <div>
-                                                        <button class="btn btn-primary btn-sm me-2"
-                                                            onclick="historyManager.createHistoryFile();">
-                                                            <i class="fas fa-plus"></i> Add
-                                                        </button>
-                                                        <button class="btn btn-secondary btn-sm"
-                                                            onclick="historyManager.importHistory();">
-                                                            <i class="fas fa-upload"></i> Load
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                                <ul class="list-group" id="chat-items">
-                                                    <!-- Will be added dynamically -->
-                                                </ul>
-                                            </div>
-                                            <div class="tab-pane fade" id="collections" role="tabpanel"
-                                                aria-labelledby="collections-tab">
-                                                <h5 class="mb-3 fw-bold">Collections</h5>
-                                                <ul class="list-group" id="collectionItems">
-                                                    <!-- Collections content -->
-                                                </ul>
-                                            </div>
+                              <div class="card settings-container el-9">
+                                <div class="card-body">
+                                  
+                                  <!-- Main Navigation Tabs: Library, Himitsu, Diary -->
+                                  <ul class="nav nav-pills nav-fill mb-4" id="exploreTab" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                      <button class="nav-link active" id="library-tab" data-bs-toggle="pill" data-bs-target="#library" type="button" role="tab" aria-controls="library" aria-selected="true">Library</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                      <button class="nav-link" id="himitsu-tab" data-bs-toggle="pill" data-bs-target="#himitsu" type="button" role="tab" aria-controls="himitsu" aria-selected="false">Himitsu</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                      <button class="nav-link" id="diary-tab" data-bs-toggle="pill" data-bs-target="#diary" type="button" role="tab" aria-controls="diary" aria-selected="false">Diary</button>
+                                    </li>
+                                  </ul>
+                                  
+                                  <!-- Main Tab Content -->
+                                  <div class="tab-content" id="exploreTabContent">
+                                    
+                                    <!-- Library Tab: Combines Chats and Collections -->
+                                    <div class="tab-pane fade show active" id="library" role="tabpanel" aria-labelledby="library-tab">
+                                      
+                                      <!-- Chats Section -->
+                                      <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h5 class="m-0 fw-bold">Chats</h5>
+                                        <div>
+                                          <button class="btn btn-primary btn-sm me-2" onclick="historyManager.createHistoryFile();">
+                                            <i class="fas fa-plus"></i> Add
+                                          </button>
+                                          <button class="btn btn-secondary btn-sm" onclick="historyManager.importHistory();">
+                                            <i class="fas fa-upload"></i> Load
+                                          </button>
                                         </div>
+                                      </div>
+                                      <ul class="list-group mb-4" id="chat-items">
+                                        <!-- Dynamically Added Chat Items -->
+                                      </ul>
+                                      
+                                      <!-- Collections Section -->
+                                      <ul class="list-group" id="collectionItems">
+                                        <!-- Collections Content -->
+                                      </ul>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="tab-o" id="3">
-                            <div class="coll-lo">
-                                <div class="card settings-container el-9">
-                                    <div class="card-body">
-                                        <ul class="nav nav-pills nav-fill mb-3" id="myTab" role="tablist">
-                                            <li class="nav-item" role="presentation">
-                                                <button class="nav-link active" id="himitsu-tab" data-bs-toggle="pill"
-                                                    data-bs-target="#himitsu" type="button" role="tab"
-                                                    aria-controls="himitsu" aria-selected="true">Himitsu</button>
-                                            </li>
-                                            <li class="nav-item" role="presentation">
-                                                <button class="nav-link" id="kanojo-tab" data-bs-toggle="pill"
-                                                    data-bs-target="#kanojo" type="button" role="tab"
-                                                    aria-controls="kanojo" aria-selected="false">Kanojo Connect</button>
-                                            </li>
-                                        </ul>
-                                        <div class="tab-content" id="myTabContent">
-                                            <div class="tab-pane fade show active" id="himitsu" role="tabpanel"
-                                                aria-labelledby="himitsu-tab">
+                                    
+                                    <!-- Himitsu Tab: Himitsu Controls -->
+                                    <div class="tab-pane fade" id="himitsu" role="tabpanel" aria-labelledby="himitsu-tab">
+                                      <div class="mb-3">
+                                        <h5 class="mb-3">Himitsu Controls</h5>
+                                        <!-- Add Himitsu Controls Content Here -->
+                                      </div>
+                                    </div>
+                                    
+                                    <!-- Diary Tab: Nested Sub-Tabs -->
+                                    <div class="tab-pane fade" id="diary" role="tabpanel" aria-labelledby="diary-tab">
+                                      
+                                      <!-- Nested Diary Sub-Tabs -->
+                                      <ul class="nav nav-pills nav-fill mb-3" id="diaryTab" role="tablist">
+                                        <li class="nav-item" role="presentation">
+                                          <button class="nav-link" id="entries-tab" data-bs-toggle="pill" data-bs-target="#entries" type="button" role="tab" aria-controls="entries" aria-selected="false">Diary Entries</button>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                          <button class="nav-link active" id="notes-tab" data-bs-toggle="pill" data-bs-target="#notes" type="button" role="tab" aria-controls="notes" aria-selected="true">Notes/Memories</button>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                          <button class="nav-link" id="schedule-tab" data-bs-toggle="pill" data-bs-target="#schedule" type="button" role="tab" aria-controls="schedule" aria-selected="false">Timetable/Schedule</button>
+                                        </li>
+                                      </ul>
+                                      
+                                      <!-- Nested Diary Tab Content -->
+                                      <div class="tab-content" id="diaryTabContent">
+                                        
+                                        <!-- Diary Entries Sub-Tab -->
+                                        <div class="tab-pane fade" id="entries" role="tabpanel" aria-labelledby="entries-tab">
+                                          
+                                          <!-- New Diary Entry Form -->
+                                          <div class="card shadow-sm mb-5">
+                                            <div class="card-body">
+                                              <h5 class="card-title mb-3">New Diary Entry</h5>
+                                              <form id="entry-form">
                                                 <div class="mb-3">
-                                                    <h5 class="mb-3">Dark Mode</h5>
-                                                    <div class="form-check form-switch">
-                                                        <input class="form-check-input" type="checkbox"
-                                                            id="darkModeSwitch" onclick="toggleTheme()" checked>
-                                                        <label class="form-check-label" for="darkModeSwitch">Enable Dark
-                                                            Mode</label>
-                                                    </div>
+                                                  <input type="text" class="form-control" id="entry-title" placeholder="Title" required>
                                                 </div>
-                                            </div>
-                                            <div class="tab-pane fade" id="kanojo" role="tabpanel"
-                                                aria-labelledby="kanojo-tab">
                                                 <div class="mb-3">
-                                                    <h5 class="mb-3">AI Data Usage</h5>
-                                                    <div class="list-group mb-3">
-                                                        <span class="list-group-item list-group-item-action">This
-                                                            feature</span>
-                                                    </div>
-                                                    <div class="form-check form-switch">
-                                                        <input class="form-check-input" type="checkbox"
-                                                            id="aiDataUsageSwitch" checked>
-                                                        <label class="form-check-label" for="aiDataUsageSwitch">Enable
-                                                            AI
-                                                            Data Usage</label>
-                                                    </div>
+                                                  <textarea class="form-control" id="entry-text" rows="3" placeholder="Write your thoughts..." required></textarea>
                                                 </div>
+                                                <div class="mb-3">
+                                                  <input type="datetime-local" class="form-control" id="entry-date" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                  <input type="file" class="form-control" id="entry-image" accept="image/*">
+                                                </div>
+                                                <button type="submit" class="btn btn-primary" id="add-entry">Add Entry</button>
+                                              </form>
                                             </div>
+                                          </div>
+                                          
+                                          <!-- Entries Display Container -->
+                                          <div id="entries-container">
+                                            <!-- Diary Entries Will Be Displayed Here -->
+                                          </div>
                                         </div>
+                                        
+                                        <!-- Notes/Memories Sub-Tab -->
+                                        <div class="tab-pane fade active show" id="notes" role="tabpanel" aria-labelledby="notes-tab">
+                                          
+                                          <!-- New Note/Memory Form -->
+                                          <div class="card shadow-sm mb-5">
+                                            <div class="card-body">
+                                              <h5 class="card-title mb-3">New Note/Memory</h5>
+                                              <form id="note-form">
+                                                <div class="mb-3">
+                                                  <input type="text" class="form-control" id="note-title" placeholder="Title" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                  <textarea class="form-control" id="note-text" rows="3" placeholder="Write your note or memory..." required></textarea>
+                                                </div>
+                                                <button type="submit" class="btn btn-success" id="add-note">Add Note</button>
+                                              </form>
+                                            </div>
+                                          </div>
+                                          
+                                          <!-- Notes Display Container -->
+                                          <div id="notes-container">
+                                            <!-- Notes Will Be Displayed Here -->
+                                          </div>
+                                        </div>
+                                        
+                                        <!-- Timetable/Schedule Sub-Tab -->
+                                        <div class="tab-pane fade" id="schedule" role="tabpanel" aria-labelledby="schedule-tab">
+                                          
+                                          <!-- New Schedule Item Form -->
+                                          <div class="card shadow-sm mb-5">
+                                            <div class="card-body">
+                                              <h5 class="card-title mb-3">New Schedule Item</h5>
+                                              <form id="schedule-form">
+                                                <div class="mb-3">
+                                                  <input type="text" class="form-control" id="schedule-title" placeholder="Title" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                  <input type="datetime-local" class="form-control" id="schedule-time" required>
+                                                </div>
+                                                <button type="submit" class="btn btn-info" id="add-schedule">Add Schedule</button>
+                                              </form>
+                                            </div>
+                                          </div>
+                                          
+                                          <!-- Schedule Display Container -->
+                                          <div id="schedule-container">
+                                            <!-- Schedule Items Will Be Displayed Here -->
+                                          </div>
+                                        </div>
+                                        
+                                      </div>
                                     </div>
+                                    
+                                  </div>
+                                  
                                 </div>
+                              </div>
                             </div>
-                        </div>
+                          </div>
 
                         <div class="tab-o" id="4">
                             <div class="coll-lo">
                                 <div class="col-10 settings-container el-9 profile-card">
+
+                                    <!-- Combined Profile and Kanojo Management -->
                                     <div class="row">
-                                        <!-- Profile Card -->
-                                        <div class="col-md-2">
+                                        <div class="col-md-2 mb-3 mb-sm-0">
                                             <div class="card">
                                                 <img src="/static/img/yuna-girl-head.webp" class="card-img-top"
                                                     alt="Profile Picture">
@@ -327,28 +381,6 @@
                                         </div>
 
                                         <div class="col-md-10">
-                                            <form>
-                                                <div class="mb-3">
-                                                    <label for="yuna-ai-names" class="form-label">Name</label>
-                                                    <input type="text" class="form-control" id="kanojoName">
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label for="yuna-ai-memory" class="form-label">Memory</label>
-                                                    <textarea class="form-control" id="kanojoMemory"
-                                                        rows="3"></textarea>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label for="character" class="form-label">Character</label>
-                                                    <textarea class="form-control" id="kanojoCharacter"
-                                                        rows="5"></textarea>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-
-                                    <!-- Kanojo Management -->
-                                    <div class="row mt-4">
-                                        <div class="col-md-12">
                                             <div class="card">
                                                 <div class="card-body">
                                                     <h5 class="card-title">Kanojo Management</h5>
@@ -357,131 +389,162 @@
                                                             Kanojo</label>
                                                         <select class="form-select" id="kanojoSelect"></select>
                                                     </div>
-                                                    <button type="button" class="btn btn-primary"
-                                                        id="saveKanojo">Save</button>
-                                                    <button type="button" class="btn btn-primary"
-                                                        id="addKanojo">Add</button>
-                                                    <button type="button" class="btn btn-secondary"
-                                                        id="deleteKanojo">Delete</button>
-                                                    <button type="button" class="btn btn-primary"
-                                                        id="exportKanojos">Export All</button>
-                                                    <button type="button" class="btn btn-primary"
-                                                        id="importKanojos">Import All</button>
-                                                    <button type="button" class="btn btn-primary"
-                                                        id="exportSingleKanojo">Export Single</button>
-                                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                                        data-bs-target="#fileModal">Import Single</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Customization -->
-                                    <div class="row mt-4">
-                                        <!-- Emotional Profile Section -->
-                                        <div class="col-md-6">
-                                            <div class="card">
-                                                <div class="card-body">
-                                                    <h5 class="card-title">Emotional Profile</h5>
-                                                    <!-- Skill Bars -->
-                                                    <div class="mb-3">
-                                                        <label for="uiuxDesign" class="form-label">Cuteness</label>
-                                                        <input type="range" class="form-range" id="uiuxDesign">
-                                                    </div>
-
-                                                    <div class="mb-3">
-                                                        <label for="uiuxDesign" class="form-label">Obsessive</label>
-                                                        <input type="range" class="form-range" id="uiuxDesign">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Plugins Section -->
-                                        <div class="col-md-6">
-                                            <div class="card">
-                                                <div class="card-body">
-                                                    <h5 class="card-title">Plugins</h5>
-
                                                     <div>
-                                                        <label for="testNonIntegrated" class="form-label">Function
-                                                            Calling</label>
-                                                        <!-- toggle switch -->
-                                                        <div class="form-check form-switch">
-                                                            <input class="form-check-input" type="checkbox"
-                                                                id="testNonIntegrated">
-                                                            <label class="form-check-label"
-                                                                for="testNonIntegrated">Pseudo-API</label>
-                                                        </div>
-
-                                                        <div class="form-check form-switch">
-                                                            <input class="form-check-input" type="checkbox"
-                                                                id="testNonIntegrated">
-                                                            <label class="form-check-label"
-                                                                for="testNonIntegrated">Embeddable Functions</label>
-                                                        </div>
+                                                        <button type="button" class="btn btn-primary"
+                                                            id="saveKanojo">Save</button>
+                                                        <button type="button" class="btn btn-primary"
+                                                            id="addKanojo">Add</button>
+                                                        <button type="button" class="btn btn-secondary"
+                                                            id="deleteKanojo">Delete</button>
                                                     </div>
-
                                                     <div>
-                                                        <label for="testNonIntegrated" class="form-label">Gaming</label>
-                                                        <!-- toggle switch -->
-                                                        <div class="form-check form-switch">
-                                                            <input class="form-check-input" type="checkbox"
-                                                                id="testNonIntegrated">
-                                                            <label class="form-check-label"
-                                                                for="testNonIntegrated">Kiseki</label>
-                                                        </div>
+                                                        <button type="button" class="btn btn-primary"
+                                                            id="exportKanojos">Export All</button>
+                                                        <button type="button" class="btn btn-primary"
+                                                            id="importKanojos">Import All</button>
+                                                    </div>
+                                                    <div>
+                                                        <button type="button" class="btn btn-primary"
+                                                            id="exportSingleKanojo">Export Single</button>
+                                                        <button type="button" class="btn btn-primary"
+                                                            data-bs-toggle="modal" data-bs-target="#fileModal">Import
+                                                            Single</button>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <!-- Settings Section -->
+                                    <!-- Name, Memory, Character with Emotional Profile -->
+                                    <div class="row mt-3">
+                                        <div class="col-md-12">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <form>
+                                                        <div class="mb-3">
+                                                            <label for="yuna-ai-names" class="form-label">Name</label>
+                                                            <input type="text" class="form-control" id="kanojoName">
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label for="yuna-ai-memory"
+                                                                class="form-label">Memory</label>
+                                                            <textarea class="form-control" id="kanojoMemory"></textarea>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label for="character" class="form-label">Character</label>
+                                                            <textarea class="form-control" id="kanojoCharacter"
+                                                               ></textarea>
+                                                        </div>
+
+                                                        <!-- Integrated Emotional Profile Sliders -->
+                                                        <div class="mb-3">
+                                                            <label for="uiuxDesign" class="form-label">Cuteness</label>
+                                                            <input type="range" class="form-range" id="uiuxDesign">
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label for="uiuxDesign" class="form-label">Obsessive</label>
+                                                            <input type="range" class="form-range" id="uiuxDesign">
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Combined Customization Section -->
                                     <div class="row mt-4">
                                         <div class="col-md-12">
                                             <div class="card">
                                                 <div class="card-body">
                                                     <h5 class="card-title">Customization</h5>
+                                                    <div class="d-flex flex-wrap">
+                                                        <!-- Plugins Settings -->
+                                                        <div class="me-4">
+                                                            <label for="testNonIntegrated" class="form-label">Himitsu
+                                                                Actions</label>
+                                                            <div class="form-check form-switch">
+                                                                <input class="form-check-input" type="checkbox"
+                                                                    id="testNonIntegrated">
+                                                                <label class="form-check-label"
+                                                                    for="testNonIntegrated">Pseudo API</label>
+                                                            </div>
+                                                            <div class="form-check form-switch">
+                                                                <input class="form-check-input" type="checkbox"
+                                                                    id="testNonIntegrated">
+                                                                <label class="form-check-label"
+                                                                    for="testNonIntegrated">Functions</label>
+                                                            </div>
+                                                            <div class="form-check form-switch">
+                                                                <input class="form-check-input" type="checkbox"
+                                                                    id="testNonIntegrated">
+                                                                <label class="form-check-label"
+                                                                    for="testNonIntegrated">Notifications</label>
+                                                            </div>
 
-                                                    <div>
-                                                        <label for="customConfig"
-                                                            class="form-label">Configuration</label>
-                                                        <!-- toggle switch -->
-                                                        <div class="form-check form-switch">
-                                                            <input class="form-check-input" type="checkbox"
-                                                                id="customConfig">
-                                                            <label class="form-check-label" for="customConfig">Custom
-                                                                Config</label>
+                                                            <label for="testNonIntegrated"
+                                                                class="form-label">Gaming</label>
+                                                            <div class="form-check form-switch">
+                                                                <input class="form-check-input" type="checkbox"
+                                                                    id="testNonIntegrated">
+                                                                <label class="form-check-label"
+                                                                    for="testNonIntegrated">Kiseki</label>
+                                                            </div>
                                                         </div>
-                                                    </div>
 
-                                                    <div>
-                                                        <label for="streamingChatMode"
-                                                            class="form-label">Chatting</label>
-                                                        <!-- toggle switch -->
-                                                        <div class="form-check form-switch">
-                                                            <input class="form-check-input" type="checkbox"
-                                                                id="streamingChatMode">
-                                                            <label class="form-check-label"
-                                                                for="streamingChatMode">Streaming Messages</label>
-                                                        </div>
-                                                        <div class="form-check form-switch">
-                                                            <input class="form-check-input" type="checkbox"
-                                                                id="useHistory">
-                                                            <label class="form-check-label" for="useHistory">Use
-                                                                History</label>
-                                                        </div>
-                                                    </div>
+                                                        <!-- Customization Settings -->
+                                                        <div class="me-4">
+                                                            <label for="customConfig"
+                                                                class="form-label">Configuration</label>
+                                                            <div class="form-check form-switch">
+                                                                <input class="form-check-input" type="checkbox"
+                                                                    id="customConfig">
+                                                                <label class="form-check-label"
+                                                                    for="customConfig">Custom Config</label>
+                                                            </div>
+                                                            <div class="form-check form-switch">
+                                                                <input class="form-check-input" type="checkbox"
+                                                                    id="soundsMode">
+                                                                <label class="form-check-label"
+                                                                    for="soundsMode">Sounds</label>
+                                                            </div>
+                                                            <div class="form-check form-switch">
+                                                                <input class="form-check-input" type="checkbox"
+                                                                    id="useHistory">
+                                                                <label class="form-check-label" for="useHistory">Use
+                                                                    History</label>
+                                                            </div>
 
-                                                    <div>
-                                                        <label for="soundsMode" class="form-label">SFX</label>
-                                                        <!-- toggle switch -->
-                                                        <div class="form-check form-switch">
-                                                            <input class="form-check-input" type="checkbox"
-                                                                id="soundsMode">
-                                                            <label class="form-check-label" for="soundsMode">Enable
-                                                                Sounds</label>
+                                                            <label for="streamingChatMode"
+                                                                class="form-label">Chatting</label>
+                                                            <div class="form-check form-switch">
+                                                                <input class="form-check-input" type="checkbox"
+                                                                    id="streamingChatMode">
+                                                                <label class="form-check-label"
+                                                                    for="streamingChatMode">Streaming</label>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Customization Settings -->
+                                                        <div class="me-4">
+                                                            <label for="backgroundCall"
+                                                                class="form-label">General</label>
+                                                            <div class="form-check form-switch">
+                                                                <input class="form-check-input" type="checkbox"
+                                                                    id="backgroundCall">
+                                                                <label class="form-check-label"
+                                                                    for="backgroundCall">Background Call</label>
+                                                            </div>
+                                                            <div class="form-check form-switch">
+                                                                <input class="form-check-input" type="checkbox"
+                                                                    id="nsfw">
+                                                                <label class="form-check-label" for="nsfw">NSFW</label>
+                                                            </div>
+                                                            <div class="form-check form-switch">
+                                                                <input class="form-check-input" type="checkbox"
+                                                                    id="useHistory">
+                                                                <label class="form-check-label" for="useHistory">Data
+                                                                    Collection</label>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -509,7 +572,7 @@
                                                         <label for="promptTemplateContent" class="form-label">Prompt
                                                             Template Content</label>
                                                         <textarea class="form-control" id="promptTemplateContent"
-                                                            rows="5"></textarea>
+                                                           ></textarea>
                                                     </div>
                                                     <button type="button" class="btn btn-primary"
                                                         id="savePromptTemplate">Save</button>
@@ -525,29 +588,30 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <!-- File Import Modal -->
-                                <div class="modal fade" id="fileModal" tabindex="-1" aria-labelledby="fileModalLabel"
-                                    aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="fileModalLabel">Import Kanojo</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                    aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <input type="file" id="fileInput" accept=".json">
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary"
-                                                    data-bs-dismiss="modal">Close</button>
-                                                <button type="button" class="btn btn-primary"
-                                                    id="fileSubmit">Submit</button>
+                                    <!-- File Import Modal -->
+                                    <div class="modal fade" id="fileModal" tabindex="-1"
+                                        aria-labelledby="fileModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="fileModalLabel">Import Kanojo</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <input type="file" id="fileInput" accept=".json">
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">Close</button>
+                                                    <button type="button" class="btn btn-primary"
+                                                        id="fileSubmit">Submit</button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
+
                                 </div>
                             </div>
                         </div>
@@ -602,14 +666,14 @@
                                                         <div class="form-group">
                                                             <h5 class="mb-3">Prompt Template</h5>
                                                             <textarea class="form-control"
-                                                                id="presentation-prompt-template" rows="5"></textarea>
+                                                                id="presentation-prompt-template"></textarea>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6" id="user-input-presentation-container">
                                                         <div class="form-group">
                                                             <h5 class="mb-3">User Input</h5>
                                                             <textarea class="form-control" id="presentation-user-input"
-                                                                rows="5"></textarea>
+                                                               ></textarea>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -624,14 +688,14 @@
                                                         <div class="form-group">
                                                             <h5 class="mb-3">Output Text</h5>
                                                             <textarea class="form-control" id="presentation-output-text"
-                                                                rows="5"></textarea>
+                                                               ></textarea>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6">
                                                         <div class="form-group">
                                                             <h5 class="mb-3">Draft Text</h5>
                                                             <textarea class="form-control" id="presentation-draft-text"
-                                                                rows="5"></textarea>
+                                                               ></textarea>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -649,14 +713,14 @@
                                                         <div class="form-group">
                                                             <h5 class="mb-3">Prompt Template</h5>
                                                             <textarea class="form-control" id="article-prompt-template"
-                                                                rows="5"></textarea>
+                                                               ></textarea>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6">
                                                         <div class="form-group">
                                                             <h5 class="mb-3">Body Text</h5>
                                                             <textarea class="form-control"
-                                                                id="body-text-article-container" rows="5"></textarea>
+                                                                id="body-text-article-container"></textarea>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -671,7 +735,7 @@
                                                         <div class="form-group">
                                                             <h5 class="mb-3">Result</h5>
                                                             <textarea class="form-control" id="result-create-article"
-                                                                rows="5"></textarea>
+                                                               ></textarea>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -782,54 +846,31 @@
                         <div class="col-2">
                             <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist"
                                 aria-orientation="vertical">
-                                <button class="nav-link active" id="v-pills-general-tab" data-bs-toggle="pill"
-                                    data-bs-target="#v-pills-general" type="button" role="tab"
-                                    aria-controls="v-pills-general" aria-selected="true">General</button>
+                                <button class="nav-link" id="v-pills-ai-tab" data-bs-toggle="pill"
+                                    data-bs-target="#v-pills-ai" type="button" role="tab" aria-controls="v-pills-ai"
+                                    aria-selected="true">AI</button>
                                 <button class="nav-link" id="v-pills-system-tab" data-bs-toggle="pill"
                                     data-bs-target="#v-pills-system" type="button" role="tab"
                                     aria-controls="v-pills-system" aria-selected="false">Account</button>
-                                <button class="nav-link" id="v-pills-ai-tab" data-bs-toggle="pill"
-                                    data-bs-target="#v-pills-ai" type="button" role="tab" aria-controls="v-pills-ai"
-                                    aria-selected="false">AI</button>
                             </div>
                         </div>
                         <!-- Tab content -->
                         <div class="col-10">
                             <div class="tab-content" id="v-pills-tabContent">
-                                <div class="tab-pane fade show active" id="v-pills-general" role="tabpanel"
-                                    aria-labelledby="v-pills-general-tab">
+                                <div class="tab-pane fade show active" id="v-pills-ai" role="tabpanel"
+                                    aria-labelledby="v-pills-ai-tab">
                                     <div class="list-group">
                                         <div class="list-group-item" style="background-color: transparent;">
-                                            <h6>General</h6>
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" type="checkbox" id="updateEmojiHistory">
-                                                <label class="form-check-label" for="updateEmojiHistory">Keep call in
-                                                    the background</label>
-                                            </div>
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" type="checkbox" id="updateEmojiTones">
-                                                <label class="form-check-label" for="updateEmojiTones">Filter
-                                                    NSFW</label>
-                                            </div>
-                                        </div>
+                                            <h6>Customization</h6>
 
-                                        <div class="list-group-item" style="background-color: transparent;">
-                                            <h6>Data</h6>
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" checked type="checkbox"
-                                                    id="updateEmojiHistory">
-                                                <label class="form-check-label" for="updateEmojiHistory">User Datat
-                                                    Collection</label>
+                                            <div id="parameter-container">
+                                                <!-- Dynamic HTML elements will be added here -->
                                             </div>
-                                        </div>
-                                    </div>
 
-                                    <div style="width: 100%; text-align: center; margin-top: 20px;">
-                                        <a href="/logout" class="btn btn-primary" style="width: 90%;">Logout</a>
-                                    </div>
-                                    <div style="width: 100%; text-align: center; margin-top: 20px;">
-                                        <a href="#" onclick="localStorage.clear(); location.reload();"
-                                            class="btn btn-secondary" style="width: 90%;">Reset</a>
+                                            <button class="btn btn-secondary" onclick="saveConfigParams()">
+                                                Save
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="tab-pane fade" id="v-pills-system" role="tabpanel"
@@ -936,22 +977,6 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="tab-pane fade" id="v-pills-ai" role="tabpanel"
-                                    aria-labelledby="v-pills-ai-tab">
-                                    <div class="list-group">
-                                        <div class="list-group-item" style="background-color: transparent;">
-                                            <h6>Customization</h6>
-
-                                            <div id="parameter-container">
-                                                <!-- Dynamic HTML elements will be added here -->
-                                            </div>
-
-                                            <button class="btn btn-secondary" onclick="saveConfigParams()">
-                                                Save
-                                            </button>
                                         </div>
                                     </div>
                                 </div>

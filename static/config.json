@@ -18,16 +18,10 @@
         "top_k": 100,
         "top_p": 0.92,
         "stop": [
-            "Yuki:",
-            "\nYuki:",
-            "\nYuna:",
-            "Yuna:",
-            "Yuuki:",
-            "<|user|>",
-            "<|system|>",
-            "<|model|>",
-            "###",
-            "Yuki;"
+            "<yuki>",
+            "</yuki>",
+            "<yuna>",
+            "<yuki>"
         ],
         "batch_size": 512,
         "threads": 8,

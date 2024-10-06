@@ -17,7 +17,6 @@ lib/models/*
 !lib/models/agi/README.md
 !lib/models/agi/audio/README.md
 !lib/models/agi/miru/README.md
-!lib/models/agi/uta/README.md
 !lib/models/agi/voice/README.md
 !lib/models/yuna/README.md
 llama.log

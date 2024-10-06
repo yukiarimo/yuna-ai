@@ -53,11 +53,10 @@ def handle_message_request(chat_generator, chat_history_manager, config):
     chat_id = data.get('chat')
     speech = data.get('speech')
     text = data.get('text')
-    template = data.get('template')
+    kanojo = data.get('kanojo')
     useHistory = data.get('useHistory', True)
     yunaConfig = data.get('yunaConfig')
     stream = data.get('stream', False)
-    kanojo = data.get('kanojo')  # Extracting kanojo from request
     response = ""
     user_id = list({current_user.get_id()})[0]
 
@@ -65,15 +64,14 @@ def handle_message_request(chat_generator, chat_history_manager, config):
         yunaConfig = chat_generator.config
 
     response = chat_generator.generate(
-        chat_id, 
-        speech, 
-        text, 
-        template, 
-        chat_history_manager, 
-        useHistory, 
-        yunaConfig, 
+        chat_id,
+        speech,
+        text,
+        kanojo,
+        chat_history_manager,
+        useHistory,
+        yunaConfig,
         stream, 
-        kanojo=kanojo  # Passing kanojo to generate()
     )
 
     if stream:

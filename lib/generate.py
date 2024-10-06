@@ -44,18 +44,16 @@ class ChatGenerator:
             verbose=False
         ) if config["server"]["yuna_text_mode"] == "native" else ""
 
-    def generate(self, chat_id, speech=False, text="", template=None, chat_history_manager=None, useHistory=True, yunaConfig=None, stream=False, kanojo=None):
+    def generate(self, chat_id=None, speech=False, text="", kanojo=None, chat_history_manager=None, useHistory=True, yunaConfig=None, stream=False):
         # print all the parameters
         print('chat_id -> ', chat_id)
         print('speech -> ', speech)
         print('text -> ', text)
-        print('template -> ', template)
+        print('kanojo -> ', kanojo)
         print('chat_history_manager -> ', chat_history_manager)
         print('useHistory -> ', useHistory)
         print('yunaConfig -> ', yunaConfig)
         print('stream -> ', stream)
-        print('current_user.get_id() -> ', current_user.get_id())
-        print('kanojo -> ', kanojo)
 
         if yunaConfig is not None:
             self.config = yunaConfig
@@ -91,102 +89,23 @@ class ChatGenerator:
                 # Naked prompt without kanojo
                 final_prompt = text
 
-            if template is None and kanojo is not None:
-                print('into the model -> ', final_prompt)
-                response = self.model(
-                    final_prompt,
-                    stream=stream,
-                    top_k=yunaConfig["ai"]["top_k"],
-                    top_p=yunaConfig["ai"]["top_p"],
-                    temperature=yunaConfig["ai"]["temperature"],
-                    repeat_penalty=yunaConfig["ai"]["repetition_penalty"],
-                    max_tokens=yunaConfig["ai"]["max_new_tokens"],
-                    stop=yunaConfig["ai"]["stop"],
-                )
-                if stream:
-                    return (chunk['choices'][0]['text'] for chunk in response)
-                else:
-                    response = response['choices'][0]['text']
-                    response = self.clearText(str(response))
-                    return response
-            elif kanojo is not None:
-                # When template is provided with kanojo
-                print('into the model -> ', final_prompt)
-                response = self.model(
-                    final_prompt,
-                    stream=stream,
-                    top_k=yunaConfig["ai"]["top_k"],
-                    top_p=yunaConfig["ai"]["top_p"],
-                    temperature=yunaConfig["ai"]["temperature"],
-                    repeat_penalty=yunaConfig["ai"]["repetition_penalty"],
-                    max_tokens=yunaConfig["ai"]["max_new_tokens"],
-                    stop=yunaConfig["ai"]["stop"],
-                )
-                if stream:
-                    return (chunk['choices'][0]['text'] for chunk in response)
-                else:
-                    response = response['choices'][0]['text']
-                    response = self.clearText(str(response))
-                    return response
+            print('into the model -> ', final_prompt)
+            response = self.model(
+                final_prompt,
+                stream=stream,
+                top_k=yunaConfig["ai"]["top_k"],
+                top_p=yunaConfig["ai"]["top_p"],
+                temperature=yunaConfig["ai"]["temperature"],
+                repeat_penalty=yunaConfig["ai"]["repetition_penalty"],
+                max_tokens=yunaConfig["ai"]["max_new_tokens"],
+                stop=yunaConfig["ai"]["stop"],
+            )
+            if stream:
+                return (chunk['choices'][0]['text'] for chunk in response)
             else:
-                # Existing template logic without kanojo
-                if template is None:
-                    print('into the model -> ', text)
-                    response = self.model(
-                        text,
-                        stream=stream,
-                        top_k=yunaConfig["ai"]["top_k"],
-                        top_p=yunaConfig["ai"]["top_p"],
-                        temperature=yunaConfig["ai"]["temperature"],
-                        repeat_penalty=yunaConfig["ai"]["repetition_penalty"],
-                        max_tokens=yunaConfig["ai"]["max_new_tokens"],
-                        stop=yunaConfig["ai"]["stop"],
-                    )
-                    if stream:
-                        return (chunk['choices'][0]['text'] for chunk in response)
-                    else:
-                        response = response['choices'][0]['text']
-                        response = self.clearText(str(response))
-                        return response
-                else:
-                    max_length_all_input_and_output = yunaConfig["ai"]["context_length"]
-                    max_length_of_generated_tokens = yunaConfig["ai"]["max_new_tokens"]
-                    max_length_of_input_tokens = max_length_all_input_and_output - max_length_of_generated_tokens
-
-                    tokenized_prompt = self.model.tokenize(template.encode('utf-8'))
-
-                    text_of_history = self.get_history_text(chat_history, text, useHistory, yunaConfig)
-                    tokenized_history = self.model.tokenize(text_of_history.encode('utf-8'))
-
-                    max_length_of_history_tokens = max_length_of_input_tokens - len(tokenized_prompt)
-                    cropped_history = tokenized_history[-max_length_of_history_tokens:]
-
-                    if useHistory:
-                        response = template.replace('{user_msg}', self.model.detokenize(cropped_history).decode('utf-8'))
-                    else:
-                        response = template.replace('{user_msg}', text)
-
-                    response = self.clearText(str(response))
-
-                    print('into the model -> ', response)
-                    response = self.model(
-                        response,
-                        stream=stream,
-                        top_k=yunaConfig["ai"]["top_k"],
-                        top_p=yunaConfig["ai"]["top_p"],
-                        temperature=yunaConfig["ai"]["temperature"],
-                        repeat_penalty=yunaConfig["ai"]["repetition_penalty"],
-                        max_tokens=yunaConfig["ai"]["max_new_tokens"],
-                        stop=yunaConfig["ai"]["stop"],
-                    )
-
-                    if stream:
-                        return (chunk['choices'][0]['text'] for chunk in response)
-                    else:
-                        response = response['choices'][0]['text']
-                        response = self.clearText(str(response))
-                        return response
-
+                response = response['choices'][0]['text']
+                response = self.clearText(str(response))
+                return response
         elif self.config["server"]["yuna_text_mode"] == "fast":
             if kanojo is not None:
                 # Step 1: Tokenize kanojo
@@ -213,88 +132,33 @@ class ChatGenerator:
                 # Naked prompt without kanojo
                 final_prompt = text
 
-            if template is None and kanojo is not None:
-                dataSendAPI = {
-                    "model": "/Users/yuki/Documents/Github/yuna-ai/lib/models/yuna/yukiarimo/yuna-ai/yuna-ai-v3-q6_k.gguf",
-                    "messages": [{"role": "user", "content": final_prompt}],
-                    "temperature": yunaConfig["ai"]["temperature"],
-                    "max_tokens": -1,
-                    "stop": yunaConfig["ai"]["stop"],
-                    "top_p": yunaConfig["ai"]["top_p"],
-                    "top_k": yunaConfig["ai"]["top_k"],
-                    "min_p": 0,
-                    "presence_penalty": 0,
-                    "frequency_penalty": 0,
-                    "logit_bias": {},
-                    "repeat_penalty": yunaConfig["ai"]["repetition_penalty"],
-                    "seed": yunaConfig["ai"]["seed"]
-                }
-            elif kanojo is not None:
-                messages = self.get_messages(chat_history, text, yunaConfig)
-                dataSendAPI = {
-                    "model": "/Users/yuki/Documents/Github/yuna-ai/lib/models/yuna/yukiarimo/yuna-ai/yuna-ai-v3-q6_k.gguf",
-                    "messages": messages,
-                    "temperature": yunaConfig["ai"]["temperature"],
-                    "max_tokens": -1,
-                    "stop": yunaConfig["ai"]["stop"],
-                    "top_p": yunaConfig["ai"]["top_p"],
-                    "top_k": yunaConfig["ai"]["top_k"],
-                    "min_p": 0,
-                    "presence_penalty": 0,
-                    "frequency_penalty": 0,
-                    "logit_bias": {},
-                    "repeat_penalty": yunaConfig["ai"]["repetition_penalty"],
-                    "seed": yunaConfig["ai"]["seed"]
-                }
+            messages = self.get_messages(chat_history, text, yunaConfig)
+            dataSendAPI = {
+                "model": "/Users/yuki/Documents/Github/yuna-ai/lib/models/yuna/yukiarimo/yuna-ai/yuna-ai-v3-q6_k.gguf",
+                "messages": messages,
+                "temperature": yunaConfig["ai"]["temperature"],
+                "max_tokens": -1,
+                "stop": yunaConfig["ai"]["stop"],
+                "top_p": yunaConfig["ai"]["top_p"],
+                "top_k": yunaConfig["ai"]["top_k"],
+                "min_p": 0,
+                "presence_penalty": 0,
+                "frequency_penalty": 0,
+                "logit_bias": {},
+                "repeat_penalty": yunaConfig["ai"]["repetition_penalty"],
+                "seed": yunaConfig["ai"]["seed"]
+            }
+
+            url = "http://localhost:1234/v1/chat/completions"
+            headers = {"Content-Type": "application/json"}
+
+            response = requests.post(url, headers=headers, json=dataSendAPI, stream=False)
+
+            if response.status_code == 200:
+                response_json = json.loads(response.text)
+                response = response_json.get('choices', [{}])[0].get('message', {}).get('content', '')
             else:
-                # Existing template logic without kanojo
-                if template is None:
-                    dataSendAPI = {
-                        "model": "/Users/yuki/Documents/Github/yuna-ai/lib/models/yuna/yukiarimo/yuna-ai/yuna-ai-v3-q6_k.gguf",
-                        "messages": [{"role": "user", "content": text}],
-                        "temperature": yunaConfig["ai"]["temperature"],
-                        "max_tokens": -1,
-                        "stop": yunaConfig["ai"]["stop"],
-                        "top_p": yunaConfig["ai"]["top_p"],
-                        "top_k": yunaConfig["ai"]["top_k"],
-                        "min_p": 0,
-                        "presence_penalty": 0,
-                        "frequency_penalty": 0,
-                        "logit_bias": {},
-                        "repeat_penalty": yunaConfig["ai"]["repetition_penalty"],
-                        "seed": yunaConfig["ai"]["seed"]
-                    }
-                else:
-                    messages = self.get_messages(chat_history, text, yunaConfig)
-                    dataSendAPI = {
-                        "model": "/Users/yuki/Documents/Github/yuna-ai/lib/models/yuna/yukiarimo/yuna-ai/yuna-ai-v3-q6_k.gguf",
-                        "messages": messages,
-                        "temperature": yunaConfig["ai"]["temperature"],
-                        "max_tokens": -1,
-                        "stop": yunaConfig["ai"]["stop"],
-                        "top_p": yunaConfig["ai"]["top_p"],
-                        "top_k": yunaConfig["ai"]["top_k"],
-                        "min_p": 0,
-                        "presence_penalty": 0,
-                        "frequency_penalty": 0,
-                        "logit_bias": {},
-                        "repeat_penalty": yunaConfig["ai"]["repetition_penalty"],
-                        "seed": yunaConfig["ai"]["seed"]
-                    }
-
-            if kanojo is not None:
-                url = "http://localhost:1234/v1/chat/completions"
-                headers = {"Content-Type": "application/json"}
-
-                response = requests.post(url, headers=headers, json=dataSendAPI, stream=False)
-
-                if response.status_code == 200:
-                    response_json = json.loads(response.text)
-                    response = response_json.get('choices', [{}])[0].get('message', {}).get('content', '')
-                else:
-                    print(f"Request failed with status code: {response.status_code}")
-
-                return response
+                print(f"Request failed with status code: {response.status_code}")
 
             print('response -> ', response)
             if stream:
@@ -338,7 +202,7 @@ class ChatGenerator:
                 if name and message:
                     history += f'<{name.lower()}>{message}</{name.lower()}>\n'
 
-        return f"{history}<yuna>: {text}\n<yuna>:"
+        return f"{history}<yuki>{text}</yuki>\n<yuna>"
 
     def get_messages(self, chat_history, text, yunaConfig):
         messages = []

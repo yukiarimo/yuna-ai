@@ -68,7 +68,7 @@ img {
 }
 
 .el-9 {
-    width: 95% !important;
+    width: 98% !important;
 }
 
 #localVideo {
@@ -368,18 +368,6 @@ body {
     background-color: #4b6cff;
 }
 
-.toggle-theme {
-    margin-top: 30px;
-}
-
-.toggle-theme button {
-    background-color: #333;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 10px;
-}
-
 .search-container {
     display: flex;
     justify-content: center;
@@ -570,6 +558,10 @@ body {
 
 .video-container .ratio {
     height: 100%;
+}
+
+#chat-items {
+    display: none !important;
 }
 
 @media (max-width : 440px) {

@@ -4,12 +4,17 @@ import torch
 import torchaudio
 from pydub import AudioSegment
 from transformers import pipeline
+import re
+import numpy as np
+from multiprocessing import Process, Pipe
+from transformers import pipeline, SpeechT5Processor, SpeechT5ForTextToSpeech, SpeechT5HifiGan
+
 
 yunaListen = pipeline(
     "automatic-speech-recognition",
     model="openai/whisper-tiny",
     torch_dtype=torch.float32,
-    device="mps", # or mps for Mac devices
+    device="mps",  # or mps for Mac devices
     model_kwargs={"attn_implementation": "sdpa"},
 )
 
@@ -26,24 +31,22 @@ if config['server']['yuna_audio_mode'] == "11labs":
     from elevenlabs import VoiceSettings
     from elevenlabs.client import ElevenLabs
 
+def load_speecht5_in_process(config, conn):
+    from load_speecht5 import load_speecht5
+    vocoder, processor, model, speaker_model = load_speecht5(config)
+    conn.send((vocoder, processor, model, speaker_model))
+    conn.close()
+
 if config['server']['yuna_audio_mode'] == "native":
+    parent_conn, child_conn = Pipe()
+    p = Process(target=load_speecht5_in_process, args=(config, child_conn))
+    p.start()
+    vocoder, processor, model, speaker_model = parent_conn.recv()
+    p.join()
+
     import soundfile as sf
-    from transformers import SpeechT5Processor, SpeechT5ForTextToSpeech, SpeechT5HifiGan
-    from speechbrain.inference import EncoderClassifier
     import librosa
-    import numpy as np
     from datasets import Dataset, Audio
-
-    # Load models and processor
-    vocoder = SpeechT5HifiGan.from_pretrained("microsoft/speecht5_hifigan")
-    processor = SpeechT5Processor.from_pretrained("lib/models/agi/voice/" + config['server']['voice_default_model'])
-    model = SpeechT5ForTextToSpeech.from_pretrained("lib/models/agi/voice/" + config['server']['voice_default_model'])
-
-    speaker_model = EncoderClassifier.from_hparams(
-        source="speechbrain/spkrec-xvect-voxceleb",
-        run_opts={"device": "cpu"},
-        savedir="lib/models/agi/voice/embeddings/"
-    )
 
     def create_speaker_embedding(waveform):
         with torch.no_grad():
@@ -109,6 +112,7 @@ def run_tts(lang, tts_text, speaker_audio_file, output_audio):
     torchaudio.save(out_path, torch.tensor(out["aiff"]).unsqueeze(0), 22000)
 
     return out_path, speaker_audio_file
+
 def speak_text(text, reference_audio=config['server']['yuna_reference_audio'], output_audio=config['server']['output_audio_format'], mode=config['server']['yuna_audio_mode'], language="en"):
     if mode == "coqui":
         # Split the text into sentences
@@ -216,3 +220,89 @@ if config['server']['yuna_audio_mode'] == "coqui":
     xtts_config = "/Users/yuki/Documents/Github/yuna-ai/lib/models/agi/yuna-talk/config.json"
     xtts_vocab = "/Users/yuki/Documents/Github/yuna-ai/lib/models/agi/yuna-talk/vocab.json"
     load_model(xtts_checkpoint, xtts_config, xtts_vocab)
+
+def split_into_sentences(text):
+    """Split text into sentences."""
+    sentences = re.split('(?<=[.!?]) +', text)
+    return sentences
+
+def chunk_sentences(sentences, max_chars=200):
+    """Chunk sentences into groups not exceeding max_chars."""
+    chunks = []
+    current_chunk = ""
+
+    for sentence in sentences:
+        if len(current_chunk) + len(sentence) <= max_chars:
+            current_chunk += sentence + " "
+        else:
+            if current_chunk:
+                chunks.append(current_chunk.strip())
+            current_chunk = sentence + " "
+
+    if current_chunk:
+        chunks.append(current_chunk.strip())
+
+    return chunks
+
+def generate_native_speech(text, embedding_path, processor, model, vocoder):
+    """
+    Generate speech audio from text using the provided models and embeddings.
+    """
+    # Load precomputed speaker embeddings
+    speaker_embeddings = np.load(embedding_path)
+    speaker_embeddings = torch.tensor(speaker_embeddings).unsqueeze(0).to(torch.float32)
+
+    inputs = processor(text=text, return_tensors="pt")
+    spectrogram = model.generate_audiobook(inputs["input_ids"], speaker_embeddings)
+
+    with torch.no_grad():
+        speech = vocoder(spectrogram)
+
+    return speech.cpu().numpy()
+
+def save_and_convert_audio(speech_array, index):
+    """
+    Save the speech array as WAV and convert it to MP3.
+    """
+    wav_path = f"static/audio/audio_{index}.wav"
+    mp3_path = f"static/audio/audio_{index}.mp3"
+
+    # Save WAV
+    sf.write(wav_path, speech_array, samplerate=16000)
+
+    # Convert to MP3
+    audio = AudioSegment.from_wav(wav_path)
+    audio.export(mp3_path, format='mp3')
+
+    return wav_path, mp3_path
+
+def process_chunk(chunk, index, embedding_path, processor, model, vocoder):
+    """
+    Process a single text chunk: generate speech and save audio.
+    """
+    print(f"Processing chunk {index+1}: {chunk}")
+    speech_array = generate_native_speech(chunk, embedding_path, processor, model, vocoder)
+    wav_path, mp3_path = save_and_convert_audio(speech_array, index)
+    print(f"Chunk {index+1} processed.")
+    return mp3_path
+
+def stream_generate_speech(text, embedding_path):
+    """
+    Generator function to process text and yield audio paths incrementally.
+    Processes chunks sequentially to maintain order.
+    """
+    # Load models and processor outside the loop for efficiency
+    vocoder = SpeechT5HifiGan.from_pretrained("microsoft/speecht5_hifigan")
+    processor = SpeechT5Processor.from_pretrained("lib/models/agi/voice/yuna-ai-voice-v1/")
+    model = SpeechT5ForTextToSpeech.from_pretrained("lib/models/agi/voice/yuna-ai-voice-v1/")
+
+    sentences = split_into_sentences(text)
+    chunks = chunk_sentences(sentences)
+
+    for index, chunk in enumerate(chunks):
+        mp3_path = process_chunk(chunk, index, embedding_path, processor, model, vocoder)
+        # Yield the path as a JSON string followed by a newline for streaming
+        yield json.dumps({'audio_path': mp3_path}) + '\n'
+
+    # Indicate completion
+    yield json.dumps({'status': 'complete'}) + '\n'

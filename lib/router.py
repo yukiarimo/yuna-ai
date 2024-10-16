@@ -1,12 +1,10 @@
 import base64
 import re
-import json
-import os
 from flask import jsonify, request, send_from_directory, Response
 from flask_login import current_user, login_required
 from lib.vision import capture_image
 from lib.search import get_html, search_web
-from lib.audio import transcribe_audio, speak_text
+from lib.audio import stream_generate_speech, transcribe_audio, speak_text
 from pydub import AudioSegment
 
 @login_required
@@ -84,7 +82,7 @@ def handle_message_request(chat_generator, chat_history_manager, config):
 
             print("Response text: ", response_text)
 
-            if kanojo is not None and useHistory:
+            if useHistory is not None and kanojo is not None:
                 # Save chat history after streaming response
                 chat_history = chat_history_manager.load_chat_history(user_id, chat_id)
                 chat_history.append({"name": config['ai']['names'][0], "message": f"<yuki>{text}</yuki>"})
@@ -93,7 +91,7 @@ def handle_message_request(chat_generator, chat_history_manager, config):
 
                 if speech:
                     chat_history_manager.generate_speech(response_text)
-            elif kanojo is None and useHistory:
+            elif useHistory is not None and kanojo is None:
                 # Save chat history without kanojo
                 chat_history = chat_history_manager.load_chat_history(user_id, chat_id)
                 chat_history.append({"name": config['ai']['names'][0], "message": text})
@@ -105,7 +103,7 @@ def handle_message_request(chat_generator, chat_history_manager, config):
 
         return Response(generate_stream(), mimetype='text/plain')
     else:
-        if kanojo is not None and useHistory:
+        if useHistory is not None and kanojo is not None:
             # Save chat history after non-streaming response with kanojo
             chat_history = chat_history_manager.load_chat_history(user_id, chat_id)
             chat_history.append({"name": config['ai']['names'][0], "message": f"<yuki>{text}</yuki>"})
@@ -114,7 +112,7 @@ def handle_message_request(chat_generator, chat_history_manager, config):
 
             if speech:
                 speak_text(response)
-        elif kanojo is None and useHistory:
+        elif useHistory is not None and kanojo is None:
             # Save chat history without kanojo
             chat_history = chat_history_manager.load_chat_history(user_id, chat_id)
             chat_history.append({"name": config['ai']['names'][0], "message": text})
@@ -125,17 +123,6 @@ def handle_message_request(chat_generator, chat_history_manager, config):
                 speak_text(response)
 
         return jsonify({'response': response})
-
-def check_audio_file(file_path):
-    try:
-        audio = AudioSegment.from_file(file_path)
-        print(f"Audio file duration: {audio.duration_seconds} seconds")
-        print(f"Audio file channels: {audio.channels}")
-        print(f"Audio file frame rate: {audio.frame_rate}")
-        return True
-    except Exception as e:
-        print(f"Error loading audio file: {e}")
-        return False
 
 @login_required
 def handle_audio_request(self):
@@ -152,9 +139,6 @@ def handle_audio_request(self):
         save_dir_audio = 'static/audio/audio.wav'
         audio_file.save(save_dir_audio)
 
-        # Example usage
-        if not check_audio_file('static/audio/audio.wav'): print("Audio file is corrupted")
-            
         result = transcribe_audio(save_dir_audio)
         return jsonify({'text': result})
     elif task == 'tts': print(speak_text(text))
@@ -233,3 +217,10 @@ def handle_textfile_request(chat_generator, self):
 
 def services(self):
     return send_from_directory('.', 'services.html')
+
+def generate_audiobook(self):
+    data = request.json
+    text = data.get('text', '')
+    embedding_path = "lib/models/agi/voice/embeddings/speaker_embeddings.npy"
+
+    return Response(stream_generate_speech(text, embedding_path), mimetype='text/event-stream')

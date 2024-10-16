@@ -12,8 +12,11 @@ Flask-Compress
 einops
 timm
 Pillow
-article-parser
 trafilatura
 accelerate
 langchain_huggingface
 langchain-community
+soundfile
+speechbrain
+librosa
+datasets

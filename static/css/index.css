@@ -14,6 +14,10 @@
     --bs-form-check-bg: none !important;
 }
 
+*::-webkit-scrollbar {
+    display: none;  /* Safari and Chrome */
+}
+
 body,
 html,
 .modal {
@@ -562,6 +566,16 @@ body {
 
 #chat-items {
     display: none !important;
+}
+
+.card-full-stack {
+    height: 100vh;
+    overflow-y: scroll;
+    margin-bottom: 50px;
+}
+
+.mb-6 {
+    margin-bottom: 5rem !important;
 }
 
 @media (max-width : 440px) {

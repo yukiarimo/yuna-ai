@@ -11,43 +11,43 @@ document.getElementById('searchButton').addEventListener('click', function () {
 
   // Use Fetch API to send a POST request to the server
   fetch('/search', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      query: searchData,
-      url: "https://www.google.com",
-      processData: false,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        query: searchData,
+        url: "https://www.google.com",
+        processData: false,
+      })
     })
-  })
-  .then(response => response.json()) // Parse the JSON from the response
-  .then(data => {  
-    // Extract the message and results from the data
-    var message = data.message[0];
-    var results = data.message[1];
-    var imageUrls = data.images;
-  
-    var resultsContainer = document.getElementById('results');
-    resultsContainer.innerHTML = '';
-    var answerResultsContainer = document.getElementById('answerResults');
-    answerResultsContainer.innerHTML = `
+    .then(response => response.json()) // Parse the JSON from the response
+    .then(data => {
+      // Extract the message and results from the data
+      var message = data.message[0];
+      var results = data.message[1];
+      var imageUrls = data.images;
+
+      var resultsContainer = document.getElementById('results');
+      resultsContainer.innerHTML = '';
+      var answerResultsContainer = document.getElementById('answerResults');
+      answerResultsContainer.innerHTML = `
       <div class="alert alert-info mb-3">
         <div class="card-body">
           <h5 class="card-title">Search Result</h5>
           <p class="card-text" id="main-search-info">${message}</p>
         </div>
       </div>`;
-  
-    // Loop through each result
-    results.forEach(function (result) {
-      // Get the title, description, and URL
-      var title = result.Title;
-      var description = result.Description;
-      var url = result.Link;
-  
-      // Display the information using Bootstrap cards
-      resultsContainer.innerHTML += `
+
+      // Loop through each result
+      results.forEach(function (result) {
+        // Get the title, description, and URL
+        var title = result.Title;
+        var description = result.Description;
+        var url = result.Link;
+
+        // Display the information using Bootstrap cards
+        resultsContainer.innerHTML += `
         <div class="col-md-4">
           <div class="card h-100">
             <div class="card-body">
@@ -58,30 +58,30 @@ document.getElementById('searchButton').addEventListener('click', function () {
             </div>
           </div>
         </div>`;
+      });
+
+      // Process image URLs
+      imageUrls.forEach(function (url) {
+        // create a new div element to act as a card
+        let card = document.createElement('div');
+        card.className = 'card mb-3';
+
+        // create a new image element and set the source attribute
+        let img = document.createElement('img');
+        img.src = url;
+        img.className = 'card-img-top'; // Bootstrap class for images in cards
+
+        // append the image to the card
+        card.appendChild(img);
+
+        // append the card to the resultsContainer element without overwriting the previous content
+        resultsContainer.appendChild(card);
+      });
+
+    })
+    .catch(error => {
+      console.error('Error:', error);
     });
-
-    // Process image URLs
-    imageUrls.forEach(function (url) {
-      // create a new div element to act as a card
-      let card = document.createElement('div');
-      card.className = 'card mb-3';
-
-      // create a new image element and set the source attribute
-      let img = document.createElement('img');
-      img.src = url;
-      img.className = 'card-img-top'; // Bootstrap class for images in cards
-
-      // append the image to the card
-      card.appendChild(img);
-
-      // append the card to the resultsContainer element without overwriting the previous content
-      resultsContainer.appendChild(card);
-    });
-
-  })
-  .catch(error => {
-    console.error('Error:', error);
-  });
 });
 
 function analyzeContent(url) {
@@ -94,23 +94,23 @@ function analyzeContent(url) {
 
   // Send the FormData object to the server
   fetch('/search', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      url: url,
-      task: 'html',
-      query: promptForContent
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        url: url,
+        task: 'html',
+        query: promptForContent
+      })
     })
-  })
-  .then(response => response.json())
-  .then(data => {
-    displayAnalysisResult(data);
-  })
-  .catch(error => {
-    console.error('Error analyzing content:', error);
-  });
+    .then(response => response.json())
+    .then(data => {
+      displayAnalysisResult(data);
+    })
+    .catch(error => {
+      console.error('Error analyzing content:', error);
+    });
 }
 
 function displayAnalysisResult(data) {

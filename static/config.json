@@ -34,7 +34,7 @@
     "server": {
         "port": "",
         "url": "",
-        "yuna_default_model": "yuna-ai-v3-q5_k_m.gguf",
+        "yuna_default_model": "fused_q6k.gguf",
         "miru_default_model": "yuna-ai-miru-v0.gguf",
         "eyes_default_model": "yuna-ai-miru-eye-v0.gguf",
         "voice_default_model": "yuna-ai-voice-v1",

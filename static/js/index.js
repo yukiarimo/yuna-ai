@@ -257,7 +257,7 @@ class messageManager {
         chat: selectedFilename,
         text: messageContent,
         useHistory: kanojoManager.useHistory,
-        kanojo: kanojo || kanojoManager.buildKanojo(document.getElementById('kanojoSelect').value),
+        kanojo: kanojo === false ? null : (kanojo || kanojoManager.buildKanojo(document.getElementById('kanojoSelect').value)),
         speech: isYunaListening,
         yunaConfig: yunaConfig,
         stream
@@ -426,9 +426,7 @@ function formatMessage(messageData) {
   messageDiv.classList.add('message', 'p-2', 'mb-2');
   messageDiv.id = 'message1';
 
-  const classes = messageData.name == config_data.ai.names[0] || messageData.name == 'Yuki' ?
-    ['block-message-2', 'text-end', 'bg-primary', 'text-white'] :
-    ['block-message-1', 'text-start', 'bg-secondary', 'text-white'];
+  const classes = messageData.name == config_data.ai.names[0] || messageData.name == 'Yuki' ? ['block-message-2', 'text-end', 'bg-primary', 'text-white'] : ['block-message-1', 'text-start', 'bg-secondary', 'text-white'];
   messageDiv.classList.add(...classes);
 
   const messageText = document.createElement('pre');
@@ -1305,7 +1303,7 @@ document.addEventListener('DOMContentLoaded', loadConfig);
 
 class NotificationManager {
   constructor() {
-    this.dropdownMenu = document.querySelector('.dropdown-menu.dropdown-menu-end.dropdown-list.animated--grow-in');
+    this.dropdownMenu = document.querySelector('#notifications-container');
     this.messages = [];
   }
 
@@ -1406,6 +1404,3 @@ function initializeTextareas() {
 
 // Run the initialization when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', initializeTextareas);
-
-// Also run it immediately in case the script is loaded after the DOM
-initializeTextareas();

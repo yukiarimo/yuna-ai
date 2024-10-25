@@ -324,23 +324,24 @@
                                                                 <form id="entry-form">
                                                                     <div class="mb-3">
                                                                         <input type="text" class="form-control"
-                                                                            id="entry-title" placeholder="Title"
-                                                                            required>
+                                                                            id="entry-title" name="title"
+                                                                            placeholder="Title" required>
                                                                     </div>
                                                                     <div class="mb-3">
                                                                         <textarea class="form-control" id="entry-text"
-                                                                            rows="3"
+                                                                            name="text" rows="3"
                                                                             placeholder="Write your thoughts..."
                                                                             required></textarea>
                                                                     </div>
                                                                     <div class="mb-3">
                                                                         <input type="datetime-local"
                                                                             class="form-control" id="entry-date"
-                                                                            required>
+                                                                            name="date" required>
                                                                     </div>
                                                                     <div class="mb-3">
                                                                         <input type="file" class="form-control"
-                                                                            id="entry-image" accept="image/*">
+                                                                            id="entry-image" name="image"
+                                                                            accept="image/*">
                                                                     </div>
                                                                     <button type="submit" class="btn btn-primary"
                                                                         id="add-entry">Add Entry</button>
@@ -365,12 +366,12 @@
                                                                 <form id="note-form">
                                                                     <div class="mb-3">
                                                                         <input type="text" class="form-control"
-                                                                            id="note-title" placeholder="Title"
-                                                                            required>
+                                                                            id="note-title" name="title"
+                                                                            placeholder="Title" required>
                                                                     </div>
                                                                     <div class="mb-3">
                                                                         <textarea class="form-control" id="note-text"
-                                                                            rows="3"
+                                                                            name="text" rows="3"
                                                                             placeholder="Write your note or memory..."
                                                                             required></textarea>
                                                                     </div>
@@ -397,13 +398,13 @@
                                                                 <form id="schedule-form">
                                                                     <div class="mb-3">
                                                                         <input type="text" class="form-control"
-                                                                            id="schedule-title" placeholder="Title"
-                                                                            required>
+                                                                            id="schedule-title" name="title"
+                                                                            placeholder="Title" required>
                                                                     </div>
                                                                     <div class="mb-3">
                                                                         <input type="datetime-local"
                                                                             class="form-control" id="schedule-time"
-                                                                            required>
+                                                                            name="time" required>
                                                                     </div>
                                                                     <button type="submit" class="btn btn-info"
                                                                         id="add-schedule">Add Schedule</button>
@@ -815,9 +816,12 @@
                                                             </div>
                                                             <div class="card-body">
                                                                 <div class="form-group">
-                                                                    <textarea id="textInput" class="form-control" rows="4" placeholder="Enter your text here..."></textarea>
+                                                                    <textarea id="textInput" class="form-control"
+                                                                        rows="4"
+                                                                        placeholder="Enter your text here..."></textarea>
                                                                 </div>
-                                                                <button class="btn btn-primary mt-3" onclick="generateSpeech()">Generate Speech</button>
+                                                                <button class="btn btn-primary mt-3"
+                                                                    onclick="generateSpeech()">Generate Speech</button>
                                                                 <div id="status" class="mt-3"></div>
                                                                 <div id="audioOutput" class="mt-3"></div>
                                                             </div>

@@ -1,14 +1,12 @@
 {
     "ai": {
-        "names": [
-            "Yuki",
-            "Yuna"
-        ],
+        "names": ["Yuki", "Yuna"],
         "himitsu": false,
         "agi": false,
         "emotions": false,
         "miru": false,
         "search": false,
+        "audio": false,
         "max_new_tokens": 512,
         "context_length": 2048,
         "temperature": 0.7,
@@ -16,13 +14,8 @@
         "last_n_tokens_size": 128,
         "seed": -1,
         "top_k": 100,
-        "top_p": 0.92,
-        "stop": [
-            "<yuki>",
-            "</yuki>",
-            "<yuna>",
-            "<yuki>"
-        ],
+        "top_p": 0.9,
+        "stop": ["<yuki>", "</yuki>", "<yuna>", "</yuna>", "<hito>", "</hito>", "<data>", "</data>", "<kanojo>", "</kanojo>"],
         "batch_size": 512,
         "threads": 8,
         "gpu_layers": -1,
@@ -34,27 +27,29 @@
     "server": {
         "port": "",
         "url": "",
-        "yuna_default_model": "fused_q6k.gguf",
+        "yuna_default_model": "yuna-ai-v4-q6_k",
         "miru_default_model": "yuna-ai-miru-v0.gguf",
         "eyes_default_model": "yuna-ai-miru-eye-v0.gguf",
         "voice_default_model": "yuna-ai-voice-v1",
-        "art_default_model": "yuna_ai_anime.safetensors",
         "device": "mps",
-        "yuna_text_mode": "native",
+        "yuna_text_mode": "kobold",
         "yuna_audio_mode": "siri",
         "yuna_reference_audio": "1.wav",
         "output_audio_format": "audio.aiff"
     },
     "settings": {
-        "streaming": true,
+        "pseudo_api": false,
+        "fuctions": false,
+        "notifications": false,
         "customConfig": true,
-        "default_history_file": "history_template:general.json",
-        "default_kanojo": "Yuna",
-        "default_prompt_template": "dialog",
+        "sounds": false,
+        "use_history": true,
         "background_call": true,
         "nsfw_filter": false,
-        "dark_mode": true,
-        "sounds": false
+        "streaming": true,
+        "default_history_file": "history_template:general.json",
+        "default_kanojo": "Yuna",
+        "default_prompt_template": "dialog"
     },
     "security": {
         "secret_key": "YourSecretKeyHere123!",

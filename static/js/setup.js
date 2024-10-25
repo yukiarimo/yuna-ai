@@ -1,128 +1,99 @@
-function openConfigParams() {
-  const parameterContainer = document.getElementById('parameter-container');
-  parameterContainer.appendChild(createBlockList(config_data.ai, 'ai'));
-  parameterContainer.appendChild(createBlockList(config_data.server, 'server'));
-  parameterContainer.appendChild(createBlockList(config_data.settings, 'settings'));
-  return parameterContainer;
-}
+// Utility Functions
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-function createBlockList(config, type) {
-  const blockList = document.createElement('div');
-  blockList.classList.add('block-list', 'el-9', 'v-coll', `${type}-block-list`, 'list-group', 'list-group-flush');
+const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1);
 
-  let html = '';
-  for (const key in config) {
-    if (typeof config[key] === 'boolean') {
-      html += createFormCheck(key, config[key]);
-    } else if (Array.isArray(config[key])) {
-      html += createFormGroup(key, config[key].join(','));
-    } else {
-      html += createFormGroup(key, config[key]);
-    }
-  }
-
-  blockList.innerHTML = html;
-  return blockList;
-}
-
-function createFormGroup(id, value) {
-  return `
-    <div class="form-group" style="width: 100%;">
-      <label for="${id}">${capitalize(id)}</label>
-      <textarea type="text" class="form-control" id="${id}">${value}</textarea>
-    </div>
-  `;
-}
-
-function createFormCheck(id, checked) {
-  return `
-    <div class="form-check" style="width: 100%;">
-      <input class="form-check-input" type="checkbox" id="${id}" ${checked ? 'checked' : ''}>
-      <label class="form-check-label" for="${id}">${capitalize(id)}</label>
-    </div>
-  `;
-}
-
-function capitalize(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-function saveConfigParams() {
-  const reverseConfig = {
-    ai: extractValuesFromBlockList('.ai-block-list', ['names', 'himitsu', 'agi', 'emotions', 'miru', 'search', 'max_new_tokens', 'context_length', 'temperature', 'repetition_penalty', 'last_n_tokens_size', 'seed', 'top_k', 'top_p', 'stop', 'batch_size', 'threads', 'gpu_layers', 'use_mmap', 'flash_attn', 'use_mlock', 'offload_kqv']),
-    server: extractValuesFromBlockList('.server-block-list', ['port', 'url', 'yuna_default_model', 'miru_default_model', 'eyes_default_model', 'voice_default_model', 'art_default_model', 'device', 'yuna_text_mode', 'yuna_audio_mode', 'yuna_reference_audio', 'output_audio_format']),
-    settings: extractValuesFromBlockList('.settings-block-list', ['streaming', 'news', 'default_history_file', 'default_kanojo', 'default_prompt_template', 'background_call', 'nsfw_filter', 'dark_mode', 'sounds'])
-  };
-
-  localStorage.setItem('config', JSON.stringify(reverseConfig));
-}
-
-function extractValuesFromBlockList(selector, keys) {
-  const blockList = document.querySelector(selector);
-  const values = {};
-
-  keys.forEach(key => {
-    const element = blockList.querySelector(`#${key}`);
-    if (element.type === 'checkbox') {
-      values[key] = element.checked;
-    } else if (element.type === 'number') {
-      values[key] = parseFloat(element.value);
-    } else if (key === 'names' || key === 'stop') {
-      values[key] = element.value.split(',');
-    } else {
-      values[key] = element.value;
-    }
+// Configuration Handling
+const openConfigParams = () => {
+  const container = document.getElementById('parameter-container');
+  ['ai', 'server', 'settings'].forEach(type => {
+    container.appendChild(createBlockList(config_data[type], type));
   });
+  return container;
+};
 
-  return values;
-}
+const createBlockList = (config, type) => {
+  const div = document.createElement('div');
+  div.classList.add('block-list', 'el-9', 'v-coll', `${type}-block-list`, 'list-group', 'list-group-flush');
+  div.innerHTML = Object.entries(config).map(([key, value]) => 
+    typeof value === 'boolean' ? createFormCheck(key, value) :
+    Array.isArray(value) ? createFormGroup(key, value.join(',')) :
+    createFormGroup(key, value)
+  ).join('');
+  return div;
+};
 
-async function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
+const createFormGroup = (id, value) => `
+  <div class="form-group w-100">
+    <label for="${id}">${capitalize(id)}</label>
+    <textarea class="form-control" id="${id}">${value}</textarea>
+  </div>
+`;
 
-async function checkConfigData() {
+const createFormCheck = (id, checked) => `
+  <div class="form-check w-100">
+    <input class="form-check-input" type="checkbox" id="${id}" ${checked ? 'checked' : ''}>
+    <label class="form-check-label" for="${id}">${capitalize(id)}</label>
+  </div>
+`;
+
+const saveConfigParams = () => {
+  const reverseConfig = {
+    ai: extractValues('.ai-block-list', ['names', 'himitsu', 'agi', 'emotions', 'miru', 'search', 'audio', 'max_new_tokens', 'context_length', 'temperature', 'repetition_penalty', 'last_n_tokens_size', 'seed', 'top_k', 'top_p', 'stop', 'batch_size', 'threads', 'gpu_layers', 'use_mmap', 'flash_attn', 'use_mlock', 'offload_kqv']),
+    server: extractValues('.server-block-list', ['port', 'url', 'yuna_default_model', 'miru_default_model', 'eyes_default_model', 'voice_default_model', 'device', 'yuna_text_mode', 'yuna_audio_mode', 'yuna_reference_audio', 'output_audio_format']),
+    settings: extractValues('.settings-block-list', ['pseudo_api', 'fuctions', 'notifications', 'customConfig', 'sounds', 'use_history', 'background_call', 'nsfw_filter', 'streaming', 'default_history_file', 'default_kanojo', 'default_prompt_template']),
+    security: extractValues('.security-block-list', ['secret_key', 'encryption_key', '11labs_key'])
+  };
+  localStorage.setItem('config', JSON.stringify(reverseConfig));
+};
+
+const extractValues = (selector, keys) => {
+  const block = document.querySelector(selector);
+  return keys.reduce((acc, key) => {
+    const el = block.querySelector(`#${key}`);
+    if (!el) return acc;
+    acc[key] = el.type === 'checkbox' ? el.checked :
+              el.type === 'number' ? parseFloat(el.value) :
+              ['names', 'stop'].includes(key) ? el.value.split(',') :
+              el.value;
+    return acc;
+  }, {});
+};
+
+// Configuration Loading
+const checkConfigData = async () => {
   await delay(100);
   if (config_data) return;
-
-  if (localStorage.getItem('config')) {
+  
+  const storedConfig = localStorage.getItem('config');
+  if (storedConfig) {
     setTimeout(() => {
-      config_data = JSON.parse(localStorage.getItem('config'));
-      ({
-        server: {
-          url: server_url,
-          port: server_port
-        }
-      } = config_data);
-      populateHistorySelect().then(() => {
-        historyManagerInstance.loadSelectedHistory();
-      });
+      config_data = JSON.parse(storedConfig);
+      ({ server: { url: server_url, port: server_port } } = config_data);
+      populateHistorySelect().then(historyManagerInstance.loadSelectedHistory);
     }, 100);
   } else {
     try {
       const response = await fetch('/static/config.json');
       config_data = await response.json();
       localStorage.setItem('config', JSON.stringify(config_data));
-      ({
-        server: {
-          url: server_url,
-          port: server_port
-        }
-      } = config_data);
+      ({ server: { url: server_url, port: server_port } } = config_data);
     } catch (error) {
       console.error('Error:', error);
     }
     await delay(100);
     openConfigParams();
   }
-}
+};
 
 checkConfigData();
-// run openConfigParams() with 1 second delay
 setTimeout(openConfigParams, 300);
 
-document.addEventListener("keydown", function (event) {
-  // Prevent default action for Tab to avoid focusing on the next element
+// Event Listeners
+document.addEventListener("keydown", event => {
+  const activeElement = document.activeElement;
+  const isInput = ['INPUT', 'TEXTAREA'].includes(activeElement.tagName);
+  
   if (event.key === "Tab") {
     event.preventDefault();
     toggleSidebar();
@@ -130,185 +101,109 @@ document.addEventListener("keydown", function (event) {
     return;
   }
 
-  var inputs = Array.from(document.getElementsByTagName('input'));
-  var textareas = Array.from(document.getElementsByTagName('textarea'));
-
-  // Check if Command key is pressed along with the key and is not in the input field
-  if (!inputs.includes(document.activeElement) && !textareas.includes(document.activeElement) && event.metaKey) {
-    var navSidebar = document.getElementsByClassName('side-link');
-    switch (event.key) {
-      case "1":
-        event.preventDefault(); // Prevent any default action
-        for (let j = 0; j < navSidebar.length; j++) {
-          navSidebar[j].classList.remove('active');
-        }
-        navSidebar[0].classList.add('active');
-        OpenTab('1');
-        break;
-      case "2":
-        event.preventDefault(); // Prevent any default action
-        for (let j = 0; j < navSidebar.length; j++) {
-          navSidebar[j].classList.remove('active');
-        }
-        navSidebar[1].classList.add('active');
-        OpenTab('2');
-        break;
-      case "3":
-        event.preventDefault(); // Prevent any default action
-        for (let j = 0; j < navSidebar.length; j++) {
-          navSidebar[j].classList.remove('active');
-        }
-        navSidebar[2].classList.add('active');
-        OpenTab('3');
-        break;
-      case "4":
-        event.preventDefault(); // Prevent any default action
-        for (let j = 0; j < navSidebar.length; j++) {
-          navSidebar[j].classList.remove('active');
-        }
-        navSidebar[3].classList.add('active');
-        OpenTab('4');
-        break;
-      case "5":
-        event.preventDefault(); // Prevent any default action
-        for (let j = 0; j < navSidebar.length; j++) {
-          navSidebar[j].classList.remove('active');
-        }
-        navSidebar[4].classList.add('active');
-        OpenTab('5');
-        break;
-      case "6":
-        event.preventDefault(); // Prevent any default action
-        for (let j = 0; j < navSidebar.length; j++) {
-          navSidebar[j].classList.remove('active');
-        }
-        navSidebar[5].classList.add('active');
-        settingsView.show();
-        break;
-      case "7":
-        event.preventDefault(); // Prevent any default action
-        for (let j = 0; j < navSidebar.length; j++) {
-          navSidebar[j].classList.remove('active');
-        }
-        navSidebar[6].classList.add('active');
+  if (event.metaKey && !isInput) {
+    const navSidebar = [...document.getElementsByClassName('side-link')];
+    const keyMap = {
+      '1': () => { activateTab(0, '1'); },
+      '2': () => { activateTab(1, '2'); },
+      '3': () => { activateTab(2, '3'); },
+      '4': () => { activateTab(3, '4'); },
+      '5': () => { activateTab(4, '5'); },
+      '6': () => { activateTab(5); settingsView.show(); },
+      '7': () => { 
+        activateTab(6);
         window.open('https://www.patreon.com/YukiArimo', '_blank');
-        break;
-      case "Y":
-        event.preventDefault(); // Prevent any default action
-        // check if callYuna is open
-        if (document.getElementById('videoCallModal').classList.contains('show')) {
-          callYuna.hide();
-        } else {
-          callYuna.show();
-        }
-        break;
-    }
-  }
-
-  // Check if Enter key is pressed
-  if (event.key === "Enter") {
-    // Check if the message input is focused
-    if (document.activeElement === document.getElementById('input_text')) {
-      // Send the message
+      },
+      'Y': () => { 
+        document.getElementById('videoCallModal').classList.contains('show') ? callYuna.hide() : callYuna.show();
+      }
+    };
+    if (keyMap[event.key]) {
       event.preventDefault();
-      messageManagerInstance.sendMessage('');
+      keyMap[event.key]();
     }
+  }
+
+  if (event.key === "Enter" && activeElement.id === 'input_text') {
+    event.preventDefault();
+    messageManagerInstance.sendMessage('');
   }
 });
 
-var callYuna = {
-  myModal: new bootstrap.Modal(document.getElementById('videoCallModal'), {}),
-  show: function () {
-    this.myModal.show();
-  },
-  hide: function () {
-    this.myModal.hide();
-  }
+const activateTab = (index, tabId) => {
+  const navSidebar = document.getElementsByClassName('side-link');
+  [...navSidebar].forEach((link, idx) => link.classList.toggle('active', idx === index));
+  if (tabId) OpenTab(tabId);
 };
 
-var settingsView = {
-  show: function () {
-    var myModal = new bootstrap.Modal(document.getElementById('settingsModal'), {});
-    myModal.show();
-  }
+const callYuna = {
+  myModal: new bootstrap.Modal(document.getElementById('videoCallModal')),
+  show() { this.myModal.show(); },
+  hide() { this.myModal.hide(); }
 };
 
-// Get all tabs
-const tabs = document.querySelectorAll('.tab');
-// Get all content sections
-const sections = document.querySelectorAll('.section');
+const settingsView = {
+  show() { new bootstrap.Modal(document.getElementById('settingsModal')).show(); }
+};
 
-if (window.matchMedia("(max-width: 428px)").matches) {
-  document.getElementsByClassName('scroll-to-top')[0].style.display = 'none';
-}
+// Sidebar and Tabs
+const navSidebar = document.getElementsByClassName('side-link');
+const scrollToTop = document.querySelector('.scroll-to-top');
 
-var navSidebar = document.getElementsByClassName('side-link');
-var scrollToTop = document.getElementsByClassName('scroll-to-top')[0];
-
-for (let i = 0; i < navSidebar.length; i++) {
-  navSidebar[i].addEventListener('click', function () {
+[...navSidebar].forEach((link, i) => {
+  link.addEventListener('click', () => {
     scrollToTop.style.display = i === 0 ? 'none' : 'flex';
-    for (let j = 0; j < navSidebar.length; j++) {
-      navSidebar[j].classList.remove('active');
-    }
-    navSidebar[i].classList.add('active');
+    [...navSidebar].forEach(l => l.classList.remove('active'));
+    link.classList.add('active');
   });
-}
+});
 
-document.getElementsByClassName('sidebarToggle')[0].addEventListener('click', function () {
-  document.getElementsByClassName('sidebar-o')[0].style.width = '100%';
+document.querySelector('.sidebarToggle').addEventListener('click', () => {
+  document.querySelector('.sidebar-o').style.width = '100%';
   kawaiAutoScale();
 });
 
-function togglesidebarBack() {
-  document.getElementsByClassName('sidebar-o')[0].classList.add('toggled');
-  document.getElementsByClassName('sidebar-o')[0].width = '';
+const togglesidebarBack = () => {
+  const sidebar = document.querySelector('.sidebar-o');
+  sidebar.classList.add('toggled');
+  sidebar.style.width = '';
   kawaiAutoScale();
-}
+};
 
-// if on mobile, run this function
-if (window.matchMedia("(max-width: 767px)").matches) {
-  togglesidebarBack()
-}
+if (window.matchMedia("(max-width: 767px)").matches) togglesidebarBack();
 
-// get the height of the #message-container and get the height of the .input-wrapper.ui-container and set the height of the #message-container to the height of the #message-container - the height of the .input-wrapper.ui-container
-setTimeout(function () {
-  var inputWrapper = document.getElementsByClassName('input-wrapper')[0];
-  messageContainer.style.height = `calc(${messageContainer.innerHeight}px - ${inputWrapper.innerHeight}px)`;
+// Layout Adjustments
+setTimeout(() => {
+  const inputWrapper = document.querySelector('.input-wrapper');
+  messageContainer.style.height = `calc(${messageContainer.offsetHeight}px - ${inputWrapper.offsetHeight}px)`;
 }, 200);
 
 setTimeout(getVisibleHeight, 100);
 
-// check if mobile device and add event listener to the sidebar links
 if (window.matchMedia("(max-width: 767px)").matches) {
-  document.querySelectorAll('.side-link').forEach(function (element) {
-    element.addEventListener('click', async function () {
+  document.querySelectorAll('.side-link').forEach(link => {
+    link.addEventListener('click', () => {
       toggleSidebar();
       kawaiAutoScale();
     });
   });
 }
 
-document.querySelectorAll('.side-link')[3].addEventListener('click', function () {
+document.querySelectorAll('.side-link')[3]?.addEventListener('click', () => {
   ['character', 'system'].forEach(id => {
-    document.getElementById(id).style.height = `calc(${document.getElementById(id).scrollHeight}px + 3px)`;
+    const el = document.getElementById(id);
+    if (el) el.style.height = `calc(${el.scrollHeight}px + 3px)`;
   });
 });
 
-function applySettings() {
-  settingsData = JSON.parse(localStorage.getItem('config')).settings
-
-  if (settingsData.streaming) {
-    document.querySelector('#streamingChatMode').click()
-  }
+// Apply Settings
+const applySettings = () => {
+  const { settings } = JSON.parse(localStorage.getItem('config')) || {};
+  if (!settings) return;
   
-  if (settingsData.customConfig) {
-    document.querySelector('#customConfig').click()
-  }
+  settings.streaming && document.querySelector('#streamingChatMode')?.click();
+  settings.customConfig && document.querySelector('#customConfig')?.click();
+  settings.sounds && document.querySelector('#soundsMode')?.click();
+};
 
-  if (settingsData.sounds) {
-    document.querySelector('#soundsMode').click()
-  }
-}
-
-applySettings()
+applySettings();

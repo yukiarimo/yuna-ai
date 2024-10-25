@@ -1,223 +1,28 @@
-// Global Variables
-let entries = [];
-let notes = [];
-let schedules = [];
+// Constants for localStorage keys
+const STORAGE_KEYS = {
+    entries: 'diaryEntries',
+    notes: 'diaryNotes',
+    schedules: 'diarySchedules'
+};
 
-// Load data from localStorage
-if (localStorage.getItem('diaryEntries')) {
-    entries = JSON.parse(localStorage.getItem('diaryEntries'));
-    displayEntries();
-}
+// Data storage
+let data = {
+    entries: JSON.parse(localStorage.getItem(STORAGE_KEYS.entries)) || [],
+    notes: JSON.parse(localStorage.getItem(STORAGE_KEYS.notes)) || [],
+    schedules: JSON.parse(localStorage.getItem(STORAGE_KEYS.schedules)) || []
+};
 
-if (localStorage.getItem('diaryNotes')) {
-    notes = JSON.parse(localStorage.getItem('diaryNotes'));
-    displayNotes();
-}
+// Get Time of Day
+const getTimeOfDay = hour => {
+    if (hour >= 5 && hour < 12) return 'Morning';
+    if (hour >= 12 && hour < 17) return 'Afternoon';
+    if (hour >= 17 && hour < 21) return 'Evening';
+    return 'Night';
+};
 
-if (localStorage.getItem('diarySchedules')) {
-    schedules = JSON.parse(localStorage.getItem('diarySchedules'));
-    displaySchedules();
-}
-
-// Event Listener for Diary Entries
-document.getElementById('entry-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const title = document.getElementById('entry-title').value.trim();
-    const text = document.getElementById('entry-text').value.trim();
-    const dateInput = document.getElementById('entry-date').value;
-    const imageFile = document.getElementById('entry-image').files[0];
-
-    if (title && text && dateInput) {
-        const date = new Date(dateInput);
-        const entry = {
-            id: Date.now(),
-            title,
-            text,
-            date: date.toISOString(),
-            image: null,
-        };
-        if (imageFile) {
-            const reader = new FileReader();
-            reader.onloadend = function () {
-                entry.image = reader.result;
-                saveEntry(entry);
-            };
-            reader.readAsDataURL(imageFile);
-        } else {
-            saveEntry(entry);
-        }
-    } else {
-        alert('Please fill out all required fields.');
-    }
-});
-
-// Event Listener for Notes/Memories
-document.getElementById('note-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const title = document.getElementById('note-title').value.trim();
-    const text = document.getElementById('note-text').value.trim();
-
-    if (title && text) {
-        const note = {
-            id: Date.now(),
-            title,
-            text,
-            date: new Date().toISOString(),
-        };
-        saveNote(note);
-    } else {
-        alert('Please fill out all required fields.');
-    }
-});
-
-// Event Listener for Timetable/Schedule
-document.getElementById('schedule-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const title = document.getElementById('schedule-title').value.trim();
-    const timeInput = document.getElementById('schedule-time').value;
-
-    if (title && timeInput) {
-        const time = new Date(timeInput);
-        const schedule = {
-            id: Date.now(),
-            title,
-            time: time.toISOString(),
-        };
-        saveSchedule(schedule);
-    } else {
-        alert('Please fill out all required fields.');
-    }
-});
-
-// Save Entry
-function saveEntry(entry) {
-    entries.push(entry);
-    localStorage.setItem('diaryEntries', JSON.stringify(entries));
-    displayEntries();
-    clearEntryForm();
-}
-
-// Display Entries
-function displayEntries() {
-    const container = document.getElementById('entries-container');
-    container.innerHTML = '';
-    const categorizedEntries = categorizeEntries(entries);
-    for (const year in categorizedEntries) {
-        const yearSection = document.createElement('div');
-        yearSection.innerHTML = `<h2 class="mt-5 mb-4">${year}</h2>`;
-        for (const month in categorizedEntries[year]) {
-            const monthSection = document.createElement('div');
-            monthSection.innerHTML = `<h3 class="mb-3">${month}</h3>`;
-            for (const week in categorizedEntries[year][month]) {
-                const weekSection = document.createElement('div');
-                weekSection.innerHTML = `<h4 class="mb-2">Week ${week}</h4>`;
-                for (const day in categorizedEntries[year][month][week]) {
-                    const daySection = document.createElement('div');
-                    daySection.innerHTML = `<h5 class="mb-2">Day ${day}</h5>`;
-                    for (const timeOfDay in categorizedEntries[year][month][week][day]) {
-                        const timeSection = document.createElement('div');
-                        timeSection.innerHTML = `<h6 class="mb-2">${timeOfDay}</h6>`;
-                        categorizedEntries[year][month][week][day][timeOfDay].forEach((entry) => {
-                            const entryDiv = document.createElement('div');
-                            entryDiv.className = 'entry card mb-3';
-                            let entryContent = `
-                <div class="card-body">
-                  <h5 class="card-title">${entry.title}</h5>
-                  <h6 class="card-subtitle mb-2 text-muted">${new Date(
-                    entry.date
-                  ).toLocaleString()}</h6>
-                  <p class="card-text">${entry.text}</p>
-              `;
-                            if (entry.image) {
-                                entryContent += `<img src="${entry.image}" alt="Entry image" class="img-fluid">`;
-                            }
-                            entryContent += `
-                  <button class="btn btn-danger btn-sm mt-2" onclick="deleteEntry(${entry.id})">
-                    <i class="bi bi-trash"></i> Delete
-                  </button>
-                </div>
-              `;
-                            entryDiv.innerHTML = entryContent;
-                            timeSection.appendChild(entryDiv);
-                        });
-                        daySection.appendChild(timeSection);
-                    }
-                    weekSection.appendChild(daySection);
-                }
-                monthSection.appendChild(weekSection);
-            }
-            yearSection.appendChild(monthSection);
-        }
-        container.appendChild(yearSection);
-    }
-}
-
-// Save Note
-function saveNote(note) {
-    notes.push(note);
-    localStorage.setItem('diaryNotes', JSON.stringify(notes));
-    displayNotes();
-    clearNoteForm();
-}
-
-// Display Notes
-function displayNotes() {
-    const container = document.getElementById('notes-container');
-    container.innerHTML = '';
-    notes.forEach((note) => {
-        const noteDiv = document.createElement('div');
-        noteDiv.className = 'note card mb-3';
-        noteDiv.innerHTML = `
-      <div class="card-body">
-        <h5 class="card-title">${note.title}</h5>
-        <h6 class="card-subtitle mb-2 text-muted">${new Date(
-          note.date
-        ).toLocaleString()}</h6>
-        <p class="card-text">${note.text}</p>
-        <button class="btn btn-danger btn-sm mt-2" onclick="deleteNote(${note.id})">
-          <i class="bi bi-trash"></i> Delete
-        </button>
-      </div>
-    `;
-        container.appendChild(noteDiv);
-    });
-}
-
-// Save Schedule
-function saveSchedule(schedule) {
-    schedules.push(schedule);
-    localStorage.setItem('diarySchedules', JSON.stringify(schedules));
-    displaySchedules();
-    clearScheduleForm();
-}
-
-// Display Schedules
-function displaySchedules() {
-    const container = document.getElementById('schedule-container');
-    container.innerHTML = '';
-    schedules.sort((a, b) => new Date(a.time) - new Date(b.time));
-    schedules.forEach((schedule) => {
-        const scheduleDiv = document.createElement('div');
-        scheduleDiv.className = 'schedule card mb-3';
-        scheduleDiv.innerHTML = `
-      <div class="card-body">
-        <h5 class="card-title">${schedule.title}</h5>
-        <h6 class="card-subtitle mb-2 text-muted">${new Date(
-          schedule.time
-        ).toLocaleString()}</h6>
-        <button class="btn btn-danger btn-sm mt-2" onclick="deleteSchedule(${schedule.id})">
-          <i class="bi bi-trash"></i> Delete
-        </button>
-      </div>
-    `;
-        container.appendChild(scheduleDiv);
-    });
-}
-
-// Categorize Entries
-function categorizeEntries(entriesList) {
-    const categories = {};
-    entriesList.forEach((entry) => {
+// Categorize Entries for Display
+function categorizeEntries(entries) {
+    return entries.reduce((acc, entry) => {
         const date = new Date(entry.date);
         const year = date.getFullYear();
         const month = date.toLocaleString('default', {
@@ -226,66 +31,219 @@ function categorizeEntries(entriesList) {
         const week = Math.ceil(date.getDate() / 7);
         const day = date.getDate();
         const timeOfDay = getTimeOfDay(date.getHours());
-        if (!categories[year]) categories[year] = {};
-        if (!categories[year][month]) categories[year][month] = {};
-        if (!categories[year][month][week]) categories[year][month][week] = {};
-        if (!categories[year][month][week][day])
-            categories[year][month][week][day] = {};
-        if (!categories[year][month][week][day][timeOfDay])
-            categories[year][month][week][day][timeOfDay] = [];
-        categories[year][month][week][day][timeOfDay].push(entry);
+
+        acc[year] = acc[year] || {};
+        acc[year][month] = acc[year][month] || {};
+        acc[year][month][week] = acc[year][month][week] || {};
+        acc[year][month][week][day] = acc[year][month][week][day] || {};
+        acc[year][month][week][day][timeOfDay] = acc[year][month][week][day][timeOfDay] || [];
+        acc[year][month][week][day][timeOfDay].push(entry);
+        return acc;
+    }, {});
+}
+
+// Display Functions
+const displayFunctions = {
+    entries: () => {
+        const container = document.getElementById('entries-container');
+        const categorized = categorizeEntries(data.entries);
+        let html = '';
+
+        for (const [year, months] of Object.entries(categorized)) {
+            html += `<div><h2 class="mt-5 mb-4">${year}</h2>`;
+            for (const [month, weeks] of Object.entries(months)) {
+                html += `<div><h3 class="mb-3">${month}</h3>`;
+                for (const [week, days] of Object.entries(weeks)) {
+                    html += `<div><h4 class="mb-2">Week ${week}</h4>`;
+                    for (const [day, times] of Object.entries(days)) {
+                        html += `<div><h5 class="mb-2">Day ${day}</h5>`;
+                        for (const [timeOfDay, entries] of Object.entries(times)) {
+                            html += `<div><h6 class="mb-2">${timeOfDay}</h6>`;
+                            entries.forEach(entry => {
+                                html += `
+                                    <div class="entry card mb-3">
+                                        <div class="card-body">
+                                            <h5 class="card-title">${escapeHTML(entry.title)}</h5>
+                                            <h6 class="card-subtitle mb-2 text-muted">${new Date(entry.date).toLocaleString()}</h6>
+                                            <p class="card-text">${escapeHTML(entry.text)}</p>
+                                            ${entry.image ? `<img src="${entry.image}" alt="Entry image" class="img-fluid">` : ''}
+                                            <button class="btn btn-danger btn-sm mt-2" onclick="deleteItem('entries', ${entry.id})">
+                                                <i class="bi bi-trash"></i> Delete
+                                            </button>
+                                        </div>
+                                    </div>
+                                `;
+                            });
+                            html += `</div>`;
+                        }
+                        html += `</div>`;
+                    }
+                    html += `</div>`;
+                }
+                html += `</div>`;
+            }
+            html += `</div>`;
+        }
+
+        container.innerHTML = html;
+    },
+    notes: () => {
+        const container = document.getElementById('notes-container');
+        let html = '';
+
+        data.notes.forEach(note => {
+            html += `
+                <div class="note card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">${escapeHTML(note.title)}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">${new Date(note.date).toLocaleString()}</h6>
+                        <p class="card-text">${escapeHTML(note.text)}</p>
+                        <button class="btn btn-danger btn-sm mt-2" onclick="deleteItem('notes', ${note.id})">
+                            <i class="bi bi-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+    },
+    schedules: () => {
+        const container = document.getElementById('schedule-container');
+        let sortedSchedules = [...data.schedules].sort((a, b) => new Date(a.time) - new Date(b.time));
+        let html = '';
+
+        sortedSchedules.forEach(schedule => {
+            html += `
+                <div class="schedule card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">${escapeHTML(schedule.title)}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">${new Date(schedule.time).toLocaleString()}</h6>
+                        <button class="btn btn-danger btn-sm mt-2" onclick="deleteItem('schedules', ${schedule.id})">
+                            <i class="bi bi-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+    }
+};
+
+// Utility Function to Escape HTML (Prevent XSS)
+function escapeHTML(str) {
+    return str.replace(/[&<>"']/g, function (match) {
+        const escape = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+        };
+        return escape[match];
     });
-    return categories;
 }
 
-// Delete Entry
-function deleteEntry(id) {
-    entries = entries.filter((entry) => entry.id !== id);
-    localStorage.setItem('diaryEntries', JSON.stringify(entries));
-    displayEntries();
+// Initial Display
+['entries', 'notes', 'schedules'].forEach(displayType => displayFunctions[displayType]());
+
+// Event Listeners
+document.getElementById('entry-form').addEventListener('submit', e => handleSubmit(e, 'entries'));
+document.getElementById('note-form').addEventListener('submit', e => handleSubmit(e, 'notes'));
+document.getElementById('schedule-form').addEventListener('submit', e => handleSubmit(e, 'schedules'));
+
+// Handle Form Submissions
+function handleSubmit(e, type) {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+    const id = Date.now();
+    let item = {
+        id
+    };
+
+    // Process form data based on type
+    for (let [key, value] of formData.entries()) {
+        if (type === 'entries' && key === 'image' && value) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                item.image = reader.result;
+                finalizeItemSubmission(type, item, form);
+            };
+            reader.readAsDataURL(value);
+            return; // Wait for the image to be read before saving
+        } else if (type === 'schedules' && key === 'time') {
+            item.time = new Date(value).toISOString();
+        } else if (type === 'entries' && key === 'date') {
+            item.date = new Date(value).toISOString();
+        } else if (type === 'notes') {
+            // For notes, we'll handle the date separately
+            item[key] = value.trim();
+        } else {
+            item[key] = value.trim();
+        }
+    }
+
+    // For notes, set the current date
+    if (type === 'notes') {
+        item.date = new Date().toISOString();
+    }
+
+    if (validateForm(type, item)) {
+        saveItem(type, item);
+    }
 }
 
-// Delete Note
-function deleteNote(id) {
-    notes = notes.filter((note) => note.id !== id);
-    localStorage.setItem('diaryNotes', JSON.stringify(notes));
-    displayNotes();
+// Finalize Item Submission (for handling images)
+function finalizeItemSubmission(type, item, form) {
+    if (validateForm(type, item)) {
+        saveItem(type, item);
+    }
 }
 
-// Delete Schedule
-function deleteSchedule(id) {
-    schedules = schedules.filter((schedule) => schedule.id !== id);
-    localStorage.setItem('diarySchedules', JSON.stringify(schedules));
-    displaySchedules();
+// Validate Form Inputs
+function validateForm(type, item) {
+    switch (type) {
+        case 'entries':
+            return item.title && item.text && item.date;
+        case 'notes':
+            return item.title && item.text && item.date;
+        case 'schedules':
+            return item.title && item.time;
+        default:
+            return false;
+    }
+}
+
+// Save Item to Data and localStorage
+function saveItem(type, item) {
+    data[type].push(item);
+    localStorage.setItem(STORAGE_KEYS[type], JSON.stringify(data[type]));
+    displayFunctions[type]();
+    formReset(type);
+}
+
+// Delete Item
+function deleteItem(type, id) {
+    data[type] = data[type].filter(item => item.id !== id);
+    localStorage.setItem(STORAGE_KEYS[type], JSON.stringify(data[type]));
+    displayFunctions[type]();
 }
 
 // Clear Forms
-function clearEntryForm() {
-    document.getElementById('entry-title').value = '';
-    document.getElementById('entry-text').value = '';
-    document.getElementById('entry-date').value = '';
-    document.getElementById('entry-image').value = '';
-}
-
-function clearNoteForm() {
-    document.getElementById('note-title').value = '';
-    document.getElementById('note-text').value = '';
-}
-
-function clearScheduleForm() {
-    document.getElementById('schedule-title').value = '';
-    document.getElementById('schedule-time').value = '';
-}
-
-// Get Time of Day
-function getTimeOfDay(hour) {
-    if (hour >= 5 && hour < 12) {
-        return 'Morning';
-    } else if (hour >= 12 && hour < 17) {
-        return 'Afternoon';
-    } else if (hour >= 17 && hour < 21) {
-        return 'Evening';
-    } else {
-        return 'Night';
-    }
+function formReset(type) {
+    const forms = {
+        entries: ['entry-title', 'entry-text', 'entry-date', 'entry-image'],
+        notes: ['note-title', 'note-text'],
+        schedules: ['schedule-title', 'schedule-time']
+    };
+    forms[type].forEach(id => {
+        const input = document.getElementById(id);
+        if (input.type === 'file') {
+            input.value = ''; // Clear file inputs differently
+        } else {
+            input.value = '';
+        }
+    });
 }

@@ -98,7 +98,7 @@ class YunaServer:
         self.app.route('/message', methods=['POST'], endpoint='message')(lambda: handle_message_request(self.chat_generator, self.chat_history_manager, config))
         self.app.route('/image', methods=['POST'], endpoint='image')(lambda: handle_image_request(self.chat_history_manager, config, self))
         self.app.route('/audio', methods=['GET', 'POST'], endpoint='audio')(lambda: handle_audio_request(self))
-        self.app.route('/generate_audiobook', methods=['POST'], endpoint='generate_audiobook')(lambda: generate_audiobook(self))
+        self.app.route('/generate_audiobook', methods=['POST'], endpoint='generate_audiobook')(lambda: generate_audiobook())
         self.app.route('/analyze', methods=['POST'], endpoint='textfile')(lambda: handle_textfile_request(self.chat_generator, self))
         self.app.route('/logout', methods=['GET'])(self.logout)
         self.app.route('/search', methods=['POST'], endpoint='search')(lambda: handle_search_request(self))

@@ -112,7 +112,7 @@ class KanojoConnect {
         if (!kanojo) return '';
 
         // Construct the formatted Kanojo string with memory, character, and prompt template
-        return `<memory>${kanojo.memory}</memory>\n<kanojo>${kanojo.character}\n\nTask: ${promptTemplate}</kanojo>\n<dialog>\n`;
+        return `<|begin_of_text|><memory>${kanojo.memory}</memory>\n<kanojo>${kanojo.character}\n\nTask: ${promptTemplate}</kanojo>\n<dialog>\n`;
     }
 
     exportKanojos() {

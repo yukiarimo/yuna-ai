@@ -64,7 +64,7 @@ class ChatGenerator:
         response = ''
 
         mode = self.config["server"]["yuna_text_mode"]
-        if mode in {"native", "fast"}:
+        if mode in {"native", "lmstudio"}:
             final_prompt = self.construct_prompt(text, kanojo, chat_history, yunaConfig, mode)
             if mode == "native":
                 response = self.model(
@@ -78,7 +78,7 @@ class ChatGenerator:
                     stop=yunaConfig["ai"]["stop"],
                 )
                 return (chunk['choices'][0]['text'] for chunk in response) if stream else self.clearText(str(response['choices'][0]['text']))
-            elif mode == "fast":
+            elif mode == "lmstudio":
                 dataSendAPI = {
                     "model": f"/Users/yuki/Documents/Github/yuna-ai/lib/models/yuna/yukiarimo/yuna-ai/yuna-ai-v3-q6_k.gguf",
                     "messages": self.get_history_text(chat_history, text, useHistory, yunaConfig),
@@ -99,8 +99,9 @@ class ChatGenerator:
                     resp = response.json().get('choices', [{}])[0].get('message', {}).get('content', '')
                     return ''.join(resp) if stream else self.clearText(resp)
                 print(f"Request failed with status code: {response.status_code}")
-        elif mode == "kobold":
-            return self.handle_kobold_mode(text, kanojo, chat_history, yunaConfig, stream)
+        elif mode == "koboldcpp":
+            return self.handle_koboldcpp_mode(text, kanojo, chat_history, yunaConfig, stream)
+        print("Response content:", response)
         return response
 
     def construct_prompt(self, text, kanojo, chat_history, yunaConfig, mode):
@@ -115,7 +116,7 @@ class ChatGenerator:
             return self.model.detokenize(tokens).decode('utf-8') + history_text
         return text
 
-    def handle_kobold_mode(self, text, kanojo, chat_history, yunaConfig, stream):
+    def handle_koboldcpp_mode(self, text, kanojo, chat_history, yunaConfig, stream):
         messages = self.get_history_text(chat_history, text, useHistory=True, yunaConfig=yunaConfig)
         formatted_prompt = f"{kanojo}{messages}" if kanojo else messages
         call_api = {
@@ -163,10 +164,17 @@ class ChatGenerator:
                                 yield data['token']
                 return stream_generator()
             else:
-                resp = response.json().get('choices', [{}])[0].get('message', {}).get('content', '')
-                return self.clearText(resp)
-        print(f"Request failed with status code: {response.status_code}")
-        return ''
+                print("Response content non stream:", response.json())
+                response_json = response.json()
+                if "results" in response_json and response_json["results"]:
+                    resp = response_json["results"][0].get('text', '')
+                    return self.clearText(resp)
+                else:
+                    print("No results found in response.")
+                    return ''
+        else:
+            print(f"Request failed with status code: {response.status_code}")
+            return ''
 
     def processTextFile(self, text_file, question, temperature):
         loader, splitter = TextLoader(text_file), RecursiveCharacterTextSplitter(chunk_size=200)

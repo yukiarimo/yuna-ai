@@ -4,6 +4,7 @@ import torch
 from pydub import AudioSegment
 import re
 import soundfile as sf
+import io
 
 with open('static/config.json', 'r') as config_file:
     config = json.load(config_file)
@@ -30,7 +31,7 @@ if config['server']['yuna_audio_mode'] == "native":
         "default": {
             "device": "mps",
             "is_half": False,
-            "t2s_weights_path": "/Users/yuki/Downloads/GPT-SoVITS/GPT_SoVITS/pretrained_models/s1bert25hz-2kh-longer-epoch=68e-step=50232.ckpt",
+            "t2s_weights_path": "/Users/yuki/Downloads/GPT-SoVITS/GPT_SoVITS/pretrained_models/YunaAi-e20-gpt.ckpt",
             "vits_weights_path": "/Users/yuki/Downloads/GPT-SoVITS/SoVITS_weights_v2/YunaAi_e20_s620-sovits.pth",
             "cnhuhbert_base_path": "/Users/yuki/Downloads/GPT-SoVITS/GPT_SoVITS/pretrained_models/chinese-hubert-base",
             "bert_base_path": "/Users/yuki/Downloads/GPT-SoVITS/GPT_SoVITS/pretrained_models/chinese-roberta-wwm-ext-large"
@@ -41,7 +42,7 @@ if config['server']['yuna_audio_mode'] == "native":
     tts_pipeline = TTS(tts_config)
 
 def transcribe_audio(audio_file):
-    result = yunaListen(audio_file, chunk_length_s=30, batch_size=24, return_timestamps=False)
+    result = yunaListen(audio_file, chunk_length_s=30, batch_size=40, return_timestamps=False)
     return result['text']
 
 def speak_text(text, reference_audio=config['server']['yuna_reference_audio'], output_audio=config['server']['output_audio_format'], mode=config['server']['yuna_audio_mode'], language="en"):
@@ -83,8 +84,14 @@ def speak_text(text, reference_audio=config['server']['yuna_reference_audio'], o
         with torch.no_grad():
             tts_generator = tts_pipeline.run(params)
             sr, audio_data = next(tts_generator)
-            sf.write(output_audio, audio_data, sr)
-            audio = AudioSegment.from_file(output_audio)
+            
+            # Use an in-memory buffer
+            buffer = io.BytesIO()
+            sf.write(buffer, audio_data, sr, format='WAV')
+            buffer.seek(0)
+            
+            # Convert directly from the buffer
+            audio = AudioSegment.from_file(buffer, format='wav')
             audio.export("static/audio/audio.mp3", format='mp3')
 
     elif mode == "11labs":
@@ -101,9 +108,6 @@ def speak_text(text, reference_audio=config['server']['yuna_reference_audio'], o
 
     else:
         raise ValueError("Invalid mode for speaking text")
-
-def split_into_sentences(text):
-    return re.split('(?<=[.!?]) +', text)
 
 def chunk_sentences(sentences, max_chars=200):
     chunks = []
@@ -156,7 +160,7 @@ def save_and_convert_audio(audio_data, sr, index):
     return mp3_path
 
 def stream_generate_speech(text):
-    sentences = split_into_sentences(text)
+    sentences = re.split('(?<=[.!?]) +', text)
     chunks = chunk_sentences(sentences)
     for index, chunk in enumerate(chunks):
         sr, audio_data = generate_speech(chunk)

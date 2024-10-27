@@ -87,7 +87,7 @@
                             Home
                             <span class="badge badge-pill" id="messageCount">0</span></a></li>
                     <li><a href="#" class="nav-link side-link" onclick="OpenTab('2')"><i class="fas fa-compass"></i>
-                            Library
+                            Explore
                             <span class="badge badge-pill" id="chatsCount">0</span></a>
                     </li>
                     <li><a href="#" class="nav-link side-link" onclick="OpenTab('4')"><i class="fas fa-user"></i>
@@ -130,21 +130,10 @@
                                         <i class="fas fa-home fa-sm fa-fw mr-2 text-gray-400"></i>
                                         Home
                                     </a>
-                                    <!-- Call -->
-                                    <a class="dropdown-item" href="#" onclick="callYuna.show();">
-                                        <i class="fas fa-phone fa-sm fa-fw mr-2 text-gray-400"></i>
-                                        Call
-                                    </a>
-                                    <!-- Search -->
-                                    <a class="dropdown-item" href="#" data-bs-toggle="modal"
-                                        data-bs-target="#searchModal">
-                                        <i class="fas fa-search fa-sm fa-fw mr-2 text-gray-400"></i>
-                                        Search
-                                    </a>
-                                    <!-- Library Tab -->
+                                    <!-- Explore Tab -->
                                     <a class="dropdown-item" href="#" onclick="OpenTab('2');">
                                         <i class="fas fa-compass fa-sm fa-fw mr-2 text-gray-400"></i>
-                                        Library
+                                        Explore
                                     </a>
                                     <!-- Kanojo Tab -->
                                     <a class="dropdown-item" href="#" onclick="OpenTab('4');">
@@ -156,10 +145,16 @@
                                         <i class="fas fa-pencil-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                                         Studio
                                     </a>
-                                    <!-- Settings -->
-                                    <a class="dropdown-item" href="#" onclick="settingsView.show();">
-                                        <i class="fas fa-cog fa-sm fa-fw mr-2 text-gray-400"></i>
-                                        Settings
+                                    <!-- Search -->
+                                    <a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                        data-bs-target="#searchModal">
+                                        <i class="fas fa-search fa-sm fa-fw mr-2 text-gray-400"></i>
+                                        Search
+                                    </a>
+                                    <!-- Call -->
+                                    <a class="dropdown-item" href="#" onclick="callYuna.show();">
+                                        <i class="fas fa-phone fa-sm fa-fw mr-2 text-gray-400"></i>
+                                        Call
                                     </a>
                                 </div>
                             </li>
@@ -216,12 +211,12 @@
                                 <div class="card settings-container el-9">
                                     <div class="card-body card-full-stack">
 
-                                        <!-- Main Navigation Tabs: Library, Himitsu, Diary -->
+                                        <!-- Main Navigation Tabs: Explore, Himitsu, Diary -->
                                         <ul class="nav nav-pills nav-fill mb-4" id="exploreTab" role="tablist">
                                             <li class="nav-item" role="presentation">
-                                                <button class="nav-link active" id="library-tab" data-bs-toggle="pill"
-                                                    data-bs-target="#library" type="button" role="tab"
-                                                    aria-controls="library" aria-selected="true">Library</button>
+                                                <button class="nav-link active" id="explore-tab" data-bs-toggle="pill"
+                                                    data-bs-target="#explore" type="button" role="tab"
+                                                    aria-controls="explore" aria-selected="true">Explore</button>
                                             </li>
                                             <li class="nav-item" role="presentation">
                                                 <button class="nav-link" id="himitsu-tab" data-bs-toggle="pill"
@@ -238,9 +233,9 @@
                                         <!-- Main Tab Content -->
                                         <div class="tab-content card-full-stack" id="exploreTabContent">
 
-                                            <!-- Library Tab: Combines Chats and Collections -->
-                                            <div class="tab-pane fade show active" id="library" role="tabpanel"
-                                                aria-labelledby="library-tab">
+                                            <!-- Explore Tab: Combines Chats and Collections -->
+                                            <div class="tab-pane fade show active" id="explore" role="tabpanel"
+                                                aria-labelledby="explore-tab">
 
                                                 <!-- Chats Section -->
                                                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -431,9 +426,7 @@
                         <div class="tab-o" id="4">
                             <div class="coll-lo">
                                 <div class="col-10 settings-container el-9 profile-card">
-
-                                    <!-- Combined Profile and Kanojo Management -->
-                                    <div class="row">
+                                    <div class="row align-items-stretch">
                                         <div class="col-md-2 mb-3 mb-sm-0">
                                             <div class="card">
                                                 <img src="/static/img/yuna-girl-head.webp" class="card-img-top"
@@ -457,7 +450,7 @@
                                                             Kanojo</label>
                                                         <select class="form-select" id="kanojoSelect"></select>
                                                     </div>
-                                                    <div>
+                                                    <div class="mb-3">
                                                         <button type="button" class="btn btn-primary"
                                                             id="saveKanojo">Save</button>
                                                         <button type="button" class="btn btn-primary"
@@ -465,13 +458,13 @@
                                                         <button type="button" class="btn btn-secondary"
                                                             id="deleteKanojo">Delete</button>
                                                     </div>
-                                                    <div>
+                                                    <div class="mb-3">
                                                         <button type="button" class="btn btn-primary"
                                                             id="exportKanojos">Export All</button>
                                                         <button type="button" class="btn btn-primary"
                                                             id="importKanojos">Import All</button>
                                                     </div>
-                                                    <div>
+                                                    <div class="mb-3">
                                                         <button type="button" class="btn btn-primary"
                                                             id="exportSingleKanojo">Export Single</button>
                                                         <button type="button" class="btn btn-primary"
@@ -484,7 +477,7 @@
                                     </div>
 
                                     <!-- Name, Memory, Character with Emotional Profile -->
-                                    <div class="row mt-3">
+                                    <div class="row mt-4">
                                         <div class="col-md-12">
                                             <div class="card">
                                                 <div class="card-body">
@@ -604,7 +597,7 @@
                                     </div>
 
                                     <!-- Prompt Templates Section -->
-                                    <div class="row mt-4 mb-6">
+                                    <div class="row mt-4">
                                         <div class="col-md-12">
                                             <div class="card">
                                                 <div class="card-body">
@@ -635,6 +628,28 @@
                                                         id="exportPromptTemplates">Export All</button>
                                                     <button type="button" class="btn btn-primary"
                                                         id="importPromptTemplates">Import All</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mt-4 mb-6">
+                                        <div class="col-md-12">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <div class="list-group-item" style="background-color: transparent;">
+                                                        <h6>Config</h6>
+                                                        <div id="parameter-container">
+                                                            <!-- Dynamic HTML elements will be added here -->
+                                                        </div>
+                                                        <button class="btn btn-secondary" onclick="saveConfigParams()">
+                                                            Save
+                                                        </button>
+                                                        <button class="btn btn-secondary"
+                                                            onclick="localStorage.clear(); location.reload();">
+                                                            Reset
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -790,40 +805,31 @@
                                             </div>
                                         </div>
 
-                                        <div class="tab-pane fade" id="audiobook" role="tabpanel"
-                                            aria-labelledby="naked-tab">
-                                            <div class="row g-4">
-                                                <div class="row mt-4">
-                                                    <div class="col-12">
-                                                        <div class="form-group">
-                                                            <h5 class="mb-3">Novel Text</h5>
-                                                            <textarea class="form-control"
-                                                                id="audiobook-content"></textarea>
+                                        <div class="tab-pane fade" id="audiobook" role="tabpanel" aria-labelledby="naked-tab">
+                                            <div class="row justify-content-center">
+                                                <div class="col-lg-8">
+                                                    <div class="card shadow-sm">
+                                                        <div class="card-header bg-primary text-white">
+                                                            <h3 class="card-title mb-0">📚 Audiobook Reader</h3>
                                                         </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="d-grid gap-2 mt-4 mb-6">
-                                                    <button type="button" id="send-create-naked"
-                                                        class="btn btn-primary">Create</button>
-                                                </div>
-
-                                                <div class="row mt-4">
-                                                    <div class="col-12">
-                                                        <div class="card">
-                                                            <div class="card-header">
-                                                                <h1 class="card-title">Text to Speech API</h1>
+                                                        <div class="card-body">
+                                                            <div class="mb-3">
+                                                                <label for="textInput" class="form-label">Enter Your Text</label>
+                                                                <textarea id="textInput" class="form-control" rows="4" placeholder="Enter your text here..."></textarea>
                                                             </div>
-                                                            <div class="card-body">
-                                                                <div class="form-group">
-                                                                    <textarea id="textInput" class="form-control"
-                                                                        rows="4"
-                                                                        placeholder="Enter your text here..."></textarea>
-                                                                </div>
-                                                                <button class="btn btn-primary mt-3"
-                                                                    onclick="generateSpeech()">Generate Speech</button>
-                                                                <div id="status" class="mt-3"></div>
-                                                                <div id="audioOutput" class="mt-3"></div>
+                                                            <button class="btn btn-success w-100 mb-3" onclick="generateSpeech()">🎤 Speak</button>
+                                                            
+                                                            <!-- Progress Bar -->
+                                                            <div class="progress mb-3" style="height: 25px;">
+                                                                <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                                                            </div>
+                                                            
+                                                            <!-- Status Alert -->
+                                                            <div class="alert alert-info" id="status" role="alert">Status: Idle</div>
+                                                            
+                                                            <!-- Audio Player -->
+                                                            <div class="mt-4">
+                                                                <audio id="audioPlayer" class="w-100" controls></audio>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -913,167 +919,6 @@
                 </div>
                 <div class="modal-footer">
                     <!-- Close button -->
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal -->
-    <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="emojiSettingsModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content bg-dark">
-                <div class="modal-header border-0">
-                    <h5 class="modal-title" id="emojiSettingsModalLabel">Settings</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <!-- Sidebar for tabs -->
-                        <div class="col-2">
-                            <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist"
-                                aria-orientation="vertical">
-                                <button class="nav-link active" id="v-pills-ai-tab" data-bs-toggle="pill"
-                                    data-bs-target="#v-pills-ai" type="button" role="tab" aria-controls="v-pills-ai"
-                                    aria-selected="true">AI</button>
-                                <button class="nav-link" id="v-pills-system-tab" data-bs-toggle="pill"
-                                    data-bs-target="#v-pills-system" type="button" role="tab"
-                                    aria-controls="v-pills-system" aria-selected="false" tabindex="-1">Account</button>
-                            </div>
-                        </div>
-                        <!-- Tab content -->
-                        <div class="col-10">
-                            <div class="tab-content" id="v-pills-tabContent">
-                                <div class="tab-pane fade show active" id="v-pills-ai" role="tabpanel"
-                                    aria-labelledby="v-pills-ai-tab">
-                                    <div class="list-group">
-                                        <div class="list-group-item" style="background-color: transparent;">
-                                            <h6>Customization</h6>
-
-                                            <div id="parameter-container">
-                                                <!-- Dynamic HTML elements will be added here -->
-                                            </div>
-
-                                            <button class="btn btn-secondary" onclick="saveConfigParams()">
-                                                Save
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="tab-pane fade" id="v-pills-system" role="tabpanel"
-                                    aria-labelledby="v-pills-system-tab">
-                                    <div>
-                                        <div class="list-group-item" style="background-color: transparent;">
-                                            <div class="card-body p-0">
-                                                <div class="row">
-                                                    <div class="col-lg-6">
-                                                        <div class="p-5">
-                                                            <form method="post" class="user" action="/main">
-                                                                <h2 class="text-center mb-4">
-                                                                    Change Password</h2>
-                                                                <input type="hidden" name="action"
-                                                                    value="change_password">
-                                                                <div class="mb-3">
-                                                                    <input class="form-control form-control-user"
-                                                                        type="password" name="current_password"
-                                                                        placeholder="Current Password" required>
-                                                                </div>
-                                                                <div class="mb-3">
-                                                                    <input class="form-control form-control-user"
-                                                                        type="password" name="new_password"
-                                                                        placeholder="New Password" required>
-                                                                </div>
-                                                                <div class="mb-3">
-                                                                    <input class="form-control form-control-user"
-                                                                        type="password" name="confirm_new_password"
-                                                                        placeholder="Confirm New Password" required>
-                                                                </div>
-                                                                <button class="btn btn-primary btn-user w-100"
-                                                                    type="submit">Change
-                                                                    Password</button>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="col-lg-6">
-                                                        <div class="p-5">
-                                                            <form method="post" class="user" action="/main">
-                                                                <h2 class="text-center mb-4">
-                                                                    New User</h2>
-                                                                <input type="hidden" name="action" value="register">
-                                                                <div class="mb-3">
-                                                                    <input class="form-control form-control-user"
-                                                                        type="text" name="username"
-                                                                        placeholder="Username" required>
-                                                                </div>
-                                                                <div class="mb-3">
-                                                                    <input class="form-control form-control-user"
-                                                                        type="password" name="password"
-                                                                        placeholder="Password" required>
-                                                                </div>
-                                                                <button class="btn btn-primary btn-user w-100"
-                                                                    type="submit">Register</button>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="col-lg-6">
-                                                        <div class="p-5">
-                                                            <form method="post" class="user" action="/main">
-                                                                <h2 class="text-center mb-4">
-                                                                    Login</h2>
-                                                                <input type="hidden" name="action" value="login">
-                                                                <div class="mb-3">
-                                                                    <input class="form-control form-control-user"
-                                                                        type="text" name="username"
-                                                                        placeholder="Username" required>
-                                                                </div>
-                                                                <div class="mb-3">
-                                                                    <input class="form-control form-control-user"
-                                                                        type="password" name="password"
-                                                                        placeholder="Password" required>
-                                                                </div>
-                                                                <button class="btn btn-primary btn-user w-100"
-                                                                    type="submit">Login</button>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="col-lg-6">
-                                                        <div class="p-5">
-                                                            <form method="post" class="user" action="/main">
-                                                                <h2 class="text-center mb-4">
-                                                                    Delete Account</h2>
-                                                                <input type="hidden" name="action"
-                                                                    value="delete_account">
-                                                                <div class="mb-3">
-                                                                    <input class="form-control form-control-user"
-                                                                        type="text" name="username"
-                                                                        placeholder="Username" required>
-                                                                </div>
-                                                                <div class="mb-3">
-                                                                    <input class="form-control form-control-user"
-                                                                        type="password" name="password"
-                                                                        placeholder="Password" required>
-                                                                </div>
-                                                                <button class="btn btn-primary btn-user w-100"
-                                                                    type="submit">Delete
-                                                                    Account</button>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer border-0">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>

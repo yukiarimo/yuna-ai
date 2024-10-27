@@ -1,6 +1,5 @@
 // Utility Functions
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
-
 const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1);
 
 // Configuration Handling
@@ -97,7 +96,6 @@ document.addEventListener("keydown", event => {
   if (event.key === "Tab") {
     event.preventDefault();
     toggleSidebar();
-    kawaiAutoScale();
     return;
   }
 
@@ -106,12 +104,11 @@ document.addEventListener("keydown", event => {
     const keyMap = {
       '1': () => { activateTab(0, '1'); },
       '2': () => { activateTab(1, '2'); },
-      '3': () => { activateTab(2, '3'); },
-      '4': () => { activateTab(3, '4'); },
-      '5': () => { activateTab(4, '5'); },
-      '6': () => { activateTab(5); settingsView.show(); },
+      '3': () => { activateTab(2, '4'); },
+      '4': () => { activateTab(3, '5'); },
+      '5': () => { activateTab(5, '7'); },
       '7': () => { 
-        activateTab(6);
+        activateTab(6, '7');
         window.open('https://www.patreon.com/YukiArimo', '_blank');
       },
       'Y': () => { 
@@ -142,10 +139,6 @@ const callYuna = {
   hide() { this.myModal.hide(); }
 };
 
-const settingsView = {
-  show() { new bootstrap.Modal(document.getElementById('settingsModal')).show(); }
-};
-
 // Sidebar and Tabs
 const navSidebar = document.getElementsByClassName('side-link');
 const scrollToTop = document.querySelector('.scroll-to-top');
@@ -157,37 +150,6 @@ const scrollToTop = document.querySelector('.scroll-to-top');
     link.classList.add('active');
   });
 });
-
-document.querySelector('.sidebarToggle').addEventListener('click', () => {
-  document.querySelector('.sidebar-o').style.width = '100%';
-  kawaiAutoScale();
-});
-
-const togglesidebarBack = () => {
-  const sidebar = document.querySelector('.sidebar-o');
-  sidebar.classList.add('toggled');
-  sidebar.style.width = '';
-  kawaiAutoScale();
-};
-
-if (window.matchMedia("(max-width: 767px)").matches) togglesidebarBack();
-
-// Layout Adjustments
-setTimeout(() => {
-  const inputWrapper = document.querySelector('.input-wrapper');
-  messageContainer.style.height = `calc(${messageContainer.offsetHeight}px - ${inputWrapper.offsetHeight}px)`;
-}, 200);
-
-setTimeout(getVisibleHeight, 100);
-
-if (window.matchMedia("(max-width: 767px)").matches) {
-  document.querySelectorAll('.side-link').forEach(link => {
-    link.addEventListener('click', () => {
-      toggleSidebar();
-      kawaiAutoScale();
-    });
-  });
-}
 
 document.querySelectorAll('.side-link')[3]?.addEventListener('click', () => {
   ['character', 'system'].forEach(id => {

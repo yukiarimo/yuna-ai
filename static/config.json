@@ -2,10 +2,10 @@
     "ai": {
         "names": ["Yuki", "Yuna"],
         "himitsu": false,
-        "agi": true,
+        "agi": false,
         "emotions": false,
         "miru": false,
-        "search": true,
+        "search": false,
         "audio": false,
         "max_new_tokens": 512,
         "context_length": 4096,
@@ -33,7 +33,7 @@
         "voice_default_model": "yuna-ai-voice-v1",
         "device": "mps",
         "yuna_text_mode": "kobold",
-        "yuna_audio_mode": "native",
+        "yuna_audio_mode": "siri",
         "yuna_reference_audio": "1.wav",
         "output_audio_format": "audio.aiff"
     },

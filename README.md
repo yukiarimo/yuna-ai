@@ -326,7 +326,8 @@ To ensure the best possible performance, the following techniques were used:
 | Yuna Ai V1 | Yes   | No      | 20K    | No                    | No     | No       | LLaMA 2 7B   |
 | Yuna Ai V2 | Yes   | Partial | 150K   | No                    | No     | No       | LLaMA 2 7B   |
 | Yuna Ai V3 | Yes   | Yes     | 1.5B   | No                    | No     | Embedded | LLaMA 2 7B   |
-| Yuna Ai V4 | Yes   | Yes     | 10B+   | Yes                   | Yes    | Yes      | LLaMA 3.1 8B |
+| Yuna Ai V4 | Yes   | Yes     | 3B+    | Yes                   | Yes    | Yes      | LLaMA 3.1 8B |
+| Himitsu V1 | Yes   | Yes     | 5B+    | Yes                   | Yes    | Yes      | LLaMA 3.2 1B |
 
 ## Q&A
 Here are some frequently asked questions about Yuna Ai. If you have any other questions, feel free to contact us.

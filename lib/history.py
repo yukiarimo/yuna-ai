@@ -4,113 +4,85 @@ from cryptography.fernet import Fernet, InvalidToken
 from lib.generate import get_config
 
 class ChatHistoryManager:
+    BASE_PATH = "db/history"
+
     def __init__(self, config):
         self.config = config
+        self.fernet = Fernet(self._get_encryption_key())
 
-    def _user_folder_path(self, username):
-        """Constructs the path to the user's folder."""
-        return os.path.join("db/history", username)
+    def _get_user_folder(self, username):
+        path = os.path.join(self.BASE_PATH, username)
+        os.makedirs(path, exist_ok=True)
+        return path
 
-    def _ensure_user_folder_exists(self, username):
-        """Ensures that the user-specific folder exists."""
-        user_folder_path = self._user_folder_path(username)
-        os.makedirs(user_folder_path, exist_ok=True)
-        return user_folder_path
+    def _get_file_path(self, username, chat_id):
+        return os.path.join(self._get_user_folder(username), str(chat_id))
+
+    def _get_encryption_key(self):
+        key = self.config['security'].get('encryption_key')
+        if not key:
+            key = Fernet.generate_key().decode()
+            self.config['security']['encryption_key'] = key
+            get_config(self.config)
+        return key.encode()
+
+    def _read_encrypted_file(self, path):
+        try:
+            with open(path, 'rb') as file:
+                return self.fernet.decrypt(file.read()).decode()
+        except (FileNotFoundError, InvalidToken):
+            return None
+
+    def _write_encrypted_file(self, path, data):
+        with open(path, 'wb') as file:
+            file.write(self.fernet.encrypt(data.encode()))
 
     def create_chat_history_file(self, username, chat_id):
-        history_file_path = os.path.join(self._ensure_user_folder_exists(username), f"{chat_id}")
-        history_starting_template = [
+        path = self._get_file_path(username, chat_id)
+        template = [
             {"name": self.config['ai']['names'][0], "message": "Hi"}, 
             {"name": self.config['ai']['names'][1], "message": "Hello"},
         ]
-        chat_history_json = json.dumps(history_starting_template)
-        encrypted_chat_history = self.encrypt_data(chat_history_json)
-        with open(history_file_path, 'wb') as file:
-            file.write(encrypted_chat_history)
+        self._write_encrypted_file(path, json.dumps(template))
 
     def save_chat_history(self, chat_history, username, chat_id):
-        user_folder_path = self._ensure_user_folder_exists(username)
-        history_file_path = os.path.join(user_folder_path, f"{chat_id}")
-        chat_history_json = json.dumps(chat_history)
-        encrypted_chat_history = self.encrypt_data(chat_history_json)
-        with open(history_file_path, 'wb') as file:
-            file.write(encrypted_chat_history)
+        path = self._get_file_path(username, chat_id)
+        self._write_encrypted_file(path, json.dumps(chat_history))
 
     def load_chat_history(self, username, chat_id):
-        user_folder_path = self._ensure_user_folder_exists(username)
-        history_file_path = os.path.join(user_folder_path, f"{chat_id}")
-        try:
-            with open(history_file_path, 'rb') as file:
-                encrypted_chat_history = file.read()
-            decrypted_chat_history = self.decrypt_data(encrypted_chat_history)
-            return json.loads(decrypted_chat_history)
-        except FileNotFoundError:
-            # The file does not exist, create a new chat history file
+        path = self._get_file_path(username, chat_id)
+        decrypted = self._read_encrypted_file(path)
+        if decrypted is None:
             self.create_chat_history_file(username, chat_id)
             print(f"Chat history file for {chat_id} does not exist, creating a new one for {username}")
             return []
+        return json.loads(decrypted)
 
     def delete_chat_history_file(self, username, chat_id):
-        chat_history_path = os.path.join(self._user_folder_path(username), f"{chat_id}")
-        if os.path.exists(chat_history_path):
-            os.remove(chat_history_path)
+        path = self._get_file_path(username, chat_id)
+        os.remove(path) if os.path.exists(path) else None
 
     def rename_chat_history_file(self, username, old_chat_id, new_chat_id):
-        old_path = os.path.join(self._user_folder_path(username), f"{old_chat_id}")
-        new_path = os.path.join(self._user_folder_path(username), f"{new_chat_id}")
+        old_path = self._get_file_path(username, old_chat_id)
+        new_path = self._get_file_path(username, new_chat_id)
         if os.path.exists(old_path):
             os.rename(old_path, new_path)
 
     def list_history_files(self, username):
-        user_folder_path = self._user_folder_path(username)
-        if not os.path.isdir(user_folder_path):
-            return []  # Return an empty list if the user's folder doesn't exist
-        
-        # List only files in the user's directory, excluding directories
-        history_files = [f for f in os.listdir(user_folder_path) if os.path.isfile(os.path.join(user_folder_path, f))]
-
-        # Sort alphabetically
-        history_files.sort(key=lambda x: x.lower())
-        return history_files
+        folder = self._get_user_folder(username)
+        return sorted(
+            [f for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f))],
+            key=lambda x: x.lower()
+        )
 
     def delete_message(self, username, chat_id, target_message):
-        chat_history = self.load_chat_history(username, chat_id)
-        
-        target_index = None
-        for i, message in enumerate(chat_history):
-            if message['message'].strip() == target_message.strip():
-                target_index = i
-                break
-        
-        # If the target message is found, delete it and the next message
-        if target_index is not None:
-            # Delete the target message
-            del chat_history[target_index]
-            # Check if there is a next message and delete it
-            if target_index < len(chat_history):
-                del chat_history[target_index]
+        history = self.load_chat_history(username, chat_id)
+        indices_to_delete = [i for i, msg in enumerate(history)
+                             if msg['message'].strip() == target_message.strip()]
 
-        self.save_chat_history(chat_history, username, chat_id)
+        for index in sorted(indices_to_delete, reverse=True):
+            del history[index]
+            if index < len(history):
+                del history[index]
 
-    def get_encryption_key(self):
-        if 'encryption_key' not in self.config['security'] or not self.config['security']['encryption_key']:
-            new_key = Fernet.generate_key()
-            self.config['security']['encryption_key'] = new_key.decode()
-            get_config(self.config)
-        key = self.config['security']['encryption_key']
-        return key.encode()
-
-    def encrypt_data(self, data):
-        key = self.get_encryption_key()
-        fernet = Fernet(key)
-        encrypted_data = fernet.encrypt(data.encode())
-        return encrypted_data
-
-    def decrypt_data(self, encrypted_data):
-        try:
-            key = self.get_encryption_key()
-            fernet = Fernet(key)
-            decrypted_data = fernet.decrypt(encrypted_data)
-        except InvalidToken:
-            raise ValueError("Cannot decrypt data with the current encryption key")
-        return decrypted_data
+        self.save_chat_history(history, username, chat_id)

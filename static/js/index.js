@@ -1,12 +1,7 @@
-var server_url = '';
-var server_port = '';
 var selectedFilename = '';
 var backgroundMusic = document.getElementById('backgroundMusic');
-var isHimitsu = false;
 var messageContainer = document.getElementById('message-container');
-var himitsuCopilot;
-var name1;
-var name2;
+var inputTextContainer = document.getElementById('input_text');
 var config_data;
 let isRecording = false;
 var isYunaListening = false;
@@ -14,7 +9,10 @@ let mediaRecorder;
 let audioChunks = [];
 var activeElement = null;
 let isStreamingChatModeEnabled = false;
-let isCustomConfigEnabled = false;
+var isCustomConfigEnabled = false;
+var soundsModeEnabled = false;
+var buttonAudioRec = document.querySelector('#buttonAudioRec');
+var iconAudioRec = buttonAudioRec.querySelector('#iconAudioRec');
 
 // Function to handle the toggle switch change
 document.querySelector('#streamingChatMode').onchange = e => {
@@ -49,8 +47,21 @@ document.querySelector('#customConfig').onchange = e => {
   localStorage.setItem('config', JSON.stringify(config));
 }
 
-const buttonAudioRec = document.querySelector('#buttonAudioRec');
-const iconAudioRec = buttonAudioRec.querySelector('#iconAudioRec');
+document.querySelector('#soundsMode').onchange = e => {
+  soundsModeEnabled = e.target.checked;
+
+  // Retrieve the current configuration from localStorage
+  let config = JSON.parse(localStorage.getItem('config')) || {};
+
+  // Ensure the settings object exists
+  config.settings = config.settings || {};
+
+  // Update the settings.streaming value
+  config.settings.sounds = soundsModeEnabled;
+
+  // Save the updated configuration back to localStorage
+  localStorage.setItem('config', JSON.stringify(config));
+}
 
 buttonAudioRec.addEventListener('click', () => {
   if (!isRecording) {
@@ -61,7 +72,9 @@ buttonAudioRec.addEventListener('click', () => {
 });
 
 function startRecording(withImage = false, imageDataURL, imageName, messageForImage) {
-  navigator.mediaDevices.getUserMedia({ audio: true })
+  navigator.mediaDevices.getUserMedia({
+      audio: true
+    })
     .then(stream => {
       mediaRecorder = new MediaRecorder(stream);
       mediaRecorder.start();
@@ -76,7 +89,9 @@ function startRecording(withImage = false, imageDataURL, imageName, messageForIm
       });
 
       mediaRecorder.addEventListener('stop', () => {
-        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+        const audioBlob = new Blob(audioChunks, {
+          type: 'audio/wav'
+        });
 
         if (withImage) {
           sendAudioToServer(audioBlob, true, imageDataURL, imageName, messageForImage);
@@ -106,25 +121,25 @@ function sendAudioToServer(audioBlob, withImage = false, imageDataURL, imageName
   formData.append('task', 'transcribe');
 
   fetch('/audio', {
-    method: 'POST',
-    body: formData
-  })
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    return response.json();
-  })
-  .then(data => {
-    if (withImage) {
-      askYunaImage = messageManagerInstance.sendMessage(data.text, kanojo.buildKanojo(), [imageDataURL, imageName, data.text], '/image', false, false, isStreamingChatModeEnabled);
-    } else {
-      messageManagerInstance.sendMessage(data.text, kanojo.buildKanojo(),'', '/message', false, false, isStreamingChatModeEnabled);
-    };
-  })
-  .catch(error => {
-    console.error('Error sending audio to server', error);
-  });
+      method: 'POST',
+      body: formData
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data => {
+      if (withImage) {
+        askYunaImage = messageManagerInstance.sendMessage(data.text, kanojoManager.buildKanojo(), [imageDataURL, imageName, data.text], '/image', false, false, isStreamingChatModeEnabled);
+      } else {
+        messageManagerInstance.sendMessage(data.text, kanojoManager.buildKanojo(), '', '/message', false, false, isStreamingChatModeEnabled);
+      };
+    })
+    .catch(error => {
+      console.error('Error sending audio to server', error);
+    });
 }
 
 async function loadConfig() {
@@ -139,59 +154,51 @@ async function loadConfig() {
     // Store the fetched config in localStorage for future use
     localStorage.setItem('config', JSON.stringify(config));
   }
-  // Extract names from the config
-  const { ai: { names: [first, second] } } = config;
-  name1 = first;
-  name2 = second;
   // Set the placeholder using the second name
-  document.getElementById('input_text').placeholder = `Ask ${second}...`;
+  inputTextContainer.placeholder = `Ask ${config.ai.names[1]}...`;
 }
 
 class messageManager {
-  constructor() {
-    this.messageContainer = document.getElementById('message-container');
-    this.inputText = document.getElementById('input_text');
-  }
-
   displayMessages(messages) {
-    const messageContainer = document.getElementById('message-container');
-  
     // Clear the existing content of messageContainer
     while (messageContainer.firstChild) {
       messageContainer.removeChild(messageContainer.firstChild);
     }
 
     // Check if the messages is an array or string
-    if (typeof messages === 'string') {      
+    if (typeof messages === 'string') {
       try {
         messages = JSON.parse(messages);
       } catch (error) {
         console.error('Error parsing JSON:', error);
       }
     }
-  
+
     // Loop through the messages and format each one
     messages.forEach(messageData => {
       const formattedMessage = formatMessage(messageData);
       messageContainer.appendChild(formattedMessage);
     });
-  
+
     this.scrollMsg();
   }
 
   createMessage(name, messageContent, isStreaming = false) {
-    const messageContainer = document.getElementById('message-container');
     const messageData = {
-        name: name,
-        message: isStreaming ? '' : messageContent,
+      name: name,
+      message: isStreaming ? '' : messageContent,
     };
 
     const formattedMessage = formatMessage(messageData);
     messageContainer.appendChild(formattedMessage);
     this.scrollMsg();
 
+    if (name == config_data.ai.names[1]) {
+      playAudio('message');
+    }
+
     if (isStreaming) {
-        return formattedMessage;
+      return formattedMessage;
     }
   }
 
@@ -204,7 +211,7 @@ class messageManager {
     const typingBubble = `<div id="circle-loader"><img src="/static/img/loader.gif"></div>`;
 
     if (naked == false) {
-      this.messageContainer.insertAdjacentHTML('beforeend', typingBubble);
+      messageContainer.insertAdjacentHTML('beforeend', typingBubble);
       this.scrollMsg();
     } else {
       activeElement.insertAdjacentHTML('beforeend', typingBubble);
@@ -218,144 +225,148 @@ class messageManager {
   }
 
   scrollMsg() {
-    this.messageContainer.scrollTop = this.messageContainer.scrollHeight;
+    messageContainer.scrollTop = messageContainer.scrollHeight;
   }
 
-  async sendMessage(message, template, imageData = '', url = '/message', naked = false, stream = isStreamingChatModeEnabled || false, outputElement = '', config = null) {
-    this.inputText = document.getElementById('input_text');
-    const messageContent = message || this.inputText.value;
+  async sendMessage(message, kanojo, imageData = '', url = '/message', naked = false, stream = isStreamingChatModeEnabled || false, outputElement = '', config = null) {
+    const messageContent = message || inputTextContainer.value;
     var userMessageElement;
 
     if (url === '/message') {
-      if (template !== null) {
-        userMessageElement = this.createMessage(name1, messageContent);
+      if (kanojo !== null) {
+        userMessageElement = this.createMessage(config_data.ai.names[0], messageContent);
         this.createTypingBubble(naked);
         updateMsgCount();
       }
 
-        let result = '';
-        const decoder = new TextDecoder();
-        const serverEndpoint = `${server_url + server_port}${url}`;
-        const headers = { 'Content-Type': 'application/json' };
+      let result = '';
+      const decoder = new TextDecoder();
+      const serverEndpoint = `${config_data.server.url + config_data.server.port}${url}`;
+      const headers = {
+        'Content-Type': 'application/json'
+      };
 
-        var yunaConfig;
-        if (config === null) {
-            yunaConfig = isCustomConfigEnabled ? config_data : null;
-        } else {
-            yunaConfig = config;
-        }
+      var yunaConfig;
+      if (config === null) {
+        yunaConfig = isCustomConfigEnabled ? config_data : null;
+      } else {
+        yunaConfig = config;
+      }
 
-        const body = JSON.stringify({
-            chat: selectedFilename,
-            text: messageContent,
-            useHistory: kanojo.useHistory,
-            template: (typeof template !== 'undefined') ? template : (this.inputText.value ? kanojo.buildKanojo() : null),
-            speech: isYunaListening,
-            yunaConfig: yunaConfig,
-            stream
+      const body = JSON.stringify({
+        chat: selectedFilename,
+        text: messageContent,
+        useHistory: kanojoManager.useHistory,
+        kanojo: kanojo === false ? null : (kanojo || kanojoManager.buildKanojo(document.getElementById('kanojoSelect').value)),
+        speech: isYunaListening,
+        yunaConfig: yunaConfig,
+        stream
+      });
+      inputTextContainer.value = '';
+
+      try {
+        const response = await fetch(serverEndpoint, {
+          method: 'POST',
+          headers,
+          body
         });
-        this.inputText.value = '';
 
-        try {
-            const response = await fetch(serverEndpoint, { method: 'POST', headers, body });
+        if (stream && isStreamingChatModeEnabled) {
+          const reader = response.body.getReader();
 
-            if (stream && isStreamingChatModeEnabled) {
-                const reader = response.body.getReader();
+          var isBubbleCreated = false
 
-                var isBubbleCreated = false
-
-                while (true) {
-                    const { done, value } = await reader.read();
-                    if (done) break;
-                    const chunk = decoder.decode(value, { stream: true });
-                    result += chunk;
-                    if (outputElement) {
-                        outputElement.value += chunk;
-                    } else {
-                        if (!isBubbleCreated) {
-                            this.createMessage(name2, "");
-                            isBubbleCreated = true;
-                        }
-                        
-                        let elements = document.querySelectorAll('.p-2.mb-2.block-message-1.text-start.bg-secondary.text-white');
-                        let lastElement = elements[elements.length - 1];
-                        let preElement = lastElement.querySelector('pre');
-                        this.updateMessageContent(preElement, result);
-                    }
-                    initializeTextareas();
-                }
-
-                this.removeTypingBubble();
+          while (true) {
+            const {
+              done,
+              value
+            } = await reader.read();
+            if (done) break;
+            const chunk = decoder.decode(value, {
+              stream: true
+            });
+            result += chunk;
+            if (outputElement) {
+              outputElement.value += chunk;
             } else {
-                const data = await response.json();
+              if (!isBubbleCreated) {
+                this.createMessage(config_data.ai.names[1], "");
+                isBubbleCreated = true;
+              }
 
-                if (template !== null) {
-                  this.removeTypingBubble();
-                  this.createMessage(name2, data.response);
-                }
+              let elements = document.querySelectorAll('.p-2.mb-2.block-message-1.text-start.bg-secondary.text-white');
+              let lastElement = elements[elements.length - 1];
+              let preElement = lastElement.querySelector('pre');
+              this.updateMessageContent(preElement, result);
             }
+            initializeTextareas();
+          }
 
-            if (isYunaListening) {
-                playAudio();
-            }
-        } catch (error) {
-            this.handleError(error);
+          this.removeTypingBubble();
+        } else {
+          const data = await response.json();
+
+          if (kanojo !== null) {
+            this.removeTypingBubble();
+            this.createMessage(config_data.ai.names[1], data.response);
+          }
         }
-        updateMsgCount();
+
+        if (isYunaListening) {
+          playAudio();
+        }
+      } catch (error) {
+        this.handleError(error);
+      }
+      updateMsgCount();
     } else if (url === '/image') {
-        this.sendImage(imageData);
+      this.sendImage(imageData);
     }
   }
 
   updateTypingBubble(text) {
     const bubble = document.getElementById('circle-loader');
     if (bubble) {
-        bubble.innerHTML = text;
-        this.scrollMsg();
+      bubble.innerHTML = text;
+      this.scrollMsg();
     }
-  }
-
-  processResponse(response) {
-    const splitData = response.split('\n');
-    const formInputs = splitData.map((dataPart, index) => `
-      <div class="input-group">
-        <label for="q${index + 1}">${dataPart}</label>
-        <input type="text" id="q${index + 1}" name="q${index + 1}">
-      </div>
-    `).join('');
-  
-    return `
-      <div>
-        <form id="Himitsu">
-          ${formInputs}
-        </form>
-        <div class="block-button" type="button" onclick="generateText();">Gen</div>
-      </div>
-    `;
   }
 
   handleError(error) {
     console.error('Error:', error);
     this.removeTypingBubble();
-    this.createMessage(name2, error);
+    this.createMessage(config_data.ai.names[1], error);
     playAudio('error');
   }
 
   sendImage(imageData) {
     const [imageDataURL, imageName, messageForImage] = imageData;
-    const serverEndpoint = `${server_url + server_port}/image`;
-    const headers = { 'Content-Type': 'application/json' };
-    const body = JSON.stringify({ image: imageDataURL, name: imageName, message: messageForImage, task: 'caption', chat: selectedFilename, speech: isYunaListening });
+    const serverEndpoint = `${config_data.server.url + config_data.server.port}/image`;
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+    const body = JSON.stringify({
+      image: imageDataURL,
+      name: imageName,
+      message: messageForImage,
+      task: 'caption',
+      chat: selectedFilename,
+      speech: isYunaListening
+    });
 
-    fetch(serverEndpoint, { method: 'POST', headers, body })
+    fetch(serverEndpoint, {
+        method: 'POST',
+        headers,
+        body
+      })
       .then(response => response.ok ? response.json() : Promise.reject('Error sending captured image.'))
       .then(data => {
         this.removeTypingBubble();
         const imageCaption = `${messageForImage}<img src="${data.path}" alt="${imageName}">`;
-        this.createMessage(name1, imageCaption);
+        this.createMessage(config_data.ai.names[0], imageCaption);
 
         const imageResponse = `${data.message}`;
-        this.createMessage(name2, imageResponse);
+        this.createMessage(config_data.ai.names[1], imageResponse);
 
         // play audio
         if (isYunaListening) {
@@ -375,17 +386,29 @@ class messageManager {
 messageManagerInstance = new messageManager();
 
 function playAudio(audioType = 'tts') {
+  if (!soundsModeEnabled && audioType != 'tts') {
+    return;
+  }
+
   const audioSource = document.getElementById("backgroundMusic");
   const audioMap = {
     'tts': `/static/audio/audio.mp3?v=${Math.random()}`,
-    'message': '/audio/sounds/message.mp3',
-    'send': '/audio/sounds/send.mp3',
-    'error': '/audio/sounds/error.mp3',
-    'ringtone': '/audio/sounds/ringtone.mp3'
+    'call': '/audio/sfx/app/ringtone.mp3',
+    'camera': '/audio/sfx/app/camera.mp3',
+    'confirm': '/audio/sfx/app/confirm.mp3',
+    'error': '/audio/sfx/app/error.mp3',
+    'keyboard': '/audio/sfx/app/keyboard.mp3',
+    'message': '/audio/sfx/app/message.mp3',
+    'mouseclick': '/audio/sfx/app/mouseclick.mp3',
+    'notification': '/audio/sfx/app/notification.mp3',
+    'popup': '/audio/sfx/app/popup.mp3',
+    'server': '/audio/sfx/app/server.mp3',
+    'welcome': '/audio/sfx/app/welcome.mp3',
+    'wrong': '/audio/sfx/app/wrong.mp3',
   };
   audioSource.src = audioMap[audioType];
   // Check if the audio type can be played
-  const canPlay = audioSource.canPlayType('audio/mpeg'); 
+  const canPlay = audioSource.canPlayType('audio/mpeg');
   if (canPlay) {
     // calculate the duration of the audio, play the audio and stop after that duration
     audioSource.play();
@@ -403,9 +426,7 @@ function formatMessage(messageData) {
   messageDiv.classList.add('message', 'p-2', 'mb-2');
   messageDiv.id = 'message1';
 
-  const classes = messageData.name == name1 || messageData.name == 'Yuki'
-    ? ['block-message-2', 'text-end', 'bg-primary', 'text-white'] 
-    : ['block-message-1', 'text-start', 'bg-secondary', 'text-white'];
+  const classes = messageData.name == config_data.ai.names[0] || messageData.name == 'Yuki' ? ['block-message-2', 'text-end', 'bg-primary', 'text-white'] : ['block-message-1', 'text-start', 'bg-secondary', 'text-white'];
   messageDiv.classList.add(...classes);
 
   const messageText = document.createElement('pre');
@@ -469,9 +490,7 @@ function formatMessage(messageData) {
 }
 
 function regenerateMessage(messageText) {
-  const input_text = document.getElementById('input_text');
-  input_text.value = messageText;
-
+  inputTextContainer.value = messageText;
   messageManagerInstance.sendMessage('');
 }
 
@@ -482,7 +501,7 @@ function setMessagePopoverListeners() {
   // Iterate over each message bubble
   messageBubbles.forEach(message => {
     // Add click event listener to each message bubble
-    message.addEventListener('click', function(event) {
+    message.addEventListener('click', function (event) {
       // Prevent event from bubbling up to avoid triggering click events on parent elements
       event.stopPropagation();
 
@@ -498,7 +517,7 @@ function setMessagePopoverListeners() {
   });
 
   // Add a global click listener to close all message menus when clicking outside
-  document.addEventListener('click', function() {
+  document.addEventListener('click', function () {
     document.querySelectorAll('.message-menu').forEach(menu => {
       menu.style.display = 'none';
     });
@@ -509,7 +528,7 @@ function setMessagePopoverListeners() {
 
   // Add click event listener to each delete button
   deleteButtons.forEach(button => {
-    button.addEventListener('click', function(event) {
+    button.addEventListener('click', function (event) {
       // Prevent event from bubbling up to avoid triggering click events on parent elements
       event.stopPropagation();
 
@@ -524,13 +543,6 @@ function setMessagePopoverListeners() {
 setTimeout(setMessagePopoverListeners, 200);
 
 class HistoryManager {
-  constructor(serverUrl, serverPort, defaultHistoryFile) {
-    this.serverUrl = serverUrl || 'https://localhost:';
-    this.serverPort = serverPort || 4848;
-    this.defaultHistoryFile = defaultHistoryFile || 'history_template:general.json';
-    this.messageContainer = document.getElementById('message-container');
-  }
-
   createHistoryFile() {
     const newFileName = prompt('Enter a name for the new file (with .json):');
     if (!newFileName) {
@@ -539,7 +551,7 @@ class HistoryManager {
 
     selectedFilename = newFileName;
 
-    fetch(`${server_url + server_port}/history`, {
+    fetch(`${config_data.server.url + config_data.server.port}/history`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -562,7 +574,7 @@ class HistoryManager {
   }
 
   get selectedFilename() {
-    return this._selectedFilename || this.defaultHistoryFile;
+    return this._selectedFilename || config_data.settings.default_history_file;
   }
 
   set selectedFilename(filename) {
@@ -573,7 +585,9 @@ class HistoryManager {
     this.fetchHistory('load')
       .then(data => {
         const chatHistory = JSON.stringify(data);
-        const blob = new Blob([chatHistory], { type: 'text/plain' });
+        const blob = new Blob([chatHistory], {
+          type: 'text/plain'
+        });
         const url = URL.createObjectURL(blob);
 
         const a = document.createElement('a');
@@ -592,32 +606,34 @@ class HistoryManager {
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
     fileInput.accept = '.json';
-  
+
     fileInput.onchange = async () => {
       const file = fileInput.files[0];
       const reader = new FileReader();
-  
+
       await new Promise((resolve) => {
         reader.onload = () => {
           resolve();
         };
         reader.readAsText(file);
       });
-  
+
       const historyData = reader.result;
       const filename = prompt('Enter a name for the new file (with .json):');
-  
+
       try {
-        const response = await fetch(`${server_url + server_port}/history`, {
+        const response = await fetch(`${config_data.server.url + config_data.server.port}/history`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json'
+          },
           body: JSON.stringify({
             chat: filename,
             task: 'save',
             history: historyData,
           }),
         });
-  
+
         await response.json();
         alert('History imported successfully.');
         location.reload();
@@ -625,9 +641,9 @@ class HistoryManager {
         console.error('Error sending edited history:', error);
       }
     };
-  
+
     fileInput.click();
-  }  
+  }
 
   editHistory() {
     this.fetchHistory('load')
@@ -662,60 +678,68 @@ class HistoryManager {
   }
 
   sendEditHistory(editedText, filename) {
-    fetch(`${this.serverUrl + this.serverPort}/history`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chat: filename,
-        task: 'edit',
-        history: JSON.parse(editedText),
-      }),
-    })
-    .then(response => response.json())
-    .then(() => this.loadSelectedHistory())
-    .catch(error => console.error('Error sending edited history:', error));
+    fetch(`${config_data.server.url + config_data.server.port}/history`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          chat: filename,
+          task: 'edit',
+          history: JSON.parse(editedText),
+        }),
+      })
+      .then(response => response.json())
+      .then(() => this.loadSelectedHistory())
+      .catch(error => console.error('Error sending edited history:', error));
   }
 
   fetchHistory(task) {
-    return fetch(`${this.serverUrl + this.serverPort}/history`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chat: this.selectedFilename,
-        task: task,
-      }),
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response.json();
-    });
+    return fetch(`${config_data.server.url + config_data.server.port}/history`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          chat: this.selectedFilename,
+          task: task,
+        }),
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      });
   }
 
   // Placeholder for loadSelectedHistory method
   loadSelectedHistory(selectedFilename) {
-    const messageContainer = document.getElementById('message-container');
     if (selectedFilename == undefined) {
       selectedFilename = config_data.settings.default_history_file;
     }
-  
-    fetch(`${server_url+server_port}/history`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ task: 'load', chat: selectedFilename })
-    })
-    .then(response => {
-      if (!response.ok) throw new Error('Error loading selected history file.');
-      return response.json();
-    })
-    .then(data => {
-      messageManagerInstance.displayMessages(data);
-      updateMsgCount();
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
+
+    fetch(`${config_data.server.url + config_data.server.port}/history`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          task: 'load',
+          chat: selectedFilename
+        })
+      })
+      .then(response => {
+        if (!response.ok) throw new Error('Error loading selected history file.');
+        return response.json();
+      })
+      .then(data => {
+        messageManagerInstance.displayMessages(data);
+        updateMsgCount();
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
   }
 }
 
@@ -738,23 +762,25 @@ function initializeVideoStream() {
 
     // Request video stream with the current facingMode
     navigator.mediaDevices.getUserMedia({
-      video: { facingMode: facingMode },
-      audio: false
-    })
-    .then(function(stream) {
-      videoStream = stream; // Assign the stream to the global variable
-      localVideo.srcObject = stream;
-    })
-    .catch(function(error) {
-      console.log('Error accessing the camera:', error);
-      localVideo.remove();
-    });
+        video: {
+          facingMode: facingMode
+        },
+        audio: false
+      })
+      .then(function (stream) {
+        videoStream = stream; // Assign the stream to the global variable
+        localVideo.srcObject = stream;
+      })
+      .catch(function (error) {
+        console.log('Error accessing the camera:', error);
+        localVideo.remove();
+      });
   }
 
   // Function to stop the video stream
   function stopVideo() {
     if (videoStream) {
-      videoStream.getTracks().forEach(function(track) {
+      videoStream.getTracks().forEach(function (track) {
         track.stop();
       });
       videoStream = null; // Clear the global stream variable
@@ -794,40 +820,11 @@ function scrollMsg() {
   objDiv.scrollTop = objDiv.scrollHeight;
 }
 
-async function drawArt() {
-  const messageContainer = document.getElementById('message-container');
-  const imagePrompt = prompt('Enter a prompt for the image:');
-  loadConfig();
-
-  messageContainer.insertAdjacentHTML('beforeend', formatMessage({ name: name1, message: imagePrompt }));
-  messageContainer.insertAdjacentHTML('beforeend', typingBubble);
-  scrollMsg();
-
-  try {
-    const response = await fetch(`${server_url+server_port}/image`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: imagePrompt, chat: selectedFilename, task: 'generate' })
-    });
-
-    if (!response.ok) throw new Error('Error generating image.');
-
-    const data = await response.json();
-    document.getElementById('circle-loader')?.remove();
-
-    messageContainer.insertAdjacentHTML('beforeend', formatMessage({ name: name2, message: data.message }));
-  } catch (error) {
-    console.error('Error:', error);
-    alert('Error sending captured image.');
-  }
-}
-
 // Add an event listener to the "Capture Image" button
 async function captureImage() {
   var localVideo = document.getElementById('localVideo');
   var captureCanvas = document.getElementById('capture-canvas');
   var captureContext = captureCanvas.getContext('2d');
-  var messageContainer = document.getElementById('message-container');
 
   // Set the canvas dimensions to match the video element
   captureCanvas.width = localVideo.videoWidth;
@@ -852,12 +849,12 @@ async function captureImage() {
     return true;
   } else {
     messageForImage = prompt('Enter a message for the image:');
-    askYunaImage = messageManagerInstance.sendMessage(messageForImage, kanojo.buildKanojo(), [imageDataURL, imageName, messageForImage], '/image', false, false, isStreamingChatModeEnabled);
+    askYunaImage = messageManagerInstance.sendMessage(messageForImage, kanojoManager.buildKanojo(), [imageDataURL, imageName, messageForImage], '/image', false, false, isStreamingChatModeEnabled);
   }
 }
 
 // Modify the captureImage function to handle file uploads
-async function captureImageViaFile(inputElement, image=null, imagePrompt=null) {
+async function captureImageViaFile(inputElement, image = null, imagePrompt = null) {
   var file = '';
   file = inputElement.files[0] || (image && !imagePrompt ? image : imagePrompt && image ? image : null);
   if (!file) return alert('No file selected.');
@@ -869,7 +866,7 @@ async function captureImageViaFile(inputElement, image=null, imagePrompt=null) {
     messageForImage = prompt('Enter a message for the image:');
 
     const imageName = Date.now().toString();
-    messageManagerInstance.sendMessage('', kanojo.buildKanojo(), [imageDataURL, imageName, messageForImage], '/image', false, false, isStreamingChatModeEnabled);
+    messageManagerInstance.sendMessage('', kanojoManager.buildKanojo(), [imageDataURL, imageName, messageForImage], '/image', false, false, isStreamingChatModeEnabled);
   };
 
   reader.readAsDataURL(file);
@@ -898,35 +895,37 @@ function captureAudioViaFile() {
   const userQuestion = prompt("What's your question?");
 
   fetch('/audio', {
-    method: 'POST',
-    body: formData
-  })
-  .then(response => response.json())
-  .then(data => {
-    const makeRAG = confirm("Do you want to make a RAG?");
-    if (!makeRAG) {
-      var ragMessage = `Context Audio: "${data.text}"\nQuestion: ${userQuestion}`
-      document.getElementById('input_text').value = ragMessage;
-      messageManagerInstance.sendMessage(ragMessage);
-    } else {
-      const textBlob = new Blob([data.text], { type: 'text/plain' });
-      const questionFormData = new FormData();
-      questionFormData.append('text', textBlob, 'content.txt');
-      questionFormData.append('query', userQuestion);
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      const makeRAG = confirm("Do you want to make a RAG?");
+      if (!makeRAG) {
+        var ragMessage = `Context Audio: "${data.text}"\nQuestion: ${userQuestion}`
+        inputTextContainer.value = ragMessage;
+        messageManagerInstance.sendMessage(ragMessage);
+      } else {
+        const textBlob = new Blob([data.text], {
+          type: 'text/plain'
+        });
+        const questionFormData = new FormData();
+        questionFormData.append('text', textBlob, 'content.txt');
+        questionFormData.append('query', userQuestion);
 
-      fetch('/analyze', {
-        method: 'POST',
-        body: questionFormData
-      })
-      .then(response => response.json())
-      .then(result => {
-        console.log(result);
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
-    }
-  });
+        fetch('/analyze', {
+            method: 'POST',
+            body: questionFormData
+          })
+          .then(response => response.json())
+          .then(result => {
+            console.log(result);
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+      }
+    });
 
   reader.readAsDataURL(file);
 }
@@ -945,14 +944,14 @@ function captureVideoViaFile() {
   const video = document.createElement('video');
   video.src = URL.createObjectURL(file);
 
-  video.addEventListener('loadedmetadata', function() {
+  video.addEventListener('loadedmetadata', function () {
     const duration = video.duration;
     let currentTime = 0;
 
     function captureFrame() {
       if (currentTime <= duration) {
         video.currentTime = currentTime;
-        video.addEventListener('seeked', function() {
+        video.addEventListener('seeked', function () {
           const canvas = document.createElement('canvas');
           canvas.width = video.videoWidth;
           canvas.height = video.videoHeight;
@@ -962,7 +961,9 @@ function captureVideoViaFile() {
           videoFrames.push(frameDataURL);
           currentTime += 30;
           captureFrame();
-        }, { once: true });
+        }, {
+          once: true
+        });
       } else {
         console.log('not implemented');
       }
@@ -979,13 +980,13 @@ function captureVideoViaFile() {
   formData.append('task', 'transcribe');
 
   fetch('/audio', {
-    method: 'POST',
-    body: formData
-  })
-  .then(response => response.json())
-  .then(data => {
-    console.log('The text in video:', data.text);
-  });
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('The text in video:', data.text);
+    });
 }
 
 function captureTextViaFile() {
@@ -1008,13 +1009,13 @@ function captureTextViaFile() {
   formData.append('audio', file);
 
   fetch('/text', {
-    method: 'POST',
-    body: formData
-  })
-  .then(response => response.json())
-  .then(data => {
-    console.log('The text in video:', data.text);
-  })
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('The text in video:', data.text);
+    })
 
   reader.readAsDataURL(file);
 }
@@ -1026,11 +1027,8 @@ function populateHistorySelect() {
     var historySelect = document.getElementById('chat-items');
     historySelect.innerHTML = '';
 
-    server_port = JSON.parse(localStorage.getItem('config')).server.port
-    server_url = JSON.parse(localStorage.getItem('config')).server.url
-
     // Fetch the list of history files from the server using the new /history route with 'load' task
-    fetch(`${server_url+server_port}/history`, {
+    fetch(`${config_data.server.url + config_data.server.port}/history`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -1047,7 +1045,7 @@ function populateHistorySelect() {
         }
 
         // Populate the <select> with the available options 
-        historySelect.insertAdjacentHTML('beforeend', data.map(filename => 
+        historySelect.insertAdjacentHTML('beforeend', data.map(filename =>
           ` 
           <li class="collection-item list-group-item d-flex justify-content-between align-items-center">
           <div class="collection-info"> 
@@ -1093,7 +1091,7 @@ function populateHistorySelect() {
               case 'Edit':
                 selectedFilename = fileName;
 
-                fetch(`${server_url + server_port}/history`, {
+                fetch(`${config_data.server.url + config_data.server.port}/history`, {
                     method: 'POST',
                     headers: {
                       'Content-Type': 'application/json',
@@ -1123,11 +1121,10 @@ function populateHistorySelect() {
 
                     historyPopup.innerHTML = popupContent;
                     document.body.appendChild(historyPopup);
-                  }
-                );
+                  });
                 break;
               case 'Delete':
-                fetch(`${server_url + server_port}/history`, {
+                fetch(`${config_data.server.url + config_data.server.port}/history`, {
                     method: 'POST',
                     headers: {
                       'Content-Type': 'application/json',
@@ -1150,7 +1147,7 @@ function populateHistorySelect() {
                 break;
               case 'Download':
                 // request load history file from the server and download it as json file
-                fetch(`${server_url + server_port}/history`, {
+                fetch(`${config_data.server.url + config_data.server.port}/history`, {
                     method: 'POST',
                     headers: {
                       'Content-Type': 'application/json',
@@ -1185,7 +1182,7 @@ function populateHistorySelect() {
                 var newName = prompt('Enter a new name for the file (with .json):', fileName);
                 selectedFilename = newName;
 
-                fetch(`${server_url + server_port}/history`, {
+                fetch(`${config_data.server.url + config_data.server.port}/history`, {
                     method: 'POST',
                     headers: {
                       'Content-Type': 'application/json',
@@ -1225,52 +1222,52 @@ function populateHistorySelect() {
 function duplicateAndCategorizeChats() {
   const chatList = document.querySelector('#chat-items');
   const collectionItems = document.querySelector('#collectionItems');
-  
+
   // Clear existing content in collectionItems
   collectionItems.innerHTML = '';
 
   // Create an object to store categorized chats
   const categories = {
-      'Uncategorized': []
+    'Uncategorized': []
   };
 
   // Check if chatList exists and has items
-  const items = chatList && chatList.children.length > 0 
-      ? chatList.querySelectorAll('.collection-item') 
-      : document.querySelectorAll('.collection-item');
+  const items = chatList && chatList.children.length > 0 ?
+    chatList.querySelectorAll('.collection-item') :
+    document.querySelectorAll('.collection-item');
 
   items.forEach(item => {
-      const chatName = item.querySelector('.collection-name').textContent;
-      const colonIndex = chatName.indexOf(':');
-      
-      if (colonIndex !== -1) {
-          const folder = chatName.substring(colonIndex + 1).split('.')[0]; // Get the part after ':' and before '.'
-          if (!categories[folder]) {
-              categories[folder] = [];
-          }
-          categories[folder].push(item.cloneNode(true));
-      } else {
-          categories['Uncategorized'].push(item.cloneNode(true));
+    const chatName = item.querySelector('.collection-name').textContent;
+    const colonIndex = chatName.indexOf(':');
+
+    if (colonIndex !== -1) {
+      const folder = chatName.substring(colonIndex + 1).split('.')[0]; // Get the part after ':' and before '.'
+      if (!categories[folder]) {
+        categories[folder] = [];
       }
+      categories[folder].push(item.cloneNode(true));
+    } else {
+      categories['Uncategorized'].push(item.cloneNode(true));
+    }
   });
 
   // Create category blocks and add chats
   for (const [category, chats] of Object.entries(categories)) {
-      if (chats.length === 0) continue; // Skip empty categories
+    if (chats.length === 0) continue; // Skip empty categories
 
-      const categoryBlock = document.createElement('div');
-      categoryBlock.className = 'category-block mb-3';
-      categoryBlock.innerHTML = `<h6 class="fw-bold">${category}</h6>`;
+    const categoryBlock = document.createElement('div');
+    categoryBlock.className = 'category-block mb-3';
+    categoryBlock.innerHTML = `<h6 class="fw-bold">${category}</h6>`;
 
-      const categoryList = document.createElement('ul');
-      categoryList.className = 'list-group';
+    const categoryList = document.createElement('ul');
+    categoryList.className = 'list-group';
 
-      chats.forEach(chat => {
-          categoryList.appendChild(chat);
-      });
+    chats.forEach(chat => {
+      categoryList.appendChild(chat);
+    });
 
-      categoryBlock.appendChild(categoryList);
-      collectionItems.appendChild(categoryBlock);
+    categoryBlock.appendChild(categoryList);
+    collectionItems.appendChild(categoryBlock);
   }
 }
 
@@ -1306,7 +1303,7 @@ document.addEventListener('DOMContentLoaded', loadConfig);
 
 class NotificationManager {
   constructor() {
-    this.dropdownMenu = document.querySelector('.dropdown-menu.dropdown-menu-end.dropdown-list.animated--grow-in');
+    this.dropdownMenu = document.querySelector('#notifications-container');
     this.messages = [];
   }
 
@@ -1352,7 +1349,7 @@ function updateMsgCount() {
 function deleteMessageFromHistory(message) {
   let fileName = selectedFilename;
 
-  fetch(`${server_url + server_port}/history`, {
+  fetch(`${config_data.server.url + config_data.server.port}/history`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -1387,22 +1384,23 @@ function initializeTextareas() {
   textareas.forEach(textarea => {
     // Disable manual resizing
     textarea.style.resize = 'none';
-    
+
     // Initial adjustment
     adjustTextareaHeight(textarea);
-    
+
     // Add event listeners for real-time updates
     textarea.addEventListener('input', () => adjustTextareaHeight(textarea));
     textarea.addEventListener('change', () => adjustTextareaHeight(textarea));
-    
+
     // Create a MutationObserver to watch for changes in content
     const observer = new MutationObserver(() => adjustTextareaHeight(textarea));
-    observer.observe(textarea, { childList: true, characterData: true, subtree: true });
+    observer.observe(textarea, {
+      childList: true,
+      characterData: true,
+      subtree: true
+    });
   });
 }
 
 // Run the initialization when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', initializeTextareas);
-
-// Also run it immediately in case the script is loaded after the DOM
-initializeTextareas();

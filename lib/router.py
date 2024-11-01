@@ -6,10 +6,15 @@ from lib.vision import capture_image
 from lib.audio import stream_generate_speech, transcribe_audio, speak_text
 from lib.generate import get_config
 
-config = get_config()
+def get_config(config_path='static/config.json', config=None):
+    mode = 'r' if config is None else 'w'
+    with open(config_path, mode) as f:
+        return json.load(f) if config is None else json.dump(config, f, indent=4)
 
-if config.get("ai", {}).get("search"):
-    from lib.search import get_html, search_web
+    config = get_config(config_path='static/config.json')
+
+    if config.get("ai", {}).get("search"):
+      from lib.search import get_html, search_web
 
 def get_user_id():
     """Helper function to retrieve the current user's ID."""

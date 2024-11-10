@@ -138,7 +138,6 @@ Controls server-side operations and model settings:
 - `yuna_text_mode`: Text processing mode (native/koboldcpp/lmstudio)
 - `yuna_audio_mode`: Audio processing mode (native/siri/siri-pv/11labs)
 - `yuna_reference_audio`: Voice reference file for audio processing
-- `output_audio_format`: Audio output format (wav/ogg/mp3/aiff)
 
 #### Settings Configuration Block
 Manages user preferences and features:

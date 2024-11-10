@@ -97,7 +97,7 @@ class MemoryManager:
 
 # Example usage
 if __name__ == "__main__":
-    memory_manager = MemoryManager(model_path="lib/models/yuna/yuna-ai-v4-q6_k.gguf")
+    memory_manager = MemoryManager(model_path="lib/utils/models/yuna/yuna-ai-v4-q6_k.gguf")
     memory_manager.add_memory("fact1", "The capital of France is Paris, which is known for its rich history, iconic landmarks such as the Eiffel Tower, and its vibrant culture and cuisine.")
     memory_manager.add_memory("fact2", "Water freezes at 0 degrees Celsius, a temperature at which it transitions from its liquid state to a solid state, forming ice.")
     memory_manager.add_memory("fact3", "The Earth orbits around the Sun in an elliptical path, completing one full revolution approximately every 365.25 days, which constitutes a year.")

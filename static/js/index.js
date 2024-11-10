@@ -393,18 +393,18 @@ function playAudio(audioType = 'tts') {
   const audioSource = document.getElementById("backgroundMusic");
   const audioMap = {
     'tts': `/static/audio/audio.mp3?v=${Math.random()}`,
-    'call': '/audio/sfx/app/ringtone.mp3',
-    'camera': '/audio/sfx/app/camera.mp3',
-    'confirm': '/audio/sfx/app/confirm.mp3',
-    'error': '/audio/sfx/app/error.mp3',
-    'keyboard': '/audio/sfx/app/keyboard.mp3',
-    'message': '/audio/sfx/app/message.mp3',
-    'mouseclick': '/audio/sfx/app/mouseclick.mp3',
-    'notification': '/audio/sfx/app/notification.mp3',
-    'popup': '/audio/sfx/app/popup.mp3',
-    'server': '/audio/sfx/app/server.mp3',
-    'welcome': '/audio/sfx/app/welcome.mp3',
-    'wrong': '/audio/sfx/app/wrong.mp3',
+    'call': '/static/audio/sfx/app/ringtone.mp3',
+    'camera': '/static/audio/sfx/app/camera.mp3',
+    'confirm': '/static/audio/sfx/app/confirm.mp3',
+    'error': '/static/audio/sfx/app/error.mp3',
+    'keyboard': '/static/audio/sfx/app/keyboard.mp3',
+    'message': '/static/audio/sfx/app/message.mp3',
+    'mouseclick': '/static/audio/sfx/app/mouseclick.mp3',
+    'notification': '/static/audio/sfx/app/notification.mp3',
+    'popup': '/static/audio/sfx/app/popup.mp3',
+    'server': '/static/audio/sfx/app/server.mp3',
+    'welcome': '/static/audio/sfx/app/welcome.mp3',
+    'wrong': '/static/audio/sfx/app/wrong.mp3',
   };
   audioSource.src = audioMap[audioType];
   // Check if the audio type can be played
@@ -1338,6 +1338,208 @@ const notificationManagerInstance = new NotificationManager();
 
 // Call the add method
 notificationManagerInstance.add("Hello! Welcome to the chat room!");
+
+// First, add this button to trigger the timer with proper user interaction
+const createTimerButton = document.createElement('button');
+createTimerButton.classList.add('btn', 'btn-primary', 'ms-2');
+createTimerButton.innerHTML = '<i class="fas fa-clock"></i>';
+createTimerButton.setAttribute('data-bs-toggle', 'tooltip');
+createTimerButton.setAttribute('data-bs-placement', 'top');
+createTimerButton.setAttribute('title', 'Set Timer');
+
+// Add it next to the audio record button
+buttonAudioRec.parentNode.insertBefore(createTimerButton, buttonAudioRec.nextSibling);
+
+// Add click handler that shows a modal for timer input
+createTimerButton.addEventListener('click', async () => {
+    const duration = prompt('Enter duration in seconds:', '5');
+    if (!duration) return;
+    
+    const message = prompt('Enter timer message:', 'Timer is done!');
+    if (!message) return;
+
+    try {
+        const timerId = await timerManagerInstance.createTimer(
+            parseInt(duration), 
+            message,
+            "Yuna Timer"
+        );
+        
+        if (timerId) {
+            notificationManagerInstance.add(`Timer set for ${duration} seconds`);
+        }
+    } catch (error) {
+        console.error('Error creating timer:', error);
+        notificationManagerInstance.add('Failed to create timer: ' + error.message);
+    }
+});
+
+    // First, let's create a proper audio playback function that returns a promise
+    function playNotificationSound() {
+      return new Promise((resolve, reject) => {
+          if (!soundsModeEnabled) {
+              resolve();
+              return;
+          }
+    
+          // Create a new audio element each time
+          const audio = new Audio('/audio/sfx/app/notification.mp3');
+          
+          // Add event listeners
+          audio.addEventListener('ended', () => {
+              resolve();
+          });
+    
+          audio.addEventListener('error', (error) => {
+              reject(error);
+          });
+    
+          // Attempt to play with user interaction handling
+          const playAttempt = audio.play();
+          
+          if (playAttempt) {
+              playAttempt.catch((error) => {
+                  if (error.name === 'NotAllowedError') {
+                      console.warn('Audio playback requires user interaction first');
+                      resolve(); // Resolve anyway to prevent unhandled rejection
+                  } else {
+                      reject(error);
+                  }
+              });
+          }
+      });
+    }
+
+// Add this to your existing TimerManager class
+class TimerManager {
+    constructor(notificationManager) {
+        this.notificationManager = notificationManager;
+        this.timers = new Map();
+        this.hasNotificationPermission = false;
+        this.initializePermission();
+    }
+
+    async initializePermission() {
+        if (!("Notification" in window)) {
+            console.warn("This browser does not support notifications");
+            return;
+        }
+        
+        if (Notification.permission === "granted") {
+            this.hasNotificationPermission = true;
+        }
+    }
+
+    async requestPermission() {
+        if (!("Notification" in window)) {
+            throw new Error("This browser does not support notifications");
+        }
+
+        try {
+            const permission = await Notification.requestPermission();
+            this.hasNotificationPermission = permission === "granted";
+            return this.hasNotificationPermission;
+        } catch (error) {
+            console.error("Error requesting notification permission:", error);
+            throw new Error("Failed to request notification permission");
+        }
+    }
+
+    // Modify the createTimer method in TimerManager class
+    async createTimer(duration, message, title = "Yuna Timer") {
+      const granted = await this.requestPermission();
+      if (!granted) {
+          throw new Error("Notification permission denied");
+      }
+
+      const timerId = Date.now().toString();
+      const triggerTime = Date.now() + duration * 1000;
+
+      // Store timer information
+      this.timers.set(timerId, {
+          id: timerId,
+          message,
+          title,
+          triggerTime,
+          timer: setTimeout(() => this.triggerTimer(timerId), duration * 1000)
+      });
+
+      // Add to notification dropdown
+      this.notificationManager.add(`Timer set: ${message} (${duration}s)`);
+      
+      return timerId;
+    }
+
+    cancelTimer(timerId) {
+        const timer = this.timers.get(timerId);
+        if (timer) {
+            clearTimeout(timer.timer);
+            this.timers.delete(timerId);
+            this.notificationManager.add(`Timer cancelled: ${timer.message}`);
+            return true;
+        }
+        return false;
+    }
+
+// Modify the triggerTimer method in TimerManager class
+triggerTimer(timerId) {
+  const timer = this.timers.get(timerId);
+  if (!timer) return;
+
+  // Show system notification
+  try {
+      const notificationOptions = {
+          body: timer.message,
+          icon: "/static/img/yuna-ai.png",
+          badge: "/static/img/yuna-ai.png",
+          silent: false // This ensures the default notification sound plays
+      };
+
+      // Check if notification permission is granted before showing
+      if (Notification.permission === "granted") {
+          new Notification(timer.title, notificationOptions);
+      }
+
+      // Handle sound separately with the new function
+      //playNotificationSound().catch(error => {
+      //    console.warn('Could not play notification sound:', error);
+      //});
+
+      // Trigger vibration if supported
+      if (navigator.vibrate) {
+          try {
+              navigator.vibrate([200, 100, 200]);
+          } catch (error) {
+              console.warn('Vibration not supported:', error);
+          }
+      }
+
+  } catch (error) {
+      console.error("Error showing notification:", error);
+  }
+
+  // Add to notification dropdown
+  this.notificationManager.add(`Timer completed: ${timer.message}`);
+  
+  // Clean up timer
+  this.timers.delete(timerId);
+}
+
+    getActiveTimers() {
+        const activeTimers = [];
+        for (const [id, timer] of this.timers) {
+            activeTimers.push({
+                id,
+                message: timer.message,
+                remainingTime: Math.ceil((timer.triggerTime - Date.now()) / 1000)
+            });
+        }
+        return activeTimers;
+    }
+}
+
+// Create an instance of TimerManager
+const timerManagerInstance = new TimerManager(notificationManagerInstance);
 
 function updateMsgCount() {
   setTimeout(() => {

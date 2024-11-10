@@ -39,7 +39,7 @@ const createFormCheck = (id, checked) => `
 const saveConfigParams = () => {
   const reverseConfig = {
     ai: extractValues('.ai-block-list', ['names', 'himitsu', 'agi', 'emotions', 'miru', 'search', 'audio', 'max_new_tokens', 'context_length', 'temperature', 'repetition_penalty', 'last_n_tokens_size', 'seed', 'top_k', 'top_p', 'stop', 'batch_size', 'threads', 'gpu_layers', 'use_mmap', 'flash_attn', 'use_mlock', 'offload_kqv']),
-    server: extractValues('.server-block-list', ['port', 'url', 'yuna_default_model', 'miru_default_model', 'eyes_default_model', 'voice_default_model', 'device', 'yuna_text_mode', 'yuna_audio_mode', 'yuna_reference_audio', 'output_audio_format']),
+    server: extractValues('.server-block-list', ['port', 'url', 'yuna_default_model', 'miru_default_model', 'eyes_default_model', 'voice_default_model', 'device', 'yuna_text_mode', 'yuna_audio_mode', 'yuna_reference_audio']),
     settings: extractValues('.settings-block-list', ['pseudo_api', 'fuctions', 'notifications', 'customConfig', 'sounds', 'use_history', 'background_call', 'nsfw_filter', 'streaming', 'default_history_file', 'default_kanojo', 'default_prompt_template']),
     security: extractValues('.security-block-list', ['secret_key', 'encryption_key', '11labs_key'])
   };

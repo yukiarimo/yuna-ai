@@ -1,15 +1,21 @@
 import base64
+import json
+import os
 import re
+import uuid
 from flask import jsonify, request, send_from_directory, Response
 from flask_login import current_user, login_required
 from lib.vision import capture_image
 from lib.audio import stream_generate_speech, transcribe_audio, speak_text
 from lib.generate import get_config
+from pydub import AudioSegment
 
 config = get_config()
+AUDIOBOOKS_DIR = os.path.join('static', 'audio', 'audiobooks')
+PROJECTS = set(os.listdir(AUDIOBOOKS_DIR))
 
 if config.get("ai", {}).get("search"):
-    from lib.search import get_html, search_web
+    from lib.himitsu import get_html, search_web
 
 def get_user_id():
     """Helper function to retrieve the current user's ID."""
@@ -203,9 +209,49 @@ def services():
     """Serves the services.html file."""
     return send_from_directory('.', 'services.html')
 
-@login_required
+#@login_required
+def create_project_directory():
+    data = request.get_json()
+    project_id = data.get('project_id')
+    if not project_id:
+        return jsonify({'error': 'No project ID provided'}), 400
+
+    project_path = os.path.join('static', 'audio', 'audiobooks', project_id)
+    try:
+        os.makedirs(project_path, exist_ok=True)
+        return jsonify({'success': True, 'path': project_path})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 def generate_audiobook():
+    data = request.get_json()
+    text = data['text']
+    id = data.get('id', str(uuid.uuid4()))
+    project_path = data.get('projectPath', '')
+    
+    output_path = os.path.join('static', 'audio', project_path)
+    os.makedirs(output_path, exist_ok=True)
+    
+    return Response(stream_generate_speech(text, id, output_path), mimetype='text/event-stream')
+
+def merge_audiobook():
     data = request.json
-    text = data.get('text', '')
-    embedding_path = "lib/models/agi/voice/embeddings/speaker_embeddings.npy"
-    return Response(stream_generate_speech(text), mimetype='text/event-stream')
+    audio_paths = data.get('audio_paths', [])
+    project_id = data.get('project_id')
+    
+    if not audio_paths or not project_id:
+        return jsonify({'error': 'Missing required parameters'}), 400
+    
+    try:
+        output_path = os.path.join('static', 'audio', 'audiobooks', project_id)
+        os.makedirs(output_path, exist_ok=True)
+        
+        combined = AudioSegment.empty()
+        for path in audio_paths:
+            combined += AudioSegment.from_mp3(path)
+        
+        merged_path = os.path.join(output_path, 'merged_audiobook.mp3')
+        combined.export(merged_path, format='mp3')
+        return jsonify({'merged_path': '/' + merged_path})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500

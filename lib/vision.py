@@ -8,8 +8,8 @@ if config["ai"]["miru"]:
     from llama_cpp.llama_chat_format import MoondreamChatHandler
 
     llm = Llama(
-        model_path=f"lib/models/agi/miru/{config['server']['miru_default_model']}",
-        chat_handler=MoondreamChatHandler(clip_model_path=f"lib/models/agi/miru/{config['server']['eyes_default_model']}"),
+        model_path=f"lib/utils/models/agi/miru/{config['server']['miru_default_model']}",
+        chat_handler=MoondreamChatHandler(clip_model_path=f"lib/utils/models/agi/miru/{config['server']['eyes_default_model']}"),
         n_ctx=4096,
         last_n_tokens_size=config["ai"]["last_n_tokens_size"],
         seed=config["ai"]["seed"],

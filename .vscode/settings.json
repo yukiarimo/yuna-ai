@@ -1,9 +1,0 @@
-{
-    "liveServer.settings.multiRootWorkspaceName": "yuna-ai",
-    "liveServer.settings.https": {
-        "passphrase": "",
-        "enable": true,
-        "cert": "/Users/yuki/Documents/Github/yuna-ai/cert.pem",
-        "key": "/Users/yuki/Documents/Github/yuna-ai/key.pem"
-    }
-}

@@ -40,7 +40,7 @@ class ChatGenerator:
     def __init__(self, config):
         self.config = config
         self.model = Llama(
-            model_path=f"lib/models/yuna/{config['server']['yuna_default_model']}",
+            model_path=f"lib/utils/models/yuna/{config['server']['yuna_default_model']}",
             n_ctx=config["ai"]["context_length"],
             last_n_tokens_size=config["ai"]["last_n_tokens_size"],
             seed=config["ai"]["seed"],
@@ -80,7 +80,7 @@ class ChatGenerator:
                 return (chunk['choices'][0]['text'] for chunk in response) if stream else self.clearText(str(response['choices'][0]['text']))
             elif mode == "lmstudio":
                 dataSendAPI = {
-                    "model": f"/Users/yuki/Documents/Github/yuna-ai/lib/models/yuna/yukiarimo/yuna-ai/yuna-ai-v3-q6_k.gguf",
+                    "model": f"/Users/yuki/Documents/Github/yuna-ai/lib/utils/models/yuna/yukiarimo/yuna-ai/yuna-ai-v3-q6_k.gguf",
                     "messages": self.get_history_text(chat_history, text, useHistory, yunaConfig),
                     "temperature": yunaConfig["ai"]["temperature"],
                     "max_tokens": -1,
@@ -129,21 +129,24 @@ class ChatGenerator:
             "top_k": yunaConfig["ai"]["top_k"],
             "top_a": 0,
             "typical": 1,
-            "tfs": 1,
-            "rep_pen_range": 360,
-            "rep_pen_slope": 0.7,
-            "sampler_order": [6, 0, 1, 3, 4, 2, 5],
+            "tfs": 0.8,
+            "rep_pen_range": 512,
+            "rep_pen_slope": 0,
+            "sampler_order": [6, 5, 0, 2, 3, 1, 4],
             "memory": kanojo,
             "trim_stop": True,
-            "genkey": "KCPP3164",
-            "min_p": 0,
+            "genkey": "KCPP9126",
+            "mirostat": 2,
+            "mirostat_tau": 4,
+            "mirostat_eta": 0.3,
+            "min_p": 0.1,
             "dynatemp_range": 0,
             "dynatemp_exponent": 1,
             "smoothing_factor": 0,
             "banned_tokens": [],
             "render_special": True,
             "presence_penalty": 0,
-            "logit_bias": {key: -100 for key in [38]},
+            "logit_bias": {},
             "prompt": formatted_prompt,
             "quiet": True,
             "stop_sequence": yunaConfig["ai"]["stop"],
@@ -181,7 +184,7 @@ class ChatGenerator:
         docs = splitter.split_documents(loader.load())
         embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
         vectorstore = Chroma.from_documents(documents=docs, embedding=embeddings)
-        llm = LlamaCpp(model_path="lib/models/yuna/yuna-ai-v3-q5_k_m.gguf", temperature=temperature, verbose=False)
+        llm = LlamaCpp(model_path="lib/utils/models/yuna/yuna-ai-v3-q5_k_m.gguf", temperature=temperature, verbose=False)
         qa = RetrievalQA.from_chain_type(llm=llm, chain_type="stuff", retriever=vectorstore.as_retriever())
         return qa.invoke(question).get('result', '')
 

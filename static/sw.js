@@ -20,3 +20,94 @@ toolbox.router.get('/images/*', toolbox.cacheFirst);
 toolbox.router.get('/*', toolbox.networkFirst, {
     networkTimeoutSeconds: 1
 });
+
+// sw.js
+self.addEventListener('push', function(event) {
+    console.log('Push received:', event);
+    
+    let payload;
+    try {
+        payload = event.data.json();
+    } catch (e) {
+        payload = {
+            title: 'Yuna AI',
+            body: event.data ? event.data.text() : 'No payload'
+        };
+    }
+    
+    const options = {
+        body: payload.body,
+        icon: payload.icon || '/static/img/yuna-ai.png',
+        badge: payload.badge || '/static/img/yuna-girl-head.webp',
+        data: {
+            dateOfArrival: Date.now(),
+            primaryKey: 1,
+            url: 'https://yuki.yuna-ai.pro'
+        }
+    };
+
+    event.waitUntil(
+        self.registration.showNotification(payload.title || 'Yuna AI', options)
+    );
+});
+
+self.addEventListener('notificationclick', function (event) {
+    console.log('Notification clicked:', event);
+
+    event.notification.close();
+
+    event.waitUntil(
+        clients.openWindow('https://www.himitsu.dev')
+    );
+});
+
+self.addEventListener('install', function (event) {
+    self.skipWaiting();
+});
+
+self.addEventListener('activate', function (event) {
+    event.waitUntil(self.clients.claim());
+});
+
+self.addEventListener('pushsubscriptionchange', function (event) {
+    console.log('Subscription expired');
+    event.waitUntil(
+        self.registration.pushManager.subscribe({
+            userVisibleOnly: true
+        })
+        .then(function (subscription) {
+            console.log('Subscribed after expiration', subscription.endpoint);
+            return fetch('https://www.himitsu.dev/subscribe', {
+                method: 'post',
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: JSON.stringify({
+                    endpoint: subscription.endpoint
+                })
+            });
+        })
+    );
+});
+
+self.addEventListener('fetch', function (event) {
+    event.respondWith(
+        fetch(event.request).catch(function () {
+            return caches.match(event.request);
+        })
+    );
+});
+
+// app.js
+if ('serviceWorker' in navigator && 'PushManager' in window) {
+    let swRegistration = null;
+
+    navigator.serviceWorker.register('/sw.js')
+        .then(function (registration) {
+            console.log('ServiceWorker registered successfully');
+            swRegistration = registration;
+        })
+        .catch(function (error) {
+            console.error('ServiceWorker registration failed:', error);
+        });
+}

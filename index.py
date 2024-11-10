@@ -2,12 +2,32 @@ import shutil
 from flask import Flask, request, jsonify, send_from_directory, redirect, url_for, make_response
 from flask_login import LoginManager, UserMixin, login_required, logout_user, login_user, current_user, login_manager
 from lib.generate import ChatGenerator, ChatHistoryManager, get_config
-from lib.router import generate_audiobook, handle_history_request, handle_image_request, handle_message_request, handle_audio_request, services, handle_search_request, handle_textfile_request
+from lib.router import create_project_directory, generate_audiobook, handle_history_request, handle_image_request, handle_message_request, handle_audio_request, services, handle_search_request, handle_textfile_request, merge_audiobook
 from flask_cors import CORS
 import json
 import os
 from itsdangerous import URLSafeTimedSerializer
 from flask_compress import Compress
+import pywebpush
+from cryptography.hazmat.primitives import serialization
+
+vapid = pywebpush.Vapid()
+vapid.generate_keys()
+
+public_key = vapid.public_key.public_bytes(
+    encoding=serialization.Encoding.PEM,
+    format=serialization.PublicFormat.SubjectPublicKeyInfo
+).decode('utf-8')
+
+private_key = vapid.private_key.private_bytes(
+    encoding=serialization.Encoding.PEM,
+    format=serialization.PrivateFormat.PKCS8,
+    encryption_algorithm=serialization.NoEncryption()
+).decode('utf-8')
+
+print(f"Public key: {public_key}")
+print(f"Private key: {private_key}")
+
 
 config =  get_config()
 secret_key = config['security']['secret_key']
@@ -28,6 +48,11 @@ class YunaServer:
             'text/javascript',
             'application/x-javascript'
         ]
+        self.VAPID_PRIVATE_KEY = vapid.private_key
+        self.VAPID_PUBLIC_KEY = vapid.public_key
+        self.VAPID_CLAIMS = {
+            "sub": "mailto:your-email@himitsu.dev"
+        }
         self.app.config['COMPRESS_LEVEL'] = 9 # Gzip compression level (1-9)
         self.app.config['COMPRESS_MIN_SIZE'] = 0
         Compress(self.app)
@@ -36,6 +61,8 @@ class YunaServer:
         login_manager.user_loader(self.user_loader)
         CORS(self.app, resources={r"/*": {"origins": "*"}})
         self.configure_routes()
+        self.app.route('/subscribe', methods=['POST'])(self.subscribe)
+        self.app.route('/send-notification', methods=['POST'])(self.send_notification)
         self.chat_generator = ChatGenerator(config)
         self.chat_history_manager = ChatHistoryManager(config)
         self.app.errorhandler(404)(self.page_not_found)
@@ -99,9 +126,68 @@ class YunaServer:
         self.app.route('/image', methods=['POST'], endpoint='image')(lambda: handle_image_request(self.chat_history_manager, config))
         self.app.route('/audio', methods=['GET', 'POST'], endpoint='audio')(lambda: handle_audio_request())
         self.app.route('/generate_audiobook', methods=['POST'], endpoint='generate_audiobook')(lambda: generate_audiobook())
+        self.app.route('/merge_audiobook', methods=['POST'], endpoint='merge_audiobook')(lambda: merge_audiobook())
+        self.app.route('/create_project_directory', methods=['POST'], endpoint='create_project')(lambda: create_project_directory())
         self.app.route('/analyze', methods=['POST'], endpoint='textfile')(lambda: handle_textfile_request(self.chat_generator))
         self.app.route('/logout', methods=['GET'])(self.logout)
         self.app.route('/search', methods=['POST'], endpoint='search')(lambda: handle_search_request())
+
+    @staticmethod
+    def pem_to_key(pem_str):
+        # Remove headers and newlines
+        lines = pem_str.replace('-----BEGIN PRIVATE KEY-----', '')
+        lines = lines.replace('-----END PRIVATE KEY-----', '')
+        lines = lines.replace('-----BEGIN PUBLIC KEY-----', '')
+        lines = lines.replace('-----END PUBLIC KEY-----', '')
+        return ''.join(lines.split('\n')).strip()
+
+    def subscribe(self):
+        try:
+            subscription = request.json
+            print("Received subscription:", subscription)  # Debug log
+            
+            user_id = current_user.get_id() if current_user.is_authenticated else 'anonymous'
+            subscription_path = os.path.join('db', 'subscriptions', f'{user_id}.json')
+            
+            os.makedirs(os.path.dirname(subscription_path), exist_ok=True)
+            
+            with open(subscription_path, 'w') as f:
+                json.dump(subscription, f)
+                
+            return jsonify({'success': True, 'message': 'Subscription saved'}), 200
+            
+        except Exception as e:
+            print(f"Subscription error: {e}")  # Debug log
+            return jsonify({'error': str(e)}), 500
+
+    def send_notification(self):
+        try:
+            subscription = request.json.get('subscription')
+            message = request.json.get('message', 'Hello from Yuna!')
+            
+            print(f"Sending notification to subscription: {subscription}")  # Debug log
+            
+            payload = json.dumps({
+                'title': 'Yuna AI',
+                'body': message,
+                'icon': '/static/img/yuna-ai.png',
+                'badge': '/static/img/yuna-girl-head.webp'
+            })
+
+            response = pywebpush(
+                subscription_info=subscription,
+                data=payload,
+                vapid_private_key=self.VAPID_PRIVATE_KEY,
+                vapid_claims=self.VAPID_CLAIMS
+            )
+            
+            print(f"Webpush response: {response}")  # Debug log
+            
+            return jsonify({'success': True, 'message': 'Notification sent'}), 200
+            
+        except Exception as e:
+            print(f"Notification error: {e}")  # Debug log
+            return jsonify({'error': str(e)}), 500
 
     def custom_static(self, filename):
         if not filename.startswith('static/') and not filename.startswith('/favicon.ico') and not filename.startswith('/manifest.json'):

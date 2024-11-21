@@ -1,7 +1,7 @@
 {
-    "short_name": "Yuna AI",
-    "name": "Yuna AI",
-    "description": "Yuna AI - Your Private Companion",
+    "short_name": "Yuna Ai",
+    "name": "Yuna Ai",
+    "description": "Yuna Ai - Your Private Companion",
     "icons": [{
             "src": "/static/img/yuna-ai.png",
             "sizes": "512X512",

@@ -9,10 +9,14 @@ from lib.vision import capture_image
 from lib.audio import stream_generate_speech, transcribe_audio, speak_text
 from lib.generate import get_config
 from pydub import AudioSegment
-
+from pywebpush import webpush
 config = get_config()
-AUDIOBOOKS_DIR = os.path.join('static', 'audio', 'audiobooks')
-PROJECTS = set(os.listdir(AUDIOBOOKS_DIR))
+subscriptions = []
+VAPID_PRIVATE_KEY = "x32JRDsKvbQC3VwkKqYymupvlyccXBKkrwWk1vdb88U"
+VAPID_PUBLIC_KEY = "BLAWDkBakXLWfyQP5zAXR5Dyv4-W1nsRDkUk9Kw9MqKppQCdbsP-yfz7kEpAPvDMy2lszg_SZ9QEC9Uda8mpKSg"
+VAPID_CLAIMS = {
+    "sub": "mailto:yukiarimo@gmail.com"  # Change this to your email
+}
 
 if config.get("ai", {}).get("search"):
     from lib.himitsu import get_html, search_web
@@ -255,3 +259,24 @@ def merge_audiobook():
         return jsonify({'merged_path': '/' + merged_path})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+def subscribe():
+    subscription = request.json
+    if subscription not in subscriptions:
+        subscriptions.append(subscription)
+    return jsonify({'success': True})
+
+def send_notification():
+    try:
+        data = request.json
+        print(data)
+        for subscription in subscriptions:
+            webpush(
+                subscription_info=subscription,
+                data=json.dumps(data),
+                vapid_private_key=VAPID_PRIVATE_KEY,
+                vapid_claims=VAPID_CLAIMS
+            )
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})

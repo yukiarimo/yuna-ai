@@ -30,7 +30,7 @@ self.addEventListener('push', function(event) {
         payload = event.data.json();
     } catch (e) {
         payload = {
-            title: 'Yuna AI',
+            title: 'Yuna Ai',
             body: event.data ? event.data.text() : 'No payload'
         };
     }
@@ -42,12 +42,12 @@ self.addEventListener('push', function(event) {
         data: {
             dateOfArrival: Date.now(),
             primaryKey: 1,
-            url: 'https://yuki.yuna-ai.pro'
+            url: 'https://www.yuna-ai.com'
         }
     };
 
     event.waitUntil(
-        self.registration.showNotification(payload.title || 'Yuna AI', options)
+        self.registration.showNotification(payload.title || 'Yuna Ai', options)
     );
 });
 

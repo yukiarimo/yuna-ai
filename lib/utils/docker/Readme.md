@@ -1,7 +1,7 @@
 # Yuna Docker Docs
 ## Docker Installation Guide
 
-This guide will help you set up and run the Yuna AI project using Docker.
+This guide will help you set up and run the Yuna Ai project using Docker.
 
 ### Prerequisites
 
@@ -17,7 +17,7 @@ Before proceeding, ensure you have the necessary model files. You can either:
 
 ### Clone the Repository
 
-Clone the Yuna AI repository to your local machine:
+Clone the Yuna Ai repository to your local machine:
 
 ```bash
 git clone https://github.com/0xGingi/yuna-ai
@@ -60,7 +60,7 @@ docker run --gpus all --name yuna -p 4848:4848 --restart=always -v ~/yuna-ai:/ap
 
 ### Updating the Docker Container
 
-To update the Yuna AI Docker container, follow these steps:
+To update the Yuna Ai Docker container, follow these steps:
 
 1. Stop and remove the existing container:
    ```bash

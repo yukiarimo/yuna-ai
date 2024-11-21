@@ -5,27 +5,28 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Yuna AI</title>
+    <title>Yuna Ai</title>
     <meta name="theme-color" content="#212529">
-    <link rel="canonical" href="http://www.yuna-ai.live">
+    <link rel="canonical" href="http://www.yuna-ai.com">
     <meta property="og:url" content="/">
     <meta property="og:description" content="Your Private Companion">
     <meta name="twitter:image" content="/static/img/yuna-ai.png">
-    <meta name="twitter:title" content="Yuna AI">
+    <meta name="twitter:title" content="Yuna Ai">
     <meta property="og:image" content="/static/img/yuna-ai.png">
     <meta name="description" content="Your Private Companion">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Yuna AI">
+    <meta property="og:title" content="Yuna Ai">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:description" content="Your Private Companion">
+    <meta name="apple-touch-fullscreen" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <script type="application/ld+json">
         {
             "@context": "http://schema.org",
             "@type": "WebSite",
-            "name": "Yuna AI",
-            "url": "http://www.yuna-ai.live"
+            "name": "Yuna Ai",
+            "url": "http://www.yuna-ai.com"
         }
     </script>
 
@@ -79,9 +80,9 @@
                 <div class="sidebar-header">
                     <a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
                         <div class="sidebar-brand-icon">
-                            <img src="/static/img/yuna-ai.png" alt="Yuna AI Logo" style="width: 30px; height: 30px;">
+                            <img src="/static/img/yuna-ai.png" alt="Yuna Ai Logo" style="width: 30px; height: 30px;">
                         </div>
-                        <div class="sidebar-brand-text mx-3"><span>Yuna AI</span></div>
+                        <div class="sidebar-brand-text mx-3"><span>Yuna Ai</span></div>
                     </a>
                 </div>
                 <ul class="sidebar-menu">
@@ -244,11 +245,11 @@
                                                     <h5 class="m-0 fw-bold">Chats</h5>
                                                     <div>
                                                         <button class="btn btn-primary btn-sm me-2"
-                                                            onclick="historyManager.createHistoryFile();">
+                                                            onclick="historyManagerInstance.createHistoryFile();">
                                                             <i class="fas fa-plus"></i> Add
                                                         </button>
                                                         <button class="btn btn-secondary btn-sm"
-                                                            onclick="historyManager.importHistory();">
+                                                            onclick="historyManagerInstance.importHistory();">
                                                             <i class="fas fa-upload"></i> Load
                                                         </button>
                                                     </div>

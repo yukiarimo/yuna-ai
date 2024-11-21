@@ -609,3 +609,27 @@ body {
         max-width: 96vw !important;
     }
 }
+
+/* Additional styling for better UI experience */
+.list-group-item.dragging {
+    opacity: 0.5;
+    border: 2px dashed #666;
+}
+
+.list-group-item.active {
+    background-color: #e9ecef;
+}
+
+.audio-player-wrapper {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.25rem;
+}
+
+.time-slider {
+    margin: 1rem 0;
+}
+
+.btn-group-sm > .btn {
+    padding: 0.25rem 0.5rem;
+}

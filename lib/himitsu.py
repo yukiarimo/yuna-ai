@@ -106,6 +106,14 @@ if config.get("ai", {}).get("search"):
 
             time.sleep(2)
 
+            transcript = driver.execute_script("""
+                if (window.trustedTypes && window.trustedTypes.createPolicy && !window.trustedTypes.defaultPolicy) {
+                    window.trustedTypes.createPolicy('default', {
+                        createHTML: string => string
+                    });
+                }
+            """)
+
             # Execute the JavaScript function to get the transcript
             transcript = driver.execute_script("""
                 function getTranscript() {

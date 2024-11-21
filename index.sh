@@ -169,15 +169,15 @@ install_all_agi_models() {
 # Function to install Vision model
 install_vision_model() {
     echo "Installing Vision model..."
-    wget https://huggingface.co/yukiarimo/yuna-ai-vision-v2/resolve/main/yuna-ai-miru-v0.gguf -P lib/models/agi/miru/
-    wget https://huggingface.co/yukiarimo/yuna-ai-vision-v2/resolve/main/yuna-ai-miru-eye-v0.gguf -P lib/models/agi/miru/
+    wget https://huggingface.co/yukiarimo/yuna-ai-vision-v2/resolve/main/yuna-ai-miru-v0.gguf -P lib/utils/models/agi/miru/
+    wget https://huggingface.co/yukiarimo/yuna-ai-vision-v2/resolve/main/yuna-ai-miru-eye-v0.gguf -P lib/utils/models/agi/miru/
 }
 
 # Function to install Art model
 install_art_model() {
     echo "Installing Art model..."
     echo "This is not implemented yet."
-    # wget https://huggingface.co/yukiarimo/anyloli/resolve/main/any_loli.safetensors -P lib/models/agi/art/
+    # wget https://huggingface.co/yukiarimo/anyloli/resolve/main/any_loli.safetensors -P lib/utils/models/agi/art/
 }
 
 # Function to install Himitsu model
@@ -193,7 +193,7 @@ install_talk_model() {
     echo "Enter the Hugging Face model name (e.g., username/model): "
     read model_name
     echo "Installing Talk Model"
-    git clone https://huggingface.co/$model_name lib/models/agi/voice
+    git clone https://huggingface.co/$model_name lib/utils/models/agi/voice
 }
 
 # Function to install Yuna model
@@ -208,20 +208,20 @@ install_yuna_model() {
 
     model_url="https://huggingface.co/yukiarimo/yuna-ai-${version}/resolve/main/yuna-ai-${version}-${size}.gguf"
     echo "Installing Yuna model from $model_url..."
-    wget "$model_url" -P lib/models/yuna/
+    wget "$model_url" -P lib/utils/models/yuna/
 }
 
 # Function to clear models
 clear_models() {
     clear
     echo "========== Clear Models Menu =========="
-    echo "This will delete all models inside 'lib/models/'."
+    echo "This will delete all models inside 'lib/utils/models/'."
     read -p "Do you want to proceed? (y/n): " confirm_clear
 
     case $confirm_clear in
         [Yy])
             echo "Clearing models..."
-            rm -rf lib/models/*
+            rm -rf lib/utils/models/*
             echo "Models cleared."
             ;;
         [Nn])

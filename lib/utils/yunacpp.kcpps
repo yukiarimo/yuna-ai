@@ -1,6 +1,6 @@
 {
     "model": "",
-    "model_param": "/Users/yuki/Documents/Github/yuna-ai/lib/models/yuna/yuna-ai-v4-q6_k.gguf",
+    "model_param": "/Users/yuki/Documents/Github/yuna-ai/lib/utils/models/yuna/yuna-ai-v4-q6_k.gguf",
     "port": 5001,
     "port_param": 5001,
     "host": "",

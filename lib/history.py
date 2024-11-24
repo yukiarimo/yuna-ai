@@ -1,7 +1,7 @@
 import json
 import os
 from cryptography.fernet import Fernet, InvalidToken
-from lib.generate import get_config
+from aiflow import agi
 
 class ChatHistoryManager:
     BASE_PATH = "db/history"
@@ -23,7 +23,7 @@ class ChatHistoryManager:
         if not key:
             key = Fernet.generate_key().decode()
             self.config['security']['encryption_key'] = key
-            get_config(self.config)
+            agi.get_config(self.config)
         return key.encode()
 
     def _read_encrypted_file(self, path):

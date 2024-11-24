@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yuna AI Chat</title>
+    <link rel="stylesheet" href="chat_ui.css">
+</head>
+
+<body class="bg-gradient-kawaii">
+    <div id="popoverContainerYuna"
+        class="container p-4 rounded shadow-lg bg-white position-fixed bottom-0 end-0 m-3 d-none"
+        style="max-width: 400px;">
+        <div id="popover-header-yuna"
+            class="d-flex justify-content-between align-items-center bg-gradient-kawaii-header p-3 rounded-top">
+            <h3 class="title text-white mb-0">Yuna <span id="heart-yuna">&#x2665;</span></h3>
+            <button id="closeButton" class="btn btn-sm btn-light">X</button>
+        </div>
+        <div id="chatArea" class="popover-body overflow-auto p-3 kawaii-chat-area">
+            <!-- Chat bubbles will be dynamically added here -->
+        </div>
+        <div class="chat-input-area d-flex align-items-center p-2 bg-light rounded-bottom">
+            <input type="text" id="inputFieldYuna" class="form-control me-2 rounded-pill kawaii-input"
+                placeholder="Type a message...">
+            <button id="submitButton" class="btn kawaii-btn rounded-circle"><i
+                    class="bi bi-chat-dots-fill"></i></button>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="chatui.js"></script>
+</body>
+
+</html>

@@ -1,14 +1,15 @@
 import shutil
 from flask import Flask, request, jsonify, send_from_directory, redirect, url_for
 from flask_login import LoginManager, UserMixin, login_required, logout_user, login_user, current_user, login_manager
-from lib.generate import ChatGenerator, ChatHistoryManager, get_config
 from lib.router import create_project_directory, generate_audiobook, handle_history_request, handle_image_request, handle_message_request, handle_audio_request, services, handle_search_request, handle_textfile_request, merge_audiobook, subscribe, send_notification
+from lib.history import ChatHistoryManager
 from flask_cors import CORS
 import json
 import os
 from itsdangerous import URLSafeTimedSerializer
 from flask_compress import Compress
-config =  get_config()
+from aiflow import agi
+config =  agi.get_config()
 secret_key = config['security']['secret_key']
 serializer = URLSafeTimedSerializer(secret_key)
 login_manager = LoginManager()
@@ -29,8 +30,9 @@ class YunaServer:
         login_manager.user_loader(self.user_loader)
         CORS(self.app, resources={r"/*": {"origins": "*"}})
         self.configure_routes()
-        self.chat_generator = ChatGenerator(config)
         self.chat_history_manager = ChatHistoryManager(config)
+        self.worker = agi.AGIWorker(config)
+        self.worker.start()
         self.app.errorhandler(404)(self.page_not_found)
 
         @self.app.after_request
@@ -73,15 +75,15 @@ class YunaServer:
         self.app.route('/apple-touch-icon.png')(self.image_pwa)
         self.app.route('/main', methods=['GET', 'POST'])(self.main)
         self.app.route('/history', methods=['POST'], endpoint='history')(lambda: handle_history_request(self.chat_history_manager))
-        self.app.route('/message', methods=['POST'], endpoint='message')(lambda: handle_message_request(self.chat_generator, self.chat_history_manager, config))
-        self.app.route('/image', methods=['POST'], endpoint='image')(lambda: handle_image_request(self.chat_history_manager, config))
+        self.app.route('/message', methods=['POST'], endpoint='message')(lambda: handle_message_request(self.worker, self.chat_history_manager, config))
+        self.app.route('/image', methods=['POST'], endpoint='image')(lambda: handle_image_request(self.worker, self.chat_history_manager, config))
         self.app.route('/audio', methods=['GET', 'POST'], endpoint='audio')(lambda: handle_audio_request())
         self.app.route('/generate_audiobook', methods=['POST'], endpoint='generate_audiobook')(lambda: generate_audiobook())
         self.app.route('/merge_audiobook', methods=['POST'], endpoint='merge_audiobook')(lambda: merge_audiobook())
         self.app.route('/create_project_directory', methods=['POST'], endpoint='create_project')(lambda: create_project_directory())
         self.app.route('/analyze', methods=['POST'], endpoint='textfile')(lambda: handle_textfile_request(self.chat_generator))
         self.app.route('/logout', methods=['GET'])(self.logout)
-        self.app.route('/search', methods=['POST'], endpoint='search')(lambda: handle_search_request())
+        self.app.route('/search', methods=['POST'], endpoint='search')(lambda: handle_search_request(self.worker))
         self.app.route('/subscribe', methods=['POST'], endpoint='subscribe')(lambda: subscribe())
         self.app.route('/send-notification', methods=['POST'], endpoint='send_notification')(lambda: send_notification())
 

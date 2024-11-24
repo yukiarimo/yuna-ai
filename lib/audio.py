@@ -2,11 +2,11 @@ import json
 import os
 import torch
 from pydub import AudioSegment
-from lib.generate import get_config
 import re
 import soundfile as sf
 import io
-config = get_config()
+from aiflow import agi
+config = agi.get_config()
 
 if config['ai']['audio'] == True:
     from transformers import pipeline

@@ -1,0 +1,108 @@
+:root {
+    --theme-color: #00BFA5;
+    --theme-light: #B2DFDB;
+    --theme-dark: #00796B;
+    --theme-text: #FFFFFF;
+}
+
+#popoverContainerYuna {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 350px;
+    background-color: white;
+    border-radius: 15px;
+    display: none;
+    flex-direction: column;
+    z-index: 10000;
+}
+
+#popover-header-yuna {
+    background: linear-gradient(135deg, var(--theme-color), var(--theme-dark));
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+
+#popover-header-yuna h3 {
+    margin: 0;
+    color: var(--theme-text);
+    font-size: 18px;
+}
+
+#heart-yuna {
+    color: var(--theme-light);
+    font-size: 24px;
+    animation: heartbeat 1.5s infinite;
+}
+
+@keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+#closeButton {
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: var(--theme-text);
+    cursor: pointer;
+}
+
+#chatArea {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+.chat-bubble {
+    max-width: 80%;
+    padding: 10px 15px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+    word-wrap: break-word;
+}
+
+.chat-bubble.you {
+    background-color: var(--theme-light);
+    align-self: flex-end;
+    color: #444;
+}
+
+.chat-bubble.yuna {
+    background-color: var(--theme-color);
+    align-self: flex-start;
+    color: var(--theme-text);
+}
+
+.chat-input-area {
+    display: flex;
+    padding: 10px;
+    background-color: var(--theme-light);
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+}
+
+#inputFieldYuna {
+    flex: 1;
+    padding: 10px;
+    border-radius: 20px;
+    border: 2px solid var(--theme-color);
+    outline: none;
+    font-size: 14px;
+}
+
+#submitButton {
+    padding: 10px 15px;
+    margin-left: 10px;
+    background-color: var(--theme-color);
+    border: none;
+    border-radius: 50%;
+    color: var(--theme-text);
+    font-size: 18px;
+    cursor: pointer;
+}

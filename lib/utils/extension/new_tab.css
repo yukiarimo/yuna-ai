@@ -1,0 +1,75 @@
+:root {
+    --kawaii-pink: #FFB7C5;
+    --kawaii-purple: #E6B3FF;
+    --kawaii-blue: #B3E0FF;
+    --kawaii-mint: #B3FFE0;
+    --kawaii-white: #FFF0F5;
+}
+
+body {
+    background: linear-gradient(135deg, var(--kawaii-pink), var(--kawaii-purple));
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    text-align: center;
+    margin-top: 100px;
+}
+
+h1 {
+    color: var(--kawaii-white);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.search-bar {
+    margin-top: 30px;
+}
+
+#searchInput {
+    width: 50%;
+    padding: 15px;
+    border-radius: 25px;
+    border: 3px solid var(--kawaii-pink);
+    font-size: 18px;
+    outline: none;
+}
+
+#searchButton {
+    padding: 15px;
+    border-radius: 50%;
+    border: none;
+    background: var(--kawaii-pink);
+    cursor: pointer;
+    font-size: 20px;
+    margin-left: -50px;
+    color: white;
+}
+
+.bookmarks {
+    margin-top: 50px;
+}
+
+.bookmarks h2 {
+    color: var(--kawaii-white);
+}
+
+#bookmarkList {
+    list-style: none;
+    padding: 0;
+}
+
+#bookmarkList li {
+    margin: 10px 0;
+}
+
+#bookmarkList a {
+    color: var(--kawaii-blue);
+    text-decoration: none;
+    font-size: 18px;
+}
+
+#bookmarkList a:hover {
+    text-decoration: underline;
+}

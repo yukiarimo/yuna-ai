@@ -5,25 +5,15 @@ import re
 import uuid
 from flask import jsonify, request, send_from_directory, Response
 from flask_login import current_user, login_required
-from lib.vision import capture_image
 from lib.audio import stream_generate_speech, transcribe_audio, speak_text
-from lib.generate import get_config
 from pydub import AudioSegment
 from pywebpush import webpush
-config = get_config()
 subscriptions = []
 VAPID_PRIVATE_KEY = "x32JRDsKvbQC3VwkKqYymupvlyccXBKkrwWk1vdb88U"
 VAPID_PUBLIC_KEY = "BLAWDkBakXLWfyQP5zAXR5Dyv4-W1nsRDkUk9Kw9MqKppQCdbsP-yfz7kEpAPvDMy2lszg_SZ9QEC9Uda8mpKSg"
 VAPID_CLAIMS = {
     "sub": "mailto:yukiarimo@gmail.com"  # Change this to your email
 }
-
-if config.get("ai", {}).get("search"):
-    from lib.himitsu import get_html, search_web
-
-def get_user_id():
-    """Helper function to retrieve the current user's ID."""
-    return current_user.get_id()
 
 def update_chat_history(chat_history_manager, user_id, chat_id, text, response, config):
     """Helper function to update chat history."""
@@ -43,7 +33,7 @@ def handle_history_request(chat_history_manager):
     data = request.get_json()
     chat_id = data.get('chat')
     task = data.get('task')
-    user_id = get_user_id()
+    user_id = current_user.get_id()
 
     if task == 'load':
         history = chat_history_manager.load_chat_history(user_id, chat_id)
@@ -77,27 +67,14 @@ def read_users():
     return {'admin': 'admin'}
 
 @login_required
-def handle_message_request(chat_generator, chat_history_manager, config):
+def handle_message_request(worker, chat_history_manager, config):
     data = request.get_json()
-    chat_id = data.get('chat')
-    speech = data.get('speech')
-    text = data.get('text')
-    kanojo = data.get('kanojo')
-    use_history = data.get('useHistory', True)
-    yuna_config = chat_generator.config if data.get('yunaConfig') else None
-    stream = data.get('stream', False)
-    user_id = get_user_id()
+    chat_id, speech, text, kanojo, useHistory, stream = (data.get(key) for key in ('chat', 'speech', 'text', 'kanojo', 'useHistory', 'stream'))
+    yuna_config = worker.config if data.get('yunaConfig') else None
+    user_id = current_user.get_id()
+    chat_history = chat_history_manager.load_chat_history(current_user.get_id(), chat_id)
 
-    response = chat_generator.generate(
-        chat_id,
-        speech,
-        text,
-        kanojo,
-        chat_history_manager,
-        use_history,
-        yuna_config,
-        stream
-    )
+    response = worker.generate_text(text, kanojo, chat_history, useHistory, yuna_config, stream)
 
     if stream:
         def generate_stream():
@@ -106,7 +83,7 @@ def handle_message_request(chat_generator, chat_history_manager, config):
                 response_text += chunk
                 yield chunk
             print("Response text:", response_text)
-            if use_history:
+            if useHistory:
                 update_chat_history(chat_history_manager, user_id, chat_id, text, response_text, config)
                 if speech:
                     if kanojo:
@@ -115,7 +92,7 @@ def handle_message_request(chat_generator, chat_history_manager, config):
                         speak_text(response_text)
         return Response(generate_stream(), mimetype='text/plain')
     else:
-        if use_history:
+        if useHistory:
             update_chat_history(chat_history_manager, user_id, chat_id, text, response, config)
             if speech:
                 speak_text(response)
@@ -143,53 +120,40 @@ def handle_audio_request():
         return jsonify({'error': 'Invalid task'}), 400
 
 @login_required
-def handle_image_request(chat_history_manager, config):
+def handle_image_request(worker, chat_history_manager, config):
     data = request.get_json()
-    chat_id = data.get('chat')
-    use_history = data.get('useHistory', True)
-    speech = data.get('speech', False)
+    chat_id, use_history, speech = (data.get(key) for key in ('chat', 'useHistory', 'speech'))
 
     if data.get('task') == 'caption' and 'image' in data:
-        image_data_url = data['image']
-        # Remove the MIME type and encoding from the start of the Data URL
-        image_base64 = re.sub('^data:image/.+;base64,', '', image_data_url)
-        # Decode the base64 string
-        image_raw_data = base64.b64decode(image_base64)
-        # Save the image with the provided name
-        timestamp = data.get('name')
-        image_path = f"static/img/call/{timestamp}.png"
+        image_base64 = re.sub('^data:image/.+;base64,', '', data['image'])
+        image_path = f"static/img/call/{data.get('name')}.png"
         with open(image_path, "wb") as file:
-            file.write(image_raw_data)
-        image_message, image_path_resp = capture_image(image_path, data.get('message'), use_cpu=False, speech=speech)
+            file.write(base64.b64decode(image_base64))
+        image_message, image_path_resp = worker.capture_image(image_path=image_path, prompt=data.get('message'))
 
-        response = {
-            'message': image_message,
-            'path': image_path_resp
-        }
+        response = {'message': image_message, 'path': image_path_resp}
 
         if use_history:
-            user_id = get_user_id()
-            chat_history_message = f"{data.get('message')}<img src='/static/img/call/{timestamp}.png' class='image-message'>"
+            user_id = current_user.get_id()
+            chat_history_message = f"{data.get('message')}<img src='/static/img/call/{data.get('name')}.png' class='image-message'>"
             update_chat_history(chat_history_manager, user_id, chat_id, chat_history_message, image_message, config)
             if speech:
                 speak_text(image_message)
 
         return jsonify(response)
-    else:
-        return jsonify({'error': 'Invalid task parameter'}), 400
+    return jsonify({'error': 'Invalid task parameter'}), 400
 
 @login_required
-def handle_search_request():
+def handle_search_request(worker):
     data = request.json
     task = data.get('task')
 
     if task == 'html':
-        return jsonify({'response': get_html(data.get('url'))})
+        return jsonify({'response': worker.scrape_webpage(data.get('url'))})
     
     search_query = data.get('query')
-    url = data.get('url')
     process_data = data.get('processData', False)
-    answer, search_results, image_urls = search_web(search_query, url, process_data)
+    answer, search_results, image_urls = worker.web_search(search_query)
 
     return jsonify({
         'message': [answer, search_results],

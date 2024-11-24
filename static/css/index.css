@@ -633,3 +633,23 @@ body {
 .btn-group-sm > .btn {
     padding: 0.25rem 0.5rem;
 }
+
+#main-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+#player-controls {
+    width: 300px;
+    position: fixed;
+    right: 0;
+    top: 0;
+    height: 100%;
+    border-left: 1px solid #dee2e6;
+    background-color: #f8f9fa;
+    padding: 20px;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+}
+.quill-editor {
+    height: 300px;
+}

@@ -1,0 +1,56 @@
+{
+    "manifest_version": 3,
+    "name": "Yuna Ai",
+    "version": "7.0.1",
+    "minimum_chrome_version": "102",
+    "description": "Your Private Companion",
+    "short_name": "Yuna Ai",
+    "author": "Yuki Arimo",
+    "icons": {
+        "16": "yuna-ai-16.png",
+        "32": "yuna-ai-32.png",
+        "48": "yuna-ai-48.png",
+        "128": "yuna-ai-128.png"
+    },
+    "action": {
+        "default_icon": {
+            "16": "yuna-ai-16.png",
+            "32": "yuna-ai-32.png",
+            "48": "yuna-ai-48.png",
+            "128": "yuna-ai-128.png"
+        },
+        "default_popup": "chat_ui.html",
+        "default_title": "Yuna Ai"
+    },
+    "permissions": [
+        "storage",
+        "tabs",
+        "activeTab",
+        "notifications",
+        "contextMenus",
+        "webNavigation",
+        "webRequest",
+        "bookmarks",
+        "downloads"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "content_scripts": [{
+        "matches": ["<all_urls>"],
+        "js": ["chat_ui.js"],
+        "css": ["chat_ui.css"],
+        "run_at": "document_end"
+    }],
+    "web_accessible_resources": [{
+        "resources": ["chat_ui.html", "chat_ui.js", "chat_ui.css", "new_tab.html", "new_tab.js", "new_tab.css", "image.jpg"],
+        "matches": ["<all_urls>"]
+    }],
+    "content_security_policy": {
+        "content_security_policy.extension_pages": "script-src 'self' http: https: data: blob: filesystem:; object-src 'self' http: https: data: blob: filesystem:; img-src * data: blob:; media-src * data: blob:; connect-src * data: blob:;"
+    },
+    "chrome_url_overrides": {
+        "newtab": "new_tab.html"
+    },
+    "incognito": "spanning"
+}

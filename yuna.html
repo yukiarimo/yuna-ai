@@ -809,105 +809,62 @@
                                         </div>
 
                                         <div class="tab-pane fade" id="audiobook" role="tabpanel" aria-labelledby="audiobook-tab">
-                                            <div class="row justify-content-center">
-                                                <div class="col-lg-10">
-                                                    <div class="card shadow-sm">
-                                                        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                                                            <h3 class="card-title mb-0">📚 Audiobook Generator</h3>
-                                                            <div class="d-flex align-items-center">
-                                                                <select class="form-select me-2" id="projectSelect">
-                                                                    <option value="">Select Project</option>
-                                                                </select>
-                                                                <button class="btn btn-light btn-sm me-2" id="newProjectBtn">
-                                                                    <i class="fas fa-plus"></i> New Project
-                                                                </button>
-                                                                <div class="form-check form-switch">
-                                                                    <input class="form-check-input" type="checkbox" id="modeToggle">
-                                                                    <label class="form-check-label" for="modeToggle">Listening Mode</label>
+                                            <div class="container-fluid">
+                                                <div class="row">
+                                                    <!-- Left Side: Controls -->
+                                                    <div class="col-md-4 sidebar" id="audiobook-sidebar">
+                                                        <div class="card bg-dark text-white mb-4">
+                                                            <div class="card-body">
+                                                                <h2 class="card-title">Project Manager</h2>
+                                                                <div class="mb-3">
+                                                                    <label for="projectName" class="form-label text-white">Project Name</label>
+                                                                    <input type="text" class="form-control bg-dark text-white border-secondary" id="projectName" placeholder="Enter project name">
                                                                 </div>
+                                                                <button class="btn btn-outline-primary w-100" id="createProject">Create Project</button>
+                                                                <div class="mb-3 mt-3">
+                                                                    <label for="projectSelect" class="form-label text-white">Select Project</label>
+                                                                    <select class="form-select bg-dark text-white border-secondary mb-3" id="projectSelect">
+                                                                        <option selected>Select Project</option>
+                                                                    </select>
+                                                                    <button class="btn btn-outline-primary w-100" id="loadProject">Load Project</button>
+                                                                </div>
+                                                                <hr class="border-secondary">
+                                        
+                                                                <h3 class="card-title">Chapter Manager</h3>
+                                                                <div class="mb-3">
+                                                                    <label for="chapterName" class="form-label text-white">Chapter Name</label>
+                                                                    <input type="text" class="form-control bg-dark text-white border-secondary" id="chapterName" placeholder="Enter chapter name">
+                                                                </div>
+                                                                <button class="btn btn-outline-primary w-100" id="createChapter">Create Chapter</button>
+                                                                <select class="form-select bg-dark text-white border-secondary mb-3 mt-3" id="chapterSelect">
+                                                                    <option selected>Select Chapter</option>
+                                                                </select>
+                                                                <button class="btn btn-outline-primary w-100" id="loadChapter">Load Chapter</button>
                                                             </div>
                                                         </div>
-                                                        <div class="card-body">
-                                                            <!-- Project Info -->
-                                                            <div class="mb-4" id="projectInfo">
-                                                                <div class="d-flex justify-content-between align-items-center">
-                                                                    <h4 id="currentProject">No Project Selected</h4>
-                                                                    <button class="btn btn-outline-danger btn-sm" id="deleteProjectBtn" disabled>
-                                                                        <i class="fas fa-trash"></i> Delete Project
-                                                                    </button>
+                                                    </div>
+                                        
+                                                    <!-- Right Side: Text Blocks -->
+                                                    <div class="col-md-8">
+                                                        <div class="card bg-dark text-white mb-4">
+                                                            <div class="card-body">
+                                                                <h2 class="card-title">Advanced Text Blocks</h2>
+                                                                <h3 class="card-subtitle mb-3">Select Chapter to Play</h3>
+                                                                <select class="form-select bg-dark text-white border-secondary mb-3" id="playChapterSelect">
+                                                                    <option selected>Select Chapter</option>
+                                                                </select>
+                                                                <div class="mb-3">
+                                                                    <label for="startFrom" class="form-label text-white">Start From Paragraph</label>
+                                                                    <input type="number" class="form-control bg-dark text-white border-secondary" id="startFrom" min="1" placeholder="Enter paragraph number">
                                                                 </div>
-                                                            </div>
+                                                                <button class="btn btn-outline-success w-100 mb-4" id="startPlaying">Start Playing</button>
                                         
-                                                            <!-- Text Input (Visible in Generation Mode) -->
-                                                            <div class="mb-4 generation-mode">
-                                                                <label for="textInput" class="form-label">Enter Your Text</label>
-                                                                <textarea id="textInput" class="form-control" rows="6" placeholder="Enter your text here..."></textarea>
-                                                            </div>
-                                        
-                                                            <!-- Actions -->
-                                                            <div class="d-flex mb-4 generation-mode">
-                                                                <button class="btn btn-success flex-grow-1 me-2" id="speakButton">🎤 Generate Audiobook</button>
-                                                                <button class="btn btn-warning flex-grow-1 me-2" id="mergeButton" disabled>🔀 Merge Chunks</button>
-                                                                <a href="#" class="btn btn-primary flex-grow-1" id="downloadButton" disabled>⬇️ Download Audiobook</a>
-                                                            </div>
-                                        
-                                                            <!-- Progress Bar -->
-                                                            <div class="progress mb-4" style="height: 25px;">
-                                                                <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
-                                                            </div>
-                                        
-                                                            <!-- Status Alert -->
-                                                            <div class="alert alert-info" id="status" role="alert">Status: Idle</div>
-                                        
-                                                            <!-- Audio Player (Enhanced) -->
-                                                            <div class="mt-4 mb-4">
-                                                                <div class="card">
-                                                                    <div class="card-body">
-                                                                        <h5 class="card-title">Enhanced Audio Player</h5>
-                                                                        <div class="audio-player-wrapper">
-                                                                            <audio id="audioPlayer" class="w-100" controls></audio>
-                                                                            <div class="time-slider mt-2">
-                                                                                <input type="range" class="form-range" id="timeSlider" min="0" max="100" value="0">
-                                                                                <div class="d-flex justify-content-between">
-                                                                                    <small id="currentTime">0:00</small>
-                                                                                    <small id="duration">0:00</small>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="btn-group mt-2">
-                                                                                <button class="btn btn-sm btn-outline-secondary" id="playPauseBtn">
-                                                                                    <i class="fas fa-play"></i>
-                                                                                </button>
-                                                                                <button class="btn btn-sm btn-outline-secondary" id="stopBtn">
-                                                                                    <i class="fas fa-stop"></i>
-                                                                                </button>
-                                                                                <button class="btn btn-sm btn-outline-secondary" id="prevChunkBtn">
-                                                                                    <i class="fas fa-step-backward"></i>
-                                                                                </button>
-                                                                                <button class="btn btn-sm btn-outline-secondary" id="nextChunkBtn">
-                                                                                    <i class="fas fa-step-forward"></i>
-                                                                                </button>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
+                                                                <div class="mb-3">
+                                                                    <label for="paragraphText" class="form-label text-white">New Paragraph</label>
+                                                                    <textarea class="form-control bg-dark text-white border-secondary" id="paragraphText" rows="3" placeholder="Enter paragraph text"></textarea>
+                                                                    <button class="btn btn-outline-primary w-100 mt-2" id="addParagraph">Add Paragraph</button>
                                                                 </div>
-                                                            </div>
-                                        
-                                                            <!-- Block List -->
-                                                            <div class="mt-4">
-                                                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                                                    <h5>Audio Chunks</h5>
-                                                                    <div class="btn-group">
-                                                                        <button class="btn btn-sm btn-outline-secondary" id="moveUpBtn" disabled>
-                                                                            <i class="fas fa-arrow-up"></i>
-                                                                        </button>
-                                                                        <button class="btn btn-sm btn-outline-secondary" id="moveDownBtn" disabled>
-                                                                            <i class="fas fa-arrow-down"></i>
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="list-group" id="blockList">
-                                                                    <!-- Blocks will be dynamically added here -->
-                                                                </div>
+                                                                <div id="textBlocks" class="text-white"></div>
                                                             </div>
                                                         </div>
                                                     </div>

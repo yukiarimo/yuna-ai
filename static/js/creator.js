@@ -265,565 +265,425 @@ function parseInlineText(text) {
 }
 
 // Audiobook Generator Enhanced
-class AudiobookProject {
-    constructor(id, name, chunks = [], currentTime = 0) {
-        Object.assign(this, { id, name, chunks, currentTime, path: `static/audio/audiobooks/${id}` });
-    }
+let currentProject = null;
+let currentChapter = null;
 
-    toJSON() {
-        const { id, name, chunks, currentTime } = this;
-        return { id, name, chunks, currentTime };
-    }
-
-    static fromJSON(json) {
-        return new AudiobookProject(json.id, json.name, json.chunks, json.currentTime);
-    }
-}
-
-class AudiobookManager {
-    constructor() {
-        this.projects = new Map();
-        this.loadProjects();
-    }
-
-    createProject(name) {
-        const id = `project_${Date.now()}`;
-        const project = new AudiobookProject(id, name);
-        this.projects.set(id, project);
-        this.saveProjects();
-        return project;
-    }
-
-    loadProjects() {
-        const saved = localStorage.getItem('audiobook_projects');
-        if (saved) {
-            JSON.parse(saved).forEach(p => {
-                this.projects.set(p.id, AudiobookProject.fromJSON(p));
-            });
-        }
-    }
-
-    saveProjects() {
-        const projectsArray = Array.from(this.projects.values()).map(p => p.toJSON());
-        localStorage.setItem('audiobook_projects', JSON.stringify(projectsArray));
-    }
-
-    deleteProject(id) {
-        this.projects.delete(id);
-        this.saveProjects();
-    }
-
-    setCurrentProject(id) {
-        this.currentProject = this.projects.get(id) || null;
-        return this.currentProject;
-    }
-}
-
-class AudiobookGenerator {
-    constructor() {
-        this.manager = new AudiobookManager();
-        this.currentChunkIndex = 0;
-        this.init();
-    }
-
-    init() {
-        this.cacheElements();
-        this.bindEvents();
-        this.loadProjects();
-    }
-
-    cacheElements() {
-        const ids = [
-            'textInput', 'audioPlayer', 'status', 'progressBar', 'blockList', 'mergeButton',
-            'downloadButton', 'speakButton', 'modeToggle', 'projectSelect', 'newProjectBtn',
-            'deleteProjectBtn', 'currentProject', 'timeSlider', 'currentTime', 'duration',
-            'playPauseBtn', 'stopBtn', 'prevChunkBtn', 'nextChunkBtn', 'moveUpBtn', 'moveDownBtn'
-        ];
-        this.elements = {};
-        ids.forEach(id => {
-            this.elements[id] = document.getElementById(id);
-        });
-    }
-
-    bindEvents() {
-        const E = this.elements;
-        // Project Management
-        E.newProjectBtn.addEventListener('click', () => this.createNewProject());
-        E.projectSelect.addEventListener('change', e => this.loadProject(e.target.value));
-        E.deleteProjectBtn.addEventListener('click', () => this.deleteCurrentProject());
-
-        // Audio Controls
-        E.audioPlayer.addEventListener('timeupdate', () => this.updateTimeDisplay());
-        E.audioPlayer.addEventListener('loadedmetadata', () => this.updateDuration());
-        E.timeSlider.addEventListener('input', e => this.seekTo(e.target.value));
-        E.playPauseBtn.addEventListener('click', () => this.togglePlayPause());
-        E.stopBtn.addEventListener('click', () => this.stopPlayback());
-        E.prevChunkBtn.addEventListener('click', () => this.playPreviousChunk());
-        E.nextChunkBtn.addEventListener('click', () => this.playNextChunk());
-
-        // Main Controls
-        E.speakButton.addEventListener('click', () => this.generateSpeech());
-        E.mergeButton.addEventListener('click', () => this.mergeAudioChunks());
-        E.downloadButton.addEventListener('click', () => this.downloadMergedAudio());
-        E.modeToggle.addEventListener('change', () => this.toggleMode());
-
-        // Drag and Drop for Block List
-        E.blockList.addEventListener('dragover', e => this.onDragOver(e));
-        E.blockList.addEventListener('drop', () => this.updateChunksOrder());
-    }
-
-    async createNewProject() {
-        const name = prompt('Enter project name:');
-        if (name) {
-            const project = this.manager.createProject(name);
-            await this.createProjectDirectory(project.id);
-            this.updateProjectsList();
-            this.loadProject(project.id);
-        }
-    }
-
-    async createProjectDirectory(projectId) {
-        await fetch('/create_project_directory', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ project_id: projectId })
-        }).catch(console.error);
-    }
-
-    updateProjectsList() {
-        const { projectSelect } = this.elements;
-        projectSelect.innerHTML = '<option value="">Select Project</option>';
-        this.manager.projects.forEach(project => {
-            const option = new Option(project.name, project.id);
-            projectSelect.add(option);
-        });
-    }
-
-    loadProject(projectId) {
-        const project = this.manager.setCurrentProject(projectId);
-        if (project) {
-            this.elements.currentProject.textContent = project.name;
-            this.elements.deleteProjectBtn.disabled = false;
-            this.loadProjectChunks();
-            this.elements.projectSelect.value = projectId;
-        }
-    }
-
-    async loadProjectChunks() {
-        const { currentProject } = this.manager;
-        if (!currentProject) return;
-        this.elements.blockList.innerHTML = '';
-        currentProject.chunks.forEach(chunk => {
-            this.addBlockToUI(chunk.id, chunk.text, chunk.status);
-        });
-    }
-
-    deleteCurrentProject() {
-        const { currentProject } = this.manager;
-        if (currentProject && confirm(`Delete project "${currentProject.name}"?`)) {
-            this.manager.deleteProject(currentProject.id);
-            this.manager.currentProject = null;
-            this.elements.currentProject.textContent = 'No Project Selected';
-            this.elements.deleteProjectBtn.disabled = true;
-            this.updateProjectsList();
-            this.elements.blockList.innerHTML = '';
-        }
-    }
-
-    updateTimeDisplay() {
-        const { audioPlayer, currentTime, timeSlider } = this.elements;
-        const current = audioPlayer.currentTime;
-        const duration = audioPlayer.duration;
-        currentTime.textContent = this.formatTime(current);
-        timeSlider.value = (current / duration) * 100;
-    }
-
-    updateDuration() {
-        const { audioPlayer, duration } = this.elements;
-        duration.textContent = this.formatTime(audioPlayer.duration);
-    }
-
-    formatTime(seconds) {
-        const minutes = Math.floor(seconds / 60);
-        const secs = Math.floor(seconds % 60).toString().padStart(2, '0');
-        return `${minutes}:${secs}`;
-    }
-
-    seekTo(value) {
-        const { audioPlayer } = this.elements;
-        audioPlayer.currentTime = (value / 100) * audioPlayer.duration;
-    }
-
-    togglePlayPause() {
-        const { audioPlayer, playPauseBtn } = this.elements;
-        if (audioPlayer.paused) {
-            audioPlayer.play();
-            playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-        } else {
-            audioPlayer.pause();
-            playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-        }
-    }
-
-    stopPlayback() {
-        const { audioPlayer, playPauseBtn } = this.elements;
-        audioPlayer.pause();
-        audioPlayer.currentTime = 0;
-        playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-    }
-
-    playPreviousChunk() {
-        if (this.currentChunkIndex > 0) this.playChunk(--this.currentChunkIndex);
-    }
-
-    playNextChunk() {
-        if (this.currentChunkIndex < this.manager.currentProject.chunks.length - 1)
-            this.playChunk(++this.currentChunkIndex);
-    }
-
-    highlightCurrentChunk(id) {
-        const blocks = this.elements.blockList.querySelectorAll('.list-group-item');
-        blocks.forEach(block => {
-            block.classList.toggle('active', block.dataset.id === id);
-        });
-    }
-
-    async sendMessageBook(blockData) {
-        try {
-            this.updateBlockStatus(blockData.id, 'processing');
-            const response = await fetch('/generate_audiobook', {
+// Function to create a project
+document.getElementById('createProject').addEventListener('click', () => {
+    const projectName = document.getElementById('projectName').value;
+    if (projectName) {
+        fetch('/projects', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(blockData)
-            });
-            if (!response.ok) throw new Error(`Server error: ${response.statusText}`);
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder('utf-8');
-            let buffer = '';
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-                buffer += decoder.decode(value, { stream: true });
-                let boundary;
-                while ((boundary = buffer.indexOf('\n')) !== -1) {
-                    const message = buffer.slice(0, boundary);
-                    buffer = buffer.slice(boundary + 1);
-                    if (message) {
-                        const data = JSON.parse(message);
-                        if (data.audio_path && data.id === blockData.id) {
-                            const chunk = this.manager.currentProject.chunks.find(c => c.id === data.id);
-                            if (chunk) {
-                                Object.assign(chunk, { audioPath: data.audio_path, status: 'completed' });
-                                this.updateBlockStatus(data.id, 'completed');
-                            }
-                        }
-                        if (data.status === 'complete') {
-                            this.updateStatus('Audio generation completed.', 'success');
-                            this.elements.mergeButton.disabled = false;
-                        }
-                        this.manager.saveProjects();
-                    }
-                }
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            this.updateBlockStatus(blockData.id, 'failed');
-            throw error;
-        }
-    }
-
-    processText(text) {
-        return text
-            .replace(/\(([^)]+)\)/g, ',$1,')
-            .replace(/\bi\.?e\.?\b/gi, 'that is')
-            .replace(/\be\.?g\.?\b/gi, 'for example')
-            .replace(/\betc\.?\b/gi, 'and so on')
-            .replace(/-/g, ' ')
-            .replace(/:/g, ',')
-            .replace(/["']/g, '')
-            .replace(/\s{2,}/g, ' ')
-            .replace(/,{2,}/g, ',')
-            .replace(/\b[A-Z]{5,}\b/g, word => word.toLowerCase());
-    }
-
-    splitTextIntoChunks(text, maxChars = 400) {
-        const sentences = text.match(/[^.!?]+[.!?]/g) || [text];
-        const chunks = [];
-        let currentChunk = '';
-        sentences.forEach(sentence => {
-            if ((currentChunk + sentence).length <= maxChars) {
-                currentChunk += sentence + ' ';
-            } else {
-                if (currentChunk) chunks.push(currentChunk.trim());
-                currentChunk = sentence + ' ';
-            }
-        });
-        if (currentChunk) chunks.push(currentChunk.trim());
-        return chunks;
-    }
-
-    generateUniqueId() {
-        return `chunk-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-    }
-
-    updateStatus(message, type = 'info') {
-        const { status } = this.elements;
-        status.textContent = `Status: ${message}`;
-        status.className = `alert alert-${type}`;
-        const progress = type === 'success' ? 100 : type === 'danger' ? 0 : 50;
-        this.updateProgressBar(progress);
-    }
-
-    updateProgressBar(progress) {
-        const { progressBar } = this.elements;
-        progressBar.style.width = `${progress}%`;
-        progressBar.textContent = `${progress}%`;
-        progressBar.className = `progress-bar bg-${progress === 100 ? 'success' : progress > 50 ? 'info' : 'warning'}`;
-    }
-
-    updateBlockStatus(id, status) {
-        const block = this.elements.blockList.querySelector(`[data-id="${id}"]`);
-        if (block) {
-            block.dataset.status = status;
-            const badge = block.querySelector('.badge');
-            badge.className = `badge bg-${status === 'completed' ? 'success' : status === 'failed' ? 'danger' : 'warning'} me-2`;
-            badge.textContent = status.charAt(0).toUpperCase() + status.slice(1);
-        }
-    }
-
-    toggleMode() {
-        const { modeToggle, textInput, speakButton } = this.elements;
-        const isListeningMode = modeToggle.checked;
-        textInput.disabled = isListeningMode;
-        speakButton.disabled = isListeningMode;
-        this.updateStatus(isListeningMode ? 'Listening mode activated.' : 'Generation mode activated.', 'info');
-    }
-
-    static init() {
-        new AudiobookGenerator();
-    }
-
-    addBlockToUI(id, text, status = 'pending') {
-        const li = document.createElement('li');
-        li.className = 'list-group-item d-flex justify-content-between align-items-center';
-        Object.assign(li.dataset, { id, text, status });
-        li.draggable = true;
-        li.innerHTML = `
-            <div class="flex-grow-1 me-3">${text}</div>
-            <div class="d-flex align-items-center">
-                <span class="badge bg-${status === 'completed' ? 'success' : status === 'failed' ? 'danger' : 'warning'} me-2">
-                    ${status.charAt(0).toUpperCase() + status.slice(1)}
-                </span>
-                <div class="btn-group btn-group-sm">
-                    <button class="btn btn-outline-primary"><i class="fas fa-play"></i></button>
-                    <button class="btn btn-outline-secondary"><i class="fas fa-edit"></i></button>
-                    <button class="btn btn-outline-warning"><i class="fas fa-sync"></i></button>
-                    <button class="btn btn-outline-danger"><i class="fas fa-trash"></i></button>
-                </div>
-            </div>`;
-        const [playBtn, editBtn, regenBtn, delBtn] = li.querySelectorAll('.btn');
-        playBtn.onclick = () => this.playChunkById(id);
-        editBtn.onclick = () => this.editChunk(id);
-        regenBtn.onclick = () => this.regenerateChunk(id);
-        delBtn.onclick = () => this.deleteChunk(id);
-        li.addEventListener('dragstart', e => {
-            li.classList.add('dragging');
-            e.dataTransfer.setData('text/plain', id);
-        });
-        li.addEventListener('dragend', () => {
-            li.classList.remove('dragging');
-            this.updateChunksOrder();
-        });
-        this.elements.blockList.appendChild(li);
-    }
-
-    playChunkById(id) {
-        const index = this.manager.currentProject.chunks.findIndex(c => c.id === id);
-        if (index !== -1) this.playChunk(index);
-    }
-
-    updateChunksOrder() {
-        const chunks = Array.from(this.elements.blockList.children).map(li => {
-            return this.manager.currentProject.chunks.find(c => c.id === li.dataset.id);
-        });
-        this.manager.currentProject.chunks = chunks;
-        this.manager.saveProjects();
-    }
-
-    async mergeAudioChunks() {
-        const { currentProject } = this.manager;
-        if (!currentProject || currentProject.chunks.length === 0) {
-            alert('No audio chunks available to merge.');
-            return;
-        }
-        this.updateStatus('Merging audio chunks...', 'info');
-        this.elements.mergeButton.disabled = true;
-        try {
-            const response = await fetch('/merge_audiobook', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify({
-                    audio_paths: currentProject.chunks.map(c => c.audioPath),
-                    project_id: currentProject.id
+                    name: projectName
                 })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                updateProjectSelect();
             });
-            if (!response.ok) throw new Error(`Server error: ${response.statusText}`);
-            const data = await response.json();
-            if (data.merged_path) {
-                const { downloadButton } = this.elements;
-                downloadButton.href = data.merged_path;
-                downloadButton.download = `${currentProject.name}_audiobook.mp3`;
-                downloadButton.disabled = false;
-                this.updateStatus('Audio chunks merged successfully.', 'success');
+    } else {
+        alert('Please enter a valid project name.');
+    }
+});
+
+// Function to update project select options
+function updateProjectSelect() {
+    fetch('/projects')
+        .then(response => response.json())
+        .then(data => {
+            const projectSelect = document.getElementById('projectSelect');
+            projectSelect.innerHTML = '<option selected>Select Project</option>';
+            data.projects.forEach(project => {
+                const option = document.createElement('option');
+                option.value = project;
+                option.textContent = project;
+                projectSelect.appendChild(option);
+            });
+
+            // Add project management buttons
+            const projectManagement = document.createElement('div');
+            projectManagement.className = 'mt-2';
+            projectManagement.innerHTML = `
+                    <button class="btn btn-warning btn-sm" onclick="renameProject()">
+                        <i class="bi bi-pencil"></i> Rename Project
+                    </button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteProject()">
+                        <i class="bi bi-trash"></i> Delete Project
+                    </button>
+                `;
+            const existingManagement = document.querySelector('#projectManagement');
+            if (existingManagement) {
+                existingManagement.replaceWith(projectManagement);
             } else {
-                throw new Error('Merging failed.');
+                document.getElementById('loadProject').after(projectManagement);
             }
-        } catch (error) {
-            console.error('Error:', error);
-            this.updateStatus('Failed to merge audio chunks.', 'danger');
-        } finally {
-            this.elements.mergeButton.disabled = false;
-        }
-    }
+        });
+}
 
-    loadProjects() {
-        this.updateProjectsList();
+// Function to load a project
+document.getElementById('loadProject').addEventListener('click', () => {
+    const projectSelect = document.getElementById('projectSelect').value;
+    if (projectSelect !== 'Select Project') {
+        currentProject = projectSelect;
+        updateChapterSelect();
+        alert(`Project "${currentProject}" loaded.`);
+    } else {
+        alert('Please select a project to load.');
     }
+});
 
-    async regenerateChunk(id) {
-        const chunk = this.manager.currentProject.chunks.find(c => c.id === id);
-        if (!chunk) return;
-        try {
-            this.updateStatus(`Regenerating chunk: ${chunk.text.substring(0, 30)}...`, 'info');
-            this.updateBlockStatus(id, 'pending');
-            const blockData = {
-                id: chunk.id,
-                text: chunk.text,
-                status: 'pending',
-                projectPath: `audiobooks/${this.manager.currentProject.id}`
-            };
-            await this.sendMessageBook(blockData);
-            this.updateStatus('Chunk regenerated successfully.', 'success');
-        } catch (error) {
-            console.error('Error regenerating chunk:', error);
-            this.updateStatus('Failed to regenerate chunk.', 'danger');
-            this.updateBlockStatus(id, 'failed');
-        }
+// Function to create a chapter
+document.getElementById('createChapter').addEventListener('click', () => {
+    const chapterName = document.getElementById('chapterName').value;
+    if (currentProject && chapterName) {
+        fetch(`/projects/${currentProject}/chapters`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: chapterName
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                updateChapterSelect();
+            });
+    } else {
+        alert('Please enter a valid chapter name and select a project.');
     }
+});
 
-    async editChunk(id) {
-        const chunk = this.manager.currentProject.chunks.find(c => c.id === id);
-        if (!chunk) return;
-        const newText = prompt('Edit text:', chunk.text);
-        if (newText && newText !== chunk.text) {
-            chunk.text = this.processText(newText.trim());
-            this.updateBlockUI(id, chunk.text);
-            await this.regenerateChunk(id);
-        }
-    }
+// Function to update chapter select options
+function updateChapterSelect() {
+    fetch(`/projects/${currentProject}/chapters`)
+        .then(response => response.json())
+        .then(data => {
+            const chapterSelect = document.getElementById('chapterSelect');
+            chapterSelect.innerHTML = '<option selected>Select Chapter</option>';
 
-    updateBlockUI(id, text) {
-        const block = this.elements.blockList.querySelector(`[data-id="${id}"]`);
-        if (block) {
-            block.querySelector('.flex-grow-1').textContent = text;
-        }
-    }
+            // Update both selects and add download buttons
+            [chapterSelect, document.getElementById('playChapterSelect')].forEach(select => {
+                select.innerHTML = '<option selected>Select Chapter</option>';
+                data.chapters.forEach(chapter => {
+                    const option = document.createElement('option');
+                    option.value = chapter;
+                    option.textContent = chapter;
+                    select.appendChild(option);
+                });
+            });
 
-    deleteChunk(id) {
-        if (confirm('Are you sure you want to delete this chunk?')) {
-            this.manager.currentProject.chunks = this.manager.currentProject.chunks.filter(c => c.id !== id);
-            this.elements.blockList.querySelector(`[data-id="${id}"]`)?.remove();
-            this.manager.saveProjects();
-        }
-    }
-
-    async playChunk(index) {
-        const chunk = this.manager.currentProject.chunks[index];
-        if (!chunk) return;
-        this.currentChunkIndex = index;
-        try {
-            const { audioPlayer, playPauseBtn } = this.elements;
-            audioPlayer.pause();
-            this.highlightCurrentChunk(chunk.id);
-            this.updateStatus(`Loading chunk ${index + 1}/${this.manager.currentProject.chunks.length}...`, 'info');
-            audioPlayer.src = chunk.audioPath;
-            await audioPlayer.play();
-            playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-            this.updateStatus(`Playing chunk ${index + 1}/${this.manager.currentProject.chunks.length}`, 'info');
-            audioPlayer.onended = () => {
-                if (this.currentChunkIndex < this.manager.currentProject.chunks.length - 1) {
-                    this.playChunk(++this.currentChunkIndex);
-                } else {
-                    this.updateStatus('Playback completed', 'success');
-                    playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-                }
-            };
-        } catch (error) {
-            console.error('Error playing chunk:', error);
-            this.updateStatus('Failed to play chunk', 'danger');
-        }
-    }
-
-    async generateSpeech() {
-        if (!this.manager.currentProject) {
-            alert('Please select or create a project first.');
-            return;
-        }
-        let text = this.elements.textInput.value.trim();
-        if (!text) {
-            alert('Please enter some text to generate speech.');
-            return;
-        }
-        text = this.processText(text);
-        this.elements.blockList.innerHTML = '';
-        this.elements.downloadButton.disabled = true;
-        this.elements.mergeButton.disabled = true;
-        this.updateStatus('Processing text...', 'info');
-        const chunks = this.splitTextIntoChunks(text);
-        const projectPath = `audiobooks/${this.manager.currentProject.id}`;
-        this.manager.currentProject.chunks = [];
-        for (let i = 0; i < chunks.length; i++) {
-            const chunk = chunks[i];
-            const id = this.generateUniqueId();
-            const blockData = { id, text: chunk, status: 'pending', projectPath };
-            this.manager.currentProject.chunks.push(blockData);
-            this.addBlockToUI(id, chunk);
-            try {
-                this.updateStatus(`Generating chunk ${i + 1}/${chunks.length}...`, 'info');
-                await this.sendMessageBook(blockData);
-                if (i === 0 && blockData.status === 'completed') this.playChunk(0);
-            } catch (error) {
-                console.error('Error generating speech for chunk:', error);
-                this.updateStatus(`Failed to generate chunk ${i + 1}`, 'danger');
+            // Add download buttons container if it doesn't exist
+            if (!document.getElementById('downloadButtons')) {
+                const buttonContainer = document.createElement('div');
+                buttonContainer.id = 'downloadButtons';
+                buttonContainer.className = 'mt-3';
+                buttonContainer.innerHTML = `
+                        <button class="btn btn-primary" onclick="downloadChapter()">
+                            <i class="bi bi-download"></i> Download Current Chapter
+                        </button>
+                        <button class="btn btn-primary" onclick="downloadProject()">
+                            <i class="bi bi-download"></i> Download Entire Project
+                        </button>
+                    `;
+                document.querySelector('#audiobook-sidebar').appendChild(buttonContainer);
             }
-        }
-        this.manager.saveProjects();
-        this.elements.mergeButton.disabled = false;
-        this.updateStatus('All chunks generated successfully', 'success');
-    }
 
-    onDragOver(e) {
-        e.preventDefault();
-        const { blockList } = this.elements;
-        const afterElement = this.getDragAfterElement(blockList, e.clientY);
-        const draggable = document.querySelector('.dragging');
-        if (afterElement) {
-            blockList.insertBefore(draggable, afterElement);
-        } else {
-            blockList.appendChild(draggable);
-        }
-    }
+            const chapterManagement = document.createElement('div');
+            chapterManagement.className = 'mt-2';
+            chapterManagement.innerHTML = `
+                    <button class="btn btn-warning btn-sm" onclick="renameChapter()">
+                        <i class="bi bi-pencil"></i> Rename Chapter
+                    </button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteChapter()">
+                        <i class="bi bi-trash"></i> Delete Chapter
+                    </button>
+                `;
+            const existingManagement = document.querySelector('#chapterManagement');
+            if (existingManagement) {
+                existingManagement.replaceWith(chapterManagement);
+            } else {
+                document.getElementById('loadChapter').after(chapterManagement);
+            }
+        });
+}
 
-    getDragAfterElement(container, y) {
-        const elements = [...container.querySelectorAll('.list-group-item:not(.dragging)')];
-        return elements.reduce((closest, child) => {
-            const box = child.getBoundingClientRect();
-            const offset = y - box.top - box.height / 2;
-            return offset < 0 && offset > closest.offset ? { offset, element: child } : closest;
-        }, { offset: Number.NEGATIVE_INFINITY }).element;
+// Function to load a chapter
+document.getElementById('loadChapter').addEventListener('click', () => {
+    const chapterSelectValue = document.getElementById('chapterSelect').value;
+    if (chapterSelectValue !== 'Select Chapter') {
+        currentChapter = chapterSelectValue;
+        fetch(`/projects/${currentProject}/chapters/${currentChapter}`)
+            .then(response => response.json())
+            .then(data => {
+                loadChapter(data.paragraphs);
+            });
+    } else {
+        alert('Please select a chapter to load.');
+    }
+});
+
+// Function to load a chapter and display its paragraphs
+function loadChapter(paragraphs) {
+    const textBlocksContainer = document.getElementById('textBlocks');
+    textBlocksContainer.innerHTML = '';
+    paragraphs.forEach((paragraph, index) => {
+        const textBlock = createTextBlock(paragraph, index + 1);
+        textBlocksContainer.appendChild(textBlock);
+    });
+}
+
+// Function to create a text block element
+function createTextBlock(paragraph, index) {
+    const div = document.createElement('div');
+    div.className = 'text-block d-flex justify-content-between align-items-center mb-3 p-3 border';
+    div.innerHTML = `
+                <div class="d-flex align-items-center">
+                    <span class="badge bg-secondary me-2">#${index}</span>
+                    <span>${paragraph.text}</span>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-success btn-sm" onclick="playParagraph('${paragraph.audio_url}', ${index})">
+                        <i class="bi bi-play-fill"></i> Play
+                    </button>
+                    <button class="btn btn-primary btn-sm" onclick="downloadParagraph(${index})">
+                        <i class="bi bi-download"></i> Download
+                    </button>
+                    <button class="btn btn-warning btn-sm" onclick="regenerateText(${index})">
+                        <i class="bi bi-arrow-clockwise"></i> Regenerate
+                    </button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteText(${index})">
+                        <i class="bi bi-trash"></i> Delete
+                    </button>
+                </div>
+            `;
+    return div;
+}
+
+// Function to regenerate text
+function regenerateText(index) {
+    const newText = prompt('Enter new text:');
+    if (newText) {
+        fetch(`/projects/${currentProject}/chapters/${currentChapter}/paragraphs/${index}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    text: newText,
+                    id: `${currentProject}_${currentChapter}_${index}`
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                loadChapter(data.paragraphs);
+            });
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    AudiobookGenerator.init();
+// Function to delete a text block
+function deleteText(index) {
+    fetch(`/projects/${currentProject}/chapters/${currentChapter}/paragraphs/${index}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            loadChapter(data.paragraphs);
+        });
+}
+
+function playParagraph(audioUrl, index) {
+    if (audioUrl) {
+        const audio = new Audio(audioUrl);
+        audio.play();
+    } else {
+        // Generate audio if it doesn't exist
+        fetch('/speak', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    text: currentParagraphs[index - 1].text,
+                    project: currentProject,
+                    chapter: currentChapter,
+                    paragraph: index
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const audio = new Audio(data.audio_url);
+                audio.play();
+                // Update the stored audio URL
+                currentParagraphs[index - 1].audio_url = data.audio_url;
+            });
+    }
+}
+
+// Function to start playing a selected chapter from a specific paragraph
+document.getElementById('startPlaying').addEventListener('click', () => {
+    const chapterSelectValue = document.getElementById('playChapterSelect').value;
+    const startFrom = parseInt(document.getElementById('startFrom').value) || 1;
+
+    if (chapterSelectValue !== 'Select Chapter') {
+        fetch(`/projects/${currentProject}/chapters/${chapterSelectValue}`)
+            .then(response => response.json())
+            .then(data => {
+                const paragraphs = data.paragraphs.slice(startFrom - 1);
+                playParagraphsSequentially(paragraphs, 0);
+            });
+    } else {
+        alert('Please select a chapter to play.');
+    }
 });
+
+function playParagraphsSequentially(paragraphs, index) {
+    if (index >= paragraphs.length) return;
+
+    const audio = new Audio(paragraphs[index].audio_url);
+    audio.onended = () => playParagraphsSequentially(paragraphs, index + 1);
+    audio.play();
+}
+
+document.getElementById('addParagraph').addEventListener('click', () => {
+    const text = document.getElementById('paragraphText').value;
+    if (currentProject && currentChapter && text) {
+        fetch(`/projects/${currentProject}/chapters/${currentChapter}/paragraphs`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    text: text
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('paragraphText').value = '';
+                loadChapter(data.paragraphs);
+            });
+    } else {
+        alert('Please select a project and chapter first, and enter some text.');
+    }
+});
+
+function downloadParagraph(index) {
+    window.location.href = `/download/paragraph/${currentProject}/${currentChapter}/${index}`;
+}
+
+function downloadChapter() {
+    if (currentChapter) {
+        window.location.href = `/download/chapter/${currentProject}/${currentChapter}`;
+    } else {
+        alert('Please select a chapter first.');
+    }
+}
+
+function downloadProject() {
+    if (currentProject) {
+        window.location.href = `/download/project/${currentProject}`;
+    } else {
+        alert('Please select a project first.');
+    }
+}
+
+function deleteProject() {
+    if (!currentProject) {
+        alert('Please select a project first.');
+        return;
+    }
+
+    if (confirm(`Are you sure you want to delete project "${currentProject}"?`)) {
+        fetch(`/projects/${currentProject}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                currentProject = null;
+                updateProjectSelect();
+                document.getElementById('textBlocks').innerHTML = '';
+            });
+    }
+}
+
+function renameProject() {
+    if (!currentProject) {
+        alert('Please select a project first.');
+        return;
+    }
+
+    const newName = prompt('Enter new project name:', currentProject);
+    if (newName && newName !== currentProject) {
+        fetch(`/projects/${currentProject}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: newName
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                currentProject = newName;
+                updateProjectSelect();
+            });
+    }
+}
+
+function deleteChapter() {
+    if (!currentProject || !currentChapter) {
+        alert('Please select a project and chapter first.');
+        return;
+    }
+
+    if (confirm(`Are you sure you want to delete chapter "${currentChapter}"?`)) {
+        fetch(`/projects/${currentProject}/chapters/${currentChapter}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                currentChapter = null;
+                updateChapterSelect();
+                document.getElementById('textBlocks').innerHTML = '';
+            });
+    }
+}
+
+function renameChapter() {
+    if (!currentProject || !currentChapter) {
+        alert('Please select a project and chapter first.');
+        return;
+    }
+
+    const newName = prompt('Enter new chapter name:', currentChapter);
+    if (newName && newName !== currentChapter) {
+        fetch(`/projects/${currentProject}/chapters/${currentChapter}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: newName
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                currentChapter = newName;
+                updateChapterSelect();
+            });
+    }
+}
+
+// Initialize the project select options on page load
+updateProjectSelect();

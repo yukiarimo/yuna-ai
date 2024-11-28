@@ -1,12 +1,13 @@
 import json
 import os
+import uuid
 import torch
 from pydub import AudioSegment
-from lib.generate import get_config
 import re
 import soundfile as sf
 import io
-config = get_config()
+from aiflow import agi
+config = agi.get_config()
 
 if config['ai']['audio'] == True:
     from transformers import pipeline
@@ -63,78 +64,29 @@ if config['server']['yuna_audio_mode'] == "native":
 
 def transcribe_audio(audio_file): return yunaListen(audio_file, chunk_length_s=30, batch_size=40, return_timestamps=False)['text']
 
-def speak_text(text, reference_audio=config['server']['yuna_reference_audio'], mode=config['server']['yuna_audio_mode']):
-    def export_audio(input_file):
-        audio = AudioSegment.from_file(input_file)
-        audio.export("static/audio/audio.mp3", format="mp3")
-
-    if mode == "siri":
-        os.system(f'say -o static/audio/audio.aiff {repr(text)}')
-        export_audio("static/audio/audio.aiff")
-
-    elif mode == "siri-pv":
-        os.system(f'say -v {reference_audio} -o static/audio/audio.aiff {repr(text)}')
-        export_audio("static/audio/audio.aiff")
-
-    elif mode == "native":
-        params.update({
-            "text": text,
-            "ref_audio_path": f"static/audio/{reference_audio}",
-        })
-
-        with torch.no_grad():
-            tts_generator = tts_pipeline.run(params)
-            sr, audio_data = next(tts_generator)
-            buffer = io.BytesIO()
-            sf.write(buffer, audio_data, sr, format='WAV')
-            buffer.seek(0)
-            export_audio(buffer)
-
-    elif mode == "11labs":
-        client = ElevenLabs(api_key=config['security']['11labs_key'])
-        audio_bytes = b''.join(client.generate(text=text, voice="Yuna Instant", voice_settings=VoiceSettings(stability=0.40, similarity_boost=0.98, style=0.35, use_speaker_boost=True), model="eleven_multilingual_v2"))
-        with open("static/audio/audio.mp3", "wb") as f: f.write(audio_bytes)
-
-# Generator Function Module
-def stream_generate_speech(text, id, output_path):
-    sentences = re.split('(?<=[.!?]) +', text)
-    chunks, current_chunk = [], ""
-    
-    for sentence in sentences:
-        if len(current_chunk) + len(sentence) <= 400:
-            current_chunk += sentence + " "
+def speak_text(text, project=None, chapter=None, paragraph=None, mode='siri'):
+    # Create directory structure if it doesn't exist
+    if project and chapter:
+        audio_dir = f"static/audio/audiobooks/{project}/{chapter}"
+        os.makedirs(audio_dir, exist_ok=True)
+        
+        # Use paragraph number in filename if provided
+        if paragraph:
+            output_filename = f"{audio_dir}/paragraph_{paragraph}.mp3"
         else:
-            if current_chunk:
-                chunks.append(current_chunk.strip())
-            current_chunk = sentence + " "
-    if current_chunk:
-        chunks.append(current_chunk.strip())
-    
-    with torch.no_grad():
-        for index, chunk in enumerate(chunks):
-            params["text"] = chunk
-            tts_generator = tts_pipeline.run(params)
-            sr, audio_data = next(tts_generator)
-            
-            # Generate filenames with project path
-            wav_filename = f"chunk_{id}_{index}.wav"
-            mp3_filename = f"chunk_{id}_{index}.mp3"
-            wav_path = os.path.join(output_path, wav_filename)
-            mp3_path = os.path.join(output_path, mp3_filename)
-            
-            # Save audio files
-            sf.write(wav_path, audio_data, sr)
-            audio = AudioSegment.from_wav(wav_path)
-            audio.export(mp3_path, format='mp3')
-            
-            # Clean up WAV file
-            os.remove(wav_path)
-            
-            yield json.dumps({
-                'id': id,
-                'audio_path': mp3_path,
-                'chunk_index': index,
-                'total_chunks': len(chunks)
-            }) + '\n'
-    
-    yield json.dumps({'status': 'complete'}) + '\n'
+            output_filename = f"{audio_dir}/full_chapter.mp3"
+    else:
+        output_filename = f"static/audio/{uuid.uuid4()}.mp3"
+
+    # Check if audio file already exists
+    if os.path.exists(output_filename):
+        return '/' + output_filename
+
+    mode = 'siri'
+    if mode == "siri":
+        os.system(f'say -o temp.aiff {repr(text)}')
+        audio = AudioSegment.from_file("temp.aiff")
+        audio.export(output_filename, format="mp3")
+        os.remove("temp.aiff")
+
+    return '/' + output_filename

@@ -81,6 +81,11 @@ const checkConfigData = async () => {
 !config_data && setTimeout(checkConfigData, 100);
 setTimeout(openConfigParams, 300);
 
+if (window.innerWidth <= 440) {
+  document.querySelectorAll('.side-link').forEach(link => link.addEventListener('click', () => toggleSidebar()));
+  toggleSidebar(); // Toggle sidebar when the site first loads for mobile
+}
+
 // Event Listeners
 document.addEventListener("keydown", event => {
   const active = document.activeElement.tagName;
@@ -116,10 +121,8 @@ const callYuna = {
 
 // Sidebar and Tabs
 const navSidebar = document.getElementsByClassName('side-link');
-const scrollToTop = document.querySelector('.scroll-to-top');
 [...navSidebar].forEach((link, i) => {
   link.addEventListener('click', () => {
-    scrollToTop.style.display = i === 0 ? 'none' : 'flex';
     [...navSidebar].forEach(l => l.classList.remove('active'));
     link.classList.add('active');
   });

@@ -1,14 +1,1 @@
-{
-  "test": {
-    "chapters": {
-      "1": [
-        {
-          "id": "test_1_1",
-          "text": "Hey there!",
-          "audio_url": "/static/audio/audiobooks/test/1/paragraph_1.mp3",
-          "number": 1
-        }
-      ]
-    }
-  }
-}
+{}

@@ -1,15 +1,13 @@
 // Constants for localStorage keys
 const STORAGE_KEYS = {
     entries: 'diaryEntries',
-    notes: 'diaryNotes',
-    schedules: 'diarySchedules'
+    notes: 'diaryNotes'
 };
 
 // Data storage
 let data = {
     entries: JSON.parse(localStorage.getItem(STORAGE_KEYS.entries)) || [],
-    notes: JSON.parse(localStorage.getItem(STORAGE_KEYS.notes)) || [],
-    schedules: JSON.parse(localStorage.getItem(STORAGE_KEYS.schedules)) || []
+    notes: JSON.parse(localStorage.getItem(STORAGE_KEYS.notes)) || []
 };
 
 // Get Time of Day
@@ -25,9 +23,7 @@ function categorizeEntries(entries) {
     return entries.reduce((acc, entry) => {
         const date = new Date(entry.date);
         const year = date.getFullYear();
-        const month = date.toLocaleString('default', {
-            month: 'long'
-        });
+        const month = date.toLocaleString('default', { month: 'long' });
         const week = Math.ceil(date.getDate() / 7);
         const day = date.getDate();
         const timeOfDay = getTimeOfDay(date.getHours());
@@ -66,7 +62,6 @@ const displayFunctions = {
                                             <h5 class="card-title">${escapeHTML(entry.title)}</h5>
                                             <h6 class="card-subtitle mb-2 text-muted">${new Date(entry.date).toLocaleString()}</h6>
                                             <p class="card-text">${escapeHTML(entry.text)}</p>
-                                            ${entry.image ? `<img src="${entry.image}" alt="Entry image" class="img-fluid">` : ''}
                                             <button class="btn btn-danger btn-sm mt-2" onclick="deleteItem('entries', ${entry.id})">
                                                 <i class="bi bi-trash"></i> Delete
                                             </button>
@@ -107,27 +102,6 @@ const displayFunctions = {
         });
 
         container.innerHTML = html;
-    },
-    schedules: () => {
-        const container = document.getElementById('schedule-container');
-        let sortedSchedules = [...data.schedules].sort((a, b) => new Date(a.time) - new Date(b.time));
-        let html = '';
-
-        sortedSchedules.forEach(schedule => {
-            html += `
-                <div class="schedule card mb-3">
-                    <div class="card-body">
-                        <h5 class="card-title">${escapeHTML(schedule.title)}</h5>
-                        <h6 class="card-subtitle mb-2 text-muted">${new Date(schedule.time).toLocaleString()}</h6>
-                        <button class="btn btn-danger btn-sm mt-2" onclick="deleteItem('schedules', ${schedule.id})">
-                            <i class="bi bi-trash"></i> Delete
-                        </button>
-                    </div>
-                </div>
-            `;
-        });
-
-        container.innerHTML = html;
     }
 };
 
@@ -146,12 +120,11 @@ function escapeHTML(str) {
 }
 
 // Initial Display
-['entries', 'notes', 'schedules'].forEach(displayType => displayFunctions[displayType]());
+['entries', 'notes'].forEach(displayType => displayFunctions[displayType]());
 
 // Event Listeners
 document.getElementById('entry-form').addEventListener('submit', e => handleSubmit(e, 'entries'));
 document.getElementById('note-form').addEventListener('submit', e => handleSubmit(e, 'notes'));
-document.getElementById('schedule-form').addEventListener('submit', e => handleSubmit(e, 'schedules'));
 
 // Handle Form Submissions
 function handleSubmit(e, type) {
@@ -159,44 +132,20 @@ function handleSubmit(e, type) {
     const form = e.target;
     const formData = new FormData(form);
     const id = Date.now();
-    let item = {
-        id
-    };
+    let item = { id };
 
-    // Process form data based on type
     for (let [key, value] of formData.entries()) {
-        if (type === 'entries' && key === 'image' && value) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                item.image = reader.result;
-                finalizeItemSubmission(type, item, form);
-            };
-            reader.readAsDataURL(value);
-            return; // Wait for the image to be read before saving
-        } else if (type === 'schedules' && key === 'time') {
-            item.time = new Date(value).toISOString();
-        } else if (type === 'entries' && key === 'date') {
+        if (type === 'entries' && key === 'date') {
             item.date = new Date(value).toISOString();
-        } else if (type === 'notes') {
-            // For notes, we'll handle the date separately
-            item[key] = value.trim();
         } else {
             item[key] = value.trim();
         }
     }
 
-    // For notes, set the current date
     if (type === 'notes') {
         item.date = new Date().toISOString();
     }
 
-    if (validateForm(type, item)) {
-        saveItem(type, item);
-    }
-}
-
-// Finalize Item Submission (for handling images)
-function finalizeItemSubmission(type, item, form) {
     if (validateForm(type, item)) {
         saveItem(type, item);
     }
@@ -209,8 +158,6 @@ function validateForm(type, item) {
             return item.title && item.text && item.date;
         case 'notes':
             return item.title && item.text && item.date;
-        case 'schedules':
-            return item.title && item.time;
         default:
             return false;
     }
@@ -234,16 +181,10 @@ function deleteItem(type, id) {
 // Clear Forms
 function formReset(type) {
     const forms = {
-        entries: ['entry-title', 'entry-text', 'entry-date', 'entry-image'],
-        notes: ['note-title', 'note-text'],
-        schedules: ['schedule-title', 'schedule-time']
+        entries: ['entry-title', 'entry-text', 'entry-date'],
+        notes: ['note-title', 'note-text']
     };
     forms[type].forEach(id => {
-        const input = document.getElementById(id);
-        if (input.type === 'file') {
-            input.value = ''; // Clear file inputs differently
-        } else {
-            input.value = '';
-        }
+        document.getElementById(id).value = '';
     });
 }

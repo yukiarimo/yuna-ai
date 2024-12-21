@@ -1,7 +1,7 @@
 import shutil
-from flask import Flask, request, jsonify, send_from_directory, redirect, url_for
+from flask import Flask, request, send_from_directory, redirect, url_for
 from flask_login import LoginManager, UserMixin, login_required, logout_user, login_user, current_user, login_manager
-from lib.router import handle_history_request, handle_image_request, handle_message_request, handle_audio_request, services, handle_search_request, handle_textfile_request, subscribe, send_notification, get_projects, create_project, get_chapters, create_chapter, get_chapter, update_paragraph, delete_paragraph, speak, create_paragraph, download_paragraph, download_chapter, download_project, delete_project, rename_project, delete_chapter, rename_chapter
+from lib.router import handle_history_request, handle_image_request, handle_message_request, handle_audio_request, handle_search_request, handle_textfile_request, subscribe, send_notification, get_projects, create_project, get_chapters, create_chapter, get_chapter, update_paragraph, delete_paragraph, speak, create_paragraph, download_paragraph, download_chapter, download_project, delete_project, rename_project, delete_chapter, rename_chapter
 from lib.history import ChatHistoryManager
 from flask_cors import CORS
 import json
@@ -71,22 +71,20 @@ class YunaServer:
         self.app.route('/<path:filename>')(self.custom_static)
         self.app.route('/yuna')(self.yuna_server)
         self.app.route('/yuna.html')(self.yuna_server)
-        self.app.route('/services.html', methods=['GET'], endpoint='services')(lambda: services(self))
         self.app.route('/apple-touch-icon.png')(self.image_pwa)
         self.app.route('/main', methods=['GET', 'POST'])(self.main)
-        #self.app.route('/speak', methods=['POST'], endpoint='generate_audio')(generate_audio)
         self.app.route('/history', methods=['POST'], endpoint='history')(lambda: handle_history_request(self.chat_history_manager))
         self.app.route('/message', methods=['POST'], endpoint='message')(lambda: handle_message_request(self.worker, self.chat_history_manager, config))
         self.app.route('/image', methods=['POST'], endpoint='image')(lambda: handle_image_request(self.worker, self.chat_history_manager, config))
-        self.app.route('/audio', methods=['GET', 'POST'], endpoint='audio')(lambda: handle_audio_request())
+        self.app.route('/audio', methods=['GET', 'POST'], endpoint='audio')(lambda: handle_audio_request(self.worker))
         self.app.route('/projects', methods=['GET'], endpoint='get_project')(lambda: get_projects())
         self.app.route('/projects', methods=['POST'], endpoint='create_project')(lambda: create_project())
         self.app.route('/projects/<project_name>/chapters', methods=['GET'], endpoint='get_chapters')(lambda project_name: get_chapters(project_name))
         self.app.route('/projects/<project_name>/chapters', methods=['POST'], endpoint='create_chapter')(lambda project_name: create_chapter(project_name))
         self.app.route('/projects/<project_name>/chapters/<chapter_name>', methods=['GET'], endpoint='get_chapter')(lambda project_name, chapter_name: get_chapter(project_name, chapter_name))
-        self.app.route('/projects/<project_name>/chapters/<chapter_name>/paragraphs/<int:index>', methods=['PUT'], endpoint='update_paragraph')(lambda project_name, chapter_name, index: update_paragraph(project_name, chapter_name, index))
+        self.app.route('/projects/<project_name>/chapters/<chapter_name>/paragraphs/<int:index>', methods=['PUT'], endpoint='update_paragraph')(lambda project_name, chapter_name, index: update_paragraph(self.worker, project_name, chapter_name, index))
         self.app.route('/projects/<project_name>/chapters/<chapter_name>/paragraphs/<int:index>', methods=['DELETE'], endpoint='delete_paragraph')(lambda project_name, chapter_name, index: delete_paragraph(project_name, chapter_name, index))
-        self.app.route('/projects/<project_name>/chapters/<chapter_name>/paragraphs', methods=['POST'], endpoint='create_paragraph')(lambda project_name, chapter_name: create_paragraph(project_name, chapter_name))
+        self.app.route('/projects/<project_name>/chapters/<chapter_name>/paragraphs', methods=['POST'], endpoint='create_paragraph')(lambda project_name, chapter_name: create_paragraph(self.worker, project_name, chapter_name))
         self.app.route('/download/paragraph/<project>/<chapter>/<int:index>', methods=['GET'], endpoint='download_paragraph')(lambda project, chapter, index: download_paragraph(project, chapter, index))
         self.app.route('/download/chapter/<project>/<chapter>', methods=['GET'], endpoint='download_chapter')(lambda project, chapter: download_chapter(project, chapter))
         self.app.route('/download/project/<project>', methods=['GET'], endpoint='download_project')(lambda project: download_project(project))
@@ -94,7 +92,7 @@ class YunaServer:
         self.app.route('/projects/<project_name>', methods=['PUT'], endpoint='rename_project')(lambda project_name: rename_project(project_name))
         self.app.route('/projects/<project_name>/chapters/<chapter_name>', methods=['DELETE'], endpoint='delete_chapter')(lambda project_name, chapter_name: delete_chapter(project_name, chapter_name))
         self.app.route('/projects/<project_name>/chapters/<chapter_name>', methods=['PUT'], endpoint='rename_chapter')(lambda project_name, chapter_name: rename_chapter(project_name, chapter_name))
-        self.app.route('/speak', methods=['POST'], endpoint='speak')(lambda: speak())        
+        self.app.route('/speak', methods=['POST'], endpoint='speak')(lambda: speak(self.worker))        
         self.app.route('/analyze', methods=['POST'], endpoint='textfile')(lambda: handle_textfile_request(self.chat_generator))
         self.app.route('/logout', methods=['GET'])(self.logout)
         self.app.route('/search', methods=['POST'], endpoint='search')(lambda: handle_search_request(self.worker))

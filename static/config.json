@@ -8,9 +8,9 @@
         "search": false,
         "audio": false,
         "mind": false,
-        "voice": true,
+        "voice": false,
         "max_new_tokens": 1024,
-        "context_length": 8192,
+        "context_length": 16384,
         "temperature": 0.7,
         "repetition_penalty": 1.11,
         "last_n_tokens_size": 128,
@@ -23,7 +23,7 @@
         "gpu_layers": -1,
         "use_mmap": false,
         "flash_attn": true,
-        "use_mlock": false,
+        "use_mlock": true,
         "offload_kqv": true
     },
     "server": {
@@ -37,8 +37,8 @@
         "voice_model_config": ["YunaAi-e200.ckpt", "YunaAi_e65_s2925.pth"],
         "device": "mps",
         "yuna_text_mode": "koboldcpp",
-        "yuna_audio_mode": "native",
-        "yuna_reference_audio": "reference.wav"
+        "yuna_audio_mode": "siri",
+        "yuna_reference_audio": "static/audio/reference.wav"
     },
     "settings": {
         "pseudo_api": false,

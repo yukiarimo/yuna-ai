@@ -3,7 +3,7 @@ __pycache__/
 !static/audio/audiobooks/README.md
 !static/audio/sfx/*
 !static/text/README.md
-!static/img/call/image_template.jpg
+!static/img/call/README.md
 !lib/utils/models/agi/README.md
 !lib/utils/models/agi/audio/README.md
 !lib/utils/models/agi/miru/README.md

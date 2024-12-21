@@ -19,7 +19,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:description" content="Your Private Companion">
     <meta name="apple-touch-fullscreen" content="yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <script type="application/ld+json">
         {
@@ -95,8 +95,6 @@
                     </li>
                     <li><a href="#" class="nav-link side-link" onclick="OpenTab('4')"><i class="fas fa-user"></i>
                             Kanojo</a></li>
-                    <li><a href="#" class="nav-link side-link" onclick="OpenTab('5')"><i class="fas fa-pencil-alt"></i>
-                            Studio</a></li>
                     <li><a href="#" class="nav-link side-link"
                             onclick="OpenLink('https://www.patreon.com/YukiArimo')"><i class="fas fa-heart"></i>
                             Support</a>
@@ -142,17 +140,6 @@
                                     <a class="dropdown-item" href="#" onclick="OpenTab('4');">
                                         <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                                         Kanojo
-                                    </a>
-                                    <!-- Studio Tab -->
-                                    <a class="dropdown-item" href="#" onclick="OpenTab('5');">
-                                        <i class="fas fa-pencil-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                                        Studio
-                                    </a>
-                                    <!-- Search -->
-                                    <a class="dropdown-item" href="#" data-bs-toggle="modal"
-                                        data-bs-target="#searchModal">
-                                        <i class="fas fa-search fa-sm fa-fw mr-2 text-gray-400"></i>
-                                        Search
                                     </a>
                                     <!-- Call -->
                                     <a class="dropdown-item" href="#" onclick="callYuna.show();">
@@ -219,7 +206,12 @@
                                             <li class="nav-item" role="presentation">
                                                 <button class="nav-link active" id="explore-tab" data-bs-toggle="pill"
                                                     data-bs-target="#explore" type="button" role="tab"
-                                                    aria-controls="explore" aria-selected="true">Explore</button>
+                                                    aria-controls="explore" aria-selected="true">Chats</button>
+                                            </li>
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link" id="create-tab" data-bs-toggle="pill"
+                                                    data-bs-target="#create" type="button" role="tab"
+                                                    aria-controls="create" aria-selected="false">Creator</button>
                                             </li>
                                             <li class="nav-item" role="presentation">
                                                 <button class="nav-link" id="himitsu-tab" data-bs-toggle="pill"
@@ -230,6 +222,11 @@
                                                 <button class="nav-link" id="diary-tab" data-bs-toggle="pill"
                                                     data-bs-target="#diary" type="button" role="tab"
                                                     aria-controls="diary" aria-selected="false">Diary</button>
+                                            </li>
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link" id="audiobook-tab" data-bs-toggle="pill"
+                                                    data-bs-target="#audiobook" type="button" role="tab"
+                                                    aria-controls="audiobook" aria-selected="false">Audiobook</button>
                                             </li>
                                         </ul>
 
@@ -264,6 +261,57 @@
                                                 </ul>
                                             </div>
 
+                                            <div class="tab-pane fade" id="create" role="tabpanel"
+                                                aria-labelledby="create-tab">
+                                                <div class="row g-4">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <h5 class="mb-3">Draft Area</h5>
+                                                            <textarea class="form-control" id="draft-area"
+                                                                placeholder="Draft will appear here..."></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <h5 class="mb-3">Work Area</h5>
+                                                            <textarea class="form-control" id="work-area"
+                                                                placeholder="Enter content to send..."></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6"></div>
+                                                    <div class="form-group">
+                                                        <h5 class="mb-3">Output Area</h5>
+                                                        <textarea class="form-control" id="output-area"
+                                                            placeholder="Output will appear here..."></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6 d-grid gap-2 mt-4"></div>
+                                                <button type="button" id="send-button"
+                                                    class="btn btn-primary">Send</button>
+                                                <button type="button" id="copy-to-draft" class="btn btn-secondary">Copy
+                                                    to Draft</button>
+                                                <button type="button" id="export-presentation-button"
+                                                    class="btn btn-primary">Export Presentation</button>
+                                                <button type="button" id="save-button"
+                                                    class="btn btn-success">Save</button>
+                                                <button type="button" id="clear-button"
+                                                    class="btn btn-danger">Clear</button>
+
+                                                <div class="col-12">
+                                                    <div class="form-check mt-3">
+                                                        <input class="form-check-input" type="checkbox"
+                                                            id="toggle-presentation">
+                                                        <label class="form-check-label" for="toggle-presentation">
+                                                            Show Presentation
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 d-none" id="presentation-section">
+                                                    <h5>Presentation</h5>
+                                                    <div id="presentation-content"></div>
+                                                </div>
+                                            </div>
+
                                             <!-- Himitsu Tab: Himitsu Controls -->
                                             <div class="tab-pane fade" id="himitsu" role="tabpanel"
                                                 aria-labelledby="himitsu-tab">
@@ -279,32 +327,41 @@
                                                             </div>
                                                         </a>
                                                     </div>
+
+                                                    <div class="input-group mb-3">
+                                                        <input type="text" id="searchInput"
+                                                            class="form-control rounded-pill"
+                                                            placeholder="Enter your search" aria-label="Search input">
+                                                        <button id="searchButton"
+                                                            class="btn btn-outline-primary rounded-pill ms-2">Search</button>
+                                                    </div>
+                                                    <div id="requestResults" class="alert alert-info d-none"></div>
+                                                    <div id="answerResults" class="bg-white p-3 rounded shadow-sm">
+                                                    </div>
+                                                    <div id="results" class="row row-cols-1 row-cols-md-3 g-4"></div>
+                                                    <div id="analysisResult" class="row row-cols-1 row-cols-md-3 g-4">
+                                                    </div>
+
                                                 </div>
                                             </div>
 
-                                            <!-- Diary Tab: Nested Sub-Tabs -->
+                                            <!-- Diary and Notes Tabs -->
                                             <div class="tab-pane fade" id="diary" role="tabpanel"
                                                 aria-labelledby="diary-tab">
 
                                                 <!-- Nested Diary Sub-Tabs -->
                                                 <ul class="nav nav-pills nav-fill mb-3" id="diaryTab" role="tablist">
                                                     <li class="nav-item" role="presentation">
-                                                        <button class="nav-link" id="entries-tab" data-bs-toggle="pill"
-                                                            data-bs-target="#entries" type="button" role="tab"
-                                                            aria-controls="entries" aria-selected="false">Diary
-                                                            Entries</button>
+                                                        <button class="nav-link active" id="entries-tab"
+                                                            data-bs-toggle="pill" data-bs-target="#entries"
+                                                            type="button" role="tab" aria-controls="entries"
+                                                            aria-selected="true">Diary Entries</button>
                                                     </li>
                                                     <li class="nav-item" role="presentation">
-                                                        <button class="nav-link active" id="notes-tab"
-                                                            data-bs-toggle="pill" data-bs-target="#notes" type="button"
-                                                            role="tab" aria-controls="notes"
-                                                            aria-selected="true">Notes/Memories</button>
-                                                    </li>
-                                                    <li class="nav-item" role="presentation">
-                                                        <button class="nav-link" id="schedule-tab" data-bs-toggle="pill"
-                                                            data-bs-target="#schedule" type="button" role="tab"
-                                                            aria-controls="schedule"
-                                                            aria-selected="false">Timetable/Schedule</button>
+                                                        <button class="nav-link" id="notes-tab" data-bs-toggle="pill"
+                                                            data-bs-target="#notes" type="button" role="tab"
+                                                            aria-controls="notes"
+                                                            aria-selected="false">Notes/Memories</button>
                                                     </li>
                                                 </ul>
 
@@ -312,7 +369,7 @@
                                                 <div class="tab-content" id="diaryTabContent">
 
                                                     <!-- Diary Entries Sub-Tab -->
-                                                    <div class="tab-pane fade" id="entries" role="tabpanel"
+                                                    <div class="tab-pane fade show active" id="entries" role="tabpanel"
                                                         aria-labelledby="entries-tab">
 
                                                         <!-- New Diary Entry Form -->
@@ -327,19 +384,14 @@
                                                                     </div>
                                                                     <div class="mb-3">
                                                                         <textarea class="form-control" id="entry-text"
-                                                                            name="text" rows="3"
-                                                                            placeholder="Write your thoughts..."
+                                                                            name="text" rows="5"
+                                                                            placeholder="Write your thoughts in Markdown..."
                                                                             required></textarea>
                                                                     </div>
                                                                     <div class="mb-3">
                                                                         <input type="datetime-local"
                                                                             class="form-control" id="entry-date"
                                                                             name="date" required>
-                                                                    </div>
-                                                                    <div class="mb-3">
-                                                                        <input type="file" class="form-control"
-                                                                            id="entry-image" name="image"
-                                                                            accept="image/*">
                                                                     </div>
                                                                     <button type="submit" class="btn btn-primary"
                                                                         id="add-entry">Add Entry</button>
@@ -354,7 +406,7 @@
                                                     </div>
 
                                                     <!-- Notes/Memories Sub-Tab -->
-                                                    <div class="tab-pane fade active show" id="notes" role="tabpanel"
+                                                    <div class="tab-pane fade" id="notes" role="tabpanel"
                                                         aria-labelledby="notes-tab">
 
                                                         <!-- New Note/Memory Form -->
@@ -369,8 +421,8 @@
                                                                     </div>
                                                                     <div class="mb-3">
                                                                         <textarea class="form-control" id="note-text"
-                                                                            name="text" rows="3"
-                                                                            placeholder="Write your note or memory..."
+                                                                            name="text" rows="5"
+                                                                            placeholder="Write your note or memory in Markdown..."
                                                                             required></textarea>
                                                                     </div>
                                                                     <button type="submit" class="btn btn-success"
@@ -385,40 +437,110 @@
                                                         </div>
                                                     </div>
 
-                                                    <!-- Timetable/Schedule Sub-Tab -->
-                                                    <div class="tab-pane fade" id="schedule" role="tabpanel"
-                                                        aria-labelledby="schedule-tab">
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane fade" id="audiobook" role="tabpanel"
+                                                aria-labelledby="audiobook-tab">
+                                                <!-- Audiobook Maker Content -->
+                                                <div class="container-fluid">
+                                                    <div class="row">
+                                                        <!-- Left Side: Controls -->
+                                                        <div class="col-md-4 sidebar" id="audiobook-sidebar">
+                                                            <div class="card bg-dark text-white mb-4">
+                                                                <div class="card-body">
+                                                                    <h2 class="card-title">Project Manager</h2>
+                                                                    <div class="mb-3">
+                                                                        <label for="projectName"
+                                                                            class="form-label text-white">Project
+                                                                            Name</label>
+                                                                        <input type="text"
+                                                                            class="form-control bg-dark text-white border-secondary"
+                                                                            id="projectName"
+                                                                            placeholder="Enter project name">
+                                                                    </div>
+                                                                    <button class="btn btn-outline-primary w-100"
+                                                                        id="createProject">Create Project</button>
+                                                                    <div class="mb-3 mt-3">
+                                                                        <label for="projectSelect"
+                                                                            class="form-label text-white">Select
+                                                                            Project</label>
+                                                                        <select
+                                                                            class="form-select bg-dark text-white border-secondary mb-3"
+                                                                            id="projectSelect">
+                                                                            <option selected>Select Project</option>
+                                                                        </select>
+                                                                        <button class="btn btn-outline-primary w-100"
+                                                                            id="loadProject">Load Project</button>
+                                                                    </div>
+                                                                    <hr class="border-secondary">
 
-                                                        <!-- New Schedule Item Form -->
-                                                        <div class="card shadow-sm mb-5">
-                                                            <div class="card-body">
-                                                                <h5 class="card-title mb-3">New Schedule Item</h5>
-                                                                <form id="schedule-form">
+                                                                    <h3 class="card-title">Chapter Manager</h3>
                                                                     <div class="mb-3">
-                                                                        <input type="text" class="form-control"
-                                                                            id="schedule-title" name="title"
-                                                                            placeholder="Title" required>
+                                                                        <label for="chapterName"
+                                                                            class="form-label text-white">Chapter
+                                                                            Name</label>
+                                                                        <input type="text"
+                                                                            class="form-control bg-dark text-white border-secondary"
+                                                                            id="chapterName"
+                                                                            placeholder="Enter chapter name">
                                                                     </div>
-                                                                    <div class="mb-3">
-                                                                        <input type="datetime-local"
-                                                                            class="form-control" id="schedule-time"
-                                                                            name="time" required>
-                                                                    </div>
-                                                                    <button type="submit" class="btn btn-info"
-                                                                        id="add-schedule">Add Schedule</button>
-                                                                </form>
+                                                                    <button class="btn btn-outline-primary w-100"
+                                                                        id="createChapter">Create Chapter</button>
+                                                                    <select
+                                                                        class="form-select bg-dark text-white border-secondary mb-3 mt-3"
+                                                                        id="chapterSelect">
+                                                                        <option selected>Select Chapter</option>
+                                                                    </select>
+                                                                    <button class="btn btn-outline-primary w-100"
+                                                                        id="loadChapter">Load Chapter</button>
+                                                                </div>
                                                             </div>
                                                         </div>
 
-                                                        <!-- Schedule Display Container -->
-                                                        <div id="schedule-container">
-                                                            <!-- Schedule Items Will Be Displayed Here -->
+                                                        <!-- Right Side: Text Blocks -->
+                                                        <div class="col-md-8">
+                                                            <div class="card bg-dark text-white mb-4">
+                                                                <div class="card-body">
+                                                                    <h2 class="card-title">Advanced Text Blocks</h2>
+                                                                    <h3 class="card-subtitle mb-3">Select Chapter to
+                                                                        Play
+                                                                    </h3>
+                                                                    <select
+                                                                        class="form-select bg-dark text-white border-secondary mb-3"
+                                                                        id="playChapterSelect">
+                                                                        <option selected>Select Chapter</option>
+                                                                    </select>
+                                                                    <div class="mb-3">
+                                                                        <label for="startFrom"
+                                                                            class="form-label text-white">Start From
+                                                                            Paragraph</label>
+                                                                        <input type="number"
+                                                                            class="form-control bg-dark text-white border-secondary"
+                                                                            id="startFrom" min="1"
+                                                                            placeholder="Enter paragraph number">
+                                                                    </div>
+                                                                    <button class="btn btn-outline-success w-100 mb-4"
+                                                                        id="startPlaying">Start Playing</button>
+
+                                                                    <div class="mb-3">
+                                                                        <label for="paragraphText"
+                                                                            class="form-label text-white">New
+                                                                            Paragraph</label>
+                                                                        <textarea
+                                                                            class="form-control bg-dark text-white border-secondary"
+                                                                            id="paragraphText" rows="3"
+                                                                            placeholder="Enter paragraph text"></textarea>
+                                                                        <button
+                                                                            class="btn btn-outline-primary w-100 mt-2"
+                                                                            id="addParagraph">Add Paragraph</button>
+                                                                    </div>
+                                                                    <div id="textBlocks" class="text-white"></div>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
-
                                                 </div>
                                             </div>
-
                                         </div>
 
                                     </div>
@@ -463,9 +585,11 @@
                                                     </div>
                                                     <div class="mb-3">
                                                         <button type="button" class="btn btn-primary"
-                                                            id="exportKanojos">Export All</button>
+                                                            id="exportKanojos">Export
+                                                            All</button>
                                                         <button type="button" class="btn btn-primary"
-                                                            id="importKanojos">Import All</button>
+                                                            id="importKanojos">Import
+                                                            All</button>
                                                     </div>
                                                     <div class="mb-3">
                                                         <button type="button" class="btn btn-primary"
@@ -531,7 +655,8 @@
                                                                 <input class="form-check-input" type="checkbox"
                                                                     id="testNonIntegrated">
                                                                 <label class="form-check-label"
-                                                                    for="testNonIntegrated">Pseudo API</label>
+                                                                    for="testNonIntegrated">Pseudo
+                                                                    API</label>
                                                             </div>
                                                             <div class="form-check form-switch">
                                                                 <input class="form-check-input" type="checkbox"
@@ -555,7 +680,8 @@
                                                                 <input class="form-check-input" type="checkbox"
                                                                     id="customConfig">
                                                                 <label class="form-check-label"
-                                                                    for="customConfig">Custom Config</label>
+                                                                    for="customConfig">Custom
+                                                                    Config</label>
                                                             </div>
                                                             <div class="form-check form-switch">
                                                                 <input class="form-check-input" type="checkbox"
@@ -579,7 +705,8 @@
                                                                 <input class="form-check-input" type="checkbox"
                                                                     id="backgroundCall">
                                                                 <label class="form-check-label"
-                                                                    for="backgroundCall">Background Call</label>
+                                                                    for="backgroundCall">Background
+                                                                    Call</label>
                                                             </div>
                                                             <div class="form-check form-switch">
                                                                 <input class="form-check-input" type="checkbox"
@@ -680,198 +807,6 @@
                                             </div>
                                         </div>
                                     </div>
-
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="tab-o" id="5">
-                            <div class="coll-lo">
-                                <div class="card settings-container profile-card el-9">
-                                    <ul class="nav nav-pills nav-fill mb-4" role="tablist">
-                                        <li class="nav-item" role="presentation">
-                                            <button class="nav-link active" id="naked-tab" data-bs-toggle="pill"
-                                                data-bs-target="#naked" type="button" role="tab" aria-controls="naked"
-                                                aria-selected="false">Naked</button>
-                                        </li>
-                                        <li class="nav-item" role="presentation">
-                                            <button class="nav-link" id="article-tab" data-bs-toggle="pill"
-                                                data-bs-target="#article" type="button" role="tab"
-                                                aria-controls="article" aria-selected="true">Article</button>
-                                        </li>
-                                        <li class="nav-item" role="presentation">
-                                            <button class="nav-link" id="presentation-tab" data-bs-toggle="pill"
-                                                data-bs-target="#presentation" type="button" role="tab"
-                                                aria-controls="presentation" aria-selected="false">Presentation</button>
-                                        </li>
-                                        <li class="nav-item" role="presentation">
-                                            <button class="nav-link" id="audiobook-tab" data-bs-toggle="pill"
-                                                data-bs-target="#audiobook" type="button" role="tab"
-                                                aria-controls="audiobook" aria-selected="false">Audiobook</button>
-                                        </li>
-                                    </ul>
-                                    <div class="tab-content">
-                                        <div class="tab-pane fade show active" id="naked" role="tabpanel"
-                                            aria-labelledby="naked-tab">
-                                            <div class="row g-4">
-                                                <div class="row mt-4">
-                                                    <div class="col-12">
-                                                        <div class="form-group">
-                                                            <h5 class="mb-3">Work Area</h5>
-                                                            <textarea class="form-control"
-                                                                id="naked-work-area"></textarea>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="d-grid gap-2 mt-4 mb-6">
-                                                    <button type="button" id="send-create-naked"
-                                                        class="btn btn-primary">Create</button>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="tab-pane fade" id="article" role="tabpanel"
-                                            aria-labelledby="article-tab">
-                                            <div class="row g-4">
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <h5 class="mb-3">Prompt Template</h5>
-                                                        <textarea class="form-control"
-                                                            id="article-prompt-template"></textarea>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6" id="user-input-article-container">
-                                                    <div class="form-group">
-                                                        <h5 class="mb-3">User Input</h5>
-                                                        <textarea class="form-control"
-                                                            id="article-user-input"></textarea>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="d-grid gap-2 mt-4">
-                                                <button type="button" id="send-create-article"
-                                                    class="btn btn-primary">Create</button>
-                                            </div>
-
-                                            <div class="row g-4 mt-4">
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <h5 class="mb-3">Output Text</h5>
-                                                        <textarea class="form-control"
-                                                            id="article-output-text"></textarea>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <h5 class="mb-3">Draft Text</h5>
-                                                        <textarea class="form-control"
-                                                            id="article-draft-text"></textarea>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="d-grid gap-2 mt-4 mb-6">
-                                                <button type="button" id="copy-to-draft" class="btn btn-secondary">Copy
-                                                    to Draft</button>
-                                            </div>
-                                        </div>
-
-                                        <div class="tab-pane fade" id="presentation" role="tabpanel"
-                                            aria-labelledby="presentation-tab">
-                                            <div class="row g-4">
-                                                <!-- Markdown and Controls Column -->
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <h5 class="mb-3">Markdown Editor</h5>
-                                                        <textarea class="form-control" id="markdown-input"
-                                                            placeholder="Write your presentation in Markdown..."></textarea>
-                                                    </div>
-                                                    <div class="form-group mt-3">
-                                                        <button class="btn btn-primary me-2"
-                                                            id="save-button">Save</button>
-                                                        <button class="btn btn-success me-2" id="export-button">Export
-                                                            as PPTX</button>
-                                                        <button class="btn btn-secondary"
-                                                            id="clear-button">Clear</button>
-                                                    </div>
-                                                </div>
-
-                                                <!-- Preview Column -->
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <h5 class="mb-3">Preview</h5>
-                                                        <div id="preview"></div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="tab-pane fade" id="audiobook" role="tabpanel" aria-labelledby="audiobook-tab">
-                                            <div class="container-fluid">
-                                                <div class="row">
-                                                    <!-- Left Side: Controls -->
-                                                    <div class="col-md-4 sidebar" id="audiobook-sidebar">
-                                                        <div class="card bg-dark text-white mb-4">
-                                                            <div class="card-body">
-                                                                <h2 class="card-title">Project Manager</h2>
-                                                                <div class="mb-3">
-                                                                    <label for="projectName" class="form-label text-white">Project Name</label>
-                                                                    <input type="text" class="form-control bg-dark text-white border-secondary" id="projectName" placeholder="Enter project name">
-                                                                </div>
-                                                                <button class="btn btn-outline-primary w-100" id="createProject">Create Project</button>
-                                                                <div class="mb-3 mt-3">
-                                                                    <label for="projectSelect" class="form-label text-white">Select Project</label>
-                                                                    <select class="form-select bg-dark text-white border-secondary mb-3" id="projectSelect">
-                                                                        <option selected>Select Project</option>
-                                                                    </select>
-                                                                    <button class="btn btn-outline-primary w-100" id="loadProject">Load Project</button>
-                                                                </div>
-                                                                <hr class="border-secondary">
-                                        
-                                                                <h3 class="card-title">Chapter Manager</h3>
-                                                                <div class="mb-3">
-                                                                    <label for="chapterName" class="form-label text-white">Chapter Name</label>
-                                                                    <input type="text" class="form-control bg-dark text-white border-secondary" id="chapterName" placeholder="Enter chapter name">
-                                                                </div>
-                                                                <button class="btn btn-outline-primary w-100" id="createChapter">Create Chapter</button>
-                                                                <select class="form-select bg-dark text-white border-secondary mb-3 mt-3" id="chapterSelect">
-                                                                    <option selected>Select Chapter</option>
-                                                                </select>
-                                                                <button class="btn btn-outline-primary w-100" id="loadChapter">Load Chapter</button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                        
-                                                    <!-- Right Side: Text Blocks -->
-                                                    <div class="col-md-8">
-                                                        <div class="card bg-dark text-white mb-4">
-                                                            <div class="card-body">
-                                                                <h2 class="card-title">Advanced Text Blocks</h2>
-                                                                <h3 class="card-subtitle mb-3">Select Chapter to Play</h3>
-                                                                <select class="form-select bg-dark text-white border-secondary mb-3" id="playChapterSelect">
-                                                                    <option selected>Select Chapter</option>
-                                                                </select>
-                                                                <div class="mb-3">
-                                                                    <label for="startFrom" class="form-label text-white">Start From Paragraph</label>
-                                                                    <input type="number" class="form-control bg-dark text-white border-secondary" id="startFrom" min="1" placeholder="Enter paragraph number">
-                                                                </div>
-                                                                <button class="btn btn-outline-success w-100 mb-4" id="startPlaying">Start Playing</button>
-                                        
-                                                                <div class="mb-3">
-                                                                    <label for="paragraphText" class="form-label text-white">New Paragraph</label>
-                                                                    <textarea class="form-control bg-dark text-white border-secondary" id="paragraphText" rows="3" placeholder="Enter paragraph text"></textarea>
-                                                                    <button class="btn btn-outline-primary w-100 mt-2" id="addParagraph">Add Paragraph</button>
-                                                                </div>
-                                                                <div id="textBlocks" class="text-white"></div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -880,8 +815,6 @@
             </div>
         </div>
     </div>
-    </div>
-    <div class="scroll-to-top" style="display: none;"></div>
 
     <audio id="backgroundMusic">
         <source src="/static/audio/audio.mp3" type="audio/mpeg">
@@ -932,33 +865,6 @@
     </div>
 
     <canvas id="capture-canvas" style="display: none;"></canvas>
-
-    <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content bg-dark text-light">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="videoCallModalLabel">Search</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="input-group mb-3">
-                        <input type="text" id="searchInput" class="form-control rounded-pill"
-                            placeholder="Enter your search" aria-label="Search input">
-                        <button id="searchButton" class="btn btn-outline-light rounded-pill ms-2">Search</button>
-                    </div>
-                    <div id="requestResults" class="alert alert-info d-none"></div>
-                    <div id="answerResults"></div>
-                    <div id="results" class="row row-cols-1 row-cols-md-3 g-4"></div>
-                    <div id="analysisResult" class="row row-cols-1 row-cols-md-3 g-4"></div>
-                </div>
-                <div class="modal-footer">
-                    <!-- Close button -->
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <div class="modal" tabindex="-1" role="dialog" id="fileModal">
         <div class="modal-dialog" role="document">

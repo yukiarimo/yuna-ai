@@ -6,7 +6,6 @@ import shutil
 import uuid
 from flask import jsonify, request, send_file, send_from_directory, Response
 from flask_login import current_user, login_required
-from lib.audio import transcribe_audio, speak_text
 from pydub import AudioSegment
 from pywebpush import webpush
 subscriptions = []
@@ -105,18 +104,18 @@ def handle_message_request(worker, chat_history_manager, config):
                     if kanojo:
                         chat_history_manager.generate_speech(response_text)
                     else:
-                        speak_text(response_text)
+                        worker.speak_text(response_text)
         return Response(generate_stream(), mimetype='text/plain')
     else:
         if useHistory:
             update_chat_history(chat_history_manager, user_id, chat_id, text, response, config)
             if speech:
-                speak_text(response)
+                worker.speak_text(response)
         print("Response:", response)
         return jsonify({'response': response})
 
 @login_required
-def handle_audio_request():
+def handle_audio_request(worker):
     task = request.form.get('task')
     text = request.form.get('text')
 
@@ -127,10 +126,10 @@ def handle_audio_request():
             return jsonify({'error': 'No audio file'}), 400
         audio_path = 'static/audio/audio.wav'
         audio_file.save(audio_path)
-        transcribed_text = transcribe_audio(audio_path)
+        transcribed_text = worker.transcribe_audio(audio_path)
         return jsonify({'text': transcribed_text})
     elif task == 'tts':
-        speak_text(text)
+        worker.speak_text(text)
         return jsonify({'response': 'Text-to-speech executed'})
     else:
         return jsonify({'error': 'Invalid task'}), 400
@@ -154,7 +153,7 @@ def handle_image_request(worker, chat_history_manager, config):
             chat_history_message = f"{data.get('message')}<img src='/static/img/call/{data.get('name')}.png' class='image-message'>"
             update_chat_history(chat_history_manager, user_id, chat_id, chat_history_message, image_message, config)
             if speech:
-                speak_text(image_message)
+                worker.speak_text(image_message)
 
         return jsonify(response)
     return jsonify({'error': 'Invalid task parameter'}), 400
@@ -187,11 +186,6 @@ def handle_textfile_request(chat_generator):
     result = chat_generator.processTextFile('static/text/content.txt', query, 0.6)
 
     return jsonify({'response': result})
-
-@login_required
-def services():
-    """Serves the services.html file."""
-    return send_from_directory('.', 'services.html')
 
 #@login_required
 def get_projects():
@@ -228,7 +222,7 @@ def get_chapter(project_name, chapter_name):
     return jsonify({'paragraphs': paragraphs}), 200
 
 # router.py
-def update_paragraph(project_name, chapter_name, index):
+def update_paragraph(worker, project_name, chapter_name, index):
     if project_name not in projects or chapter_name not in projects[project_name]['chapters']:
         return jsonify({'message': 'Chapter does not exist.'}), 404
         
@@ -240,7 +234,7 @@ def update_paragraph(project_name, chapter_name, index):
     paragraph_id = f"{project_name}_{chapter_name}_{index}"
     
     # Generate new audio
-    audio_url = speak_text(text, project_name, chapter_name, index)
+    audio_url = worker.speak_text(text, project_name, chapter_name, index)
     
     paragraphs[index - 1] = {
         'id': paragraph_id,
@@ -276,16 +270,16 @@ def delete_paragraph(project_name, chapter_name, index):
     save_projects(projects)  # Save after modification
     return jsonify({'paragraphs': paragraphs}), 200
 
-def speak():
+def speak(worker):
     text = request.json.get('text')
     project = request.json.get('project')
     chapter = request.json.get('chapter')
     paragraph = request.json.get('paragraph')
     
-    audio_url = speak_text(text, project, chapter, paragraph)
+    audio_url = worker.speak_text(text, project, chapter, paragraph)
     return jsonify({'audio_url': audio_url}), 200
 
-def create_paragraph(project_name, chapter_name):
+def create_paragraph(worker, project_name, chapter_name):
     if project_name not in projects or chapter_name not in projects[project_name]['chapters']:
         return jsonify({'message': 'Chapter does not exist.'}), 404
         
@@ -300,7 +294,7 @@ def create_paragraph(project_name, chapter_name):
         paragraph_id = f"{project_name}_{chapter_name}_{paragraph_number}"
         
         # Generate audio
-        audio_url = speak_text(text, project_name, chapter_name, paragraph_number)
+        audio_url = worker.speak_text(text, project_name, chapter_name, paragraph_number)
         
         paragraphs.append({
             'id': paragraph_id,

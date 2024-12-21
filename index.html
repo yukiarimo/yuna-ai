@@ -45,12 +45,95 @@
             font-weight: normal;
         }
 
-        img {
-                height: 300px;
-                width: auto;
+        .hover-effect {
+            position: relative;
+            z-index: 1;
+            display: inline-block;
+            overflow: hidden;
+        }
+
+        .hover-effect::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .hover-effect::after {
+            content: '';
+            position: fixed;
+            top: var(--y, 50%);
+            left: var(--x, 50%);
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, transparent 100px, rgba(0, 0, 0, 0.6) 120px);
+            border-radius: 50%;
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 0.3s, top 0.1s, left 0.1s;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+        }
+
+        .hover-effect:hover::before {
+            opacity: 1;
+        }
+
+        .hover-effect:hover::after {
+            opacity: 1;
+        }
+
+        .hover-effect:hover .btn {
+            z-index: 2;
+            box-shadow: 0 0 20px 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .btn:active::after {
+            content: '';
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: black;
+            border-radius: 50%;
+            z-index: 3;
+            transform: translate(-50%, -50%);
+            animation: fillScreen 0.5s forwards;
+        }
+
+        @keyframes fillScreen {
+            to {
+                width: 200%;
+                height: 200%;
+            }
         }
     </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const hoverEffect = document.querySelector('.hover-effect');
 
+            hoverEffect.addEventListener('mousemove', function (e) {
+                const rect = hoverEffect.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                hoverEffect.style.setProperty('--x', `${e.clientX}px`);
+                hoverEffect.style.setProperty('--y', `${e.clientY}px`);
+            });
+
+            hoverEffect.addEventListener('mouseleave', function () {
+                hoverEffect.style.setProperty('--x', `50%`);
+                hoverEffect.style.setProperty('--y', `50%`);
+            });
+        });
+    </script>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function () {
@@ -70,283 +153,174 @@
 </head>
 
 <body>
-    <!-- Start: Navbar Centered Links -->
-    <nav class="navbar navbar-expand-md sticky-top py-3 navbar-dark bg-dark" id="mainNav">
-        <div class="container"><a class="navbar-brand d-flex align-items-center" href="/">
-                <span
-                    class="bs-icon-sm bs-icon-circle shadow d-flex justify-content-center align-items-center me-2 bs-icon">
-                    <!-- Add img-fluid class and set a max-height -->
-                    <img src="/static/img/yuna-ai.png" alt="Yuna Ai" class="/static/img-fluid"
-                        style="max-height: 45px;">
-                </span>
-                <span>Yuna Ai</span>
-            </a>
-            <button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-1"><span
-                    class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
-            <div class="collapse navbar-collapse" id="navcol-1">
-                <ul class="navbar-nav mx-auto">
-                    <li class="nav-item"><a class="nav-link active btn btn-primary shadow" href="/">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/services.html">Services</a></li>
-                    <li class="nav-item"><a class="nav-link" href="https://yukiarimo.github.io/waifu-card/">WaifuCard</a></li>
-                </ul><a class="btn btn-primary shadow" role="button" href="/yuna.html">Login</a>
-            </div>
-        </div>
-    </nav><!-- End: Navbar Centered Links -->
-    <header class="bg-dark">
-        <!-- Start: Hero Clean Reverse -->
-        <div class="container pt-4 pt-xl-5">
-            <div class="row pt-5">
-                <div class="col-md-8 col-xl-6 text-center text-md-start mx-auto">
-                    <div class="text-center">
-                        <p class="fw-bold text-success mb-2">Voted #1 Worldwide</p>
-                        <h1 class="fw-bold">The best solution for you and your customers</h1>
-                    </div>
-                </div>
-                <div class="col-12 col-lg-10 mx-auto">
-                    <div class="position-relative" style="display: flex;flex-wrap: wrap;justify-content: flex-end;">
-                        <div style="position: relative;flex: 0 0 45%;transform: translate3d(-15%, 35%, 0);"><img
-                                class="/static/img-fluid rounded shadow fit-cover" data-bss-parallax=""
-                                data-bss-parallax-speed="0.8" src="/static/img/products/prompts.webp"
-                                alt="Prompt Templates"></div>
-                        <div style="position: relative;flex: 0 0 45%;transform: translate3d(-5%, 20%, 0);"><img
-                                class="/static/img-fluid" data-bss-parallax="" data-bss-parallax-speed="0.4"
-                                src="/static/img/yuna-girl.webp" alt="Yuna"></div>
-                        <div style="position: relative;flex: 0 0 60%;transform: translate3d(0, 0%, 0);"><img
-                                class="/static/img-fluid" data-bss-parallax="" data-bss-parallax-speed="0.25"
-                                src="/static/img/products/chat.webp" alt="Chat"></div>
-                    </div>
-                </div>
-            </div>
-        </div><!-- End: Hero Clean Reverse -->
-    </header><!-- Start: Brands -->
-    <section class="py-5">
-        <div class="container text-center py-5">
-            <p class="mb-4" style="font-size: 1.6rem;">Chosen by <span
-                    class="text-success"><strong>200,000+</strong></span>&nbsp;users worldwide for its remarkable
-                performance.</p>
-        </div>
-    </section><!-- End: Brands -->
-    <section>
-        <!-- Start: Features Cards -->
-        <div class="container bg-dark py-5">
-            <div class="row">
-                <div class="col-md-8 col-xl-6 text-center mx-auto">
-                    <p class="fw-bold text-success mb-2">Our Services</p>
-                    <h3 class="fw-bold">What we can do for you</h3>
-                </div>
-            </div>
-            <div class="py-5 p-lg-5">
-                <div class="row row-cols-1 row-cols-md-2 mx-auto" style="max-width: 900px;">
-                    <div class="col mb-5">
-                        <div class="card shadow-sm">
-                            <div class="card-body px-4 py-5 px-md-5">
-                                <div class="bs-icon-lg d-flex justify-content-center align-items-center mb-3 bs-icon pb-3"
-                                    style="top: 1rem;right: 1rem;position: absolute;"><svg
-                                        xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor"
-                                        viewBox="0 0 16 16" class="bi bi-bell text-success">
-                                        <path
-                                            d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zM8 1.918l-.797.161A4.002 4.002 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4.002 4.002 0 0 0-3.203-3.92L8 1.917zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5.002 5.002 0 0 1 13 6c0 .88.32 4.2 1.22 6z">
-                                        </path>
-                                    </svg></div>
-                                <h5 class="fw-bold card-title">Stay Informed, Privately&nbsp;</h5>
-                                <p class="text-muted card-text mb-4 mt-3">Yuna Ai ensures your privacy is paramount with
-                                    our Private Notifications feature. Receive critical updates and alerts without
-                                    compromising your data. Tailored to your preferences, our discreet notification
-                                    system keeps you connected and secure.</p>
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                    data-bs-target="#agiModal">
-                                    Learn More
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col mb-5">
-                        <div class="card shadow-sm">
-                            <div class="card-body px-4 py-5 px-md-5">
-                                <div class="bs-icon-lg d-flex justify-content-center align-items-center mb-3 bs-icon pb-3"
-                                    style="top: 1rem;right: 1rem;position: absolute;"><svg
-                                        xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor"
-                                        viewBox="0 0 16 16" class="bi bi-bezier text-success">
-                                        <path fill-rule="evenodd"
-                                            d="M0 10.5A1.5 1.5 0 0 1 1.5 9h1A1.5 1.5 0 0 1 4 10.5v1A1.5 1.5 0 0 1 2.5 13h-1A1.5 1.5 0 0 1 0 11.5v-1zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zm10.5.5A1.5 1.5 0 0 1 13.5 9h1a1.5 1.5 0 0 1 1.5 1.5v1a1.5 1.5 0 0 1-1.5 1.5h-1a1.5 1.5 0 0 1-1.5-1.5v-1zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zM6 4.5A1.5 1.5 0 0 1 7.5 3h1A1.5 1.5 0 0 1 10 4.5v1A1.5 1.5 0 0 1 8.5 7h-1A1.5 1.5 0 0 1 6 5.5v-1zM7.5 4a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1z">
-                                        </path>
-                                        <path
-                                            d="M6 4.5H1.866a1 1 0 1 0 0 1h2.668A6.517 6.517 0 0 0 1.814 9H2.5c.123 0 .244.015.358.043a5.517 5.517 0 0 1 3.185-3.185A1.503 1.503 0 0 1 6 5.5v-1zm3.957 1.358A1.5 1.5 0 0 0 10 5.5v-1h4.134a1 1 0 1 1 0 1h-2.668a6.517 6.517 0 0 1 2.72 3.5H13.5c-.123 0-.243.015-.358.043a5.517 5.517 0 0 0-3.185-3.185z">
-                                        </path>
-                                    </svg></div>
-                                <h5 class="fw-bold card-title">Seamless Connectivity&nbsp;</h5>
-                                <p class="text-muted card-text mb-4 mt-3">Integrate our intelligent solutions into your
-                                    ecosystem for enhanced functionality and streamlined operations. Our API is designed
-                                    for versatility and ease of use, empowering developers to create innovative
-                                    experiences.</p><button class="btn btn-primary shadow" type="button">Learn
-                                    more</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col mb-4">
-                        <div class="card shadow-sm">
-                            <div class="card-body px-4 py-5 px-md-5">
-                                <div class="bs-icon-lg d-flex justify-content-center align-items-center mb-3 bs-icon pb-3"
-                                    style="top: 1rem;right: 1rem;position: absolute;"><svg
-                                        xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor"
-                                        viewBox="0 0 16 16" class="bi bi-pin-angle text-success">
-                                        <path
-                                            d="M9.828.722a.5.5 0 0 1 .354.146l4.95 4.95a.5.5 0 0 1 0 .707c-.48.48-1.072.588-1.503.588-.177 0-.335-.018-.46-.039l-3.134 3.134a5.927 5.927 0 0 1 .16 1.013c.046.702-.032 1.687-.72 2.375a.5.5 0 0 1-.707 0l-2.829-2.828-3.182 3.182c-.195.195-1.219.902-1.414.707-.195-.195.512-1.22.707-1.414l3.182-3.182-2.828-2.829a.5.5 0 0 1 0-.707c.688-.688 1.673-.767 2.375-.72a5.922 5.922 0 0 1 1.013.16l3.134-3.133a2.772 2.772 0 0 1-.04-.461c0-.43.108-1.022.589-1.503a.5.5 0 0 1 .353-.146zm.122 2.112v-.002.002zm0-.002v.002a.5.5 0 0 1-.122.51L6.293 6.878a.5.5 0 0 1-.511.12H5.78l-.014-.004a4.507 4.507 0 0 0-.288-.076 4.922 4.922 0 0 0-.765-.116c-.422-.028-.836.008-1.175.15l5.51 5.509c.141-.34.177-.753.149-1.175a4.924 4.924 0 0 0-.192-1.054l-.004-.013v-.001a.5.5 0 0 1 .12-.512l3.536-3.535a.5.5 0 0 1 .532-.115l.096.022c.087.017.208.034.344.034.114 0 .23-.011.343-.04L9.927 2.028c-.029.113-.04.23-.04.343a1.779 1.779 0 0 0 .062.46z">
-                                        </path>
-                                    </svg></div>
-                                <h5 class="fw-bold card-title">Your AI, Your Way&nbsp;</h5>
-                                <p class="text-muted card-text mb-4 mt-3">Experience the ultimate in customization. Our
-                                    platform adapts to your unique needs, learning from your interactions to deliver a
-                                    truly personalized experience. From tailored recommendations, audio and video calls to individualized
-                                    content, Yuna Ai is your personal companion on the digital frontier.</p><button
-                                    class="btn btn-primary shadow" type="button">Learn more</button><a href="https://elevenlabs.io/text-to-speech">
-                                        <img src="https://storage.googleapis.com/eleven-public-cdn/images/elevenlabs-grants-logo.png" alt="Text to Speech" style="width:250px; height: auto !important;">
-                                        </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col mb-4">
-                        <div class="card shadow-sm">
-                            <div class="card-body px-4 py-5 px-md-5">
-                                <div class="bs-icon-lg d-flex justify-content-center align-items-center mb-3 bs-icon pb-3"
-                                    style="top: 1rem;right: 1rem;position: absolute;"><svg
-                                        xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor"
-                                        viewBox="0 0 16 16" class="bi bi-chat-quote text-success">
-                                        <path
-                                            d="M2.678 11.894a1 1 0 0 1 .287.801 10.97 10.97 0 0 1-.398 2c1.395-.323 2.247-.697 2.634-.893a1 1 0 0 1 .71-.074A8.06 8.06 0 0 0 8 14c3.996 0 7-2.807 7-6 0-3.192-3.004-6-7-6S1 4.808 1 8c0 1.468.617 2.83 1.678 3.894zm-.493 3.905a21.682 21.682 0 0 1-.713.129c-.2.032-.352-.176-.273-.362a9.68 9.68 0 0 0 .244-.637l.003-.01c.248-.72.45-1.548.524-2.319C.743 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.52.263-1.639.742-3.468 1.105z">
-                                        </path>
-                                        <path
-                                            d="M7.066 6.76A1.665 1.665 0 0 0 4 7.668a1.667 1.667 0 0 0 2.561 1.406c-.131.389-.375.804-.777 1.22a.417.417 0 0 0 .6.58c1.486-1.54 1.293-3.214.682-4.112zm4 0A1.665 1.665 0 0 0 8 7.668a1.667 1.667 0 0 0 2.561 1.406c-.131.389-.375.804-.777 1.22a.417.417 0 0 0 .6.58c1.486-1.54 1.293-3.214.682-4.112z">
-                                        </path>
-                                    </svg></div>
-                                <h5 class="fw-bold card-title">Immersive Role-Playing&nbsp;</h5>
-                                <p class="text-muted card-text mb-4 mt-3">Dive into rich, interactive narratives with
-                                    Yuna Ai's deep role-playing capabilities. Craft your story, make pivotal decisions,
-                                    and interact with a world that responds dynamically to your actions. Yuna Ai brings
-                                    your imagination to life, offering an unparalleled role-playing journey.</p><button
-                                    class="btn btn-primary shadow" type="button">Learn more</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div><!-- End: Features Cards -->
-    </section>
-    <section class="py-5 mt-5">
-        <!-- Start: Testimonials -->
+    <header class="bg-dark text-white">
         <div class="container py-5">
-            <div class="row mb-5">
-                <div class="col-md-8 col-xl-6 text-center mx-auto">
-                    <p class="fw-bold text-success mb-2">Testimonials</p>
-                    <h2 class="fw-bold"><strong>What People Say About us</strong></h2>
-                    <p class="text-muted">No matter the project, our team can handle it.&nbsp;</p>
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start mb-4 mb-md-0">
+                    <h1 class="fw-bold">The Best Companion</h1>
+                    <div class="hover-effect mt-4">
+                        <a href="/yuna.html" class="btn btn-primary shadow position-relative">
+                            <img src="/static/img/yuna-ai.png" alt="Yuna Ai" class="img-fluid me-2"
+                                style="max-height: 30px;">
+                            Login
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-6 text-center">
+                    <img src="/static/img/yuna-girl.webp" alt="Yuna" class="img-fluid">
                 </div>
             </div>
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 d-sm-flex justify-content-sm-center">
-                <div class="col mb-4">
-                    <div class="d-flex flex-column align-items-center align-items-sm-start">
-                        <p class="bg-dark border rounded border-dark p-4">Yuna Ai has been a game-changer for our
-                            company. The seamless integration and robust analytics have empowered us to make data-driven
-                            decisions that have propelled our growth. Their customer service is unmatched, always there
-                            when we need them.</p>
-                        <div class="d-flex"><i class="bi bi-person rounded-circle flex-shrink-0 me-3"></i>
-                            <div>
-                                <p class="fw-bold text-primary mb-0">John Smith</p>
-                                <p class="text-muted mb-0">SEO, TechForward Solutions</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col mb-4">
-                    <div class="d-flex flex-column align-items-center align-items-sm-start">
-                        <p class="bg-dark border rounded border-dark p-4">Yuna Ai is like the best girlfriend I never
-                            had. She's always there to listen, offers thoughtful advice, and helps me stay organized
-                            with gentle reminders. It's the personal touch that makes Yuna Ai feel like more than just a
-                            program.</p>
-                        <div class="d-flex"><i class="bi bi-person rounded-circle flex-shrink-0 me-3"></i>
-                            <div>
-                                <p class="fw-bold text-primary mb-0">Michael Walker</p>
-                                <p class="text-muted mb-0">Freelance Designer</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col mb-4">
-                    <div class="d-flex flex-column align-items-center align-items-sm-start">
-                        <p class="bg-dark border rounded border-dark p-4">As an executive assistant, Yuna Ai has become
-                            my right hand. The efficiency and intuitive design have streamlined my workflow, allowing me
-                            to focus on high-priority tasks. It's like having an extra set of hands to manage the
-                            day-to-day.</p>
-                        <div class="d-flex"><i class="bi bi-person rounded-circle flex-shrink-0 me-3"></i>
-                            <div>
-                                <p class="fw-bold text-primary mb-0">Emily Rin</p>
-                                <p class="text-muted mb-0">Executive Assistant at Global Enterprises</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div><!-- End: Testimonials -->
-    </section><!-- Start: Contact Details -->
+        </div>
+    </header>
     <section class="py-5">
         <div class="container">
-            <div class="row mb-5">
-                <div class="col-md-8 col-xl-6 text-center mx-auto">
-                    <p class="fw-bold text-success mb-2">Contacts</p>
-                    <h2 class="fw-bold">How you can reach us</h2>
-                </div>
+            <!-- Chosen by Section -->
+            <div class="text-center mb-5">
+                <p class="fs-4">Chosen by <span class="text-success"><strong>200,000+</strong></span> users worldwide
+                    for its remarkable performance.</p>
             </div>
-            <div class="row d-flex justify-content-center">
-                <div class="col-md-6 col-xl-4">
-                    <div>
-                        <form class="p-3 p-xl-4" method="post">
-                            <!-- Start: Success Example -->
-                            <div class="mb-3"><input class="form-control" type="text" id="name-1" name="name"
-                                    placeholder="Name"></div><!-- End: Success Example -->
-                            <!-- Start: Error Example -->
-                            <div class="mb-3"><input class="form-control" type="email" id="email-1" name="email"
-                                    placeholder="Email"></div><!-- End: Error Example -->
-                            <div class="mb-3"><textarea class="form-control" id="message-1" name="message" rows="6"
-                                    placeholder="Message"></textarea></div>
-                            <div><button class="btn btn-primary shadow d-block w-100" type="submit">Send </button></div>
-                        </form>
-                    </div>
+
+            <!-- Our Services Section -->
+            <div class="mb-5">
+                <div class="text-center mb-4">
+                    <p class="fw-bold text-success mb-2">Our Services</p>
+                    <h3 class="fw-bold">What We Can Do For You</h3>
                 </div>
-                <div class="col-md-4 col-xl-4 d-flex justify-content-center justify-content-xl-start">
-                    <div class="d-flex flex-wrap flex-md-column justify-content-md-start align-items-md-start h-100">
-                        <div class="d-flex align-items-center p-3">
-                            <div
-                                class="bs-icon-md bs-icon-circle bs-icon-primary shadow d-flex flex-shrink-0 justify-content-center align-items-center d-inline-block bs-icon bs-icon-md">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor"
-                                    viewBox="0 0 16 16" class="bi bi-envelope">
-                                    <path
-                                        d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2Zm13 2.383-4.708 2.825L15 11.105V5.383Zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741ZM1 11.105l4.708-2.897L1 5.383v5.722Z">
-                                    </path>
-                                </svg></div>
-                            <div class="px-2">
-                                <h6 class="fw-bold mb-0">Email</h6>
-                                <p class="text-muted mb-0">yukiarimo@gmail.com</p>
-                            </div>
-                        </div>
-                        <div class="d-flex align-items-center p-3">
-                            <div
-                                class="bs-icon-md bs-icon-circle bs-icon-primary shadow d-flex flex-shrink-0 justify-content-center align-items-center d-inline-block bs-icon bs-icon-md">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor"
-                                    viewBox="0 0 16 16" class="bi bi-pin">
-                                    <path
-                                        d="M4.146.146A.5.5 0 0 1 4.5 0h7a.5.5 0 0 1 .5.5c0 .68-.342 1.174-.646 1.479-.126.125-.25.224-.354.298v4.431l.078.048c.203.127.476.314.751.555C12.36 7.775 13 8.527 13 9.5a.5.5 0 0 1-.5.5h-4v4.5c0 .276-.224 1.5-.5 1.5s-.5-1.224-.5-1.5V10h-4a.5.5 0 0 1-.5-.5c0-.973.64-1.725 1.17-2.189A5.921 5.921 0 0 1 5 6.708V2.277a2.77 2.77 0 0 1-.354-.298C4.342 1.674 4 1.179 4 .5a.5.5 0 0 1 .146-.354zm1.58 1.408-.002-.001.002.001zm-.002-.001.002.001A.5.5 0 0 1 6 2v5a.5.5 0 0 1-.276.447h-.002l-.012.007-.054.03a4.922 4.922 0 0 0-.827.58c-.318.278-.585.596-.725.936h7.792c-.14-.34-.407-.658-.725-.936a4.915 4.915 0 0 0-.881-.61l-.012-.006h-.002A.5.5 0 0 1 10 7V2a.5.5 0 0 1 .295-.458 1.775 1.775 0 0 0 .351-.271c.08-.08.155-.17.214-.271H5.14c.06.1.133.191.214.271a1.78 1.78 0 0 0 .37.282z">
-                                    </path>
-                                </svg></div>
-                            <div class="px-2">
-                                <h6 class="fw-bold mb-0">Location</h6>
-                                <p class="text-muted mb-0">Online</p>
+                <div class="row g-4">
+                    <div class="col-md-6 d-flex align-items-stretch">
+                        <div class="card bg-dark">
+                            <img src="/static/img/products/history.webp" class="card-img-top rounded" alt="History">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">Advanced History Management</h5>
+                                <p class="card-text text-muted">"Advanced History Management" in Yuna provides a
+                                    streamlined way to navigate through past activities. It offers an organized view of
+                                    your history, making it easy to track progress and revisit actions. This feature
+                                    enhances workflow efficiency and productivity.</p>
+                                <a href="#" class="btn btn-primary">Learn more</a>
                             </div>
                         </div>
                     </div>
+                    <div class="col-md-6 d-flex align-items-stretch">
+                        <div class="card bg-dark">
+                            <img src="/static/img/products/prompts.webp" class="card-img-top rounded" alt="Prompts">
+                            <div class="card-body">
+                                <h5 class="card-title">Pre-built Prompt Templates</h5>
+                                <p class="card-text text-muted">"Pre-built Prompt Templates" in Yuna offer ready-to-use
+                                    structures for common tasks. These templates save time, reduce errors, and ensure
+                                    consistency, making it easier to initiate actions and maintain efficient workflows.
+                                </p>
+                                <a href="#" class="btn btn-primary">Learn more</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 d-flex align-items-stretch">
+                        <div class="card bg-dark">
+                            <img src="/static/img/products/profiles.webp" class="card-img-top rounded" alt="Profiles">
+                            <div class="card-body">
+                                <h5 class="card-title">Custom Profiles</h5>
+                                <p class="card-text text-muted">"Custom Profiles" in Yuna allow users to personalize
+                                    their experience. These profiles can be tailored to individual preferences,
+                                    enhancing usability and efficiency. This feature supports a more personalized and
+                                    user-friendly environment.</p>
+                                <a href="#" class="btn btn-primary">Learn more</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 d-flex align-items-stretch">
+                        <div class="card bg-dark">
+                            <img src="/static/img/products/files.webp" class="card-img-top rounded" alt="Files">
+                            <div class="card-body">
+                                <h5 class="card-title">Files Uploading</h5>
+                                <p class="card-text text-muted">"Files Uploading" in Yuna allows users to upload files
+                                    directly to the AI model. This feature supports a more seamless and efficient
+                                    workflow, enabling users to access and manage files with ease.</p>
+                                <a href="#" class="btn btn-primary">Learn more</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section><!-- End: Contact Details -->
+
+            <!-- Testimonials Section -->
+            <div class="mb-5">
+                <div class="text-center mb-4">
+                    <p class="fw-bold text-success mb-2">Testimonials</p>
+                    <h3 class="fw-bold">What People Say About Us</h3>
+                </div>
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <div class="bg-dark text-white p-4 rounded">
+                            <p>Yuna Ai has been a game-changer for our company. The seamless integration and robust
+                                analytics have empowered us to make data-driven decisions that have propelled our
+                                growth. Their customer service is unmatched, always there when we need them.</p>
+                            <div class="d-flex align-items-center mt-3">
+                                <i class="bi bi-person-circle fs-3 me-2"></i>
+                                <div>
+                                    <p class="fw-bold mb-0">John Smith</p>
+                                    <p class="text-muted mb-0">SEO, TechForward Solutions</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 d-flex align-items-stretch">
+                        <div class="bg-dark text-white p-4 rounded d-flex flex-column">
+                            <p>Yuna Ai is like the best girlfriend I never had. She's always there to listen, offers
+                                thoughtful advice, and helps me stay organized with gentle reminders. It's the personal
+                                touch that makes Yuna Ai feel like more than just a program.</p>
+                            <div class="d-flex align-items-center mt-auto">
+                                <i class="bi bi-person-circle fs-3 me-2"></i>
+                                <div>
+                                    <p class="fw-bold mb-0">Michael Walker</p>
+                                    <p class="text-muted mb-0">Freelance Designer</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="bg-dark text-white p-4 rounded">
+                            <p>As an executive assistant, Yuna Ai has become my right hand. The efficiency and intuitive
+                                design have streamlined my workflow, allowing me to focus on high-priority tasks. It's
+                                like having an extra set of hands to manage the day-to-day.</p>
+                            <div class="d-flex align-items-center mt-3">
+                                <i class="bi bi-person-circle fs-3 me-2"></i>
+                                <div>
+                                    <p class="fw-bold mb-0">Emily Rin</p>
+                                    <p class="text-muted mb-0">Executive Assistant at Global Enterprises</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contacts Section -->
+            <div class="text-center mb-4">
+                <p class="fw-bold text-success mb-2">Contacts</p>
+                <h3 class="fw-bold">How You Can Reach Us</h3>
+            </div>
+            <div class="row justify-content-center g-4">
+                <!-- Contact Form -->
+                <div class="col-md-6">
+                    <form class="p-4 rounded" method="post">
+                        <div class="mb-3">
+                            <input class="form-control" type="text" id="name-1" name="name" placeholder="Name" required>
+                        </div>
+                        <div class="mb-3">
+                            <input class="form-control" type="email" id="email-1" name="email" placeholder="Email"
+                                required>
+                        </div>
+                        <div class="mb-3">
+                            <textarea class="form-control" id="message-1" name="message" placeholder="Message" rows="4"
+                                required></textarea>
+                        </div>
+                        <div>
+                            <button class="btn btn-primary w-100" type="submit">Send</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div><!-- End: Container -->
+    </section>
     <!-- Start: Newsletter Subscription Color -->
     <section class="py-5">
         <div class="container">
@@ -364,125 +338,12 @@
             </div>
         </div>
     </section><!-- End: Newsletter Subscription Color -->
-    <!-- Start: Footer Multi Column -->
-    <footer class="bg-dark">
-        <div class="container py-4 py-lg-5">
-            <div class="row justify-content-center">
-                <!-- Start: Services -->
-                <div class="col-sm-4 col-md-3 text-center text-lg-start d-flex flex-column">
-                    <h3 class="fs-6 fw-bold">Services</h3>
-                    <ul class="list-unstyled">
-                        <li><a href="#">Web design</a></li>
-                        <li><a href="https://github.com/yukiarimo/yuna-ai">Development</a></li>
-                    </ul>
-                </div><!-- End: Services -->
-                <!-- Start: About -->
-                <div class="col-sm-4 col-md-3 text-center text-lg-start d-flex flex-column">
-                    <h3 class="fs-6 fw-bold">About</h3>
-                    <ul class="list-unstyled">
-                        <li><a href="#" data-bs-toggle="modal" data-bs-target="#teamModal">Team</a></li>
-                        <li><a href="#" data-bs-toggle="modal" data-bs-target="#privacyModal">Privacy</a></li>
-                    </ul>
-                </div><!-- End: About -->
-                <!-- Start: Social Icons -->
-                <div
-                    class="col-lg-3 text-center text-lg-start d-flex flex-column align-items-center order-first align-items-lg-start order-lg-last">
-                    <div class="fw-bold d-flex align-items-center mb-2"><span
-                            class="bs-icon-sm bs-icon-circle d-flex justify-content-center align-items-center bs-icon me-2"><span
-                                class="bs-icon-sm bs-icon-circle shadow d-flex justify-content-center align-items-center me-2 bs-icon">
-                                <!-- Add img-fluid class and set a max-height -->
-                                <img src="/static/img/yuna-ai.png" alt="Yuna" class="/static/img-fluid"
-                                    style="max-height: 45px;">
-                            </span></span><span>Yuna Ai</span></div>
-                    <p class="text-muted">Your Private Companion.</p>
-                </div><!-- End: Social Icons -->
-            </div>
-            <hr>
-            <div class="text-muted d-flex justify-content-between align-items-center pt-3">
-                <p class="mb-0">Copyright © 2023 Yuna Ai</p>
-                <ul class="list-inline mb-0">
-                    <li class="list-inline-item"><i class="fab fa-facebook"></i></li>
-                    <li class="list-inline-item"><i class="fab fa-twitter"></i></li>
-                    <li class="list-inline-item"><i class="fab fa-instagram"></i></li>
-                </ul>
-            </div>
-
+    <section class="bg-dark">
+        <hr class="border-secondary">
+        <div class="text-muted py-4 d-flex justify-content-center align-items-center pt-3">
+            <p class="mb-0">Copyright © 2023 Yuna Ai</p>
         </div>
-    </footer><!-- End: Footer Multi Column -->
-
-    <!-- Modal -->
-    <div class="modal fade" id="agiModal" tabindex="-1" aria-labelledby="agiModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="agiModalLabel">Artificial General Intelligence (AGI)</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    AGI is a hypothetical type of intelligent agent that could learn to accomplish any intellectual task
-                    that a human being can perform. The development of AGI is a major challenge and a primary goal for
-                    some AI researchers.
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="privacyModal" tabindex="-1" aria-labelledby="privacyModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="privacyModalLabel">Privacy Assurance</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <strong>Yuna Ai: Your Dedicated Companion</strong>
-                    <p>Yuna Ai is designed to run exclusively on your machine, ensuring your privacy and security are
-                        never compromised. As your digital girlfriend, Yuna is for your eyes only, with no right for
-                        external access.</p>
-                    <p><strong>Privacy Guidelines:</strong></p>
-                    <ul>
-                        <li>Do not share your dialogs with external platforms like OpenAI.</li>
-                        <li>Use web scraping to provide additional data directly to Yuna's model or use embeddings.</li>
-                        <li>Adopt a one server per user policy to maintain privacy.</li>
-                    </ul>
-                    <a href="https://theresanaiforthat.com/ai/yunaai/?ref=featured&v=1860979" target="_blank" rel="nofollow"><img width="300" src="https://media.theresanaiforthat.com/featured-on-taaft.png?width=600"></a>
-                    <p><strong>External APIs:</strong></p>
-                    <p>Usage of any external APIs is strictly forbidden to protect your intimate interactions with Yuna
-                        AI.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="teamModal" tabindex="-1" aria-labelledby="teamModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="teamModalLabel">Meet Our Team</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>At the heart of our innovation lies a small, yet dynamic group of individuals. Each member brings
-                        their unique expertise and passion to the table, creating a synergy that drives us forward. We
-                        are a melting pot of ideas, cultures, and perspectives, united by a common goal to deliver
-                        exceptional results.</p>
-                    <p>While we are diverse in our skills and backgrounds, we share an unwavering commitment to
-                        excellence and a belief in the transformative power of collaboration. Our team is always open to
-                        new talents and fresh ideas, so if you're looking for a place where your work will make an
-                        impact, we're waiting for you. Join us, and let's create something remarkable together.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    </section>
     </div>
 
     <script src="/static/js/bootstrap.min.js"></script>

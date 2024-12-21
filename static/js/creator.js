@@ -1,22 +1,18 @@
 // Element selectors
 const $ = id => document.getElementById(id);
 const elements = {
-    nakedWorkArea: $('naked-work-area'),
-    articlePromptTemplate: $('article-prompt-template'),
-    articleUserInput: $('article-user-input'),
-    articleOutputText: $('article-output-text'),
-    articleDraftText: $('article-draft-text'),
-    sendCreateNakedButton: $('send-create-naked'),
-    sendCreateArticleButton: $('send-create-article'),
+    workArea: $('work-area'),
+    draftArea: $('draft-area'),
+    outputArea: $('output-area'),
+    sendButton: $('send-button'),
+    togglePresentation: $('toggle-presentation'),
+    presentationSection: $('presentation-section'),
+    presentationPreview: $('presentation-content'),
+    saveButton: $('save-button'),
+    clearButton: $('clear-button'),
     copyToDraftButton: $('copy-to-draft'),
     markdownInput: $('markdown-input'),
-    preview: $('preview'),
-    saveButton: $('save-button'),
-    exportButton: $('export-button'),
-    clearButton: $('clear-button'),
-    textInput: $('textInput'),
-    status: $('status'),
-    audioOutput: $('audioOutput'),
+    exportButton: $('export-presentation-button')
 };
 
 // Shared message sending function
@@ -26,17 +22,16 @@ const sendMessage = async (content, output) => {
 };
 
 // Event handlers
-const sendNakedRequest = () => sendMessage(elements.nakedWorkArea.value, elements.nakedWorkArea);
-const sendArticleRequest = () => {
-    const content = `${elements.articlePromptTemplate.value}\n\n${elements.articleUserInput.value}`;
-    sendMessage(content, elements.articleOutputText);
+const sendRequest = () => sendMessage(elements.workArea.value, elements.outputArea);
+const copyToDraft = () => elements.draftArea.value = elements.outputArea.value;
+const togglePresentation = () => {
+    elements.presentationSection.classList.toggle('d-none');
 };
-const copyToDraft = () => elements.articleDraftText.value = elements.articleOutputText.value;
 
 // Attach event listeners
-elements.sendCreateNakedButton.addEventListener('click', sendNakedRequest);
-elements.sendCreateArticleButton.addEventListener('click', sendArticleRequest);
+elements.sendButton.addEventListener('click', sendRequest);
 elements.copyToDraftButton.addEventListener('click', copyToDraft);
+elements.togglePresentation.addEventListener('change', togglePresentation);
 
 // Markdown Renderer Setup
 marked.setOptions({
@@ -47,28 +42,28 @@ marked.setOptions({
 // Load and render markdown on load
 window.onload = () => {
     const saved = localStorage.getItem('presentationMarkdown');
-    if (saved) elements.markdownInput.value = saved;
+    if (saved) elements.workArea.value = saved;
     renderPreview();
 };
 
 // Markdown Event Listeners
 elements.saveButton.addEventListener('click', () => {
-    localStorage.setItem('presentationMarkdown', elements.markdownInput.value);
+    localStorage.setItem('presentationMarkdown', elements.workArea.value);
     alert('Presentation saved!');
 });
 elements.clearButton.addEventListener('click', () => {
     if (confirm('Are you sure you want to clear the presentation?')) {
-        elements.markdownInput.value = '';
-        elements.preview.innerHTML = '';
+        elements.workArea.value = '';
+        elements.outputArea.innerHTML = '';
         localStorage.removeItem('presentationMarkdown');
     }
 });
-elements.markdownInput.addEventListener('input', renderPreview);
+elements.workArea.addEventListener('input', renderPreview);
 
 // Render markdown preview
 function renderPreview() {
-    const slides = elements.markdownInput.value.split(/^---$/m);
-    elements.preview.innerHTML = slides.map(slide => {
+    const slides = elements.workArea.value.split(/^---$/m);
+    elements.presentationPreview.innerHTML = slides.map(slide => {
         const div = document.createElement('div');
         div.className = 'slide-container mb-4 p-3 border rounded';
         div.innerHTML = marked.parse(slide);

@@ -1,890 +1,434 @@
 <!DOCTYPE html>
-<html data-bs-theme="dark" lang="en">
+<html data-bs-theme="dark">
 
-<head data-bs-theme="dark">
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Yuna Ai</title>
-    <meta name="theme-color" content="#212529">
-    <link rel="canonical" href="http://www.yuna-ai.com">
-    <meta property="og:url" content="/">
-    <meta property="og:description" content="Your Private Companion">
-    <meta name="twitter:image" content="/static/img/yuna-ai.png">
-    <meta name="twitter:title" content="Yuna Ai">
-    <meta property="og:image" content="/static/img/yuna-ai.png">
-    <meta name="description" content="Your Private Companion">
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Yuna Ai">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:description" content="Your Private Companion">
-    <meta name="apple-touch-fullscreen" content="yes" />
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <script type="application/ld+json">
-        {
-            "@context": "http://schema.org",
-            "@type": "WebSite",
-            "name": "Yuna Ai",
-            "url": "http://www.yuna-ai.com"
-        }
-    </script>
-
-    <link rel="icon" type="image/jpeg" sizes="60x60" href="/static/img/yuna-ai.png">
-    <link rel="manifest" href="/static/manifest.json">
-    <link rel="stylesheet" href="/static/css/bootstrap.min.css" rel="preload" as="style" media="all">
-    <link rel="stylesheet" href="/static/css/awesome.css" rel="preload" as="style" media="all">
-    <link rel="stylesheet" href="/static/css/kawai-v11-2.css" media="all">
-    <link rel="stylesheet" href="/static/css/index.css" media="all">
-    <script src="/static/js/kawai-v11-2.js" defer></script>
-    <script src="/static/js/kanojo.js" defer></script>
+    <title>Yuna AI - Modern Interface</title>
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/index.css">
     <script src="/static/js/index.js" defer></script>
-    <script src="/static/js/setup.js" defer></script>
-    <script src="/static/js/search.js" defer></script>
-    <script src="/static/js/pptxgen.js" defer></script>
-    <script src="/static/js/markdown.js" defer></script>
-    <script src="/static/js/creator.js" defer></script>
-    <script src="/static/js/diary.js" defer></script>
-    <style>
-        body {
-            margin: 0;
-        }
-
-        canvas {
-            display: block;
-        }
-    </style>
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function () {
-                navigator.serviceWorker.register('/static/sw.js').then(
-                    function (registration) {
-                        // Registration was successful
-                        console.log('ServiceWorker registration successful with scope: ', registration
-                            .scope);
-                    },
-                    function (err) {
-                        // registration failed :(
-                        console.log('ServiceWorker registration failed: ', err);
-                    });
-            });
-        }
-    </script>
+    <script src="/static/js/history.js" defer></script>
+    <script src="/static/js/kanojo.js" defer></script>
+    <script src="/static/js/dairy.js" defer></script>
 </head>
 
-<body id="page-top">
-    <div id="wrapper">
-        <nav class="navbar sidebar sidebar-o bg-black align-items-start sidebar-dark accordion p-0 navbar-dark"
-            id="sidebar">
-            <div class="container-fluid d-flex flex-column p-0">
-                <div class="sidebar-header">
-                    <a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
-                        <div class="sidebar-brand-icon">
-                            <img src="/static/img/yuna-ai.png" alt="Yuna Ai Logo" style="width: 30px; height: 30px;">
+<body>
+    <!-- Yuna Avatar -->
+    <img src="/static/img/yuna-girl-head.webp" class="yuna-avatar" onclick="toggleFloatingMenu()">
+
+    <!-- Top Menu -->
+    <div class="top-menu" id="floatingMenu">
+        <button class="menu-button" onclick="togglePanel('kanojo')" aria-label="Kanojo">
+            <i class="fas fa-user"></i>
+        </button>
+        <button class="menu-button" onclick="togglePanel('history')" aria-label="History">
+            <i class="fas fa-history"></i>
+        </button>
+        <button class="menu-button" onclick="togglePanel('creator')" aria-label="Creator">
+            <i class="fas fa-magic"></i>
+        </button>
+        <button class="menu-button" onclick="togglePanel('himitsu')" aria-label="Himitsu">
+            <i class="fas fa-star"></i>
+        </button>
+        <button class="menu-button" onclick="togglePanel('diary')" aria-label="Diary">
+            <i class="fas fa-book"></i>
+        </button>
+        <button class="menu-button" onclick="showCallModal()" aria-label="Call">
+            <i class="fas fa-phone"></i>
+        </button>
+    </div>
+
+    <!-- Overlay -->
+    <div class="overlay" id="overlay" onclick="closeAllPanels()"></div>
+
+    <!-- Main Chat Area -->
+    <div class="chat-container" id="chatContainer">
+        <div class="message message-ai">
+            Hello! I'm Yuna, your adorable AI companion. How can I assist you today?
+        </div>
+        <div class="message message-user">
+            Hi Yuna! I'm excited to chat with you.
+        </div>
+        <div class="message message-ai">
+            That's wonderful! Let's make our conversations fun and productive.
+        </div>
+    </div>
+
+    <!-- Input Area -->
+    <div class="input-area">
+        <div class="input-group">
+            <button class="btn btn-outline-secondary attach-button" aria-label="Attach">
+                <i class="fas fa-paperclip"></i>
+            </button>
+            <input type="text" class="form-control" placeholder="Message Yuna..." aria-label="Message Yuna"
+                id="messageInput">
+            <button class="btn send-button" aria-label="Send" onclick="sendMessage()">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Sliding Panels -->
+    <!-- Kanojo Panel -->
+    <div id="kanojoPanel" class="popup-panel">
+        <button class="close-button" onclick="togglePanel('kanojo')">&times;</button>
+        <h4 class="mb-4">Yuna Customization</h4>
+        <div class="diary-card accordion" id="kanojoAccordion">
+            <!-- Profile and Personality Section -->
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#profilePersonalityCollapse">
+                        Profile & Personality
+                    </button>
+                </h2>
+                <div id="profilePersonalityCollapse" class="accordion-collapse collapse show"
+                    data-bs-parent="#kanojoAccordion">
+                    <div class="accordion-body">
+                        <!-- Kanojo Manager -->
+                        <div class="mb-3">
+                            <h5 class="card-title">Kanojo Management</h5>
+                            <div class="mb-3">
+                                <label for="kanojoSelect" class="form-label">Select Kanojo</label>
+                                <select class="form-select" id="kanojoSelect">
+                                    <option value="Yuna">Yuna</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <button type="button" class="btn btn-primary" id="saveKanojo">Save</button>
+                                <button type="button" class="btn btn-primary" id="addKanojo">Add</button>
+                                <button type="button" class="btn btn-secondary" id="deleteKanojo">Delete</button>
+                            </div>
+                            <div class="mb-3">
+                                <button type="button" class="btn btn-primary" id="exportKanojos">Export All</button>
+                                <button type="button" class="btn btn-primary" id="importKanojos">Import All</button>
+                            </div>
+                            <div class="mb-3">
+                                <button type="button" class="btn btn-primary" id="exportSingleKanojo">Export
+                                    Single</button>
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#fileModal">Import Single</button>
+                            </div>
                         </div>
-                        <div class="sidebar-brand-text mx-3"><span>Yuna Ai</span></div>
-                    </a>
-                </div>
-                <ul class="sidebar-menu">
-                    <li><a href="#" class="nav-link side-link active" onclick="OpenTab('1')"><i class="fas fa-home"></i>
-                            Home
-                            <span class="badge badge-pill" id="messageCount">0</span></a></li>
-                    <li><a href="#" class="nav-link side-link" onclick="OpenTab('2')"><i class="fas fa-compass"></i>
-                            Explore
-                            <span class="badge badge-pill" id="chatsCount">0</span></a>
-                    </li>
-                    <li><a href="#" class="nav-link side-link" onclick="OpenTab('4')"><i class="fas fa-user"></i>
-                            Kanojo</a></li>
-                    <li><a href="#" class="nav-link side-link"
-                            onclick="OpenLink('https://www.patreon.com/YukiArimo')"><i class="fas fa-heart"></i>
-                            Support</a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-        <div class="d-flex flex-column" id="content-wrapper" style="background-color: none !important;">
-            <div id="content">
-                <nav class="navbar navbar-expand shadow mb-4 topbar static-top navbar-light topbar-o fixed-top">
-                    <div class="container-fluid">
-                        <ul class="navbar-nav">
-                            <!-- Toggle Sidebar -->
-                            <li
-                                class="nav-item d-flex justify-content-center sidebarToggle align-items-center rounded-circle">
-                                <a class="btn btn-link" href="#" onclick="toggleSidebar(); kawaiAutoScale();"
-                                    aria-label="Settings">
-                                    <i class="fas fa-bars"></i>
-                                </a>
-                            </li>
-                        </ul>
-                        <ul class="navbar-nav flex-nowrap ms-auto">
-                            <!-- Profile Dropdown -->
-                            <li class="nav-item dropdown no-arrow">
-                                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
-                                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <img class="border rounded-circle img-profile" src="/static/img/yuna-girl-head.webp"
-                                        alt="Profile Picture" style="height: 26px;">
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
-                                    aria-labelledby="userDropdown">
-                                    <!-- Home Tab -->
-                                    <a class="dropdown-item" href="#" onclick="OpenTab('1');">
-                                        <i class="fas fa-home fa-sm fa-fw mr-2 text-gray-400"></i>
-                                        Home
-                                    </a>
-                                    <!-- Explore Tab -->
-                                    <a class="dropdown-item" href="#" onclick="OpenTab('2');">
-                                        <i class="fas fa-compass fa-sm fa-fw mr-2 text-gray-400"></i>
-                                        Explore
-                                    </a>
-                                    <!-- Kanojo Tab -->
-                                    <a class="dropdown-item" href="#" onclick="OpenTab('4');">
-                                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                                        Kanojo
-                                    </a>
-                                    <!-- Call -->
-                                    <a class="dropdown-item" href="#" onclick="callYuna.show();">
-                                        <i class="fas fa-phone fa-sm fa-fw mr-2 text-gray-400"></i>
-                                        Call
-                                    </a>
-                                </div>
-                            </li>
-                        </ul>
+
+                        <div class="mb-3">
+                            <label for="kanojoName" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="kanojoName">
+                        </div>
+                        <div class="mb-3">
+                            <label for="kanojoMemory" class="form-label">Memory</label>
+                            <textarea class="form-control" id="kanojoMemory" style="height: 100px"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="kanojoCharacter" class="form-label">Character</label>
+                            <textarea class="form-control" id="kanojoCharacter" style="height: 100px"></textarea>
+                        </div>
+
+                        <!-- Prompt Template Manager -->
+                        <div class="mb-3">
+                            <h5 class="card-title">Prompt Templates</h5>
+                            <div class="mb-3">
+                                <label for="promptTemplateSelect" class="form-label">Select Prompt Template</label>
+                                <select class="form-select" id="promptTemplateSelect">
+                                    <option value="Default">Default</option>
+                                    <option value="Creative">Creative</option>
+                                    <option value="Professional">Professional</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="promptTemplateName" class="form-label">Prompt Template Name</label>
+                                <input type="text" class="form-control" id="promptTemplateName">
+                            </div>
+                            <div class="mb-3">
+                                <label for="promptTemplateContent" class="form-label">Prompt Template Content</label>
+                                <textarea class="form-control" id="promptTemplateContent"
+                                    style="height: 100px"></textarea>
+                            </div>
+                            <button type="button" class="btn btn-primary" id="savePromptTemplate">Save</button>
+                            <button type="button" class="btn btn-secondary" id="cancelPromptTemplate">Cancel</button>
+                            <button type="button" class="btn btn-danger" id="deletePromptTemplate">Delete</button>
+                            <button type="button" class="btn btn-primary" id="exportPromptTemplates">Export All</button>
+                            <button type="button" class="btn btn-primary" id="importPromptTemplates">Import All</button>
+                        </div>
                     </div>
-                </nav>
-                <div class="container-fluid">
-                    <div class="block-o">
-                        <div class="tab-o tab-o-default" id="1">
-                            <div class="" id="msgCol">
-                                <div class="block-card block-scroll" id="message-container">
-                                    <!-- Dynamic HTML elements will be added here -->
+                </div>
+            </div>
+
+            <!-- Features Section -->
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#featuresCollapse">
+                        Features
+                    </button>
+                </h2>
+                <div id="featuresCollapse" class="accordion-collapse collapse" data-bs-parent="#kanojoAccordion">
+                    <div class="accordion-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <h6>Himitsu Actions</h6>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="pseudoApi">
+                                    <label class="form-check-label">Pseudo API</label>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="functions">
+                                    <label class="form-check-label">Functions</label>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="notifications">
+                                    <label class="form-check-label">Notifications</label>
                                 </div>
                             </div>
-
-                            <div class="search-container input-wrapper ui-container">
-                                <div class="search-bar">
-                                    <!-- a button to open popup-->
-                                    <button class="search-button icon-left attach-button" data-bs-toggle="popover"
-                                        aria-label="Attach File" data-bs-placement="bottom" data-bs-html="true"
-                                        data-bs-content="<a class='btn btn-outline-primary btn-sm dropdown-item' onclick='handleTextFileClick()'>Text</a><a class='btn btn-outline-info btn-sm dropdown-item' onclick='handleImageFileClick()'>Image</a><a class='btn btn-outline-success btn-sm dropdown-item' onclick='handleAudioFileClick()'>Audio</a><a class='btn btn-outline-danger btn-sm dropdown-item' onclick='handleVideoFileClick()'>Video</a>">
-                                        <i class="fas fa-folder"></i>
-                                    </button>
-                                    <input type="file" id="textUpload" accept=".txt" style="display: none;"
-                                        onchange="captureTextViaFile()">
-                                    <input type="file" id="imageUpload" accept="image/*" style="display: none;"
-                                        onchange="captureImageViaFile(this)">
-                                    <input type="file" id="audioUpload" accept="audio/*" style="display: none;"
-                                        onchange="captureAudioViaFile()">
-                                    <input type="file" id="videoUpload" accept="video/*" style="display: none;"
-                                        onchange="captureVideoViaFile()">
-                                    <input id="input_text" type="text" class="input-field" placeholder="Ask Yuna..."
-                                        type="text" class="search-input">
-
-                                    <div class="form-check form-switch" style="display: none;">
-                                        <input class="form-check-input" type="checkbox" id="himitsuToggle">
-                                        <label class="form-check label" for="himitsuToggle">Himitsu Copilot</label>
-                                    </div>
-
-                                    <div class="form-check form-switch" id="himitsuToggle">
-                                        <input class="form-check-input" type="checkbox" id="himitsuToggle"
-                                            aria-label="Himitsu Copilot">
-                                    </div>
-
-                                    <button class="search-button icon-right" aria-label="Send">
-                                        <i class="fas fa-arrow-up" onclick="messageManagerInstance.sendMessage('')"></i>
-                                    </button>
+                            <div class="col-md-4">
+                                <h6>Configuration</h6>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="customConfig">
+                                    <label class="form-check-label">Custom Config</label>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="sounds">
+                                    <label class="form-check-label">Sounds</label>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="useHistory">
+                                    <label class="form-check-label">Use History</label>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="tab-o" id="2">
-                            <div class="coll-lo">
-                                <div class="card settings-container el-9">
-                                    <div class="card-body card-full-stack">
-
-                                        <!-- Main Navigation Tabs: Explore, Himitsu, Diary -->
-                                        <ul class="nav nav-pills nav-fill mb-4" id="exploreTab" role="tablist">
-                                            <li class="nav-item" role="presentation">
-                                                <button class="nav-link active" id="explore-tab" data-bs-toggle="pill"
-                                                    data-bs-target="#explore" type="button" role="tab"
-                                                    aria-controls="explore" aria-selected="true">Chats</button>
-                                            </li>
-                                            <li class="nav-item" role="presentation">
-                                                <button class="nav-link" id="create-tab" data-bs-toggle="pill"
-                                                    data-bs-target="#create" type="button" role="tab"
-                                                    aria-controls="create" aria-selected="false">Creator</button>
-                                            </li>
-                                            <li class="nav-item" role="presentation">
-                                                <button class="nav-link" id="himitsu-tab" data-bs-toggle="pill"
-                                                    data-bs-target="#himitsu" type="button" role="tab"
-                                                    aria-controls="himitsu" aria-selected="false">Himitsu</button>
-                                            </li>
-                                            <li class="nav-item" role="presentation">
-                                                <button class="nav-link" id="diary-tab" data-bs-toggle="pill"
-                                                    data-bs-target="#diary" type="button" role="tab"
-                                                    aria-controls="diary" aria-selected="false">Diary</button>
-                                            </li>
-                                            <li class="nav-item" role="presentation">
-                                                <button class="nav-link" id="audiobook-tab" data-bs-toggle="pill"
-                                                    data-bs-target="#audiobook" type="button" role="tab"
-                                                    aria-controls="audiobook" aria-selected="false">Audiobook</button>
-                                            </li>
-                                        </ul>
-
-                                        <!-- Main Tab Content -->
-                                        <div class="tab-content card-full-stack" id="exploreTabContent">
-
-                                            <!-- Explore Tab: Combines Chats and Collections -->
-                                            <div class="tab-pane fade show active" id="explore" role="tabpanel"
-                                                aria-labelledby="explore-tab">
-
-                                                <!-- Chats Section -->
-                                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                                    <h5 class="m-0 fw-bold">Chats</h5>
-                                                    <div>
-                                                        <button class="btn btn-primary btn-sm me-2"
-                                                            onclick="historyManagerInstance.createHistoryFile();">
-                                                            <i class="fas fa-plus"></i> Add
-                                                        </button>
-                                                        <button class="btn btn-secondary btn-sm"
-                                                            onclick="historyManagerInstance.importHistory();">
-                                                            <i class="fas fa-upload"></i> Load
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                                <ul class="list-group mb-4" id="chat-items">
-                                                    <!-- Dynamically Added Chat Items -->
-                                                </ul>
-
-                                                <!-- Collections Section -->
-                                                <ul class="list-group" id="collectionItems">
-                                                    <!-- Collections Content -->
-                                                </ul>
-                                            </div>
-
-                                            <div class="tab-pane fade" id="create" role="tabpanel"
-                                                aria-labelledby="create-tab">
-                                                <div class="row g-4">
-                                                    <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <h5 class="mb-3">Draft Area</h5>
-                                                            <textarea class="form-control" id="draft-area"
-                                                                placeholder="Draft will appear here..."></textarea>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <h5 class="mb-3">Work Area</h5>
-                                                            <textarea class="form-control" id="work-area"
-                                                                placeholder="Enter content to send..."></textarea>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6"></div>
-                                                    <div class="form-group">
-                                                        <h5 class="mb-3">Output Area</h5>
-                                                        <textarea class="form-control" id="output-area"
-                                                            placeholder="Output will appear here..."></textarea>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6 d-grid gap-2 mt-4"></div>
-                                                <button type="button" id="send-button"
-                                                    class="btn btn-primary">Send</button>
-                                                <button type="button" id="copy-to-draft" class="btn btn-secondary">Copy
-                                                    to Draft</button>
-                                                <button type="button" id="export-presentation-button"
-                                                    class="btn btn-primary">Export Presentation</button>
-                                                <button type="button" id="save-button"
-                                                    class="btn btn-success">Save</button>
-                                                <button type="button" id="clear-button"
-                                                    class="btn btn-danger">Clear</button>
-
-                                                <div class="col-12">
-                                                    <div class="form-check mt-3">
-                                                        <input class="form-check-input" type="checkbox"
-                                                            id="toggle-presentation">
-                                                        <label class="form-check-label" for="toggle-presentation">
-                                                            Show Presentation
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                                <div class="col-12 d-none" id="presentation-section">
-                                                    <h5>Presentation</h5>
-                                                    <div id="presentation-content"></div>
-                                                </div>
-                                            </div>
-
-                                            <!-- Himitsu Tab: Himitsu Controls -->
-                                            <div class="tab-pane fade" id="himitsu" role="tabpanel"
-                                                aria-labelledby="himitsu-tab">
-                                                <div class="mb-3">
-                                                    <h5 class="mb-3">Himitsu Controls</h5>
-                                                    <!-- Add Himitsu Controls Content Here -->
-                                                    <div class="list-group list-group" id="notifications-container">
-                                                        <a class="list-group-item list-group-item-action d-flex align-items-center bg-dark text-white"
-                                                            href="#">
-                                                            <div>
-                                                                <span class="font-weight-bold">Hello! Welcome to the
-                                                                    chat room!</span>
-                                                            </div>
-                                                        </a>
-                                                    </div>
-
-                                                    <div class="input-group mb-3">
-                                                        <input type="text" id="searchInput"
-                                                            class="form-control rounded-pill"
-                                                            placeholder="Enter your search" aria-label="Search input">
-                                                        <button id="searchButton"
-                                                            class="btn btn-outline-primary rounded-pill ms-2">Search</button>
-                                                    </div>
-                                                    <div id="requestResults" class="alert alert-info d-none"></div>
-                                                    <div id="answerResults" class="bg-white p-3 rounded shadow-sm">
-                                                    </div>
-                                                    <div id="results" class="row row-cols-1 row-cols-md-3 g-4"></div>
-                                                    <div id="analysisResult" class="row row-cols-1 row-cols-md-3 g-4">
-                                                    </div>
-
-                                                </div>
-                                            </div>
-
-                                            <!-- Diary and Notes Tabs -->
-                                            <div class="tab-pane fade" id="diary" role="tabpanel"
-                                                aria-labelledby="diary-tab">
-
-                                                <!-- Nested Diary Sub-Tabs -->
-                                                <ul class="nav nav-pills nav-fill mb-3" id="diaryTab" role="tablist">
-                                                    <li class="nav-item" role="presentation">
-                                                        <button class="nav-link active" id="entries-tab"
-                                                            data-bs-toggle="pill" data-bs-target="#entries"
-                                                            type="button" role="tab" aria-controls="entries"
-                                                            aria-selected="true">Diary Entries</button>
-                                                    </li>
-                                                    <li class="nav-item" role="presentation">
-                                                        <button class="nav-link" id="notes-tab" data-bs-toggle="pill"
-                                                            data-bs-target="#notes" type="button" role="tab"
-                                                            aria-controls="notes"
-                                                            aria-selected="false">Notes/Memories</button>
-                                                    </li>
-                                                </ul>
-
-                                                <!-- Nested Diary Tab Content -->
-                                                <div class="tab-content" id="diaryTabContent">
-
-                                                    <!-- Diary Entries Sub-Tab -->
-                                                    <div class="tab-pane fade show active" id="entries" role="tabpanel"
-                                                        aria-labelledby="entries-tab">
-
-                                                        <!-- New Diary Entry Form -->
-                                                        <div class="card shadow-sm mb-5">
-                                                            <div class="card-body">
-                                                                <h5 class="card-title mb-3">New Diary Entry</h5>
-                                                                <form id="entry-form">
-                                                                    <div class="mb-3">
-                                                                        <input type="text" class="form-control"
-                                                                            id="entry-title" name="title"
-                                                                            placeholder="Title" required>
-                                                                    </div>
-                                                                    <div class="mb-3">
-                                                                        <textarea class="form-control" id="entry-text"
-                                                                            name="text" rows="5"
-                                                                            placeholder="Write your thoughts in Markdown..."
-                                                                            required></textarea>
-                                                                    </div>
-                                                                    <div class="mb-3">
-                                                                        <input type="datetime-local"
-                                                                            class="form-control" id="entry-date"
-                                                                            name="date" required>
-                                                                    </div>
-                                                                    <button type="submit" class="btn btn-primary"
-                                                                        id="add-entry">Add Entry</button>
-                                                                </form>
-                                                            </div>
-                                                        </div>
-
-                                                        <!-- Entries Display Container -->
-                                                        <div id="entries-container">
-                                                            <!-- Diary Entries Will Be Displayed Here -->
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Notes/Memories Sub-Tab -->
-                                                    <div class="tab-pane fade" id="notes" role="tabpanel"
-                                                        aria-labelledby="notes-tab">
-
-                                                        <!-- New Note/Memory Form -->
-                                                        <div class="card shadow-sm mb-5">
-                                                            <div class="card-body">
-                                                                <h5 class="card-title mb-3">New Note/Memory</h5>
-                                                                <form id="note-form">
-                                                                    <div class="mb-3">
-                                                                        <input type="text" class="form-control"
-                                                                            id="note-title" name="title"
-                                                                            placeholder="Title" required>
-                                                                    </div>
-                                                                    <div class="mb-3">
-                                                                        <textarea class="form-control" id="note-text"
-                                                                            name="text" rows="5"
-                                                                            placeholder="Write your note or memory in Markdown..."
-                                                                            required></textarea>
-                                                                    </div>
-                                                                    <button type="submit" class="btn btn-success"
-                                                                        id="add-note">Add Note</button>
-                                                                </form>
-                                                            </div>
-                                                        </div>
-
-                                                        <!-- Notes Display Container -->
-                                                        <div id="notes-container">
-                                                            <!-- Notes Will Be Displayed Here -->
-                                                        </div>
-                                                    </div>
-
-                                                </div>
-                                            </div>
-                                            <div class="tab-pane fade" id="audiobook" role="tabpanel"
-                                                aria-labelledby="audiobook-tab">
-                                                <!-- Audiobook Maker Content -->
-                                                <div class="container-fluid">
-                                                    <div class="row">
-                                                        <!-- Left Side: Controls -->
-                                                        <div class="col-md-4 sidebar" id="audiobook-sidebar">
-                                                            <div class="card bg-dark text-white mb-4">
-                                                                <div class="card-body">
-                                                                    <h2 class="card-title">Project Manager</h2>
-                                                                    <div class="mb-3">
-                                                                        <label for="projectName"
-                                                                            class="form-label text-white">Project
-                                                                            Name</label>
-                                                                        <input type="text"
-                                                                            class="form-control bg-dark text-white border-secondary"
-                                                                            id="projectName"
-                                                                            placeholder="Enter project name">
-                                                                    </div>
-                                                                    <button class="btn btn-outline-primary w-100"
-                                                                        id="createProject">Create Project</button>
-                                                                    <div class="mb-3 mt-3">
-                                                                        <label for="projectSelect"
-                                                                            class="form-label text-white">Select
-                                                                            Project</label>
-                                                                        <select
-                                                                            class="form-select bg-dark text-white border-secondary mb-3"
-                                                                            id="projectSelect">
-                                                                            <option selected>Select Project</option>
-                                                                        </select>
-                                                                        <button class="btn btn-outline-primary w-100"
-                                                                            id="loadProject">Load Project</button>
-                                                                    </div>
-                                                                    <hr class="border-secondary">
-
-                                                                    <h3 class="card-title">Chapter Manager</h3>
-                                                                    <div class="mb-3">
-                                                                        <label for="chapterName"
-                                                                            class="form-label text-white">Chapter
-                                                                            Name</label>
-                                                                        <input type="text"
-                                                                            class="form-control bg-dark text-white border-secondary"
-                                                                            id="chapterName"
-                                                                            placeholder="Enter chapter name">
-                                                                    </div>
-                                                                    <button class="btn btn-outline-primary w-100"
-                                                                        id="createChapter">Create Chapter</button>
-                                                                    <select
-                                                                        class="form-select bg-dark text-white border-secondary mb-3 mt-3"
-                                                                        id="chapterSelect">
-                                                                        <option selected>Select Chapter</option>
-                                                                    </select>
-                                                                    <button class="btn btn-outline-primary w-100"
-                                                                        id="loadChapter">Load Chapter</button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <!-- Right Side: Text Blocks -->
-                                                        <div class="col-md-8">
-                                                            <div class="card bg-dark text-white mb-4">
-                                                                <div class="card-body">
-                                                                    <h2 class="card-title">Advanced Text Blocks</h2>
-                                                                    <h3 class="card-subtitle mb-3">Select Chapter to
-                                                                        Play
-                                                                    </h3>
-                                                                    <select
-                                                                        class="form-select bg-dark text-white border-secondary mb-3"
-                                                                        id="playChapterSelect">
-                                                                        <option selected>Select Chapter</option>
-                                                                    </select>
-                                                                    <div class="mb-3">
-                                                                        <label for="startFrom"
-                                                                            class="form-label text-white">Start From
-                                                                            Paragraph</label>
-                                                                        <input type="number"
-                                                                            class="form-control bg-dark text-white border-secondary"
-                                                                            id="startFrom" min="1"
-                                                                            placeholder="Enter paragraph number">
-                                                                    </div>
-                                                                    <button class="btn btn-outline-success w-100 mb-4"
-                                                                        id="startPlaying">Start Playing</button>
-
-                                                                    <div class="mb-3">
-                                                                        <label for="paragraphText"
-                                                                            class="form-label text-white">New
-                                                                            Paragraph</label>
-                                                                        <textarea
-                                                                            class="form-control bg-dark text-white border-secondary"
-                                                                            id="paragraphText" rows="3"
-                                                                            placeholder="Enter paragraph text"></textarea>
-                                                                        <button
-                                                                            class="btn btn-outline-primary w-100 mt-2"
-                                                                            id="addParagraph">Add Paragraph</button>
-                                                                    </div>
-                                                                    <div id="textBlocks" class="text-white"></div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                    </div>
+                            <div class="col-md-4">
+                                <h6>General</h6>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="backgroundCall">
+                                    <label class="form-check-label">Background Call</label>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="nsfw">
+                                    <label class="form-check-label">NSFW</label>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="streaming">
+                                    <label class="form-check-label">Streaming</label>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
 
-                        <div class="tab-o" id="4">
-                            <div class="coll-lo">
-                                <div class="col-10 settings-container el-9 profile-card">
-                                    <div class="row align-items-stretch">
-                                        <div class="col-md-2 mb-3 mb-sm-0">
-                                            <div class="card">
-                                                <img src="/static/img/yuna-girl-head.webp" class="card-img-top"
-                                                    alt="Profile Picture">
-                                                <div class="card-body">
-                                                    <div style="display: flex; flex-direction: row;">
-                                                        <h5 class="card-title" id="yuna-name">Yuna Ai</h5>
-                                                    </div>
-                                                    <p class="card-text">Calgary, Canada</p>
-                                                    <button class="btn btn-primary">Upload</button>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-10">
-                                            <div class="card">
-                                                <div class="card-body">
-                                                    <h5 class="card-title">Kanojo Management</h5>
-                                                    <div class="mb-3">
-                                                        <label for="kanojoSelect" class="form-label">Select
-                                                            Kanojo</label>
-                                                        <select class="form-select" id="kanojoSelect"></select>
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <button type="button" class="btn btn-primary"
-                                                            id="saveKanojo">Save</button>
-                                                        <button type="button" class="btn btn-primary"
-                                                            id="addKanojo">Add</button>
-                                                        <button type="button" class="btn btn-secondary"
-                                                            id="deleteKanojo">Delete</button>
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <button type="button" class="btn btn-primary"
-                                                            id="exportKanojos">Export
-                                                            All</button>
-                                                        <button type="button" class="btn btn-primary"
-                                                            id="importKanojos">Import
-                                                            All</button>
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <button type="button" class="btn btn-primary"
-                                                            id="exportSingleKanojo">Export Single</button>
-                                                        <button type="button" class="btn btn-primary"
-                                                            data-bs-toggle="modal" data-bs-target="#fileModal">Import
-                                                            Single</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Name, Memory, Character with Emotional Profile -->
-                                    <div class="row mt-4">
-                                        <div class="col-md-12">
-                                            <div class="card">
-                                                <div class="card-body">
-                                                    <form>
-                                                        <div class="mb-3">
-                                                            <label for="yuna-ai-names" class="form-label">Name</label>
-                                                            <input type="text" class="form-control" id="kanojoName">
-                                                        </div>
-                                                        <div class="mb-3">
-                                                            <label for="yuna-ai-memory"
-                                                                class="form-label">Memory</label>
-                                                            <textarea class="form-control" id="kanojoMemory"></textarea>
-                                                        </div>
-                                                        <div class="mb-3">
-                                                            <label for="character" class="form-label">Character</label>
-                                                            <textarea class="form-control"
-                                                                id="kanojoCharacter"></textarea>
-                                                        </div>
-
-                                                        <!-- Integrated Emotional Profile Sliders -->
-                                                        <div class="mb-3">
-                                                            <label for="uiuxDesign" class="form-label">Cuteness</label>
-                                                            <input type="range" class="form-range" id="uiuxDesign">
-                                                        </div>
-                                                        <div class="mb-3">
-                                                            <label for="uiuxDesigntwo"
-                                                                class="form-label">Obsessive</label>
-                                                            <input type="range" class="form-range" id="uiuxDesigntwo">
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Combined Customization Section -->
-                                    <div class="row mt-4">
-                                        <div class="col-md-12">
-                                            <div class="card">
-                                                <div class="card-body">
-                                                    <h5 class="card-title">Customization</h5>
-                                                    <div class="d-flex flex-wrap">
-                                                        <!-- Plugins Settings -->
-                                                        <div class="me-4">
-                                                            <label for="testNonIntegrated" class="form-label">Himitsu
-                                                                Actions</label>
-                                                            <div class="form-check form-switch">
-                                                                <input class="form-check-input" type="checkbox"
-                                                                    id="testNonIntegrated">
-                                                                <label class="form-check-label"
-                                                                    for="testNonIntegrated">Pseudo
-                                                                    API</label>
-                                                            </div>
-                                                            <div class="form-check form-switch">
-                                                                <input class="form-check-input" type="checkbox"
-                                                                    id="testNonIntegrated">
-                                                                <label class="form-check-label"
-                                                                    for="testNonIntegrated">Functions</label>
-                                                            </div>
-                                                            <div class="form-check form-switch">
-                                                                <input class="form-check-input" type="checkbox"
-                                                                    id="testNonIntegrated">
-                                                                <label class="form-check-label"
-                                                                    for="testNonIntegrated">Notifications</label>
-                                                            </div>
-                                                        </div>
-
-                                                        <!-- Customization Settings -->
-                                                        <div class="me-4">
-                                                            <label for="customConfig"
-                                                                class="form-label">Configuration</label>
-                                                            <div class="form-check form-switch">
-                                                                <input class="form-check-input" type="checkbox"
-                                                                    id="customConfig">
-                                                                <label class="form-check-label"
-                                                                    for="customConfig">Custom
-                                                                    Config</label>
-                                                            </div>
-                                                            <div class="form-check form-switch">
-                                                                <input class="form-check-input" type="checkbox"
-                                                                    id="soundsMode">
-                                                                <label class="form-check-label"
-                                                                    for="soundsMode">Sounds</label>
-                                                            </div>
-                                                            <div class="form-check form-switch">
-                                                                <input class="form-check-input" type="checkbox"
-                                                                    id="useHistory">
-                                                                <label class="form-check-label" for="useHistory">Use
-                                                                    History</label>
-                                                            </div>
-                                                        </div>
-
-                                                        <!-- Customization Settings -->
-                                                        <div class="me-4">
-                                                            <label for="backgroundCall"
-                                                                class="form-label">General</label>
-                                                            <div class="form-check form-switch">
-                                                                <input class="form-check-input" type="checkbox"
-                                                                    id="backgroundCall">
-                                                                <label class="form-check-label"
-                                                                    for="backgroundCall">Background
-                                                                    Call</label>
-                                                            </div>
-                                                            <div class="form-check form-switch">
-                                                                <input class="form-check-input" type="checkbox"
-                                                                    id="nsfw">
-                                                                <label class="form-check-label" for="nsfw">NSFW</label>
-                                                            </div>
-                                                            <div class="form-check form-switch">
-                                                                <input class="form-check-input" type="checkbox"
-                                                                    id="streamingChatMode">
-                                                                <label class="form-check-label"
-                                                                    for="streamingChatMode">Streaming</label>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Prompt Templates Section -->
-                                    <div class="row mt-4">
-                                        <div class="col-md-12">
-                                            <div class="card">
-                                                <div class="card-body">
-                                                    <h5 class="card-title">Prompt Templates</h5>
-                                                    <div class="mb-3">
-                                                        <label for="promptTemplateSelect" class="form-label">Select
-                                                            Prompt Template</label>
-                                                        <select class="form-select" id="promptTemplateSelect"></select>
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label for="promptTemplateName" class="form-label">Prompt
-                                                            Template Name</label>
-                                                        <input type="text" class="form-control" id="promptTemplateName">
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label for="promptTemplateContent" class="form-label">Prompt
-                                                            Template Content</label>
-                                                        <textarea class="form-control"
-                                                            id="promptTemplateContent"></textarea>
-                                                    </div>
-                                                    <button type="button" class="btn btn-primary"
-                                                        id="savePromptTemplate">Save</button>
-                                                    <button type="button" class="btn btn-secondary"
-                                                        id="cancelPromptTemplate">Cancel</button>
-                                                    <button type="button" class="btn btn-danger"
-                                                        id="deletePromptTemplate">Delete</button>
-                                                    <button type="button" class="btn btn-primary"
-                                                        id="exportPromptTemplates">Export All</button>
-                                                    <button type="button" class="btn btn-primary"
-                                                        id="importPromptTemplates">Import All</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row mt-4 mb-6">
-                                        <div class="col-md-12">
-                                            <div class="card">
-                                                <div class="card-body">
-                                                    <div class="list-group-item" style="background-color: transparent;">
-                                                        <h6>Config</h6>
-                                                        <div id="parameter-container">
-                                                            <!-- Dynamic HTML elements will be added here -->
-                                                        </div>
-                                                        <button class="btn btn-secondary" onclick="saveConfigParams()">
-                                                            Save
-                                                        </button>
-                                                        <button class="btn btn-secondary"
-                                                            onclick="localStorage.clear(); location.reload();">
-                                                            Reset
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- File Import Modal -->
-                                    <div class="modal fade" id="fileModal" tabindex="-1"
-                                        aria-labelledby="fileModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="fileModalLabel">Import Kanojo</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                        aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <input type="file" id="fileInput" accept=".json">
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary"
-                                                        data-bs-dismiss="modal">Close</button>
-                                                    <button type="button" class="btn btn-primary"
-                                                        id="fileSubmit">Submit</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+            <!-- Advanced Config Section -->
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#advancedCollapse">
+                        Advanced Config
+                    </button>
+                </h2>
+                <div id="advancedCollapse" class="accordion-collapse collapse" data-bs-parent="#kanojoAccordion">
+                    <div class="accordion-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Max New Tokens</label>
+                                <input type="number" class="form-control" id="maxNewTokens" value="1024">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Context Length</label>
+                                <input type="number" class="form-control" id="contextLength" value="8192">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Temperature</label>
+                                <input type="number" step="0.1" class="form-control" id="temperature" value="0.7">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Top P</label>
+                                <input type="number" step="0.1" class="form-control" id="topP" value="0.9">
                             </div>
                         </div>
+                        <button class="btn btn-secondary mt-3" onclick="saveAdvancedConfig()">Save Config</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <audio id="backgroundMusic">
-        <source src="/static/audio/audio.mp3" type="audio/mpeg">
-    </audio>
-    </div>
-    <!-- Video Call Modal -->
-    <div class="modal fade" id="videoCallModal" tabindex="-1" aria-labelledby="videoCallModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content bg-dark text-light">
-                <div class="modal-header border-0">
-                    <h5 class="modal-title" id="videoCallModalLabel">
-                        <i class="fas fa-video me-2"></i>Video Call with Yuna
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-0">
-                    <div class="row g-0">
-                        <div class="col-md-6 video-container">
-                            <div class="ratio ratio-16x9">
-                                <img src="/static/img/yuna-girl-head.webp" class="img-fluid rounded" alt="Yuna">
-                            </div>
-                        </div>
-                        <div class="col-md-6 video-container">
-                            <div class="ratio ratio-16x9">
-                                <video id="localVideo" class="rounded" muted autoplay playsinline></video>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer border-0 justify-content-center">
-                    <div class="call-controls">
-                        <button type="button" class="btn btn-outline-light rounded-circle me-2"
-                            onclick="captureImage()">
-                            <i class="fas fa-camera"></i>
-                        </button>
-                        <button type="button" class="btn btn-outline-light rounded-circle me-2" id="buttonAudioRec">
-                            <i class="fas fa-microphone" id="iconAudioRec"></i>
-                        </button>
-                        <button type="button" class="btn btn-danger rounded-circle"
-                            onclick="document.getElementById('videoCallModal').dispatchEvent(new Event('hidden.bs.modal'));">
-                            <i class="fas fa-phone-slash"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <canvas id="capture-canvas" style="display: none;"></canvas>
-
-    <div class="modal" tabindex="-1" role="dialog" id="fileModal">
-        <div class="modal-dialog" role="document">
+    <!-- File Import Modal -->
+    <div class="modal fade" id="fileModal" tabindex="-1" aria-labelledby="fileModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">File Input</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <h5 class="modal-title" id="fileModalLabel">Import Kanojo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <input type="file" id="fileInput">
+                    <input type="file" id="fileInput" accept=".json">
                 </div>
                 <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" id="fileSubmit">Submit</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- History Panel -->
+    <div id="historyPanel" class="popup-panel">
+        <button class="close-button" onclick="togglePanel('history')">&times;</button>
+        <h4 class="mb-4">Chat History</h4>
+        <button id="createChatButton" class="btn btn-sm btn-success mb-2">Create New Chat</button>
+        <ul id="chatList" class="list-group">
+            <!-- Chats will be dynamically populated here -->
+        </ul>
+    </div>
+
+    <!-- Creator Panel -->
+    <div id="creatorPanel" class="popup-panel">
+        <button class="close-button" onclick="togglePanel('creator')">&times;</button>
+        <h4 class="mb-4">Himitsu Creator</h4>
+        <div class="diary-card">
+            <div class="row g-4">
+                <!-- Draft Area -->
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <h5 class="mb-3">Draft Area</h5>
+                        <textarea class="form-control" id="draft-area" placeholder="Draft will appear here..."
+                            style="resize: none; height: 100px;" spellcheck="false"></textarea>
+                    </div>
+                </div>
+                <!-- General Area -->
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <h5 class="mb-3">General Area</h5>
+                        <textarea class="form-control" id="general-area" placeholder="Enter content..."
+                            style="resize: none; height: 100px;"></textarea>
+                    </div>
+                </div>
+                <!-- Output Area -->
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <h5 class="mb-3">Output Area</h5>
+                        <textarea class="form-control" id="output-area" placeholder="Output will appear here..."
+                            style="resize: none; height: 100px;"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4">
+                <button type="button" class="btn btn-primary">Help</button>
+                <button type="button" class="btn btn-success">Create</button>
+                <button type="button" class="btn btn-secondary">Copy to Draft</button>
+                <button type="button" class="btn btn-primary">Export Presentation</button>
+                <button type="button" class="btn btn-danger">Clear</button>
+            </div>
+            <div class="mt-4">
+                <h5>Presentation</h5>
+                <div id="presentation-content" class="slide-container mb-4 p-3 border rounded"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Himitsu Panel -->
+    <div id="himitsuPanel" class="popup-panel">
+        <button class="close-button" onclick="togglePanel('himitsu')">&times;</button>
+        <h4 class="mb-4">Himitsu</h4>
+        <div class="diary-card">
+            <h5>Secrets</h5>
+            <div class="mb-3">
+                <label for="secretTitle" class="form-label">Title</label>
+                <input type="text" class="form-control" id="secretTitle" placeholder="Enter title">
+            </div>
+            <div class="mb-3">
+                <label for="secretContent" class="form-label">Content</label>
+                <textarea class="form-control" id="secretContent" rows="4" placeholder="Enter content"></textarea>
+            </div>
+            <button type="button" class="btn btn-primary">Save Secret</button>
+        </div>
+    </div>
+
+    <!-- Diary Panel -->
+    <div id="diaryPanel" class="popup-panel">
+        <button class="close-button" onclick="togglePanel('diary')">&times;</button>
+        <h4 class="mb-4">Diary</h4>
+        <div class="diary-card">
+            <h5>Create Note</h5>
+            <form id="note-form">
+                <div class="mb-3">
+                    <label for="noteTitle" class="form-label">Title</label>
+                    <input type="text" class="form-control" id="noteTitle" placeholder="Enter title" required>
+                </div>
+                <div class="mb-3">
+                    <label for="noteContent" class="form-label">Content</label>
+                    <textarea class="form-control" id="noteContent" rows="4" placeholder="Write your note..."
+                        required></textarea>
+                </div>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="isScheduled" onclick="toggleDateField()">
+                    <label class="form-check-label" for="isScheduled">Add Date for Scheduled Entry</label>
+                </div>
+                <div class="mb-3" id="dateField" style="display: none;">
+                    <label for="noteDate" class="form-label">Date</label>
+                    <input type="date" class="form-control" id="noteDate">
+                </div>
+                <button type="submit" class="btn btn-primary">Save Note</button>
+            </form>
+        </div>
+        <div class="diary-card mt-4">
+            <h5>Previous Notes</h5>
+            <div id="notes-container">
+                <!-- Notes will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Updated Call Modal -->
+    <div class="modal fade" id="callModal" tabindex="-1" aria-labelledby="callModalLabel" aria-hidden="true"
+        data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-fullscreen modal-dialog-centered">
+            <div class="modal-content modal-custom">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" id="callModalLabel">Call with Yuna</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                        onclick="resetCallUI()"></button>
+                </div>
+                <div class="call-container" id="callContainer">
+                    <div class="video-frame">
+                        <img src="/static/img/yuna-call.png" alt="Yuna Call" class="w-100 h-100 object-fit-cover">
+                    </div>
+                    <div class="video-frame">
+                        <video id="localVideo" class="w-100 h-100" muted autoplay></video>
+                    </div>
+                </div>
+                <div class="controls-bar">
+                    <button class="control-button" aria-label="Mute/Unmute Microphone"><i
+                            class="fas fa-microphone"></i></button>
+                    <button class="control-button" aria-label="Start/Stop Video"><i class="fas fa-video"></i></button>
+                    <button class="control-button" aria-label="Switch to Audio" onclick="switchToAudio()">
+                        <i class="fas fa-phone"></i>
+                    </button>
+                    <button class="control-button" style="background: #dc3545;" aria-label="End Call"
+                        onclick="endCall()">
+                        <i class="fas fa-phone-slash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pinned Menu -->
+    <div class="pinned" id="pinnedMenu">
+        <button class="menu-button" onclick="togglePanel('history')" aria-label="History">
+            <i class="fas fa-history"></i>
+        </button>
+        <button class="menu-button" onclick="togglePanel('creator')" aria-label="Creator">
+            <i class="fas fa-magic"></i>
+        </button>
+        <button class="menu-button" onclick="togglePanel('diary')" aria-label="Diary">
+            <i class="fas fa-book"></i>
+        </button>
+        <button class="menu-button" onclick="showCallModal()" aria-label="Call">
+            <i class="fas fa-phone"></i>
+        </button>
+    </div>
+
     <script src="/static/js/bootstrap.min.js"></script>
 </body>
 

@@ -1,12 +1,8 @@
 import base64
 import json
-import os
 import re
-import shutil
-import uuid
-from flask import jsonify, request, send_file, send_from_directory, Response
+from flask import jsonify, request, Response
 from flask_login import current_user, login_required
-from pydub import AudioSegment
 from pywebpush import webpush
 subscriptions = []
 VAPID_PRIVATE_KEY = "x32JRDsKvbQC3VwkKqYymupvlyccXBKkrwWk1vdb88U"
@@ -14,32 +10,22 @@ VAPID_PUBLIC_KEY = "BLAWDkBakXLWfyQP5zAXR5Dyv4-W1nsRDkUk9Kw9MqKppQCdbsP-yfz7kEpA
 VAPID_CLAIMS = {
     "sub": "mailto:yukiarimo@gmail.com"  # Change this to your email
 }
-AUDIOBOOKS_FILE = 'db/audiobooks.json'
-
-def load_projects():
-    if os.path.exists(AUDIOBOOKS_FILE):
-        with open(AUDIOBOOKS_FILE, 'r') as f:
-            return json.load(f)
-    return {}
-
-def save_projects(projects_data):
-    os.makedirs(os.path.dirname(AUDIOBOOKS_FILE), exist_ok=True)
-    with open(AUDIOBOOKS_FILE, 'w') as f:
-        json.dump(projects_data, f, indent=2)
-
-# Replace the global projects variable with:
-projects = load_projects()
 
 def update_chat_history(chat_history_manager, user_id, chat_id, text, response, config):
     """Helper function to update chat history."""
+
     chat_history = chat_history_manager.load_chat_history(user_id, chat_id)
     chat_history.append({
         "name": config['ai']['names'][0],
-        "message": text
+        "text": text['text'],
+        "data": None,
+        "type": "text"
     })
     chat_history.append({
         "name": config['ai']['names'][1],
-        "message": response
+        "text": response,
+        "data": None,
+        "type": "text"
     })
     chat_history_manager.save_chat_history(chat_history, user_id, chat_id)
 
@@ -186,264 +172,6 @@ def handle_textfile_request(chat_generator):
     result = chat_generator.processTextFile('static/text/content.txt', query, 0.6)
 
     return jsonify({'response': result})
-
-#@login_required
-def get_projects():
-    return jsonify({'projects': list(projects.keys())}), 200
-
-def create_project():
-    project_name = request.json.get('name')
-    if project_name in projects:
-        return jsonify({'message': 'Project already exists.'}), 400
-    projects[project_name] = {'chapters': {}}
-    save_projects(projects)
-    return jsonify({'message': 'Project created successfully.'}), 201
-
-def get_chapters(project_name):
-    if project_name not in projects:
-        return jsonify({'message': 'Project does not exist.'}), 404
-    chapters = list(projects[project_name]['chapters'].keys())
-    return jsonify({'chapters': chapters}), 200
-
-def create_chapter(project_name):
-    chapter_name = request.json.get('name')
-    if project_name not in projects:
-        return jsonify({'message': 'Project does not exist.'}), 404
-    if chapter_name in projects[project_name]['chapters']:
-        return jsonify({'message': 'Chapter already exists.'}), 400
-    projects[project_name]['chapters'][chapter_name] = []
-    save_projects(projects)
-    return jsonify({'message': 'Chapter created successfully.'}), 201
-
-def get_chapter(project_name, chapter_name):
-    if project_name not in projects or chapter_name not in projects[project_name]['chapters']:
-        return jsonify({'message': 'Chapter does not exist.'}), 404
-    paragraphs = projects[project_name]['chapters'][chapter_name]
-    return jsonify({'paragraphs': paragraphs}), 200
-
-# router.py
-def update_paragraph(worker, project_name, chapter_name, index):
-    if project_name not in projects or chapter_name not in projects[project_name]['chapters']:
-        return jsonify({'message': 'Chapter does not exist.'}), 404
-        
-    paragraphs = projects[project_name]['chapters'][chapter_name]
-    if index - 1 >= len(paragraphs):
-        return jsonify({'message': 'Paragraph does not exist.'}), 404
-        
-    text = request.json.get('text')
-    paragraph_id = f"{project_name}_{chapter_name}_{index}"
-    
-    # Generate new audio
-    audio_url = worker.speak_text(text, project_name, chapter_name, index)
-    
-    paragraphs[index - 1] = {
-        'id': paragraph_id,
-        'text': text,
-        'audio_url': audio_url,
-        'number': index
-    }
-    
-    save_projects(projects)  # Save after modification
-    return jsonify({'paragraphs': paragraphs}), 200
-
-def delete_paragraph(project_name, chapter_name, index):
-    if project_name not in projects or chapter_name not in projects[project_name]['chapters']:
-        return jsonify({'message': 'Chapter does not exist.'}), 404
-        
-    paragraphs = projects[project_name]['chapters'][chapter_name]
-    if index - 1 >= len(paragraphs):
-        return jsonify({'message': 'Paragraph does not exist.'}), 404
-    
-    # Delete associated audio file
-    paragraph = paragraphs[index - 1]
-    audio_path = f"static/audio/audiobooks/{project_name}/{chapter_name}/paragraph_{index}.mp3"
-    if os.path.exists(audio_path):
-        os.remove(audio_path)
-    
-    paragraphs.pop(index - 1)
-    
-    # Renumber remaining paragraphs
-    for i, p in enumerate(paragraphs):
-        p['number'] = i + 1
-        p['id'] = f"{project_name}_{chapter_name}_{i + 1}"
-    
-    save_projects(projects)  # Save after modification
-    return jsonify({'paragraphs': paragraphs}), 200
-
-def speak(worker):
-    text = request.json.get('text')
-    project = request.json.get('project')
-    chapter = request.json.get('chapter')
-    paragraph = request.json.get('paragraph')
-    
-    audio_url = worker.speak_text(text, project, chapter, paragraph)
-    return jsonify({'audio_url': audio_url}), 200
-
-def create_paragraph(worker, project_name, chapter_name):
-    if project_name not in projects or chapter_name not in projects[project_name]['chapters']:
-        return jsonify({'message': 'Chapter does not exist.'}), 404
-        
-    text = request.json.get('text')
-    paragraphs = projects[project_name]['chapters'][chapter_name]
-    
-    # Split text by newlines
-    texts = [t.strip() for t in text.split('\n') if t.strip()]
-    
-    for text in texts:
-        paragraph_number = len(paragraphs) + 1
-        paragraph_id = f"{project_name}_{chapter_name}_{paragraph_number}"
-        
-        # Generate audio
-        audio_url = worker.speak_text(text, project_name, chapter_name, paragraph_number)
-        
-        paragraphs.append({
-            'id': paragraph_id,
-            'text': text,
-            'audio_url': audio_url,
-            'number': paragraph_number
-        })
-    
-    save_projects(projects)  # Save after modification
-    return jsonify({'paragraphs': paragraphs}), 201
-
-def merge_audio_files(files, output_file):
-    """Merge multiple audio files into one"""
-    if not files:
-        return None
-    
-    combined = AudioSegment.from_mp3(files[0])
-    for audio_file in files[1:]:
-        combined += AudioSegment.from_mp3(audio_file)
-    
-    combined.export(output_file, format="mp3")
-    return '/' + output_file
-
-def get_merged_chapter_audio(project, chapter):
-    """Merge all paragraph audio files in a chapter"""
-    audio_dir = f"static/audio/audiobooks/{project}/{chapter}"
-    if not os.path.exists(audio_dir):
-        return None
-        
-    output_file = f"{audio_dir}/full_chapter.mp3"
-    paragraph_files = sorted(
-        [f"{audio_dir}/{f}" for f in os.listdir(audio_dir) if f.startswith("paragraph_")],
-        key=lambda x: int(x.split("_")[-1].split(".")[0])
-    )
-    
-    return merge_audio_files(paragraph_files, output_file)
-
-def get_merged_project_audio(project):
-    """Merge all chapter audio files in a project"""
-    project_dir = f"static/audio/audiobooks/{project}"
-    if not os.path.exists(project_dir):
-        return None
-        
-    output_file = f"{project_dir}/full_project.mp3"
-    chapter_files = []
-    
-    for chapter in sorted(os.listdir(project_dir)):
-        chapter_path = f"{project_dir}/{chapter}/full_chapter.mp3"
-        if os.path.exists(chapter_path):
-            chapter_files.append(chapter_path)
-        else:
-            chapter_audio = get_merged_chapter_audio(project, chapter)
-            if chapter_audio:
-                chapter_files.append(chapter_audio.lstrip('/'))
-    
-    return merge_audio_files(chapter_files, output_file)
-
-def download_paragraph(project, chapter, index):
-    audio_path = f"static/audio/audiobooks/{project}/{chapter}/paragraph_{index}.mp3"
-    if os.path.exists(audio_path):
-        return send_file(
-            audio_path,
-            mimetype="audio/mp3",
-            as_attachment=True,
-            download_name=f"{project}_{chapter}_paragraph_{index}.mp3"
-        )
-    return jsonify({'error': 'Audio file not found'}), 404
-
-def download_chapter(project, chapter):
-    audio_url = get_merged_chapter_audio(project, chapter)
-    if audio_url:
-        return send_file(
-            audio_url.lstrip('/'),
-            mimetype="audio/mp3",
-            as_attachment=True,
-            download_name=f"{project}_{chapter}.mp3"
-        )
-    return jsonify({'error': 'Could not create chapter audio'}), 404
-
-def download_project(project):
-    audio_url = get_merged_project_audio(project)
-    if audio_url:
-        return send_file(
-            audio_url.lstrip('/'),
-            mimetype="audio/mp3",
-            as_attachment=True,
-            download_name=f"{project}.mp3"
-        )
-    return jsonify({'error': 'Could not create project audio'}), 404
-
-def delete_project(project_name):
-    if project_name not in projects:
-        return jsonify({'message': 'Project does not exist.'}), 404
-    
-    # Delete project directory and all its contents
-    project_dir = f"static/audio/audiobooks/{project_name}"
-    if os.path.exists(project_dir):
-        shutil.rmtree(project_dir)
-    
-    del projects[project_name]
-    save_projects(projects)
-    return jsonify({'message': 'Project deleted successfully.'}), 200
-
-def rename_project(project_name):
-    new_name = request.json.get('name')
-    if project_name not in projects:
-        return jsonify({'message': 'Project does not exist.'}), 404
-    if new_name in projects:
-        return jsonify({'message': 'Project with new name already exists.'}), 400
-    
-    # Rename project directory
-    old_dir = f"static/audio/audiobooks/{project_name}"
-    new_dir = f"static/audio/audiobooks/{new_name}"
-    if os.path.exists(old_dir):
-        os.rename(old_dir, new_dir)
-    
-    projects[new_name] = projects.pop(project_name)
-    save_projects(projects)
-    return jsonify({'message': 'Project renamed successfully.'}), 200
-
-def delete_chapter(project_name, chapter_name):
-    if project_name not in projects or chapter_name not in projects[project_name]['chapters']:
-        return jsonify({'message': 'Chapter does not exist.'}), 404
-    
-    # Delete chapter directory
-    chapter_dir = f"static/audio/audiobooks/{project_name}/{chapter_name}"
-    if os.path.exists(chapter_dir):
-        shutil.rmtree(chapter_dir)
-    
-    del projects[project_name]['chapters'][chapter_name]
-    save_projects(projects)
-    return jsonify({'message': 'Chapter deleted successfully.'}), 200
-
-def rename_chapter(project_name, chapter_name):
-    new_name = request.json.get('name')
-    if project_name not in projects or chapter_name not in projects[project_name]['chapters']:
-        return jsonify({'message': 'Chapter does not exist.'}), 404
-    if new_name in projects[project_name]['chapters']:
-        return jsonify({'message': 'Chapter with new name already exists.'}), 400
-    
-    # Rename chapter directory
-    old_dir = f"static/audio/audiobooks/{project_name}/{chapter_name}"
-    new_dir = f"static/audio/audiobooks/{project_name}/{new_name}"
-    if os.path.exists(old_dir):
-        os.rename(old_dir, new_dir)
-    
-    projects[project_name]['chapters'][new_name] = projects[project_name]['chapters'].pop(chapter_name)
-    save_projects(projects)
-    return jsonify({'message': 'Chapter renamed successfully.'}), 200
 
 def subscribe():
     subscription = request.json

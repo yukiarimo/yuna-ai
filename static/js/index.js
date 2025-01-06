@@ -83,8 +83,10 @@ class messageManager {
     renderMessage(message) {
         const msgDiv = document.createElement('div');
         msgDiv.id = this.generateUniqueId();
-        msgDiv.className = `message message-${message.sender === 'Yuna' ? 'ai' : 'user'}`;
-
+        msgDiv.className = `message message-${message.name === 'Yuna' ? 'ai' : 'user'}`;
+    
+        console.log('Rendering message:', message);
+    
         const { src, description, render = true, type } = message.data || {};
         const createMediaElement = (tag, src, type) => {
             const media = document.createElement(tag);
@@ -94,7 +96,7 @@ class messageManager {
             media.addEventListener('click', () => openMediaModal(src, type));
             return media;
         };
-
+    
         if (['image', 'multiimage', 'video', 'mixed-text', 'yunafile'].includes(message.type)) {
             if (!render) {
                 msgDiv.textContent = description;
@@ -125,10 +127,12 @@ class messageManager {
                         break;
                 }
             }
+        } else if (message.type === 'text') {
+            msgDiv.textContent = message.text;
         } else {
             msgDiv.textContent = message.text;
         }
-
+    
         this.container.appendChild(msgDiv);
         this.container.scrollTop = this.container.scrollHeight;
     }
@@ -138,19 +142,18 @@ class messageManager {
         const text = input.value.trim();
         
         if (!text && currentAttachments.length === 0) return;
-
+    
         const processFiles = async (asMixed) => {
             try {
                 if (currentAttachments.length === 0) return null;
-
+    
                 const files = await Promise.all(
                     currentAttachments.map(file => fileToBase64(file))
                 );
-
-                // Determine message type and structure
+    
                 if (asMixed) {
                     return {
-                        sender: 'User',
+                        name: 'User',
                         type: 'mixed-text',
                         data: {
                             src: currentAttachments.length > 1 ? files : files[0],
@@ -163,12 +166,11 @@ class messageManager {
                         text
                     };
                 }
-
-                // Handle single file types
+    
                 const firstFile = currentAttachments[0];
                 if (firstFile.type.startsWith('image/')) {
                     return {
-                        sender: 'User',
+                        name: 'User',
                         type: currentAttachments.length > 1 ? 'multiimage' : 'image',
                         data: {
                             src: currentAttachments.length > 1 ? files : files[0],
@@ -178,7 +180,7 @@ class messageManager {
                     };
                 } else if (firstFile.type.startsWith('video/')) {
                     return {
-                        sender: 'User',
+                        name: 'User',
                         type: 'video',
                         data: {
                             src: files[0],
@@ -188,7 +190,7 @@ class messageManager {
                     };
                 } else {
                     return {
-                        sender: 'User',
+                        name: 'User',
                         type: 'yunafile',
                         data: {
                             src: files[0],
@@ -203,7 +205,7 @@ class messageManager {
                 return null;
             }
         };
-
+    
         if (currentAttachments.length > 0) {
             const message = await processFiles(text ? confirm('Send as mixed message with text?') : false);
             if (message) {
@@ -211,14 +213,14 @@ class messageManager {
                 currentAttachments = [];
                 updateAttachmentIndicator();
                 input.value = '';
-
+    
                 fetch('/message', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         text: message,
-                        chatId: chatHistoryManagerInstance.selectedFilename,
-                        useHistory: true, // document.getElementById('useHistory').checked,
+                        chat: chatHistoryManagerInstance.selectedFilename,
+                        useHistory: document.getElementById('useHistory').checked,
                         kanojo: kanojoManagerInstance.buildPrompt(kanojoManagerInstance.selectedKanojo, promptManagerInstance.getTemplate(promptManagerInstance.selectedTemplate)),
                         speech: false,
                         yunaConfig: config_data,
@@ -227,26 +229,26 @@ class messageManager {
                 })
                 .then(response => response.json())
                 .then(data => this.renderMessage({ 
-                    sender: 'Yuna', 
+                    name: 'Yuna', 
                     type: 'text', 
-                    text: data.reply 
+                    text: data.response,
+                    data: null
                 }))
                 .catch(error => console.error('Error:', error));
             }
             return;
         }
-
-        // Normal text message handling
-        const userMsg = { sender: 'User', type: 'text', text };
+    
+        const userMsg = { name: 'User', type: 'text', text: text, data: null };
         this.renderMessage(userMsg);
         input.value = '';
-
+    
         fetch('/message', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 text: userMsg,
-                chatId: chatHistoryManagerInstance.selectedFilename,
+                chat: chatHistoryManagerInstance.selectedFilename,
                 useHistory: document.getElementById('useHistory').checked,
                 kanojo: kanojoManagerInstance.buildPrompt(kanojoManagerInstance.selectedKanojo, promptManagerInstance.getTemplate(promptManagerInstance.selectedTemplate)),
                 speech: false,
@@ -256,9 +258,10 @@ class messageManager {
         })
         .then(response => response.json())
         .then(data => this.renderMessage({ 
-            sender: 'Yuna', 
+            name: 'Yuna', 
             type: 'text', 
-            text: data.reply 
+            text: data.response,
+            data: null
         }))
         .catch(error => console.error('Error:', error));
     }
@@ -317,11 +320,6 @@ document.getElementById('fileSubmit').addEventListener('click', () => {
     };
     reader.readAsText(file);
 });
-
-// Send Message Function
-const sendMessage = () => {
-    messageManagerInstance.sendMessage();
-};
 
 // Media Modal Function
 const openMediaModal = (src, type) => {

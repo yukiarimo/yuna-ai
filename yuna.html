@@ -11,7 +11,10 @@
     <script src="/static/js/index.js" defer></script>
     <script src="/static/js/history.js" defer></script>
     <script src="/static/js/kanojo.js" defer></script>
-    <script src="/static/js/dairy.js" defer></script>
+    <script src="/static/js/diary.js" defer></script>
+    <script src="/static/js/markdown.js" defer></script>
+    <script src="/static/js/pptxgen.js" defer></script>
+    <script src="/static/js/creator.js" defer></script>
 </head>
 
 <body>
@@ -228,21 +231,114 @@
                 <div id="advancedCollapse" class="accordion-collapse collapse" data-bs-parent="#kanojoAccordion">
                     <div class="accordion-body">
                         <div class="row g-3">
+                            <!-- Names -->
+                            <div class="col-md-6">
+                                <label class="form-label">Names</label>
+                                <input type="text" class="form-control" id="names">
+                            </div>
+                            <!-- Toggle Switches -->
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="himitsu">
+                                    <label class="form-check-label">Himitsu</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="agi">
+                                    <label class="form-check-label">AGI</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="emotions">
+                                    <label class="form-check-label">Emotions</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="miru">
+                                    <label class="form-check-label">Miru</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="search">
+                                    <label class="form-check-label">Search</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="audio">
+                                    <label class="form-check-label">Audio</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="mind">
+                                    <label class="form-check-label">Mind</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="voice">
+                                    <label class="form-check-label">Voice</label>
+                                </div>
+                            </div>
+                            <!-- Existing fields -->
                             <div class="col-md-6">
                                 <label class="form-label">Max New Tokens</label>
-                                <input type="number" class="form-control" id="maxNewTokens" value="1024">
+                                <input type="number" class="form-control" id="maxNewTokens">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Context Length</label>
-                                <input type="number" class="form-control" id="contextLength" value="8192">
+                                <input type="number" class="form-control" id="contextLength">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Temperature</label>
-                                <input type="number" step="0.1" class="form-control" id="temperature" value="0.7">
+                                <input type="number" step="0.1" class="form-control" id="temperature">
+                            </div>
+                            <!-- New fields -->
+                            <div class="col-md-6">
+                                <label class="form-label">Repetition Penalty</label>
+                                <input type="number" step="0.01" class="form-control" id="repetitionPenalty">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Last N Tokens Size</label>
+                                <input type="number" class="form-control" id="lastNTokensSize">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Seed</label>
+                                <input type="number" class="form-control" id="seed">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Top K</label>
+                                <input type="number" class="form-control" id="topK">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Top P</label>
-                                <input type="number" step="0.1" class="form-control" id="topP" value="0.9">
+                                <input type="number" step="0.1" class="form-control" id="topP">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Stop Sequences</label>
+                                <input type="text" class="form-control" id="stop">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Batch Size</label>
+                                <input type="number" class="form-control" id="batchSize">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Threads</label>
+                                <input type="number" class="form-control" id="threads">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">GPU Layers</label>
+                                <input type="number" class="form-control" id="gpuLayers">
+                            </div>
+                            <!-- Additional Toggle Switches -->
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="useMmap">
+                                    <label class="form-check-label">Use MMAP</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="flashAttn">
+                                    <label class="form-check-label">Flash Attention</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="useMlock">
+                                    <label class="form-check-label">Use MLOCK</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="offloadKqv">
+                                    <label class="form-check-label">Offload KQV</label>
+                                </div>
                             </div>
                         </div>
                         <button class="btn btn-secondary mt-3" onclick="saveAdvancedConfig()">Save Config</button>
@@ -299,7 +395,7 @@
                 <div class="col-md-4">
                     <div class="form-group">
                         <h5 class="mb-3">General Area</h5>
-                        <textarea class="form-control" id="general-area" placeholder="Enter content..."
+                        <textarea class="form-control" id="work-area" placeholder="Enter content..."
                             style="resize: none; height: 100px;"></textarea>
                     </div>
                 </div>
@@ -313,11 +409,11 @@
                 </div>
             </div>
             <div class="mt-4">
-                <button type="button" class="btn btn-primary">Help</button>
-                <button type="button" class="btn btn-success">Create</button>
-                <button type="button" class="btn btn-secondary">Copy to Draft</button>
-                <button type="button" class="btn btn-primary">Export Presentation</button>
-                <button type="button" class="btn btn-danger">Clear</button>
+                <button type="button" class="btn btn-success" id="createButtonHimitsuCreator">Create</button>
+                <button type="button" class="btn btn-secondary" id="copyToDraftButtonHimitsuCreator">Copy to Draft</button>
+                <button type="button" class="btn btn-primary" id="exportPresentationButtonHimitsuCreator">Export Presentation</button>
+                <button type="button" class="btn btn-primary" id="savePresentationButtonHimitsuCreator">Save</button>
+                <button type="button" class="btn btn-danger" id="clearButtonHimitsuCreator">Clear</button>
             </div>
             <div class="mt-4">
                 <h5>Presentation</h5>
@@ -329,18 +425,18 @@
     <!-- Himitsu Panel -->
     <div id="himitsuPanel" class="popup-panel">
         <button class="close-button" onclick="togglePanel('himitsu')">&times;</button>
-        <h4 class="mb-4">Himitsu</h4>
+        <h4 class="mb-4">Himitsu & YUI</h4>
         <div class="diary-card">
-            <h5>Secrets</h5>
+            <h5>Learn</h5>
             <div class="mb-3">
-                <label for="secretTitle" class="form-label">Title</label>
-                <input type="text" class="form-control" id="secretTitle" placeholder="Enter title">
+                <label for="secretTitle" class="form-label">Question</label>
+                <input type="text" class="form-control" id="secretTitle" placeholder="Enter the question">
             </div>
             <div class="mb-3">
                 <label for="secretContent" class="form-label">Content</label>
-                <textarea class="form-control" id="secretContent" rows="4" placeholder="Enter content"></textarea>
+                <textarea class="form-control" id="secretContent" rows="4" placeholder="Enter additional content"></textarea>
             </div>
-            <button type="button" class="btn btn-primary">Save Secret</button>
+            <button type="button" class="btn btn-primary">Start</button>
         </div>
     </div>
 

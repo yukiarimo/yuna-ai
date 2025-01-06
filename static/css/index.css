@@ -123,7 +123,7 @@ body {
     border-radius: 50%;
     width: 45px;
     height: 45px;
-    --bs-btn-padding-x: 1.5rem;
+    --bs-btn-padding-x: 1rem;
 }
 
 .modal-custom {
@@ -199,7 +199,6 @@ body {
     background: var(--darker);
     transition: transform var(--transition-speed);
     padding: 20px;
-    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3);
     z-index: 1050;
     overflow-y: auto;
 }
@@ -355,4 +354,24 @@ body {
 
 .attach-button.has-attachments:hover {
     background-color: #0b5ed7;
+}
+
+.form-control, .form-select, #presentation-content {
+    background: #3d3c3c !important;
+    color: white !important;
+    outline: none !important;
+    border-radius: 12px !important;
+}
+
+#messageInput {
+    border-radius: 0 !important;
+}
+
+.form-check-input {
+    --bs-form-check-bg: #3d3c3c;
+}
+
+.form-control:focus {
+    outline: none !important;
+    box-shadow: none !important;
 }

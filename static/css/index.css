@@ -7,6 +7,10 @@
     --transition-speed: 0.3s;
 }
 
+*:not(i) {
+    font-family: "kawai-font" !important;
+}
+
 body {
     background: var(--dark);
     color: #fff;
@@ -374,4 +378,11 @@ body {
 .form-control:focus {
     outline: none !important;
     box-shadow: none !important;
+}
+
+@font-face {
+    font-family: "kawai-font";
+    src: url("../fonts/kawai-font.woff") format("woff");
+    font-style: normal;
+    font-weight: normal;
 }

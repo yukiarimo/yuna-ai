@@ -38,8 +38,8 @@ class kanojoConnect {
         if (!Object.keys(this.kanojos).length) {
             this.addKanojo(config_data.ai.names[1], {
                 name: config_data.ai.names[1],
-                memory: "You're a helpful AI assistant",
-                character: `Name: ${config_data.ai.names[1]}\nPersonality: Friendly, Helpful\nRole: AI Assistant`
+                memory: "",
+                character: `Name: ${config_data.ai.names[1]}\nPersonality: Friendly`
             });
         }
     }

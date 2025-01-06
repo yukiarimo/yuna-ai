@@ -109,20 +109,21 @@ class ChatHistoryManager {
     async loadSelectedHistory(filename = config_data?.settings?.default_history_file) {
         try {
             const data = await this.postHistory('load', { chat: filename });
-            // Clear existing messages
             const chatContainer = document.getElementById('chatContainer');
             if (chatContainer) {
                 chatContainer.innerHTML = '';
             }
             
-            // Render each message in history
             if (Array.isArray(data)) {
-                data.forEach(message => messageManagerInstance.renderMessage(message));
+                data.forEach(message => {
+                    // Ensure data field is present
+                    if (!message.data) message.data = null;
+                    messageManagerInstance.renderMessage(message);
+                });
             }
             
             this.selectedFilename = filename;
             
-            // Update message count if function exists
             if (typeof updateMsgCount === 'function') {
                 updateMsgCount();
             }
@@ -247,3 +248,31 @@ async function populateHistorySelect() {
 }
 
 chatHistoryManagerInstance.loadSelectedHistory('chat1.json');
+
+const applySettings = () => {
+    const { settings } = config_data || {};
+    if (!settings) return;
+
+    // Map config settings to checkbox IDs
+    const settingsMap = {
+        'pseudo_api': 'pseudoApi',
+        'fuctions': 'functions', 
+        'notifications': 'notifications',
+        'customConfig': 'customConfig',
+        'sounds': 'sounds',
+        'use_history': 'useHistory',
+        'background_call': 'backgroundCall',
+        'nsfw_filter': 'nsfw',
+        'streaming': 'streaming'
+    };
+
+    // Apply each setting to corresponding checkbox
+    Object.entries(settingsMap).forEach(([settingKey, elementId]) => {
+        const checkbox = document.getElementById(elementId);
+        if (checkbox && typeof settings[settingKey] === 'boolean') {
+            checkbox.checked = settings[settingKey];
+        }
+    });
+};
+
+applySettings();

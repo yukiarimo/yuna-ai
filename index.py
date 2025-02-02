@@ -19,7 +19,7 @@ class YunaServer:
         self.app = Flask(__name__, static_folder='static')
         self.app.config.update({
             'WTF_CSRF_ENABLED': False,
-            'SECRET_KEY': 'Yuna_AI_Secret_Key',
+            'SECRET_KEY': 'Yuna_Ai_Secret_Key',
             'COMPRESS_MIMETYPES': ['text/html', 'text/css', 'text/xml', 'application/json', 'application/javascript', 'text/javascript', 'application/x-javascript'],
             'COMPRESS_LEVEL': 9,
             'COMPRESS_MIN_SIZE': 0

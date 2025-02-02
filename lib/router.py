@@ -74,7 +74,6 @@ def handle_message_request(worker, chat_history_manager, config):
     yuna_config = worker.config if data.get('yunaConfig') else None
     user_id = current_user.get_id()
     chat_history = chat_history_manager.load_chat_history(current_user.get_id(), chat_id)
-
     response = worker.generate_text(text, kanojo, chat_history, useHistory, yuna_config, stream)
 
     if stream:

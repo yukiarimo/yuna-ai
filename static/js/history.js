@@ -247,7 +247,7 @@ async function populateHistorySelect() {
     return chats;
 }
 
-chatHistoryManagerInstance.loadSelectedHistory('chat1.json');
+chatHistoryManagerInstance.loadSelectedHistory(config_data.server.default_history_file);
 
 const applySettings = () => {
     const { settings } = config_data || {};

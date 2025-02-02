@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html data-bs-theme="dark">
+<html lang="en" data-bs-theme="dark">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yuna AI - Modern Interface</title>
+    <meta name="description" content="Your Private Companion">
+    <title>Yuna Ai</title>
     <link href="/static/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/index.css">
@@ -19,7 +20,7 @@
 
 <body>
     <!-- Yuna Avatar -->
-    <img src="/static/img/yuna-girl-head.webp" class="yuna-avatar" onclick="toggleFloatingMenu()">
+    <img src="/static/img/yuna-girl-head.webp" class="yuna-avatar" alt="Yuna Ai" onclick="toggleFloatingMenu()">
 
     <!-- Top Menu -->
     <div class="top-menu" id="floatingMenu">
@@ -410,8 +411,10 @@
             </div>
             <div class="mt-4">
                 <button type="button" class="btn btn-success" id="createButtonHimitsuCreator">Create</button>
-                <button type="button" class="btn btn-secondary" id="copyToDraftButtonHimitsuCreator">Copy to Draft</button>
-                <button type="button" class="btn btn-primary" id="exportPresentationButtonHimitsuCreator">Export Presentation</button>
+                <button type="button" class="btn btn-secondary" id="copyToDraftButtonHimitsuCreator">Copy to
+                    Draft</button>
+                <button type="button" class="btn btn-primary" id="exportPresentationButtonHimitsuCreator">Export
+                    Presentation</button>
                 <button type="button" class="btn btn-primary" id="savePresentationButtonHimitsuCreator">Save</button>
                 <button type="button" class="btn btn-danger" id="clearButtonHimitsuCreator">Clear</button>
             </div>
@@ -434,7 +437,8 @@
             </div>
             <div class="mb-3">
                 <label for="secretContent" class="form-label">Content</label>
-                <textarea class="form-control" id="secretContent" rows="4" placeholder="Enter additional content"></textarea>
+                <textarea class="form-control" id="secretContent" rows="4"
+                    placeholder="Enter additional content"></textarea>
             </div>
             <button type="button" class="btn btn-primary">Start</button>
         </div>
@@ -487,7 +491,7 @@
                 </div>
                 <div class="call-container" id="callContainer">
                     <div class="video-frame">
-                        <img src="/static/img/yuna-call.png" alt="Yuna Call" class="w-100 h-100 object-fit-cover">
+                        <img src="/static/img/yuna-girl.webp" alt="Yuna Call" class="w-100 h-100 object-fit-cover">
                     </div>
                     <div class="video-frame">
                         <video id="localVideo" class="w-100 h-100" muted autoplay></video>

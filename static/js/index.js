@@ -84,9 +84,7 @@ class messageManager {
         const msgDiv = document.createElement('div');
         msgDiv.id = this.generateUniqueId();
         msgDiv.className = `message message-${message.name === 'Yuna' ? 'ai' : 'user'}`;
-    
-        console.log('Rendering message:', message);
-    
+
         const { src, description, render = true, type } = message.data || {};
         const createMediaElement = (tag, src, type) => {
             const media = document.createElement(tag);
@@ -405,9 +403,21 @@ document.body.addEventListener('click', (e) => {
     if (e.target.closest('.floating-audio-window .fa-phone-slash')) endAudioCall();
 });
 
-// Initialize draggable audio window
-document.addEventListener('DOMNodeInserted', (event) => {
-    if (event.target.id === 'audioWindow') makeDraggable(event.target);
+// Create mutation observer to watch for added audio windows
+const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+            if (node.id === 'audioWindow') {
+                makeDraggable(node);
+            }
+        });
+    });
+});
+
+// Start observing document.body for child list changes
+observer.observe(document.body, {
+    childList: true,
+    subtree: true
 });
 
 // Initialize draggable elements

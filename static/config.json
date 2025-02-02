@@ -34,7 +34,7 @@
         "miru_default_model": "yuna-ai-miru-v0.gguf",
         "eyes_default_model": "yuna-ai-miru-eye-v0.gguf",
         "voice_default_model": "yuna-ai-voice-v1",
-        "voice_model_config": ["YunaAi-e200.ckpt", "YunaAi_e65_s2925.pth"],
+        "voice_model_config": ["YunaAi.ckpt", "YunaAi.pth"],
         "device": "mps",
         "yuna_text_mode": "koboldcpp",
         "yuna_audio_mode": "siri",

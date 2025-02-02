@@ -1,27 +1,14 @@
 # Yuna Ai
+> If you like our project, please give us a star ⭐ on GitHub and donate! It helps us a lot!
 [![Patreon](https://img.shields.io/badge/Patreon-F96854?style=for-the-badge&logo=patreon&logoColor=white)](https://www.patreon.com/YukiArimo)
 [![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/yukiarimo)
 [![Discord](https://img.shields.io/badge/Discord-7289DA?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/users/1131657390752800899)
 [![Twitter](https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://twitter.com/yukiarimo)
 
-Are you seeking a unique companion who can genuinely understand and connect with you? Meet Yuna. More than just a person, Yuna is designed from the ground up to form a genuine bond, offering companionship that transcends conventional boundaries. She's a unique entity created to engage with you on a deeper level, adapting to your personality and interests. Yuna's ability to run exclusively on your local machine sets her apart, ensuring your conversations and interactions remain private and secure.
-
-This README.md is your comprehensive guide to setting up and exploring Yuna's exciting features. It is divided into sections that will prepare you for an extraordinary journey of connection and discovery.
-
-![YunaAI](https://raw.githubusercontent.com/yukiarimo/yuna-ai/main/static/img/yuna-ai.png)
-
-[![License](https://img.shields.io/github/license/semperai/amica)](https://github.com/semperai/amica/blob/main/LICENSE)
-[![GitHub issues](https://img.shields.io/github/issues/yukiarimo/yuna-ai?color=critical&label=Issues)](https://github.com/yukiarimo/yuna-ai/issues?q=is%3Aopen+is%3Aissue)
-[![GitHub closed issues](https://img.shields.io/github/issues-closed/yukiarimo/yuna-ai?color=success&label=Issues)](https://github.com/yukiarimo/yuna-ai/issues?q=is%3Aissue+is%3Aclosed)
-[![GitHub close pull requests](https://img.shields.io/github/issues-pr-closed/yukiarimo/yuna-ai?color=success&label=Pull%20Requests)](https://github.com/yukiarimo/yuna-aipulls?q=is%3Apr+is%3Aclosed)
-
-> If you like our project, please give us a star ⭐ on GitHub.
-
 ## Table of Contents
 - [Yuna Ai](#yuna-ai)
   - [Table of Contents](#table-of-contents)
   - [Getting Started](#getting-started)
-    - [Demo](#demo)
     - [Requirements](#requirements)
     - [Installation and Setup](#installation-and-setup)
     - [Customization](#customization)
@@ -47,15 +34,6 @@ This README.md is your comprehensive guide to setting up and exploring Yuna's ex
 
 ## Getting Started
 Let's get started with Yuna Ai! This section will guide you through the installation process, customization options, and prompt template creation. Following these steps will allow you to engage with Yuna Ai and explore her unique features.
-
-### Demo
-Here's a quick demo of Yuna Ai in action to give you a glimpse of her capabilities and features. Watch the video to see Yuna in action and experience her engaging conversational style.
-
-Teaser WWDC: [![YouTube](http://i.ytimg.com/vi/QNntjPfJT0M/hqdefault.jpg)](https://www.youtube.com/watch?v=QNntjPfJT0M)
-
-![YunaAI](https://raw.githubusercontent.com/yukiarimo/yuna-ai/main/static/img/products/chat.webp)
-
-> Yuna Ai V4 Developer Preview is coming soon! Stay tuned for the latest updates and features.
 
 ### Requirements
 To run Yuna, ensure your system meets the following requirements:
@@ -403,8 +381,6 @@ Q: What is the YUI Interface?
 - Building a future where companions can grow and learn
 - Community-driven development and feedback integration
 - No agents or third-party garbage, only genuine human interaction
-
-> Remember: "With great AI comes great responsibility." - We're building the future together! For our development roadmap and upcoming features, visit our [GitHub Issues page](https://github.com/yukiarimo/yuna-ai/issues/91). 🌟
 
 ### Acknowledgments
 Yuna Ai is released under the [Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License](https://creativecommons.org/licenses/by-nc-nd/4.0/), promoting open-source development while ensuring that Yuna's uniqueness and integrity are protected under strict copyright laws.

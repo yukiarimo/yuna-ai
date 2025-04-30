@@ -1,0 +1,45 @@
+{
+  "manifest_version": 3,
+  "name": "Yuna Ai",
+  "short_name": "Yuna Ai",
+  "author": "Yuki Arimo",
+  "version": "7.0.2",
+  "description": "Your Private Companion",
+  "icons": {
+    "16": "assets/yuna-ai-16.png",
+    "32": "assets/yuna-ai-32.png",
+    "48": "assets/yuna-ai-48.png",
+    "128": "assets/yuna-ai-128.png"
+  },
+  "action": {
+    "default_icon": {
+      "16": "assets/yuna-ai-16.png",
+      "32": "assets/yuna-ai-32.png",
+      "48": "assets/yuna-ai-48.png",
+      "128": "assets/yuna-ai-128.png"
+    },
+    "default_popup": "popup.html",
+    "default_title": "Yuna Ai"
+  },
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://*/*",
+    "http://*/*"
+  ],
+  "content_scripts": [{
+    "matches": ["<all_urls>"],
+    "js": ["content.js"],
+    "css": ["content.css"]
+  }],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "web_accessible_resources": [{
+    "resources": ["assets/*"],
+    "matches": ["<all_urls>"]
+  }]
+}

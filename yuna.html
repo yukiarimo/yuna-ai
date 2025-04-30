@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html data-bs-theme="dark" lang="en">
+
+<head data-bs-theme="dark">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yuna Ai</title>
+    <meta name="theme-color" content="#212529">
+    <link rel="canonical" href="http://www.yuna-ai.com/">
+    <meta property="og:url" content="http://www.yuna-ai.com/">
+    <meta property="og:description" content="Your Private Companion">
+    <meta name="twitter:image" content="http://www.yuna-ai.com/static/img/yuna-ai.png">
+    <meta name="twitter:title" content="Yuna Ai">
+    <meta property="og:image" content="http://www.yuna-ai.com/static/img/yuna-ai.png">
+    <meta name="description" content="Your Private Companion">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Yuna Ai">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:description" content="Your Private Companion">
+    <script type="application/ld+json">
+        {
+            "@context": "http://schema.org",
+            "@type": "WebSite",
+            "name": "Yuna Ai",
+            "url": "http://www.yuna-ai.com"
+        }
+    </script>
+    <link rel="icon" type="image/jpeg" sizes="60x60" href="/static/img/yuna-ai.png">
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" rel="preload" as="style" media="all">
+    <link href="/static/css/awesome.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/index.css">
+    <script src="/static/js/index.js" defer></script>
+    <script src="/static/js/history.js" defer></script>
+    <script src="/static/js/kanojo.js" defer></script>
+    <script src="/static/js/diary.js" defer></script>
+    <script src="/static/js/markdown.js" defer></script>
+    <script src="/static/js/pptxgen.js" defer></script>
+    <script src="/static/js/creator.js" defer></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('/static/sw.js').then(
+                    function (registration) {
+                        // Registration was successful
+                        console.log('ServiceWorker registration successful with scope: ', registration
+                            .scope)
+                    },
+                    function (err) {
+                        // registration failed :(
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
+</head>
+
+<body>
+    <!-- Yuna Avatar -->
+    <img src="/static/img/yuna-girl-head.webp" class="yuna-avatar" alt="Yuna Ai" onclick="toggleFloatingMenu()">
+
+    <!-- Top Menu -->
+    <div class="top-menu" id="floatingMenu">
+        <button class="menu-button" onclick="togglePanel('kanojo')" aria-label="Kanojo">
+            <i class="fas fa-user"></i>
+        </button>
+        <button class="menu-button" onclick="togglePanel('history')" aria-label="History">
+            <i class="fas fa-history"></i>
+        </button>
+        <button class="menu-button" onclick="togglePanel('creator')" aria-label="Creator">
+            <i class="fas fa-magic"></i>
+        </button>
+        <button class="menu-button" onclick="togglePanel('himitsu')" aria-label="Himitsu">
+            <i class="fas fa-star"></i>
+        </button>
+        <button class="menu-button" onclick="togglePanel('diary')" aria-label="Diary">
+            <i class="fas fa-book"></i>
+        </button>
+        <button class="menu-button" onclick="showCallModal()" aria-label="Call">
+            <i class="fas fa-phone"></i>
+        </button>
+    </div>
+
+    <!-- Overlay -->
+    <div class="overlay" id="overlay" onclick="closeAllPanels()"></div>
+
+    <!-- Main Chat Area -->
+    <div class="chat-container" id="chatContainer">
+        <div class="message message-ai">
+            Hi, Yuki! I'm Yuna, your little companion.
+        </div>
+        <div class="message message-user">
+            Hi Yuna! I'm excited to chat with you.
+        </div>
+        <div class="message message-ai">
+            That's wonderful!
+        </div>
+    </div>
+
+    <!-- Input Area -->
+    <div class="input-area">
+        <div class="input-group">
+            <button class="btn btn-outline-secondary attach-button" aria-label="Attach">
+                <i class="fas fa-paperclip"></i>
+            </button>
+            <input type="text" class="form-control" placeholder="Message Yuna..." aria-label="Message Yuna"
+                id="messageInput">
+            <button class="btn send-button" aria-label="Send" onclick="sendMessage()">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Sliding Panels -->
+    <!-- Kanojo Panel -->
+    <div id="kanojoPanel" class="popup-panel">
+        <button class="close-button" onclick="togglePanel('kanojo')">&times;</button>
+        <h4 class="mb-4">Yuna Customization</h4>
+        <div class="diary-card accordion" id="kanojoAccordion">
+            <!-- Profile and Personality Section -->
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#profilePersonalityCollapse">
+                        Profile & Personality
+                    </button>
+                </h2>
+                <div id="profilePersonalityCollapse" class="accordion-collapse collapse show"
+                    data-bs-parent="#kanojoAccordion">
+                    <div class="accordion-body">
+                        <!-- Kanojo Manager -->
+                        <div class="mb-3">
+                            <h5 class="card-title">Kanojo Management</h5>
+                            <div class="mb-3">
+                                <label for="kanojoSelect" class="form-label">Select Kanojo</label>
+                                <select class="form-select" id="kanojoSelect">
+                                    <option value="Yuna">Yuna</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <button type="button" class="btn btn-secondary" id="renameKanojo">Rename</button>
+                                <button type="button" class="btn btn-secondary" id="deleteKanojo">Delete</button>
+                            </div>
+                            <div class="mb-3">
+                                <button type="button" class="btn btn-primary" id="exportKanojos">Export All</button>
+                                <button type="button" class="btn btn-primary" id="importKanojos">Import All</button>
+                            </div>
+                            <div class="mb-3">
+                                <button type="button" class="btn btn-primary" id="exportSingleKanojo">Export</button>
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#fileModal">Import</button>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="kanojoMemory" class="form-label">Memory</label>
+                            <textarea class="form-control" id="kanojoMemory" style="height: 100px"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="kanojoCharacter" class="form-label">Character</label>
+                            <textarea class="form-control" id="kanojoCharacter" style="height: 100px"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Section -->
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#featuresCollapse">
+                        Features
+                    </button>
+                </h2>
+                <div id="featuresCollapse" class="accordion-collapse collapse" data-bs-parent="#kanojoAccordion">
+                    <div class="accordion-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <h6>Himitsu</h6>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="functions">
+                                    <label class="form-check-label">Functions</label>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="useHistory">
+                                    <label class="form-check-label">Use History</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <h6>Configuration</h6>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="customConfig">
+                                    <label class="form-check-label">Custom Config</label>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="sounds">
+                                    <label class="form-check-label">Sounds</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <h6>General</h6>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="backgroundCall">
+                                    <label class="form-check-label">Background Call</label>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="streaming">
+                                    <label class="form-check-label">Streaming</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advanced Config Section -->
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#advancedCollapse">
+                        Advanced Config
+                    </button>
+                </h2>
+                <div id="advancedCollapse" class="accordion-collapse collapse" data-bs-parent="#kanojoAccordion">
+                    <div class="accordion-body">
+                        <div class="row g-3">
+                            <!-- Names -->
+                            <div class="col-md-6">
+                                <label class="form-label">Names</label>
+                                <input type="text" class="form-control" id="names">
+                            </div>
+                            <!-- Toggle Switches -->
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="himitsu">
+                                    <label class="form-check-label">Himitsu</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="emotions">
+                                    <label class="form-check-label">Emotions</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="miru">
+                                    <label class="form-check-label">Miru</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="audio">
+                                    <label class="form-check-label">Audio</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="mind">
+                                    <label class="form-check-label">Mind</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="hanasu">
+                                    <label class="form-check-label">Hanasu</label>
+                                </div>
+                            </div>
+                            <!-- Existing fields -->
+                            <div class="col-md-6">
+                                <label class="form-label">Max New Tokens</label>
+                                <input type="number" class="form-control" id="maxNewTokens">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Context Length</label>
+                                <input type="number" class="form-control" id="contextLength">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Temperature</label>
+                                <input type="number" step="0.1" class="form-control" id="temperature">
+                            </div>
+                            <!-- New fields -->
+                            <div class="col-md-6">
+                                <label class="form-label">Repetition Penalty</label>
+                                <input type="number" step="0.01" class="form-control" id="repetitionPenalty">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Last N Tokens Size</label>
+                                <input type="number" class="form-control" id="lastNTokensSize">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Seed</label>
+                                <input type="number" class="form-control" id="seed">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Top K</label>
+                                <input type="number" class="form-control" id="topK">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Top P</label>
+                                <input type="number" step="0.1" class="form-control" id="topP">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Stop Sequences</label>
+                                <input type="text" class="form-control" id="stop">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Batch Size</label>
+                                <input type="number" class="form-control" id="batchSize">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Threads</label>
+                                <input type="number" class="form-control" id="threads">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">GPU Layers</label>
+                                <input type="number" class="form-control" id="gpuLayers">
+                            </div>
+                            <!-- Additional Toggle Switches -->
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="useMmap">
+                                    <label class="form-check-label">Use MMAP</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="flashAttn">
+                                    <label class="form-check-label">Flash Attention</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="useMlock">
+                                    <label class="form-check-label">Use MLOCK</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="offloadKqv">
+                                    <label class="form-check-label">Offload KQV</label>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary mt-3" onclick="saveAdvancedConfig()">Save Config</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- File Import Modal -->
+    <div class="modal fade" id="fileModal" tabindex="-1" aria-labelledby="fileModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="fileModalLabel">Import Kanojo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="file" id="fileInput" accept=".json">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="fileSubmit">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Panel -->
+    <div id="historyPanel" class="popup-panel">
+        <button class="close-button" onclick="togglePanel('history')">&times;</button>
+        <h4 class="mb-4">Chat History</h4>
+        <button id="createChatButton" class="btn btn-sm btn-success mb-2">Create New Chat</button>
+        <ul id="chatList" class="list-group">
+            <!-- Chats will be dynamically populated here -->
+        </ul>
+    </div>
+
+    <!-- Creator Panel -->
+    <div id="creatorPanel" class="popup-panel">
+        <button class="close-button" onclick="togglePanel('creator')">&times;</button>
+        <h4 class="mb-4">Himitsu Creator</h4>
+        <div class="diary-card">
+            <div class="row g-4">
+                <!-- Draft Area -->
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <h5 class="mb-3">Draft Area</h5>
+                        <textarea class="form-control" id="draft-area" placeholder="Draft will appear here..."
+                            style="resize: none; height: 100px;" spellcheck="false"></textarea>
+                    </div>
+                </div>
+                <!-- General Area -->
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <h5 class="mb-3">General Area</h5>
+                        <textarea class="form-control" id="work-area" placeholder="Enter content..."
+                            style="resize: none; height: 100px;"></textarea>
+                    </div>
+                </div>
+                <!-- Output Area -->
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <h5 class="mb-3">Output Area</h5>
+                        <textarea class="form-control" id="output-area" placeholder="Output will appear here..."
+                            style="resize: none; height: 100px;"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4">
+                <button type="button" class="btn btn-success" id="createButtonHimitsuCreator">Create</button>
+                <button type="button" class="btn btn-secondary" id="copyToDraftButtonHimitsuCreator">Copy to
+                    Draft</button>
+                <button type="button" class="btn btn-primary" id="exportPresentationButtonHimitsuCreator">Export
+                    Presentation</button>
+                <button type="button" class="btn btn-primary" id="savePresentationButtonHimitsuCreator">Save</button>
+                <button type="button" class="btn btn-danger" id="clearButtonHimitsuCreator">Clear</button>
+            </div>
+            <div class="mt-4">
+                <h5>Presentation</h5>
+                <div id="presentation-content" class="slide-container mb-4 p-3 border rounded"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Himitsu Panel -->
+    <div id="himitsuPanel" class="popup-panel">
+        <button class="close-button" onclick="togglePanel('himitsu')">&times;</button>
+        <h4 class="mb-4">Himitsu & YUI</h4>
+        <div class="diary-card">
+            <h5>Learn</h5>
+            <div class="mb-3">
+                <label for="secretTitle" class="form-label">Question</label>
+                <input type="text" class="form-control" id="secretTitle" placeholder="Enter the question">
+            </div>
+            <div class="mb-3">
+                <label for="secretContent" class="form-label">Content</label>
+                <textarea class="form-control" id="secretContent" rows="4"
+                    placeholder="Enter additional content"></textarea>
+            </div>
+            <button type="button" class="btn btn-primary">Start</button>
+        </div>
+    </div>
+
+    <!-- Diary Panel -->
+    <div id="diaryPanel" class="popup-panel">
+        <button class="close-button" onclick="togglePanel('diary')">&times;</button>
+        <h4 class="mb-4">Diary</h4>
+        <div class="diary-card">
+            <h5>Create Note</h5>
+            <form id="note-form">
+                <div class="mb-3">
+                    <label for="noteTitle" class="form-label">Title</label>
+                    <input type="text" class="form-control" id="noteTitle" placeholder="Enter title" required>
+                </div>
+                <div class="mb-3">
+                    <label for="noteContent" class="form-label">Content</label>
+                    <textarea class="form-control" id="noteContent" rows="4" placeholder="Write your note..."
+                        required></textarea>
+                </div>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="isScheduled" onclick="toggleDateField()">
+                    <label class="form-check-label" for="isScheduled">Add Date for Scheduled Entry</label>
+                </div>
+                <div class="mb-3" id="dateField" style="display: none;">
+                    <label for="noteDate" class="form-label">Date</label>
+                    <input type="date" class="form-control" id="noteDate">
+                </div>
+                <button type="submit" class="btn btn-primary">Save Note</button>
+            </form>
+        </div>
+        <div class="diary-card mt-4">
+            <h5>Previous Notes</h5>
+            <div id="notes-container">
+                <!-- Notes will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Updated Call Modal -->
+    <div class="modal fade" id="callModal" tabindex="-1" aria-labelledby="callModalLabel" aria-hidden="true"
+        data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-fullscreen modal-dialog-centered">
+            <div class="modal-content modal-custom">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" id="callModalLabel">Call with Yuna</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                        onclick="resetCallUI()"></button>
+                </div>
+                <div class="call-container" id="callContainer">
+                    <div class="video-frame">
+                        <img src="/static/img/yuna-girl.webp" alt="Yuna Call" class="w-100 h-100 object-fit-cover">
+                    </div>
+                    <div class="video-frame">
+                        <video id="localVideo" class="w-100 h-100" muted autoplay></video>
+                    </div>
+                </div>
+                <div class="controls-bar">
+                    <button class="control-button" aria-label="Mute/Unmute Microphone"><i
+                            class="fas fa-microphone"></i></button>
+                    <button class="control-button" aria-label="Start/Stop Video"><i class="fas fa-video"></i></button>
+                    <button class="control-button" aria-label="Switch to Audio" onclick="switchToAudio()">
+                        <i class="fas fa-phone"></i>
+                    </button>
+                    <button class="control-button" style="background: #dc3545;" aria-label="End Call"
+                        onclick="endCall()">
+                        <i class="fas fa-phone-slash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pinned Menu -->
+    <div class="pinned" id="pinnedMenu">
+        <button class="menu-button" onclick="togglePanel('history')" aria-label="History">
+            <i class="fas fa-history"></i>
+        </button>
+        <button class="menu-button" onclick="togglePanel('creator')" aria-label="Creator">
+            <i class="fas fa-magic"></i>
+        </button>
+        <button class="menu-button" onclick="togglePanel('diary')" aria-label="Diary">
+            <i class="fas fa-book"></i>
+        </button>
+        <button class="menu-button" onclick="showCallModal()" aria-label="Call">
+            <i class="fas fa-phone"></i>
+        </button>
+    </div>
+
+    <script src="/static/js/bootstrap.min.js"></script>
+</body>
+
+</html>

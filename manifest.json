@@ -1,0 +1,22 @@
+{
+    "name": "Yuna",
+    "short_name": "Yuna",
+    "description": "Yuna AI - your personal AI girlfriend",
+    "lang": "en",
+    "start_url": "",
+    "display": "standalone",
+    "background_color": "#99c189",
+    "theme_color": "#99c189",
+    "icons": [{
+            "src": "static/img/yuna.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "static/img/yuna.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

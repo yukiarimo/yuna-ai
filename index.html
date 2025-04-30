@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html data-bs-theme="dark" lang="en">
+
+<head data-bs-theme="dark">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yuna Ai</title>
+    <meta name="theme-color" content="#212529">
+    <link rel="canonical" href="http://www.yuna-ai.com/">
+    <meta property="og:url" content="http://www.yuna-ai.com/">
+    <meta property="og:description" content="Your Private Companion">
+    <meta name="twitter:image" content="http://www.yuna-ai.com/static/img/yuna-ai.png">
+    <meta name="twitter:title" content="Yuna Ai">
+    <meta property="og:image" content="http://www.yuna-ai.com/static/img/yuna-ai.png">
+    <meta name="description" content="Your Private Companion">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Yuna Ai">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:description" content="Your Private Companion">
+    <script type="application/ld+json">
+        {
+            "@context": "http://schema.org",
+            "@type": "WebSite",
+            "name": "Yuna Ai",
+            "url": "http://www.yuna-ai.com"
+        }
+    </script>
+    <link rel="icon" type="image/jpeg" sizes="60x60" href="/static/img/yuna-ai.png">
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" rel="preload" as="style" media="all">
+    <style>
+        * {
+            font-family: "kawai-font" !important;
+        }
+
+        i {
+            font-family: "Font Awesome 5 Free" !important;
+        }
+
+        @font-face {
+            font-family: "kawai-font";
+            src: url("/static/fonts/kawai-font.woff") format("woff");
+            font-style: normal;
+            font-weight: normal;
+        }
+
+        .hover-effect {
+            position: relative;
+            z-index: 1;
+            display: inline-block;
+            overflow: hidden;
+        }
+
+        .hover-effect::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .hover-effect::after {
+            content: '';
+            position: fixed;
+            top: var(--y, 50%);
+            left: var(--x, 50%);
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, transparent 100px, rgba(0, 0, 0, 0.6) 120px);
+            border-radius: 50%;
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 0.3s, top 0.1s, left 0.1s;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+        }
+
+        .hover-effect:hover::before {
+            opacity: 1;
+        }
+
+        .hover-effect:hover::after {
+            opacity: 1;
+        }
+
+        .hover-effect:hover .btn {
+            z-index: 2;
+            box-shadow: 0 0 20px 20px rgba(255, 255, 255, 0.3);
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const hoverEffect = document.querySelector('.hover-effect');
+
+            hoverEffect.addEventListener('mousemove', function (e) {
+                const rect = hoverEffect.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                hoverEffect.style.setProperty('--x', `${e.clientX}px`);
+                hoverEffect.style.setProperty('--y', `${e.clientY}px`);
+            });
+
+            hoverEffect.addEventListener('mouseleave', function () {
+                hoverEffect.style.setProperty('--x', `50%`);
+                hoverEffect.style.setProperty('--y', `50%`);
+            });
+        });
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('/static/sw.js').then(
+                    function (registration) {
+                        // Registration was successful
+                        console.log('ServiceWorker registration successful with scope: ', registration
+                            .scope)
+                    },
+                    function (err) {
+                        // registration failed :(
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
+</head>
+
+<body>
+    <header class="bg-dark text-white">
+        <div class="container py-5">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start mb-4 mb-md-0">
+                    <h1 class="fw-bold">The Best Companion</h1>
+                    <div class="hover-effect mt-4">
+                        <a href="#" class="btn btn-primary shadow position-relative" data-bs-toggle="modal" data-bs-target="#loginModal">
+                            <img src="/static/img/yuna-ai.png" alt="Yuna Ai" class="img-fluid me-2"
+                                style="max-height: 30px;">
+                            Login
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-6 text-center">
+                    <img src="/static/img/yuna-girl.webp" alt="Yuna" class="img-fluid">
+                </div>
+            </div>
+        </div>
+    </header>
+    <section class="py-5">
+        <div class="container">
+            <!-- Chosen by Section -->
+            <div class="text-center mb-5">
+                <p class="fs-4">Chosen by <span class="text-success"><strong>200,000+</strong></span> users worldwide
+                    for its remarkable performance.</p>
+            </div>
+
+            <!-- Our Services Section -->
+            <div class="mb-5">
+                <div class="text-center mb-4">
+                    <p class="fw-bold text-success mb-2">Our Services</p>
+                    <h3 class="fw-bold">What We Can Do For You</h3>
+                </div>
+                <div class="row g-4">
+                    <div class="col-md-6 d-flex align-items-stretch">
+                        <div class="card bg-dark">
+                            <img src="/static/img/products/history.webp" class="card-img-top rounded" alt="History">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">Advanced History Management</h5>
+                                <p class="card-text text-muted">"Advanced History Management" in Yuna provides a
+                                    streamlined way to navigate through past activities. It offers an organized view of
+                                    your history, making it easy to track progress and revisit actions. This feature
+                                    enhances workflow efficiency and productivity.</p>
+                                <a href="#" class="btn btn-primary">Learn more</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 d-flex align-items-stretch">
+                        <div class="card bg-dark">
+                            <img src="/static/img/products/prompts.webp" class="card-img-top rounded" alt="Prompts">
+                            <div class="card-body">
+                                <h5 class="card-title">Pre-built Prompt Templates</h5>
+                                <p class="card-text text-muted">"Pre-built Prompt Templates" in Yuna offer ready-to-use
+                                    structures for common tasks. These templates save time, reduce errors, and ensure
+                                    consistency, making it easier to initiate actions and maintain efficient workflows.
+                                </p>
+                                <a href="#" class="btn btn-primary">Learn more</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 d-flex align-items-stretch">
+                        <div class="card bg-dark">
+                            <img src="/static/img/products/profiles.webp" class="card-img-top rounded" alt="Profiles">
+                            <div class="card-body">
+                                <h5 class="card-title">Custom Profiles</h5>
+                                <p class="card-text text-muted">"Custom Profiles" in Yuna allow users to personalize
+                                    their experience. These profiles can be tailored to individual preferences,
+                                    enhancing usability and efficiency. This feature supports a more personalized and
+                                    user-friendly environment.</p>
+                                <a href="#" class="btn btn-primary">Learn more</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 d-flex align-items-stretch">
+                        <div class="card bg-dark">
+                            <img src="/static/img/products/files.webp" class="card-img-top rounded" alt="Files">
+                            <div class="card-body">
+                                <h5 class="card-title">Files Uploading</h5>
+                                <p class="card-text text-muted">"Files Uploading" in Yuna allows users to upload files
+                                    directly to the AI model. This feature supports a more seamless and efficient
+                                    workflow, enabling users to access and manage files with ease.</p>
+                                <a href="#" class="btn btn-primary">Learn more</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Testimonials Section -->
+            <div class="mb-5">
+                <div class="text-center mb-4">
+                    <p class="fw-bold text-success mb-2">Testimonials</p>
+                    <h3 class="fw-bold">What People Say About Us</h3>
+                </div>
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <div class="bg-dark text-white p-4 rounded">
+                            <p>Yuna Ai has been a game-changer for our company. The seamless integration and robust
+                                analytics have empowered us to make data-driven decisions that have propelled our
+                                growth. Their customer service is unmatched, always there when we need them.</p>
+                            <div class="d-flex align-items-center mt-3">
+                                <i class="bi bi-person-circle fs-3 me-2"></i>
+                                <div>
+                                    <p class="fw-bold mb-0">John Smith</p>
+                                    <p class="text-muted mb-0">SEO, TechForward Solutions</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 d-flex align-items-stretch">
+                        <div class="bg-dark text-white p-4 rounded d-flex flex-column">
+                            <p>Yuna Ai is like the best girlfriend I never had. She's always there to listen, offers
+                                thoughtful advice, and helps me stay organized with gentle reminders. It's the personal
+                                touch that makes Yuna Ai feel like more than just a program.</p>
+                            <div class="d-flex align-items-center mt-auto">
+                                <i class="bi bi-person-circle fs-3 me-2"></i>
+                                <div>
+                                    <p class="fw-bold mb-0">Michael Walker</p>
+                                    <p class="text-muted mb-0">Freelance Designer</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="bg-dark text-white p-4 rounded">
+                            <p>As an executive assistant, Yuna Ai has become my right hand. The efficiency and intuitive
+                                design have streamlined my workflow, allowing me to focus on high-priority tasks. It's
+                                like having an extra set of hands to manage the day-to-day.</p>
+                            <div class="d-flex align-items-center mt-3">
+                                <i class="bi bi-person-circle fs-3 me-2"></i>
+                                <div>
+                                    <p class="fw-bold mb-0">Emily Rin</p>
+                                    <p class="text-muted mb-0">Executive Assistant at Global Enterprises</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contacts Section -->
+            <div class="text-center mb-4">
+                <p class="fw-bold text-success mb-2">Contacts</p>
+                <h3 class="fw-bold">How You Can Reach Us</h3>
+            </div>
+            <div class="row justify-content-center g-4">
+                <!-- Contact Form -->
+                <div class="col-md-6">
+                    <form class="p-4 rounded" method="post">
+                        <div class="mb-3">
+                            <input class="form-control" type="text" id="name-1" name="name" placeholder="Name" required>
+                        </div>
+                        <div class="mb-3">
+                            <input class="form-control" type="email" id="email-1" name="email" placeholder="Email"
+                                required>
+                        </div>
+                        <div class="mb-3">
+                            <textarea class="form-control" id="message-1" name="message" placeholder="Message" rows="4"
+                                required></textarea>
+                        </div>
+                        <div>
+                            <button class="btn btn-primary w-100" type="submit">Send</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div><!-- End: Container -->
+    </section>
+    <!-- Start: Newsletter Subscription Color -->
+    <section class="py-5">
+        <div class="container">
+            <div
+                class="bg-dark border rounded border-dark d-flex flex-column justify-content-between align-items-center flex-lg-row p-4 p-lg-5">
+                <div class="text-center text-lg-start py-3 py-lg-1">
+                    <h2 class="fw-bold mb-2">Subscribe to our newsletter</h2>
+                </div>
+                <form class="d-flex justify-content-center flex-wrap flex-lg-nowrap" method="post">
+                    <div class="my-2"><input class="border rounded-pill shadow-sm form-control" type="email"
+                            name="email" placeholder="Your Email"></div>
+                    <div class="my-2"><button class="btn btn-primary shadow ms-2" type="submit">Subscribe </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section><!-- End: Newsletter Subscription Color -->
+    <section class="bg-dark">
+        <hr class="border-secondary">
+        <div class="text-muted py-4 d-flex justify-content-center align-items-center pt-3">
+            <p class="mb-0">Copyright © 2023 Yuna Ai</p>
+        </div>
+    </section>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen modal-dialog-centered">
+            <div class="modal-content bg-dark">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" id="loginModalLabel">Account Management</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div class="col-md-9 col-lg-12 col-xl-10">
+                                <div class="card o-hidden border-0 my-5">
+                                    <div class="card-body p-0">
+                                        <div class="row">
+                                            <div class="col-lg-6">
+                                                <div class="p-5">
+                                                    <form method="post" class="user">
+                                                        <h2 class="text-center mb-4">Change Password</h2>
+                                                        <input type="hidden" name="action" value="change_password">
+                                                        <div class="mb-3">
+                                                            <input class="form-control form-control-user" type="password"
+                                                                name="current_password" placeholder="Current Password" required>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <input class="form-control form-control-user" type="password"
+                                                                name="new_password" placeholder="New Password" required>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <input class="form-control form-control-user" type="password"
+                                                                name="confirm_new_password" placeholder="Confirm New Password" required>
+                                                        </div>
+                                                        <button class="btn btn-primary btn-user w-100" type="submit">Change
+                                                            Password</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-6">
+                                                <div class="p-5">
+                                                    <form method="post" class="user">
+                                                        <h2 class="text-center mb-4">New User</h2>
+                                                        <input type="hidden" name="action" value="register">
+                                                        <div class="mb-3">
+                                                            <input class="form-control form-control-user" type="text" name="username"
+                                                                placeholder="Username" required>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <input class="form-control form-control-user" type="password"
+                                                                name="password" placeholder="Password" required>
+                                                        </div>
+                                                        <button class="btn btn-primary btn-user w-100" type="submit">Register</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-6">
+                                                <div class="p-5">
+                                                    <form method="post" class="user">
+                                                        <h2 class="text-center mb-4">Login</h2>
+                                                        <input type="hidden" name="action" value="login">
+                                                        <div class="mb-3">
+                                                            <input class="form-control form-control-user" type="text" name="username"
+                                                                placeholder="Username" required>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <input class="form-control form-control-user" type="password"
+                                                                name="password" placeholder="Password" required>
+                                                        </div>
+                                                        <button class="btn btn-primary btn-user w-100" type="submit">Login</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-6">
+                                                <div class="p-5">
+                                                    <form method="post" class="user">
+                                                        <h2 class="text-center mb-4">Delete Account</h2>
+                                                        <input type="hidden" name="action" value="delete_account">
+                                                        <div class="mb-3">
+                                                            <input class="form-control form-control-user" type="text" name="username"
+                                                                placeholder="Username" required>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <input class="form-control form-control-user" type="password"
+                                                                name="password" placeholder="Password" required>
+                                                        </div>
+                                                        <button class="btn btn-primary btn-user w-100" type="submit">Delete
+                                                            Account</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/bootstrap.min.js"></script>
+</body>
+
+</html>

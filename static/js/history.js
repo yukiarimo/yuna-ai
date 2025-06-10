@@ -29,8 +29,7 @@ config_data = {
         "yuna_default_model": "lib/models/yuna/yuna-ai-v4-miru-mlx",
         "miru_default_model": ["lib/models/yuna/yuna-ai-v4-miru-q5_k_m.gguf", "lib/models/yuna/yuna-ai-v4-miru-eye-q5_k_m.gguf"],
         "yuna_himitsu_model": "lib/models/yuna/himitsu-v1-mlx",
-        "voice_default_model": "lib/models/agi/hanasu/yuna-ai-voice-v1",
-        "voice_model_config": ["G_108000.pth", "config.json"],
+        "voice_model_config": ["lib/models/agi/hanasu/yuna-ai-voice-v1/config.json", "lib/models/agi/hanasu/yuna-ai-voice-v1/G_158000.pth"],
         "device": "mps",
         "yuna_text_mode": "mlxvlm",
         "yuna_himitsu_mode": "mlx",
@@ -216,7 +215,7 @@ function renderChatList(chats) {
             <div class="btn-group">
                 <button class="btn btn-sm btn-primary me-1" onclick="chatHistoryManagerInstance.loadSelectedHistory('${filename}')">Open</button>
                 <button class="btn btn-sm btn-secondary me-1" onclick="chatHistoryManagerInstance.renameChat('${filename}', prompt('Enter new name:', '${filename}'))">Rename</button>
-                <button class="btn btn-sm btn-primary me-1" onclick="chatHistoryManagerInstance.downloadChat('${filename}')">Download</button>
+                <button class="btn btn-sm btn-secondary me-1" onclick="chatHistoryManagerInstance.downloadChat('${filename}')">Download</button>
                 <button class="btn btn-sm btn-danger" onclick="chatHistoryManagerInstance.deleteChat('${filename}')">Delete</button>
             </div>
         </li>

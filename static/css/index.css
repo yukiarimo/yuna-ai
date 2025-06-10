@@ -1,20 +1,25 @@
 :root {
-    --primary: #00BFA5;
-    --dark: #121212;
-    --darker: #0a0a0a;
+    --primary-glass: rgba(0, 122, 255, 0.7);
+    --bs-btn-active-bg: #009e8c !important;
+    --dark-glass: rgba(40, 40, 40, 0.4);
+    --light-glass: rgba(200, 200, 200, 0.2);
+    --light-glass-border: rgba(255, 255, 255, 0.2);
+    --dark: #0a0a0a;
+    --darker: #000;
     --card: #1E1E1E;
     --yuna: #009e8c;
-    --transition-speed: 0.3s;
+    --transition-speed: 0.4s;
+    --glass-blur: blur(20px);
 }
 
 *:not(i) {
-    font-family: "kawai-font" !important;
+    font-family: "kawai-font", sans-serif !important;
 }
 
 body {
     background: var(--dark);
-    color: #fff;
-    font-family: 'Segoe UI', sans-serif;
+    color: #f5f5f7;
+    font-family: 'kawai-font', sans-serif;
     overflow-x: hidden;
 }
 
@@ -44,25 +49,33 @@ body {
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    background: var(--primary);
+    background: var(--dark-glass);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--light-glass-border);
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: url('/static/img/heart.png') 0 0, auto !important;
-    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
-    border: none;
+    cursor: pointer !important;
+    transition: transform var(--transition-speed) ease, background-color var(--transition-speed) ease;
+    color: #f5f5f7;
 }
 
 .menu-button:hover {
     transform: scale(1.1);
-    box-shadow: 0 0 15px var(--primary);
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 10px rgba(150, 201, 255, 0.055), 
+                inset 0 0 5px rgba(255, 255, 255, 0.3);
+    transition: transform var(--transition-speed) cubic-bezier(0.25, 1, 0.5, 1),
+                background-color var(--transition-speed) ease,
+                box-shadow var(--transition-speed) ease;
 }
 
 .yuna-avatar {
     width: 55px;
     height: 55px;
     border-radius: 50%;
-    border: 3px solid var(--primary);
+    border: 2px solid var(--light-glass-border);
     position: fixed;
     top: 20px;
     left: 20px;
@@ -73,52 +86,62 @@ body {
 
 .chat-container {
     max-width: 1200px;
-    margin: 100px auto 80px;
+    margin: 100px auto 120px; /* Increased bottom margin */
     padding: 20px;
 }
 
 .message {
     max-width: 70%;
     margin: 15px;
-    padding: 15px;
-    border-radius: 20px;
-    animation: fadeIn 0.3s ease;
+    padding: 12px 18px;
+    border-radius: 22px;
+    animation: fadeIn 0.5s ease-out;
     position: relative;
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
 }
 
 .message-user {
-    background: var(--primary);
+    background: rgba(0, 158, 140, 0.8);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
     margin-left: auto;
-    border-radius: 20px 20px 0 20px;
+    border-radius: 22px 22px 5px 22px;
 }
 
 .message-ai {
-    background: var(--card);
+    background: rgba(80, 80, 80, 0.4);
     margin-right: auto;
-    border-radius: 20px 20px 20px 0;
+    border-radius: 22px 22px 22px 5px;
 }
 
 .message-actions {
     position: absolute;
-    top: 8px;
-    right: 8px;
+    bottom: -28px;
+    right: 5px;
     display: flex;
     gap: 6px;
     opacity: 0;
-    transition: opacity 0.2s ease;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    transform: translateY(-10px);
 }
 
 .message:hover .message-actions {
     opacity: 1;
+    transform: translateY(0);
 }
 
 .action-btn {
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: var(--dark-glass);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
     color: white;
-    border: none;
+    border: 1px solid var(--light-glass-border);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -130,51 +153,75 @@ body {
 
 .action-btn:hover {
     transform: scale(1.1);
+    background-color: rgba(255, 255, 255, 0.2);
 }
 
 .delete-btn:hover {
-    background-color: rgba(220, 53, 69, 0.8);
+    background-color: rgba(220, 53, 69, 0.6);
 }
 
 .regenerate-btn:hover {
-    background-color: rgba(13, 110, 253, 0.8);
+    background-color: rgba(13, 110, 253, 0.6);
 }
 
 .input-area {
     position: fixed;
     bottom: 0;
     left: 0;
-    width: 100%;
-    padding: 20px;
+    right: 0;
+    padding: 15px;
     z-index: 1000;
     display: flex;
-    align-items: center;
-    background: var(--dark);
+    justify-content: center;
+    background: transparent;
 }
 
 .input-group {
+    max-width: 1200px;
     width: 100%;
+    padding: 5px;
+    border-radius: 30px;
+    background: var(--dark-glass);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--light-glass-border);
+    display: flex;
+    align-items: center;
 }
 
 .input-area input {
+    flex-grow: 1;
     border-radius: 25px;
     padding: 10px 20px;
-    background: #1E1E1E;
+    background: transparent;
     border: none;
     outline: none;
     color: #fff;
+    font-size: 1.1em;
 }
 
 .input-area .btn {
     border-radius: 50%;
     width: 45px;
     height: 45px;
-    --bs-btn-padding-x: 1rem;
+    flex-shrink: 0;
+    border: none;
+    background: transparent;
+    color: #ccc;
+    transition: background var(--transition-speed) ease, color var(--transition-speed) ease;
+}
+.input-area .btn:hover {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
 }
 
-.modal-custom {
-    background: var(--dark);
-    border-radius: 15px;
+
+.modal-custom, .modal-content {
+    background: rgba(20, 20, 20, 0.5);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border-radius: 24px;
+    border: 1px solid var(--light-glass-border);
 }
 
 .call-container {
@@ -182,12 +229,13 @@ body {
     width: 100%;
     height: 100%;
     position: relative;
+    padding: 20px;
 }
 
 .video-frame {
     flex: 1;
-    background: var(--card);
-    border-radius: 10px;
+    background: var(--dark);
+    border-radius: 15px;
     overflow: hidden;
     margin: 10px;
     position: relative;
@@ -204,11 +252,14 @@ body {
     display: flex;
     justify-content: center;
     gap: 15px;
-    padding: 15px;
+    padding: 10px;
     position: absolute;
-    bottom: 20px;
+    bottom: 30px;
     left: 50%;
     transform: translateX(-50%);
+    background: var(--dark-glass);
+    border-radius: 30px;
+    border: 1px solid var(--light-glass-border);
 }
 
 .control-button {
@@ -216,9 +267,9 @@ body {
     height: 45px;
     border-radius: 50%;
     border: none;
-    background: var(--primary);
+    background: var(--light-glass);
     color: white;
-    transition: transform var(--transition-speed);
+    transition: transform var(--transition-speed), background-color var(--transition-speed);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -226,27 +277,32 @@ body {
 
 .control-button:hover {
     transform: scale(1.1);
+    background: rgba(255, 255, 255, 0.3);
 }
 
 .diary-card {
-    background: var(--card);
-    border-radius: 15px;
+    background: var(--dark-glass);
+    border-radius: 20px;
     padding: 20px;
     margin-bottom: 20px;
+    border: 1px solid var(--light-glass-border);
 }
 
 .popup-panel {
     position: fixed;
     top: 0;
-    right: -100%;
+    right: -100vw; /* Use vw for full viewport width */
     width: 100%;
     max-width: 100%;
     height: 100vh;
-    background: var(--darker);
-    transition: transform var(--transition-speed);
+    background: rgba(25, 25, 25, 0.5);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    transition: transform var(--transition-speed) cubic-bezier(0.25, 1, 0.5, 1);
     padding: 20px;
     z-index: 1050;
     overflow-y: auto;
+    border-left: 1px solid var(--light-glass-border);
 }
 
 .popup-panel.active {
@@ -259,22 +315,29 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
     z-index: 1040;
     display: none;
+    opacity: 0;
+    transition: opacity var(--transition-speed) ease;
 }
 
 .overlay.active {
     display: block;
+    opacity: 1;
 }
 
 @keyframes fadeIn {
     from {
         opacity: 0;
+        transform: translateY(10px);
     }
 
     to {
         opacity: 1;
+        transform: translateY(0);
     }
 }
 
@@ -284,9 +347,11 @@ body {
     right: 20px;
     width: 300px;
     height: 200px;
-    background: var(--card);
-    border: 1px solid #333;
-    border-radius: 10px;
+    background: var(--dark-glass);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--light-glass-border);
+    border-radius: 15px;
     display: none;
     flex-direction: column;
     z-index: 1060;
@@ -302,36 +367,34 @@ body {
 }
 
 .send-button {
-    background: var(--primary);
-    border: none;
+    background: var(--primary-glass);
     color: white;
-    transition: background var(--transition-speed);
 }
 
 .send-button:hover {
-    background: var(--yuna);
+    background: rgba(0, 122, 255, 1);
 }
 
 .attach-button {
-    background: var(--primary);
-    border: none;
     color: white;
-    transition: background var(--transition-speed);
-}
-
-.attach-button:hover {
-    background: var(--yuna);
 }
 
 .close-button {
-    background: transparent;
+    background: var(--dark-glass);
     border: none;
     color: #fff;
     position: absolute;
     top: 15px;
     right: 15px;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     cursor: pointer;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
 }
 
 .pinned {
@@ -348,41 +411,58 @@ body {
 }
 
 #dateField {
-    transition: display 0.3s ease;
+    transition: opacity 0.3s ease, max-height 0.3s ease;
 }
 
 .accordion {
     --bs-accordion-bg: transparent !important;
+    --bs-accordion-border-color: rgba(255,255,255,0.1);
+    --bs-accordion-btn-color: #f5f5f7;
+    --bs-accordion-active-color: #fff;
+    --bs-accordion-active-bg: rgba(255,255,255,0.05);
+}
+.accordion-button {
+    border-radius: 15px !important;
+}
+.accordion-item {
+    border: none !important;
 }
 
 .diary-card.accordion {
     padding: 0 !important;
+    background: transparent;
+    border: none;
 }
 
 .message-media {
     max-width: 200px;
     max-height: 200px;
-    border-radius: 10px;
+    border-radius: 15px;
     cursor: pointer;
     margin-top: 10px;
 }
 
 .file-link {
-    color: var(--primary);
+    color: #58a6ff;
     text-decoration: none;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 5px;
+    background: rgba(88, 166, 255, 0.2);
+    padding: 5px 10px;
+    border-radius: 10px;
 }
 
 .file-link:hover {
-    text-decoration: underline;
+    text-decoration: none;
+    background: rgba(88, 166, 255, 0.4);
 }
 
 /* Media Modal */
 .modal-media {
     width: 100%;
     height: auto;
+    border-radius: 15px;
 }
 
 @media (max-width: 600px) {
@@ -394,37 +474,133 @@ body {
 
 /* attachment button styles */
 .attach-button.has-attachments {
-    background-color: #0d6efd;
+    background-color: var(--primary-glass);
     color: white;
 }
 
 .attach-button.has-attachments:hover {
-    background-color: #0b5ed7;
+    background-color: rgba(0, 122, 255, 1);
 }
 
 .form-control, .form-select, #presentation-content {
-    background: #3d3c3c !important;
+    background: rgba(0, 0, 0, 0.2) !important;
     color: white !important;
     outline: none !important;
     border-radius: 12px !important;
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 10px 15px;
 }
 
 #messageInput {
     border-radius: 0 !important;
+    border: none !important;
 }
 
 .form-check-input {
-    --bs-form-check-bg: #3d3c3c;
+    --bs-form-check-bg: rgba(0,0,0,0.2);
+    border-color: rgba(255,255,255,0.3);
+}
+.form-check-input:checked {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
 }
 
-.form-control:focus {
+.form-control:focus, .form-select:focus {
     outline: none !important;
-    box-shadow: none !important;
+    box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.5) !important;
+    border-color: rgba(0, 122, 255, 0.8);
 }
 
-@font-face {
-    font-family: "kawai-font";
-    src: url("../fonts/kawai-font.woff") format("woff");
-    font-style: normal;
-    font-weight: normal;
+.btn {
+    border-radius: 12px;
+    border: 1px solid transparent;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.btn-primary {
+    background-color: var(--yuna);
+    border-color: var(--yuna);
+}
+
+.btn-primary:hover {
+    background-color: rgba(0, 158, 140, 0.8);
+    border-color: rgba(0, 158, 140, 0.8);
+}
+
+.btn-secondary {
+    background-color: var(--light-glass);
+    border-color: var(--light-glass-border);
+}
+.btn-secondary:hover {
+    background-color: rgba(255,255,255,0.3);
+}
+
+/* Styling for the chat history list */
+#chatList {
+    --bs-list-group-bg: transparent; /* Remove default Bootstrap background */
+    --bs-list-group-border-color: transparent; /* Remove default Bootstrap border */
+    border-radius: 20px;
+    overflow: hidden; /* Ensures child elements respect the border-radius */
+}
+
+.list-group-item {
+    background: var(--dark-glass);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    color: #f5f5f7;
+    padding: 1rem 1.25rem;
+    margin-bottom: 8px; /* Space between items */
+    border: 1px solid var(--light-glass-border);
+    border-radius: 16px; /* Rounded corners for each item */
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden; /* Necessary for the ::before pseudo-element */
+}
+
+/* Remove the default separator lines */
+.list-group-item + .list-group-item {
+    border-top-width: 1px;
+}
+
+.list-group-item:last-child {
+    margin-bottom: 0;
+}
+
+.list-group-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.chat-name {
+    font-weight: 500;
+}
+
+.list-group-item::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 200%;
+    padding-bottom: 200%; /* Maintain aspect ratio */
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0) 50%);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.list-group-item:hover::before {
+    transform: translate(calc(var(--x, 0) - 50%), calc(var(--y, 0) - 50%)) scale(1);
+    opacity: 1;
+    transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+}
+
+/* Ensure content is above the pseudo-element */
+.list-group-item > * {
+    position: relative;
+    z-index: 1;
 }

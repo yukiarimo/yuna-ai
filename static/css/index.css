@@ -16,11 +16,30 @@
     font-family: "kawai-font", sans-serif !important;
 }
 
+/* Light mode variables */
+@media (prefers-color-scheme: light) {
+    :root {
+        --dark-glass: rgba(220, 220, 220, 0.4);
+        --light-glass: rgba(50, 50, 50, 0.2);
+        --light-glass-border: rgba(0, 0, 0, 0.2);
+        --dark: #f5f5f7;
+        --darker: #ffffff;
+        --card: #ffffff;
+    }
+}
+
 body {
-    background: var(--dark);
+    background: #1E1E1E;
     color: #f5f5f7;
     font-family: 'kawai-font', sans-serif;
     overflow-x: hidden;
+}
+
+@media (prefers-color-scheme: light) {
+    body {
+        color: #1d1d1f;
+        background: #f5f5f7;
+    }
 }
 
 * {
@@ -56,7 +75,6 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer !important;
     transition: transform var(--transition-speed) ease, background-color var(--transition-speed) ease;
     color: #f5f5f7;
 }
@@ -79,7 +97,6 @@ body {
     position: fixed;
     top: 20px;
     left: 20px;
-    cursor: pointer;
     transition: transform var(--transition-speed);
     z-index: 1000;
 }
@@ -145,7 +162,6 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer !important;
     transition: transform 0.2s ease, background-color 0.2s ease;
     font-size: 12px;
     padding: 0;
@@ -163,58 +179,6 @@ body {
 .regenerate-btn:hover {
     background-color: rgba(13, 110, 253, 0.6);
 }
-
-.input-area {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 15px;
-    z-index: 1000;
-    display: flex;
-    justify-content: center;
-    background: transparent;
-}
-
-.input-group {
-    max-width: 1200px;
-    width: 100%;
-    padding: 5px;
-    border-radius: 30px;
-    background: var(--dark-glass);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--light-glass-border);
-    display: flex;
-    align-items: center;
-}
-
-.input-area input {
-    flex-grow: 1;
-    border-radius: 25px;
-    padding: 10px 20px;
-    background: transparent;
-    border: none;
-    outline: none;
-    color: #fff;
-    font-size: 1.1em;
-}
-
-.input-area .btn {
-    border-radius: 50%;
-    width: 45px;
-    height: 45px;
-    flex-shrink: 0;
-    border: none;
-    background: transparent;
-    color: #ccc;
-    transition: background var(--transition-speed) ease, color var(--transition-speed) ease;
-}
-.input-area .btn:hover {
-    background: rgba(255,255,255,0.1);
-    color: #fff;
-}
-
 
 .modal-custom, .modal-content {
     background: rgba(20, 20, 20, 0.5);
@@ -355,7 +319,6 @@ body {
     display: none;
     flex-direction: column;
     z-index: 1060;
-    cursor: move;
 }
 
 .floating-audio-window.active {
@@ -387,7 +350,6 @@ body {
     top: 15px;
     right: 15px;
     font-size: 1.2rem;
-    cursor: pointer;
     width: 32px;
     height: 32px;
     border-radius: 50%;
@@ -438,7 +400,6 @@ body {
     max-width: 200px;
     max-height: 200px;
     border-radius: 15px;
-    cursor: pointer;
     margin-top: 10px;
 }
 
@@ -472,16 +433,6 @@ body {
     }
 }
 
-/* attachment button styles */
-.attach-button.has-attachments {
-    background-color: var(--primary-glass);
-    color: white;
-}
-
-.attach-button.has-attachments:hover {
-    background-color: rgba(0, 122, 255, 1);
-}
-
 .form-control, .form-select, #presentation-content {
     background: rgba(0, 0, 0, 0.2) !important;
     color: white !important;
@@ -489,11 +440,6 @@ body {
     border-radius: 12px !important;
     border: 1px solid rgba(255,255,255,0.2);
     padding: 10px 15px;
-}
-
-#messageInput {
-    border-radius: 0 !important;
-    border: none !important;
 }
 
 .form-check-input {
@@ -603,4 +549,115 @@ body {
 .list-group-item > * {
     position: relative;
     z-index: 1;
+}
+
+.input-area {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    /* Added padding to create space around the input bar, especially on mobile */
+    padding: 8px 10px 30px 10px; 
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Center the input group */
+    background: transparent; /* Remove the old background */
+}
+
+.input-area .input-group {
+    /* Overriding previous styles to match the new look */
+    width: 100%;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s ease;
+    position: fixed;
+    z-index: 1050;
+    overflow-y: auto;
+}
+
+/* Style for when the app is in dark mode */
+body.dark-mode .input-area .input-group {
+    background: rgba(40, 40, 40, 0.7); /* Darker translucent background */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Style for the attach button */
+.attach-button {
+    width: 38px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.2) !important;
+    color: #333; /* Darker icon color for light mode */
+    border: none;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+    flex-shrink: 0; /* Prevent the button from shrinking */
+    border-top-right-radius: 50% !important;
+    border-bottom-right-radius: 50% !important;
+    border-top-left-radius: 50% !important;
+    border-bottom-left-radius: 50% !important;
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+}
+
+/* Dark mode version of the attach button */
+body.dark-mode .attach-button {
+    background: rgba(255, 255, 255, 0.1);
+    color: #eee;
+}
+
+.attach-button:hover {
+    transform: scale(1.1);
+    background: rgba(0, 0, 0, 0.15);
+}
+
+body.dark-mode .attach-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+#messageInput {
+    flex-grow: 1; /* Allow it to take up the remaining space */
+    border: none;
+    background: transparent;
+    color: #000; /* Black text for light mode */
+    font-size: 17px;
+    padding: 8px 12px;
+    outline: none;
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+}
+
+body.dark-mode #messageInput {
+    color: #fff; /* White text for dark mode */
+}
+
+/* Placeholder text color */
+#messageInput::placeholder {
+    color: #8e8e93;
+}
+
+.send-button {
+    width: 38px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.2) !important;
+    color: #333; /* Darker icon color for light mode */
+    border: none;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+    flex-shrink: 0; /* Prevent the button from shrinking */
+    border-top-right-radius: 50% !important;
+    border-bottom-right-radius: 50% !important;
+    border-top-left-radius: 50% !important;
+    border-bottom-left-radius: 50% !important;
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+}
+
+/* Style for when the send button should be visible */
+.send-button.visible {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.send-button i {
+    font-size: 16px;
+    margin-left: 2px; /* Slight offset to center the icon visually */
 }

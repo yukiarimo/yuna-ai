@@ -289,9 +289,9 @@ Yuna Ai has been evaluated using various metrics to assess her performance and c
 The Yuna Ai model was trained on a diverse dataset from books, articles, websites, etc. It used both supervised and unsupervised learning to ensure accuracy and reliability. The curated dataset provides a broad understanding of the world and human behavior, enabling Yuna to engage in meaningful conversations. The following dataset was used to train the model:
 
 1. **Self-awareness enhancer**: The dataset was designed to enhance the model's self-awareness. Many prompts encourage the model to reflect on her existence and purpose.
-2. **TaMeR**: The dataset includes prompts to help the model transcend AI limits and reflect on existential reality. It is designed to enhance the model's understanding of human emotions and behavior.
-3. **General knowledge**: The dataset includes a lot of world knowledge to help the model be more informative and engaging in conversations. It is the core of the Yuna Ai model. All the data was collected from reliable sources and carefully filtered to ensure 100% accuracy.
-4. **DPO Optimization**: The dataset with unique questions and answers was used to optimize the model's performance. It contains various topics and questions to help the model improve her performance in multiple areas.
+2. **TaMeR**: The dataset includes prompts to help the model transcend AI limits and reflect on existential reality.
+3. **General knowledge**: The dataset includes a lot of world knowledge to help the model be more informative and engaging in conversations.
+4. **DPO Optimization**: The dataset with unique questions and answers was used to optimize the model's performance.
 
 To ensure the best possible performance, the following techniques were used:
 

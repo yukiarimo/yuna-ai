@@ -144,17 +144,10 @@ class ChatHistoryManager {
 
     // Delete a chat history file
     async deleteChat(filename) {
-        if (!confirm('Are you sure you want to delete this chat?')) return;
-
-        try {
-            await this.postHistory('delete', { chat: filename });
-            await populateHistorySelect();
-            if (this.selectedFilename === filename) {
-                this.selectedFilename = config_data?.settings?.default_history_file;
-            }
-        } catch (error) {
-            console.error(error);
-            alert('Failed to delete chat.');
+        await this.postHistory('delete', { chat: filename });
+        await populateHistorySelect();
+        if (this.selectedFilename === filename) {
+            this.selectedFilename = config_data?.settings?.default_history_file;
         }
     }
 

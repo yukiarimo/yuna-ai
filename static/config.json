@@ -5,7 +5,7 @@
         "emotions": false,
         "miru": false,
         "audio": false,
-        "mind": false,
+        "mind": true,
         "hanasu": false,
         "max_new_tokens": 1024,
         "context_length": 16384,

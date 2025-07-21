@@ -126,12 +126,14 @@ body {
     -webkit-backdrop-filter: var(--glass-blur);
     margin-left: auto;
     border-radius: 22px 22px 5px 22px;
+    white-space: pre-line;
 }
 
 .message-ai {
     background: rgba(80, 80, 80, 0.4);
     margin-right: auto;
     border-radius: 22px 22px 22px 5px;
+    white-space: pre-line;
 }
 
 .message-actions {

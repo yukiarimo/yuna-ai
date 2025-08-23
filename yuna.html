@@ -28,14 +28,11 @@
     <link rel="icon" type="image/jpeg" sizes="60x60" href="/static/img/yuna-ai.png">
     <link rel="manifest" href="/static/manifest.json">
     <link rel="stylesheet" href="/static/css/bootstrap.min.css" rel="preload" as="style" media="all">
-    <link href="/static/css/awesome.css" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/index.css">
     <script src="/static/js/index.js" defer></script>
     <script src="/static/js/history.js" defer></script>
     <script src="/static/js/kanojo.js" defer></script>
-    <script src="/static/js/diary.js" defer></script>
     <script src="/static/js/markdown.js" defer></script>
-    <script src="/static/js/pptxgen.js" defer></script>
     <script src="/static/js/creator.js" defer></script>
     <script>
         if ('serviceWorker' in navigator) {
@@ -72,9 +69,6 @@
         </button>
         <button class="menu-button" onclick="togglePanel('himitsu')" aria-label="Himitsu">
             <i class="fas fa-star"></i>
-        </button>
-        <button class="menu-button" onclick="togglePanel('diary')" aria-label="Diary">
-            <i class="fas fa-book"></i>
         </button>
         <button class="menu-button" onclick="showCallModal()" aria-label="Call">
             <i class="fas fa-phone"></i>
@@ -236,8 +230,8 @@
                                     <label class="form-check-label">Himitsu</label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="emotions">
-                                    <label class="form-check-label">Emotions</label>
+                                    <input class="form-check-input" type="checkbox" id="kokoro">
+                                    <label class="form-check-label">Kokoro</label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="miru">
@@ -396,7 +390,6 @@
             <div class="mt-4">
                 <button type="button" class="btn btn-primary" id="createButtonHimitsuCreator">Create</button>
                 <button type="button" class="btn btn-secondary" id="copyToDraftButtonHimitsuCreator">Draft Copy</button>
-                <button type="button" class="btn btn-secondary" id="exportPresentationButtonHimitsuCreator">Export</button>
                 <button type="button" class="btn btn-secondary" id="savePresentationButtonHimitsuCreator">Save</button>
                 <button type="button" class="btn btn-danger" id="clearButtonHimitsuCreator">Clear</button>
             </div>
@@ -424,11 +417,7 @@
             </div>
             <button type="button" class="btn btn-primary">Start</button>
         </div>
-    </div>
 
-    <!-- Diary Panel -->
-    <div id="diaryPanel" class="popup-panel">
-        <button class="close-button" onclick="togglePanel('diary')">&times;</button>
         <h4 class="mb-4">Diary</h4>
         <div class="diary-card">
             <h5>Create Note</h5>
@@ -452,12 +441,6 @@
                 </div>
                 <button type="submit" class="btn btn-primary">Save Note</button>
             </form>
-        </div>
-        <div class="diary-card mt-4">
-            <h5>Previous Notes</h5>
-            <div id="notes-container">
-                <!-- Notes will be dynamically inserted here -->
-            </div>
         </div>
     </div>
 
@@ -502,9 +485,6 @@
         </button>
         <button class="menu-button" onclick="togglePanel('creator')" aria-label="Creator">
             <i class="fas fa-magic"></i>
-        </button>
-        <button class="menu-button" onclick="togglePanel('diary')" aria-label="Diary">
-            <i class="fas fa-book"></i>
         </button>
         <button class="menu-button" onclick="showCallModal()" aria-label="Call">
             <i class="fas fa-phone"></i>

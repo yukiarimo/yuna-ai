@@ -295,7 +295,7 @@ class messageManager {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    text: userMsg,
+                    text: text,
                     chat: chatHistoryManagerInstance.selectedFilename,
                     useHistory: document.getElementById('useHistory').checked,
                     kanojo: kanojoManagerInstance.buildPrompt(kanojoManagerInstance.selectedKanojo),
@@ -379,7 +379,7 @@ deleteMessage(messageId) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                text: userMsg,
+                text: text,
                 chat: chatHistoryManagerInstance.selectedFilename,
                 useHistory: document.getElementById('useHistory').checked,
                 kanojo: kanojoManagerInstance.buildPrompt(kanojoManagerInstance.selectedKanojo),

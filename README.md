@@ -58,7 +58,7 @@ Yuna Ai provides a myriad of customization choices to elevate your interface wit
 ### AI Configuration Block
 - `names`: Your names and Companion names that can be used.
 - `himitsu`: Toggles the Himitsu Copiloting System (Yuna's Nexus).
-- `emotions`: Should Yuna process emotional responses?
+- `kokoro`: Should Yuna process kokoro responses?
 - `miru`: Should Yuna use visual processing capabilities?
 - `audio`: Should Yuna use audio processing?
 - `mind`: Do you want to enable an LLM?

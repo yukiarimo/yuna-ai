@@ -1,8 +1,7 @@
 config_data = {
     "ai": {
         "names": ["Yuki", "Yuna"],
-        "himitsu": false,
-        "emotions": false,
+        "kokoro": false,
         "miru": false,
         "audio": false,
         "mind": false,
@@ -28,11 +27,9 @@ config_data = {
         "url": "",
         "yuna_default_model": "lib/models/yuna/yuna-ai-v4-miru-mlx",
         "miru_default_model": ["lib/models/yuna/yuna-ai-v4-miru-q5_k_m.gguf", "lib/models/yuna/yuna-ai-v4-miru-eye-q5_k_m.gguf"],
-        "yuna_himitsu_model": "lib/models/yuna/himitsu-v1-mlx",
-        "voice_model_config": ["lib/models/agi/hanasu/yuna-ai-voice-v1/config.json", "lib/models/agi/hanasu/yuna-ai-voice-v1/G_158000.pth"],
+        "voice_model_config": ["lib/models/agi/hanasu/yuna-ai-voice-v1/config.json", "lib/models/hanasu/yuna-ai-voice-v1/G_158000.pth"],
         "device": "mps",
         "yuna_text_mode": "mlxvlm",
-        "yuna_himitsu_mode": "mlx",
         "yuna_miru_mode": "mlxvlm",
         "yuna_audio_mode": "hanasu",
         "yuna_reference_audio": "static/audio/reference.wav"

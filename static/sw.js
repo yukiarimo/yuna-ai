@@ -69,27 +69,6 @@ self.addEventListener('activate', function (event) {
     event.waitUntil(self.clients.claim());
 });
 
-self.addEventListener('pushsubscriptionchange', function (event) {
-    console.log('Subscription expired');
-    event.waitUntil(
-        self.registration.pushManager.subscribe({
-            userVisibleOnly: true
-        })
-        .then(function (subscription) {
-            console.log('Subscribed after expiration', subscription.endpoint);
-            return fetch('https://www.himitsu.dev/subscribe', {
-                method: 'post',
-                headers: {
-                    'Content-type': 'application/json'
-                },
-                body: JSON.stringify({
-                    endpoint: subscription.endpoint
-                })
-            });
-        })
-    );
-});
-
 self.addEventListener('fetch', function (event) {
     event.respondWith(
         fetch(event.request).catch(function () {
@@ -99,7 +78,7 @@ self.addEventListener('fetch', function (event) {
 });
 
 // app.js
-if ('serviceWorker' in navigator && 'PushManager' in window) {
+if ('serviceWorker' in navigator) {
     let swRegistration = null;
 
     navigator.serviceWorker.register('/sw.js')

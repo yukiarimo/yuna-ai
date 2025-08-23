@@ -8,7 +8,6 @@ from flask_cors import CORS
 from itsdangerous import URLSafeTimedSerializer
 from flask_compress import Compress
 from aiflow import agi, history
-from pywebpush import webpush
 import logging
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
@@ -16,10 +15,6 @@ config =  agi.get_config()
 secret_key = config['security']['secret_key']
 serializer = URLSafeTimedSerializer(secret_key)
 login_manager = LoginManager()
-subscriptions = []
-VAPID_PRIVATE_KEY = "x32JRDsKvbQC3VwkKqYymupvlyccXBKkrwWk1vdb88U"
-VAPID_PUBLIC_KEY = "BLAWDkBakXLWfyQP5zAXR5Dyv4-W1nsRDkUk9Kw9MqKppQCdbsP-yfz7kEpAPvDMy2lszg_SZ9QEC9Uda8mpKSg"
-VAPID_CLAIMS = {"sub": "mailto:yukiarimo@gmail.com"}
 
 class YunaServer:
     def __init__(self):
@@ -91,8 +86,6 @@ class YunaServer:
         self.app.route('/analyze', methods=['POST'], endpoint='textfile')(lambda: handle_textfile_request(self.chat_generator))
         self.app.route('/logout', methods=['GET'])(self.logout)
         self.app.route('/search', methods=['POST'], endpoint='search')(lambda: handle_search_request(self.worker))
-        self.app.route('/subscribe', methods=['POST'], endpoint='subscribe')(lambda: subscribe())
-        self.app.route('/send-notification', methods=['POST'], endpoint='send_notification')(lambda: send_notification())
 
     def custom_static(self, filename): return send_from_directory(self.app.static_folder, 'static/' + filename if not filename.startswith(('static/', '/favicon.ico', '/manifest.json')) else filename)
     def image_pwa(self): return send_from_directory(self.app.static_folder, 'img/yuna-ai.png')
@@ -264,24 +257,5 @@ def handle_textfile_request(chat_generator):
 
     return jsonify({'response': result})
 
-def subscribe():
-    subscription = request.json
-    if subscription not in subscriptions: subscriptions.append(subscription)
-    return jsonify({'success': True})
-
-def send_notification():
-    try:
-        data = request.json
-        print(data)
-        for subscription in subscriptions:
-            webpush(
-                subscription_info=subscription,
-                data=json.dumps(data),
-                vapid_private_key=VAPID_PRIVATE_KEY,
-                vapid_claims=VAPID_CLAIMS
-            )
-        return jsonify({'success': True})
-    except Exception as e: return jsonify({'success': False, 'error': str(e)})
-
 app = YunaServer().app
-if __name__ == '__main__': app.run(host='0.0.0.0', port=4848, ssl_context=('lib/cert.pem', 'lib/key.pem'))
+if __name__ == '__main__': app.run(host='0.0.0.0', port=4848, ssl_context=('lib/yuna-ai.pem', 'lib/yuna-ai.key'))

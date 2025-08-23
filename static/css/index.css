@@ -1,5 +1,5 @@
 :root {
-    --primary-glass: rgba(0, 122, 255, 0.7);
+    --primary-glass: #4DA2FF
     --bs-btn-active-bg: #009e8c !important;
     --dark-glass: rgba(40, 40, 40, 0.4);
     --light-glass: rgba(200, 200, 200, 0.2);

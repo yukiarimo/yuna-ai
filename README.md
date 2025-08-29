@@ -57,11 +57,10 @@ Yuna Ai provides a myriad of customization choices to elevate your interface wit
 
 ### AI Configuration Block
 - `names`: Your names and Companion names that can be used.
-- `himitsu`: Toggles the Himitsu Copiloting System (Yuna's Nexus).
 - `kokoro`: Should Yuna process kokoro responses?
-- `miru`: Should Yuna use visual processing capabilities?
 - `audio`: Should Yuna use audio processing?
 - `mind`: Do you want to enable an LLM?
+- `hanasu`: Do you want to enable a TTS?
 - `max_new_tokens`: Should Yuna generate more new tokens (how long a response should be)?
 - `context_length`: Should Yuna remember more of the conversation history (non-long-term memory context) to work with?
 - `temperature`: Should Yuna make more creative (surprising) responses?
@@ -82,15 +81,10 @@ Yuna Ai provides a myriad of customization choices to elevate your interface wit
 ## Server Configuration Block
 - `url`: Connection URL to the server.
 - `yuna_default_model`: Main model file for Yuna LLM.
-- `miru_default_model`: Model file for visual processing and adapter file (if needed).
-- `yuna_himitsu_model`: Model file for Himitsu Copiloting System.
-- `voice_model_config`: Configuration file for voice processing.
+- `voice_default_model`: Configuration file for TTS.
 - `device`: Selection of processing hardware (CPU/CUDA/MPS).
-- `yuna_text_mode`: Text processing mode (mlx/koboldcpp/lmstudio).
-- `yuna_himitsu_mode`: Himitsu Copiloting System mode ((mlx/koboldcpp/lmstudio).
-- `yuna_miru_mode`: Visual processing mode (mlx/koboldcpp/lmstudio).
-- `yuna_audio_mode`: Audio processing mode (hanasu/siri/siri-pv/11labs).
-- `yuna_reference_audio`: Reference voice file used for audio processing.
+- `yuna_text_mode`: Text processing mode (mlx/koboldcpp).
+- `yuna_audio_mode`: TTS mode (hanasu/siri/siri-pv).
 
 ### Settings Configuration Block
 - `functions`: Enables custom function calling support.

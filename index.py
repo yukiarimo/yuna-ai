@@ -12,8 +12,7 @@ import logging
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 config =  agi.get_config()
-secret_key = config['security']['secret_key']
-serializer = URLSafeTimedSerializer(secret_key)
+serializer = URLSafeTimedSerializer("YourSecretKeyHere123!")
 login_manager = LoginManager()
 
 class YunaServer:

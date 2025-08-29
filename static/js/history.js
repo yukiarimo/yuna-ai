@@ -27,12 +27,10 @@ config_data = {
         "url": "",
         "yuna_default_model": "lib/models/yuna/yuna-ai-v4-miru-mlx",
         "miru_default_model": ["lib/models/yuna/yuna-ai-v4-miru-q5_k_m.gguf", "lib/models/yuna/yuna-ai-v4-miru-eye-q5_k_m.gguf"],
-        "voice_model_config": ["lib/models/agi/hanasu/yuna-ai-voice-v1/config.json", "lib/models/hanasu/yuna-ai-voice-v1/G_158000.pth"],
+        "voice_default_model": ["lib/models/agi/hanasu/yuna-ai-voice-v1/config.json", "lib/models/hanasu/yuna-ai-voice-v1/G_158000.pth"],
         "device": "mps",
         "yuna_text_mode": "mlxvlm",
-        "yuna_miru_mode": "mlxvlm",
         "yuna_audio_mode": "hanasu",
-        "yuna_reference_audio": "static/audio/reference.wav"
     },
     "settings": {
         "fuctions": true,
@@ -43,11 +41,6 @@ config_data = {
         "streaming": true,
         "default_history_file": "history_template:general.json",
         "default_kanojo": "Yuna"
-    },
-    "security": {
-        "secret_key": "YourSecretKeyHere123!",
-        "encryption_key": "zWZnu-lxHCTgY_EqlH4raJjxNJIgPlvXFbdk45bca_I=",
-        "11labs_key": "Your11LabsKeyHere123!"
     }
 };
 
@@ -59,7 +52,7 @@ class ChatHistoryManager {
         this.selectedFilename = '';
     }
 
-    // Fetch all chats from the server 
+    // Fetch all chats from the server
     async fetchChats() {
         try {
             const response = await fetch(`${this.apiBaseUrl}/history`, {
@@ -153,9 +146,9 @@ class ChatHistoryManager {
         if (!newName) return;
 
         try {
-            await this.postHistory('rename', { 
+            await this.postHistory('rename', {
                 chat: oldName,
-                name: newName 
+                name: newName
             });
             await populateHistorySelect();
             if (this.selectedFilename === oldName) {
@@ -239,7 +232,7 @@ const applySettings = () => {
     // Map config settings to checkbox IDs
     const settingsMap = {
         'pseudo_api': 'pseudoApi',
-        'fuctions': 'functions', 
+        'fuctions': 'functions',
         'notifications': 'notifications',
         'customConfig': 'customConfig',
         'sounds': 'sounds',

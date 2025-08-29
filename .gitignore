@@ -6,7 +6,6 @@ __pycache__/
 !static/img/call/README.md
 !lib/models/agi/README.md
 !lib/models/agi/audio/README.md
-!lib/models/agi/miru/README.md
 !lib/models/agi/voice/README.md
 !lib/models/yuna/README.md
 !lib/tests/README.md

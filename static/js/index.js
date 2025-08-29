@@ -365,11 +365,11 @@ deleteMessage(messageId) {
         }
 
         // Send message to regenerate response
-        const userMsg = { 
-            name: 'User', 
-            type: 'text', 
-            text: messageText, 
-            data: null, 
+        const userMsg = {
+            name: 'User',
+            type: 'text',
+            text: messageText,
+            data: null,
             id: this.generateUniqueId()
         };
 
@@ -391,9 +391,9 @@ deleteMessage(messageId) {
             })
         })
         .then(response => response.json())
-        .then(data => this.renderMessage({ 
-            name: 'Yuna', 
-            type: 'text', 
+        .then(data => this.renderMessage({
+            name: 'Yuna',
+            type: 'text',
             text: data.response,
             data: null,
             id: this.generateUniqueId()

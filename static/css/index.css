@@ -82,7 +82,7 @@ body {
 .menu-button:hover {
     transform: scale(1.1);
     background: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 0 10px rgba(150, 201, 255, 0.055), 
+    box-shadow: 0 0 10px rgba(150, 201, 255, 0.055),
                 inset 0 0 5px rgba(255, 255, 255, 0.3);
     transition: transform var(--transition-speed) cubic-bezier(0.25, 1, 0.5, 1),
                 background-color var(--transition-speed) ease,
@@ -559,7 +559,7 @@ body {
     left: 0;
     width: 100%;
     /* Added padding to create space around the input bar, especially on mobile */
-    padding: 8px 10px 30px 10px; 
+    padding: 8px 10px 30px 10px;
     z-index: 1000;
     display: flex;
     align-items: center;

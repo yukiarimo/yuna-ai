@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!select) return;
 
         // Add all existing kanojos
-        let options = Object.keys(kanojoManagerInstance.kanojos).map(name => 
+        let options = Object.keys(kanojoManagerInstance.kanojos).map(name =>
             `<option value="${name}">${name}</option>`
         );
 
@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const newName = prompt('Enter name for new kanojo:');
             if (!newName || newName.trim() === '') {
                 // Reset selection if canceled
-                document.getElementById('kanojoSelect').value = kanojoManagerInstance.selectedKanojo || 
+                document.getElementById('kanojoSelect').value = kanojoManagerInstance.selectedKanojo ||
                     Object.keys(kanojoManagerInstance.kanojos)[0];
                 return;
             }

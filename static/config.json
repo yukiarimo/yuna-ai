@@ -2,7 +2,6 @@
     "ai": {
         "names": ["Yuki", "Yuna"],
         "kokoro": false,
-        "miru": false,
         "audio": false,
         "mind": true,
         "hanasu": false,
@@ -25,14 +24,11 @@
     },
     "server": {
         "url": "",
-        "yuna_default_model": "lib/models/yuna/yuna-ai-v4-miru-loli-mlx",
-        "miru_default_model": ["lib/models/yuna/yuna-ai-v4-miru-q5_k_m.gguf", "lib/models/yuna/yuna-ai-v4-miru-eye-q5_k_m.gguf"],
-        "voice_model_config": ["lib/models/hanasu/yuna-ai-voice-v1/config.json", "lib/models/hanasu/yuna-ai-voice-v1/G_158000.pth"],
+        "yuna_default_model": ["lib/models/yuna/yuna-ai-v4-miru-loli-mlx"],
+        "voice_default_model": ["lib/models/agi/hanasu/config.json", "lib/models/agi/hanasu/G_46000.pth"],
         "device": "mps",
         "yuna_text_mode": "mlxvlm",
-        "yuna_miru_mode": "mlxvlm",
-        "yuna_audio_mode": "hanasu-off",
-        "yuna_reference_audio": "static/audio/reference.wav"
+        "yuna_audio_mode": "hanasu"
     },
     "settings": {
         "fuctions": true,
@@ -43,10 +39,5 @@
         "streaming": true,
         "default_history_file": "history_template:general.json",
         "default_kanojo": "Yuna"
-    },
-    "security": {
-        "secret_key": "YourSecretKeyHere123!",
-        "encryption_key": "zWZnu-lxHCTgY_EqlH4raJjxNJIgPlvXFbdk45bca_I=",
-        "11labs_key": "Your11LabsKeyHere123!"
     }
 }

@@ -1,3 +1,5 @@
+const $ = id => document.getElementById(id);
+
 class kanojoConnect {
     constructor() {
         this.kanojos = {};
@@ -261,3 +263,54 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // build kanojo
 kanojoManagerInstance.buildPrompt(kanojoManagerInstance.selectedKanojo);
+
+// Element selectors
+const elements = {
+    workArea: $('work-area'),
+    outputArea: $('output-area'),
+    sendButton: $('createButtonHimitsuCreator'),
+    clearButton: $('clearButtonHimitsuCreator'),
+};
+
+function sendNaked() {
+    fetch(`/extension`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: elements.workArea?.value })
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('Network response was not ok');
+        return response.json();
+    })
+    .then(data => { if (elements.outputArea) elements.outputArea.value = data.response; })
+    .catch(console.error);
+}
+
+// Attach event listeners
+elements.sendButton?.addEventListener('click', sendNaked);
+
+// Markdown Renderer Setup (guard if missing)
+if (window.marked) {
+    marked.setOptions({ breaks: true, gfm: true });
+} else {
+    console.warn('marked.js not found; skipping markdown setup');
+}
+
+// Load and render markdown on load
+document.addEventListener('DOMContentLoaded', () => {
+    const savedOutput = localStorage.getItem('outputAreaContent');
+    if (savedOutput && elements.outputArea) elements.outputArea.value = savedOutput;
+});
+
+elements.clearButton?.addEventListener('click', () => {
+    if (elements.workArea) elements.workArea.value = '';
+    if (elements.outputArea) elements.outputArea.value = '';
+    localStorage.removeItem('outputAreaContent');
+});
+
+// Save output area content on change
+elements.outputArea?.addEventListener('input', () => {
+    if (elements.outputArea) {
+        localStorage.setItem('outputAreaContent', elements.outputArea.value);
+    }
+});

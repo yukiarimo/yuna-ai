@@ -1,7 +1,7 @@
 {
     "short_name": "Yuna Ai",
     "name": "Yuna Ai",
-    "description": "Yuna Ai - Your Private Companion",
+    "description": "Your cute little companion.",
     "icons": [{
             "src": "/static/img/yuna-ai.png",
             "sizes": "512X512",
@@ -15,7 +15,7 @@
             "purpose": "maskable"
         }
     ],
-    "start_url": "/yuna.html",
+    "start_url": "/",
     "background_color": "#99c189",
     "theme_color": "#99c189",
     "display": "standalone",

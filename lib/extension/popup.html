@@ -1,106 +1,146 @@
-/popup.html
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Yuna Ai</title>
-  <style>
-    body {
-      width: 300px;
-      height: 250px;
-      font-family: 'Comic Sans MS', Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      color: #333;
-      overflow: hidden;
-      border-radius: 10px;
-    }
+    <meta charset="UTF-8">
+    <title>Yuna Ai</title>
+    <style>
+        /* --- BASE & VARIABLES --- */
+        :root {
+            --yuna-bg-color: rgba(30, 30, 35, 0.55);
+            --yuna-accent-ai: rgba(0, 158, 140, 0.45);
+        }
 
-    .container {
-      padding: 20px;
-      animation: fadeIn 0.5s ease-in-out;
-    }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
+        body {
+            width: 250px;
+            height: 80px;
+            font-family: sans-serif;
+            color: white;
+            background: #111;
+        }
 
-    .avatar {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      margin-bottom: 15px;
-      border: 3px solid #00BFA5;
-      box-shadow: 0 4px 15px rgba(0, 191, 165, 0.3);
-      transition: transform 0.3s ease;
-    }
+        /* --- LIQUID GLASS CORE --- */
+        .yuna-glass-container {
+            position: relative;
+            overflow: hidden;
+            background-color: transparent !important;
+            box-shadow: 0 25px 40px -10px rgba(0, 0, 0, 0.4) !important;
+            border: none !important;
+        }
 
-    .avatar:hover {
-      transform: scale(1.1);
-    }
+        .yuna-glass-container::before,
+        .yuna-glass-container::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+        }
 
-    h1 {
-      margin: 0 0 10px 0;
-      color: #00796B;
-      font-size: 24px;
-    }
+        .yuna-glass-container::before {
+            backdrop-filter: blur(10px) saturate(180%);
+            -webkit-backdrop-filter: blur(10px) saturate(180%);
+            z-index: 1;
+            background: rgba(255, 255, 255, 0.05) !important;
+        }
 
-    p {
-      margin: 0 0 20px 0;
-      font-size: 14px;
-      line-height: 1.4;
-    }
+        .yuna-glass-container::after {
+            z-index: 2;
+            background-color: var(--yuna-bg-color) !important;
+            box-shadow: 0 0 2px 7px rgba(255, 255, 255, 0.05) inset, 0 0 10px 4px rgba(0, 0, 0, 0.2) inset !important;
+        }
 
-    .btn {
-      background: #00BFA5;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 20px;
-      font-family: inherit;
-      font-size: 14px;
-      cursor: pointer;
-      box-shadow: 0 3px 8px rgba(0, 191, 165, 0.3);
-      transition: all 0.2s ease;
-    }
+        .yuna-glass-container>* {
+            position: relative !important;
+            z-index: 4 !important;
+        }
 
-    .btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 12px rgba(0, 191, 165, 0.4);
-    }
+        /* --- POPUP UI --- */
+        #yuna-popup-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
 
-    .btn:active {
-      transform: translateY(0);
-      box-shadow: 0 2px 6px rgba(0, 191, 165, 0.3);
-    }
+        /* --- SETTINGS SECTION --- */
+        .settings-section {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-    .heart {
-      color: #FF5252;
-      font-size: 16px;
-      animation: heartbeat 1.5s infinite;
-    }
+        .settings-label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+        }
 
-    @keyframes heartbeat {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.2); }
-    }
-  </style>
+        /* --- TOGGLE SWITCH --- */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.2);
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: var(--yuna-accent-ai);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(20px);
+        }
+    </style>
 </head>
+
 <body>
-  <div class="container">
-    <img src="assets/yuna-ai-128.png" alt="Yuna Ai" class="avatar">
-    <h1>Yuna Ai <span class="heart">♥</span></h1>
-    <p>I love you! Please visit my full webpage for the best experience.</p>
-    <button id="openWebpage" class="btn">Open Yuna Webpage</button>
-  </div>
-  <script src="popup.js"></script>
+    <div id="yuna-popup-container" class="yuna-glass-container">
+        <!-- Settings Section -->
+        <div class="settings-section">
+            <span class="settings-label">Yuna on Webpages</span>
+            <label class="switch">
+                <input type="checkbox" id="content-script-toggle">
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+    <script src="popup.js"></script>
 </body>
+
 </html>

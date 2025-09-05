@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Tab</title>
+    <link rel="stylesheet" href="assets/bootstrap-icons.css">
+    <style>
+        :root {
+            --bg-color: rgba(30, 30, 35, 0.45);
+            --input-bg: rgba(0, 0, 0, 0.2);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: white;
+            height: 100vh;
+            width: 100vw;
+            background-image: url('../assets/yuna-girl.webp');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* --- LIQUID GLASS CORE --- */
+        .glass-container {
+            position: relative;
+            overflow: hidden;
+            background-color: transparent;
+            box-shadow: 0 25px 40px -10px rgba(0, 0, 0, 0.4);
+        }
+        .glass-container::before, .glass-container::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+        .glass-container::before {
+            backdrop-filter: blur(8px) saturate(180%);
+            -webkit-backdrop-filter: blur(8px) saturate(180%);
+            filter: url(#glass-distortion); z-index: 1;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .glass-container::after {
+            z-index: 2;
+            background-color: var(--bg-color);
+            background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 40%);
+            box-shadow: 0 0 2px 7px rgba(255, 255, 255, 0.06) inset, 0 0 10px 4px rgba(0, 0, 0, 0.2) inset;
+        }
+        .glass-container > * { z-index: 4; position: relative;}
+
+        /* --- LAYOUT --- */
+        .top-bar {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        /* --- CLOCK WIDGET --- */
+        #clock-container {
+            padding: 15px 25px;
+            border-radius: 20px;
+        }
+        #clock {
+            font-size: 2.5rem;
+            font-weight: 300;
+            text-shadow: 0 1px 5px rgba(0,0,0,0.3);
+        }
+
+        /* --- BOOKMARKS WIDGET --- */
+        #bookmarks-widget {
+            padding: 10px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        #bookmarks-list {
+            list-style: none;
+            display: flex;
+            gap: 5px;
+        }
+        .bookmark-item a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            border-radius: 15px;
+            text-decoration: none;
+            color: white;
+            font-size: 20px;
+            background-color: rgba(255,255,255,0.05);
+            transition: background-color 0.2s ease;
+            position: relative;
+        }
+        .bookmark-item a:hover {
+            background-color: rgba(255,255,255,0.15);
+        }
+        .bookmark-item .delete-bookmark {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border: none;
+            font-size: 12px;
+            line-height: 18px;
+            text-align: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        .bookmark-item:hover .delete-bookmark {
+            opacity: 1;
+        }
+
+        .widget-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 15px;
+            border: none;
+            background-color: transparent;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s ease;
+        }
+        .widget-btn:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        /* --- SEARCH --- */
+        .search-container { position: relative; width: 100%; max-width: 600px; }
+        .search-wrapper { border-radius: 50px; }
+        #kagi-search-form { display: flex; align-items: center; padding: 5px; }
+        #kagi-search-input { flex-grow: 1; border: none; background: transparent; color: white; font-size: 1.2rem; padding: 15px 25px; outline: none;}
+        #kagi-search-input::placeholder { color: rgba(255, 255, 255, 0.5); }
+        #kagi-search-form button { background: rgba(255, 255, 255, 0.1); color: white; border: none; width: 50px; height: 50px; border-radius: 50%; font-size: 1.4rem; cursor: pointer; transition: background-color 0.2s ease; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        #kagi-search-form button:hover { background: rgba(255, 255, 255, 0.2); }
+
+        /* --- SUGGESTIONS --- */
+        #suggestions-container { position: absolute; top: 100%; left: 0; right: 0; margin-top: 10px; border-radius: 20px; max-height: 300px; overflow-y: auto; display: none; }
+        #suggestions-container ul { list-style: none; padding: 10px; margin: 0; }
+        #suggestions-container li { padding: 12px 20px; color: rgba(255, 255, 255, 0.85); cursor: pointer; border-radius: 10px; transition: background-color 0.2s ease; }
+        #suggestions-container li:hover, #suggestions-container li.active { background-color: rgba(255, 255, 255, 0.1); color: white; }
+
+        /* --- BOOKMARK MODAL --- */
+        .modal-overlay { position: fixed; inset: 0; background-color: rgba(0,0,0,0.5); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; z-index: 100; }
+        .modal-overlay.active { opacity: 1; pointer-events: all;}
+        .modal-content { width: 90%; max-width: 400px; border-radius: 20px; padding: 25px; display: flex; flex-direction: column; gap: 20px; }
+        .modal-content h3 { margin: 0; text-align: center; }
+        #add-bookmark-form { display: flex; flex-direction: column; gap: 15px; }
+        #add-bookmark-form input { background: var(--input-bg); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 12px 15px; border-radius: 10px; font-size: 1rem; }
+        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+        .modal-actions button { padding: 10px 20px; border-radius: 25px; border: none; font-size: 1rem; cursor: pointer; }
+        .modal-actions button[type="submit"] { background-color: #4DA2FF; color: white; }
+        .modal-actions button[type="button"] { background-color: rgba(255,255,255,0.1); color: white; }
+
+        /* --- RESPONSIVE DESIGN FOR MOBILE --- */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+                justify-content: flex-start;
+                padding-top: 20px;
+            }
+            .top-bar {
+                position: static;
+                flex-direction: column;
+                align-items: center;
+                width: 100%;
+            }
+            .container {
+                margin-top: 20px;
+            }
+            #clock { font-size: 2rem; }
+            #kagi-search-input { font-size: 1rem; padding: 12px 20px; }
+            #kagi-search-form button { width: 45px; height: 45px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top bar for Clock and Bookmarks -->
+    <header class="top-bar">
+        <div id="clock-container" class="glass-container">
+            <div id="clock"></div>
+        </div>
+        <div id="bookmarks-widget" class="glass-container">
+            <ul id="bookmarks-list">
+                <!-- Bookmarks will be injected here by JS -->
+            </ul>
+             <button id="add-bookmark-btn" class="widget-btn" title="Add Bookmark"><i class="bi bi-plus-lg"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
+  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+  <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+</svg></i></button>
+        </div>
+    </header>
+
+    <!-- Main content area -->
+    <main class="container">
+        <div class="search-container">
+             <div class="search-wrapper glass-container">
+                <form id="kagi-search-form" autocomplete="off">
+                    <input type="search" id="kagi-search-input" placeholder="Search with Kagi..." autocomplete="off" autofocus>
+                    <button type="submit" aria-label="Search"><i class="bi bi-search"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+  <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+</svg></i></button>
+                </form>
+            </div>
+            <div id="suggestions-container" class="glass-container"></div>
+        </div>
+    </main>
+
+    <!-- Hidden form for adding a new bookmark -->
+    <div id="add-bookmark-modal" class="modal-overlay">
+        <div class="modal-content glass-container">
+            <h3>Add New Bookmark</h3>
+            <form id="add-bookmark-form">
+                <input type="text" id="bookmark-name" placeholder="Name (e.g., GitHub)" required>
+                <input type="url" id="bookmark-url" placeholder="URL (e.g., https://github.com)" required>
+                <div class="modal-actions">
+                    <button type="button" id="cancel-bookmark-btn">Cancel</button>
+                    <button type="submit">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="newtab.js"></script>
+</body>
+</html>

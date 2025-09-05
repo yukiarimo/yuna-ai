@@ -15,6 +15,135 @@ config =  agi.get_config()
 serializer = URLSafeTimedSerializer("YourSecretKeyHere123!")
 login_manager = LoginManager()
 
+login_html = """
+<!DOCTYPE html>
+<html data-bs-theme="dark" lang="en">
+
+<head data-bs-theme="dark">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yuna Ai</title>
+    <meta name="theme-color" content="#212529">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" rel="preload" as="style" media="all">
+    <style>
+        * {
+            font-family: "yukiarimo" !important;
+        }
+
+        @font-face {
+            font-family: "yukiarimo";
+            src: url("/static/fonts/yukiarimo.woff") format("woff");
+            font-style: normal;
+            font-weight: normal;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Login Modal -->
+    <div class="modal-content bg-dark">
+        <div class="modal-body">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-md-9 col-lg-12 col-xl-10">
+                        <div class="card o-hidden border-0 my-5">
+                            <div class="card-body p-0">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="p-5">
+                                            <form method="post" class="user">
+                                                <h2 class="text-center mb-4">Change Password</h2>
+                                                <input type="hidden" name="action" value="change_password">
+                                                <div class="mb-3">
+                                                    <input class="form-control form-control-user" type="password"
+                                                        name="current_password" placeholder="Current Password" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <input class="form-control form-control-user" type="password"
+                                                        name="new_password" placeholder="New Password" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <input class="form-control form-control-user" type="password"
+                                                        name="confirm_new_password" placeholder="Confirm New Password"
+                                                        required>
+                                                </div>
+                                                <button class="btn btn-primary btn-user w-100" type="submit">Change
+                                                    Password</button>
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-6">
+                                        <div class="p-5">
+                                            <form method="post" class="user">
+                                                <h2 class="text-center mb-4">New User</h2>
+                                                <input type="hidden" name="action" value="register">
+                                                <div class="mb-3">
+                                                    <input class="form-control form-control-user" type="text"
+                                                        name="username" placeholder="Username" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <input class="form-control form-control-user" type="password"
+                                                        name="password" placeholder="Password" required>
+                                                </div>
+                                                <button class="btn btn-primary btn-user w-100"
+                                                    type="submit">Register</button>
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-6">
+                                        <div class="p-5">
+                                            <form method="post" class="user">
+                                                <h2 class="text-center mb-4">Login</h2>
+                                                <input type="hidden" name="action" value="login">
+                                                <div class="mb-3">
+                                                    <input class="form-control form-control-user" type="text"
+                                                        name="username" placeholder="Username" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <input class="form-control form-control-user" type="password"
+                                                        name="password" placeholder="Password" required>
+                                                </div>
+                                                <button class="btn btn-primary btn-user w-100"
+                                                    type="submit">Login</button>
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-6">
+                                        <div class="p-5">
+                                            <form method="post" class="user">
+                                                <h2 class="text-center mb-4">Delete Account</h2>
+                                                <input type="hidden" name="action" value="delete_account">
+                                                <div class="mb-3">
+                                                    <input class="form-control form-control-user" type="text"
+                                                        name="username" placeholder="Username" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <input class="form-control form-control-user" type="password"
+                                                        name="password" placeholder="Password" required>
+                                                </div>
+                                                <button class="btn btn-primary btn-user w-100" type="submit">Delete
+                                                    Account</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/bootstrap.min.js"></script>
+</body>
+
+</html>
+"""
+
 class YunaServer:
     def __init__(self):
         self.app = Flask(__name__, static_folder='static')
@@ -42,6 +171,7 @@ class YunaServer:
             response.headers['Access-Control-Allow-Origin'] = '*'
             response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
             response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+            response.headers['Service-Worker-Allowed'] = '/'
             return response
 
         @self.app.after_request
@@ -54,8 +184,7 @@ class YunaServer:
 
     # User model
     class User(UserMixin):
-        def __init__(self, id=None):
-            self.id = id
+        def __init__(self, id=None): self.id = id
 
     @login_manager.user_loader
     def user_loader(self, user_id):
@@ -75,8 +204,7 @@ class YunaServer:
     def configure_routes(self):
         self.app.route('/', methods=['GET', 'POST'])(self.main)
         self.app.route('/<path:filename>')(self.custom_static)
-        self.app.route('/yuna')(self.yuna_server)
-        self.app.route('/yuna.html')(self.yuna_server)
+        self.app.route('/index.html', methods=['GET', 'POST'])(self.main)
         self.app.route('/apple-touch-icon.png')(self.image_pwa)
         self.app.route('/history', methods=['POST'], endpoint='history')(lambda: handle_history_request(self.chat_history_manager))
         self.app.route('/message', methods=['POST'], endpoint='message')(lambda: handle_message_request(self.worker, self.chat_history_manager, config))
@@ -96,6 +224,9 @@ class YunaServer:
         return redirect(url_for('main'))
 
     def main(self):
+        if current_user.is_authenticated: return send_from_directory('.', 'index.html')
+        if not current_user.is_authenticated:
+            if request.method == 'GET': return login_html
         if request.method == 'POST':
             action = request.form['action']
             username = request.form['username']
@@ -107,22 +238,18 @@ class YunaServer:
                 print('Invalid username or password')
                 return send_from_directory('.', 'index.html')
 
-            if action == 'register':
-                if username in users:
-                    print('Username already exists')
-                else:
-                    users[username] = password
-                    self.write_users(users)
-                    os.makedirs(f'db/history/{username}', exist_ok=True)
-                    print('Registered successfully')
+            if action == 'register' and username in users:
+                users[username] = password
+                self.write_users(users)
+                os.makedirs(f'db/history/{username}', exist_ok=True)
+                print('Registered successfully')
             elif action == 'login':
                 user = self.User()
                 user.id = username
                 login_user(user)
-                return redirect(url_for('yuna_server'))
+                return redirect(url_for('main'))
             elif action == 'change_password':
-                new_password = request.form['new_password']
-                users[username] = new_password
+                users[username] = request.form['new_password']
                 self.write_users(users)
                 print('Password changed successfully')
             elif action == 'change_username':
@@ -139,10 +266,7 @@ class YunaServer:
                 os.rmdir(f'db/history/{username}')
                 print('Account deleted successfully')
 
-        return send_from_directory('.', 'index.html')
-
-    @login_required
-    def yuna_server(self): return send_from_directory('.', 'yuna.html')
+            return send_from_directory('.', 'index.html')
 
 def update_chat_history(chat_history_manager, user_id, chat_id, text, response, config, messageId):
     """Helper function to update chat history."""
@@ -240,7 +364,7 @@ def handle_search_request(worker):
     if task == 'html': return jsonify({'response': worker.scrape_webpage(data.get('url'))})
 
     search_query = data.get('query')
-    process_data = data.get('processData', False)
+    _ = data.get('processData', False)
     answer, search_results, image_urls = worker.web_search(search_query)
 
     return jsonify({'message': [answer, search_results], 'images': image_urls})
@@ -249,11 +373,9 @@ def handle_search_request(worker):
 def handle_textfile_request(chat_generator):
     text_file = request.files.get('text')
     if not text_file: return jsonify({'error': 'No text file'}), 400
-
     query = request.form.get('query', '')
     text_file.save('static/text/content.txt')
     result = chat_generator.processTextFile('static/text/content.txt', query, 0.6)
-
     return jsonify({'response': result})
 
 app = YunaServer().app

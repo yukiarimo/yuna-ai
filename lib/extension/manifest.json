@@ -1,45 +1,54 @@
 {
   "manifest_version": 3,
   "name": "Yuna Ai",
-  "short_name": "Yuna Ai",
-  "author": "Yuki Arimo",
-  "version": "7.0.2",
-  "description": "Your Private Companion",
-  "icons": {
-    "16": "assets/yuna-ai-16.png",
-    "32": "assets/yuna-ai-32.png",
-    "48": "assets/yuna-ai-48.png",
-    "128": "assets/yuna-ai-128.png"
-  },
-  "action": {
-    "default_icon": {
-      "16": "assets/yuna-ai-16.png",
-      "32": "assets/yuna-ai-32.png",
-      "48": "assets/yuna-ai-48.png",
-      "128": "assets/yuna-ai-128.png"
-    },
-    "default_popup": "popup.html",
-    "default_title": "Yuna Ai"
-  },
+  "version": "1.1",
+  "description": "Your cute little companion.",
   "permissions": [
     "storage",
-    "activeTab",
-    "scripting"
+    "tabs"
   ],
   "host_permissions": [
-    "https://*/*",
-    "http://*/*"
+    "<all_urls>"
   ],
-  "content_scripts": [{
-    "matches": ["<all_urls>"],
-    "js": ["content.js"],
-    "css": ["content.css"]
-  }],
-  "background": {
-    "service_worker": "background.js"
+  "icons": {
+    "16": "assets/icon16.png",
+    "48": "assets/icon48.png",
+    "128": "assets/icon128.png"
   },
-  "web_accessible_resources": [{
-    "resources": ["assets/*"],
-    "matches": ["<all_urls>"]
-  }]
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "assets/icon16.png",
+      "48": "assets/icon48.png"
+    }
+  },
+  "background": {
+    "service_worker": "service-worker.js"
+  },
+  "chrome_url_overrides": {
+    "newtab": "newtab.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "css": [
+        "content.css"
+      ],
+      "js": [
+        "content.js"
+      ]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "assets/*"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ]
 }

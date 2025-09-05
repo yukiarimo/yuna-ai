@@ -1,19 +1,18 @@
 :root {
-    --primary-glass: #4DA2FF
-    --bs-btn-active-bg: #009e8c !important;
+    --primary-glass: #4DA2FF --bs-btn-active-bg: #009e8c !important;
     --dark-glass: rgba(40, 40, 40, 0.4);
-    --light-glass: rgba(200, 200, 200, 0.2);
+    --light-glass: transparent;
     --light-glass-border: rgba(255, 255, 255, 0.2);
     --dark: #0a0a0a;
     --darker: #000;
     --card: #1E1E1E;
     --yuna: #009e8c;
     --transition-speed: 0.4s;
-    --glass-blur: blur(20px);
+    --glass-blur: blur(6px) saturate(200%);
 }
 
 *:not(i) {
-    font-family: "kawai-font", sans-serif !important;
+    font-family: "yukiarimo", sans-serif !important;
 }
 
 /* Light mode variables */
@@ -26,24 +25,40 @@
         --darker: #ffffff;
         --card: #ffffff;
     }
+    body {
+        color: #1d1d1f;
+        background: #f5f5f7 !important;
+    }
+    .menu-button {
+        color: #1d1d1f !important;
+    }
+    #messageInput {
+        color: #000 !important;
+    }
+}
+
+@font-face {
+    font-family: "yukiarimo";
+    src: url("/static/fonts/yukiarimo.woff") format("woff");
+    font-style: normal;
+    font-display: auto;
+    font-weight: normal;
 }
 
 body {
     background: #1E1E1E;
     color: #f5f5f7;
-    font-family: 'kawai-font', sans-serif;
+    font-family: 'yukiarimo', sans-serif;
+    background-image: url('/static/img/yuna-girl.webp');
+    background-size: fit;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     overflow-x: hidden;
 }
 
-@media (prefers-color-scheme: light) {
-    body {
-        color: #1d1d1f;
-        background: #f5f5f7;
-    }
-}
-
 * {
-    cursor: url('/static/img/pointer.png') 0 0, auto !important;
+    cursor: url('/static/img/cursor.png') 0 0, auto !important;
 }
 
 *::-webkit-scrollbar {
@@ -83,10 +98,10 @@ body {
     transform: scale(1.1);
     background: rgba(255, 255, 255, 0.2);
     box-shadow: 0 0 10px rgba(150, 201, 255, 0.055),
-                inset 0 0 5px rgba(255, 255, 255, 0.3);
+        inset 0 0 5px rgba(255, 255, 255, 0.3);
     transition: transform var(--transition-speed) cubic-bezier(0.25, 1, 0.5, 1),
-                background-color var(--transition-speed) ease,
-                box-shadow var(--transition-speed) ease;
+        background-color var(--transition-speed) ease,
+        box-shadow var(--transition-speed) ease;
 }
 
 .yuna-avatar {
@@ -103,7 +118,8 @@ body {
 
 .chat-container {
     max-width: 1200px;
-    margin: 100px auto 120px; /* Increased bottom margin */
+    margin: 100px auto 120px;
+    /* Increased bottom margin */
     padding: 20px;
 }
 
@@ -117,7 +133,7 @@ body {
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    box-shadow: 0 0 10px 0px rgba(255, 255, 255, 0.2) inset, 0 0 10px 2px rgba(0, 0, 0, 0.2) inset;
 }
 
 .message-user {
@@ -182,7 +198,8 @@ body {
     background-color: rgba(13, 110, 253, 0.6);
 }
 
-.modal-custom, .modal-content {
+.modal-custom,
+.modal-content {
     background: rgba(20, 20, 20, 0.5);
     backdrop-filter: blur(40px);
     -webkit-backdrop-filter: blur(40px);
@@ -225,7 +242,8 @@ body {
     transform: translateX(-50%);
     background: var(--dark-glass);
     border-radius: 30px;
-    border: 1px solid var(--light-glass-border);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
 }
 
 .control-button {
@@ -257,7 +275,8 @@ body {
 .popup-panel {
     position: fixed;
     top: 0;
-    right: -100vw; /* Use vw for full viewport width */
+    right: -100vw;
+    /* Use vw for full viewport width */
     width: 100%;
     max-width: 100%;
     height: 100vh;
@@ -340,10 +359,6 @@ body {
     background: rgba(0, 122, 255, 1);
 }
 
-.attach-button {
-    color: white;
-}
-
 .close-button {
     background: var(--dark-glass);
     border: none;
@@ -380,14 +395,16 @@ body {
 
 .accordion {
     --bs-accordion-bg: transparent !important;
-    --bs-accordion-border-color: rgba(255,255,255,0.1);
+    --bs-accordion-border-color: rgba(255, 255, 255, 0.1);
     --bs-accordion-btn-color: #f5f5f7;
     --bs-accordion-active-color: #fff;
-    --bs-accordion-active-bg: rgba(255,255,255,0.05);
+    --bs-accordion-active-bg: rgba(255, 255, 255, 0.05);
 }
+
 .accordion-button {
     border-radius: 15px !important;
 }
+
 .accordion-item {
     border: none !important;
 }
@@ -435,25 +452,28 @@ body {
     }
 }
 
-.form-control, .form-select, #presentation-content {
+.form-control,
+.form-select {
     background: rgba(0, 0, 0, 0.2) !important;
     color: white !important;
     outline: none !important;
     border-radius: 12px !important;
-    border: 1px solid rgba(255,255,255,0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     padding: 10px 15px;
 }
 
 .form-check-input {
-    --bs-form-check-bg: rgba(0,0,0,0.2);
-    border-color: rgba(255,255,255,0.3);
+    --bs-form-check-bg: rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
 }
+
 .form-check-input:checked {
     background-color: #0d6efd;
     border-color: #0d6efd;
 }
 
-.form-control:focus, .form-select:focus {
+.form-control:focus,
+.form-select:focus {
     outline: none !important;
     box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.5) !important;
     border-color: rgba(0, 122, 255, 0.8);
@@ -461,8 +481,9 @@ body {
 
 .btn {
     border-radius: 12px;
-    border: 1px solid transparent;
     transition: background-color 0.2s ease, border-color 0.2s ease;
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
 }
 
 .btn-primary {
@@ -479,16 +500,20 @@ body {
     background-color: var(--light-glass);
     border-color: var(--light-glass-border);
 }
+
 .btn-secondary:hover {
-    background-color: rgba(255,255,255,0.3);
+    background-color: rgba(255, 255, 255, 0.3);
 }
 
 /* Styling for the chat history list */
 #chatList {
-    --bs-list-group-bg: transparent; /* Remove default Bootstrap background */
-    --bs-list-group-border-color: transparent; /* Remove default Bootstrap border */
+    --bs-list-group-bg: transparent;
+    /* Remove default Bootstrap background */
+    --bs-list-group-border-color: transparent;
+    /* Remove default Bootstrap border */
     border-radius: 20px;
-    overflow: hidden; /* Ensures child elements respect the border-radius */
+    overflow: hidden;
+    /* Ensures child elements respect the border-radius */
 }
 
 .list-group-item {
@@ -497,28 +522,22 @@ body {
     -webkit-backdrop-filter: var(--glass-blur);
     color: #f5f5f7;
     padding: 1rem 1.25rem;
-    margin-bottom: 8px; /* Space between items */
-    border: 1px solid var(--light-glass-border);
-    border-radius: 16px; /* Rounded corners for each item */
+    margin-bottom: 8px;
+    border-radius: 16px;
     transition: background-color 0.3s ease, transform 0.3s ease;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     position: relative;
-    overflow: hidden; /* Necessary for the ::before pseudo-element */
+    overflow: hidden;
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 /* Remove the default separator lines */
-.list-group-item + .list-group-item {
+.list-group-item+.list-group-item {
     border-top-width: 1px;
 }
 
 .list-group-item:last-child {
     margin-bottom: 0;
-}
-
-.list-group-item:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 .chat-name {
@@ -531,7 +550,8 @@ body {
     top: 50%;
     left: 50%;
     width: 200%;
-    padding-bottom: 200%; /* Maintain aspect ratio */
+    padding-bottom: 200%;
+    /* Maintain aspect ratio */
     background-image: radial-gradient(circle, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0) 50%);
     border-radius: 50%;
     transform: translate(-50%, -50%) scale(0);
@@ -548,7 +568,7 @@ body {
 }
 
 /* Ensure content is above the pseudo-element */
-.list-group-item > * {
+.list-group-item>* {
     position: relative;
     z-index: 1;
 }
@@ -558,17 +578,15 @@ body {
     bottom: 0;
     left: 0;
     width: 100%;
-    /* Added padding to create space around the input bar, especially on mobile */
     padding: 8px 10px 30px 10px;
     z-index: 1000;
     display: flex;
     align-items: center;
-    justify-content: center; /* Center the input group */
-    background: transparent; /* Remove the old background */
+    justify-content: center;
+    background: transparent;
 }
 
 .input-area .input-group {
-    /* Overriding previous styles to match the new look */
     width: 100%;
     display: flex;
     align-items: center;
@@ -580,47 +598,16 @@ body {
 
 /* Style for when the app is in dark mode */
 body.dark-mode .input-area .input-group {
-    background: rgba(40, 40, 40, 0.7); /* Darker translucent background */
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* Style for the attach button */
-.attach-button {
-    width: 38px;
-    border-radius: 50%;
-    background: rgba(0, 0, 0, 0.2) !important;
-    color: #333; /* Darker icon color for light mode */
-    border: none;
-    transition: transform 0.2s ease, background-color 0.2s ease;
-    flex-shrink: 0; /* Prevent the button from shrinking */
-    border-top-right-radius: 50% !important;
-    border-bottom-right-radius: 50% !important;
-    border-top-left-radius: 50% !important;
-    border-bottom-left-radius: 50% !important;
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-}
-
-/* Dark mode version of the attach button */
-body.dark-mode .attach-button {
-    background: rgba(255, 255, 255, 0.1);
-    color: #eee;
-}
-
-.attach-button:hover {
-    transform: scale(1.1);
-    background: rgba(0, 0, 0, 0.15);
-}
-
-body.dark-mode .attach-button:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(40, 40, 40, 0.7);
 }
 
 #messageInput {
-    flex-grow: 1; /* Allow it to take up the remaining space */
+    flex-grow: 1;
+    /* Allow it to take up the remaining space */
     border: none;
     background: transparent;
-    color: #000; /* Black text for light mode */
+    color: #000;
+    /* Black text for light mode */
     font-size: 17px;
     padding: 8px 12px;
     outline: none;
@@ -629,7 +616,7 @@ body.dark-mode .attach-button:hover {
 }
 
 body.dark-mode #messageInput {
-    color: #fff; /* White text for dark mode */
+    color: #fff;
 }
 
 /* Placeholder text color */
@@ -641,10 +628,10 @@ body.dark-mode #messageInput {
     width: 38px;
     border-radius: 50%;
     background: rgba(0, 0, 0, 0.2) !important;
-    color: #333; /* Darker icon color for light mode */
+    color: #333;
     border: none;
     transition: transform 0.2s ease, background-color 0.2s ease;
-    flex-shrink: 0; /* Prevent the button from shrinking */
+    flex-shrink: 0;
     border-top-right-radius: 50% !important;
     border-bottom-right-radius: 50% !important;
     border-top-left-radius: 50% !important;
@@ -653,7 +640,6 @@ body.dark-mode #messageInput {
     -webkit-backdrop-filter: var(--glass-blur);
 }
 
-/* Style for when the send button should be visible */
 .send-button.visible {
     transform: scale(1);
     opacity: 1;
@@ -661,5 +647,5 @@ body.dark-mode #messageInput {
 
 .send-button i {
     font-size: 16px;
-    margin-left: 2px; /* Slight offset to center the icon visually */
+    margin-left: 2px;
 }

@@ -6,7 +6,6 @@ class kanojoConnect {
         this.loadKanojos();
         this.selectedKanojo = '';
 
-        // Add default if empty
         if (!Object.keys(this.kanojos).length) {
             this.addKanojo(config_data.ai.names[1], {
                 memory: "",
@@ -264,7 +263,6 @@ document.addEventListener('DOMContentLoaded', () => {
 // build kanojo
 kanojoManagerInstance.buildPrompt(kanojoManagerInstance.selectedKanojo);
 
-// Element selectors
 const elements = {
     workArea: $('work-area'),
     outputArea: $('output-area'),
@@ -273,30 +271,27 @@ const elements = {
 };
 
 function sendNaked() {
-    fetch(`/extension`, {
+    fetch(`/message`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: elements.workArea?.value })
+        body: JSON.stringify({
+            message: { text: elements.workArea?.value || '', data: [], id: Date.now().toString() },
+            chat: null, speech: false, kanojo: false, useHistory: false, stream: false, yunaConfig: false
+        })
     })
-    .then(response => {
-        if (!response.ok) throw new Error('Network response was not ok');
-        return response.json();
-    })
+    .then(response => { if (!response.ok) throw new Error('Network response was not ok'); return response.json(); })
     .then(data => { if (elements.outputArea) elements.outputArea.value = data.response; })
     .catch(console.error);
 }
 
-// Attach event listeners
 elements.sendButton?.addEventListener('click', sendNaked);
 
-// Markdown Renderer Setup (guard if missing)
 if (window.marked) {
     marked.setOptions({ breaks: true, gfm: true });
 } else {
     console.warn('marked.js not found; skipping markdown setup');
 }
 
-// Load and render markdown on load
 document.addEventListener('DOMContentLoaded', () => {
     const savedOutput = localStorage.getItem('outputAreaContent');
     if (savedOutput && elements.outputArea) elements.outputArea.value = savedOutput;
@@ -308,9 +303,6 @@ elements.clearButton?.addEventListener('click', () => {
     localStorage.removeItem('outputAreaContent');
 });
 
-// Save output area content on change
 elements.outputArea?.addEventListener('input', () => {
-    if (elements.outputArea) {
-        localStorage.setItem('outputAreaContent', elements.outputArea.value);
-    }
+    if (elements.outputArea) localStorage.setItem('outputAreaContent', elements.outputArea.value);
 });

@@ -387,10 +387,11 @@
             <div class="modal-content modal-custom">
                 <div class="modal-header border-0">
                     <h5 class="modal-title" id="callModalLabel">Call with Yuna</h5>
+                    <!-- This button will now switch to the audio window -->
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-                        onclick="resetCallUI()"></button>
+                        onclick="switchToAudio()"></button>
                 </div>
-                <div class="call-container" id="callContainer">
+                <div class="call-container" id="callContainer-modal"> <!-- Renamed to avoid conflicts -->
                     <div class="video-frame">
                         <img src="/static/img/yuna-girl.webp" alt="Yuna Call" class="w-100 h-100 object-fit-cover">
                     </div>
@@ -398,15 +399,22 @@
                         <video id="localVideo" class="w-100 h-100" muted autoplay></video>
                     </div>
                 </div>
+
+                <div id="callStatus" class="call-status-display">
+                    Click the microphone to speak
+                </div>
+
                 <div class="controls-bar">
-                    <button class="control-button" aria-label="Mute/Unmute Microphone"><i
-                            class="bi-mic-mute"></i></button>
+                    <button class="control-button" aria-label="Mute/Unmute Microphone"><i class="bi-mic-mute"></i></button>
                     <button class="control-button" aria-label="Start/Stop Video"><i class="bi-camera-video"></i></button>
-                    <button class="control-button" aria-label="Switch to Audio" onclick="switchToAudio()">
-                        <i class="bi-telephone-x"></i>
+
+                    <!-- The ONE record button for the main modal -->
+                    <button id="recordButton" class="control-button record-button" aria-label="Start Recording">
+                        <i class="bi bi-mic-fill"></i>
                     </button>
+
                     <button class="control-button" style="background: #dc3545;" aria-label="End Call"
-                        onclick="endCall()">
+                        onclick="callManagerInstance.endCall()">
                         <i class="bi-telephone-fill"></i>
                     </button>
                 </div>

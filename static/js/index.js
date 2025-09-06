@@ -17,16 +17,6 @@ const closeAllPanels = () => {
     document.getElementById('overlay')?.classList.remove('active');
 };
 
-// Modals
-const showCallModal = () =>
-    new bootstrap.Modal(document.getElementById('callModal'), { backdrop: 'static', keyboard: false }).show();
-
-const endCall = () => {
-    try { typeof resetCallUI === 'function' && resetCallUI(); } catch (e) {}
-    const modal = bootstrap.Modal.getInstance(document.getElementById('callModal'));
-    modal && modal.hide();
-};
-
 // Top Menu
 const toggleFloatingMenu = () => document.getElementById('floatingMenu')?.classList.toggle('visible');
 
@@ -83,6 +73,14 @@ class messageManager {
         msgDiv.id = message.id;
         msgDiv.className = `message message-${message.name === 'Yuna' ? 'ai' : 'user'}`;
 
+        // Add the text content first if it exists
+        if (message.text && message.text.trim()) {
+            const textDiv = document.createElement('div');
+            textDiv.className = 'message-text';
+            textDiv.textContent = message.text;
+            msgDiv.appendChild(textDiv);
+        }
+
         const actionButtons = document.createElement('div');
         actionButtons.className = 'message-actions';
 
@@ -117,39 +115,37 @@ class messageManager {
             return media;
         };
 
-        if (['image', 'multiimage', 'video', 'mixed-text', 'yunafile'].includes(message.type)) {
-            const { src, description, render = true, type } = message.data || {};
-            if (!render) {
-                msgDiv.textContent = description;
-            } else {
-                switch (message.type) {
-                    case 'image':
-                        msgDiv.appendChild(createMediaElement('img', src, 'image'));
-                        break;
-                    case 'multiimage':
-                        (Array.isArray(message.data.src) ? message.data.src : [message.data.src]).forEach(s => msgDiv.appendChild(createMediaElement('img', s, 'image')));
-                        break;
-                    case 'video':
-                        msgDiv.appendChild(createMediaElement('video', src, 'video'));
-                        break;
-                    case 'mixed-text':
-                        msgDiv.innerHTML = (message.text || '').replace(/\n/g, '<br>');
-                        if (render && ['image', 'multiimage', 'video', 'yunafile'].includes(type)) {
-                            msgDiv.appendChild(createMediaElement(type === 'video' ? 'video' : 'img', src, type));
-                        }
-                        break;
-                    case 'yunafile':
-                        const fileLink = document.createElement('a');
-                        fileLink.href = src;
-                        fileLink.download = description;
-                        fileLink.classList.add('file-link');
-                        fileLink.innerHTML = `<i class="bi-file-earmark-arrow-down"></i> ${description}`;
-                        msgDiv.appendChild(fileLink);
-                        break;
+        if (message.data && Array.isArray(message.data)) {
+            message.data.forEach(attachment => {
+                if (attachment.type === 'image') {
+                    // When loading from history, the path is the server path.
+                    // When sending, the src is a local dataURL. This handles both.
+                    const imageSrc = attachment.path || attachment.src;
+                    if (imageSrc) {
+                        msgDiv.appendChild(createMediaElement('img', imageSrc, 'image'));
+                    }
                 }
-            }
-        } else {
-            msgDiv.textContent = message.text || '';
+                else if (attachment.type === 'video') {
+                    const videoSrc = attachment.path || attachment.src;
+                    if (videoSrc) {
+                        msgDiv.appendChild(createMediaElement('video', videoSrc, 'video'));
+                    }
+                }
+                else if (attachment.type === 'audio') {
+                    const audioSrc = attachment.path || attachment.src;
+                    if (audioSrc) {
+                        msgDiv.appendChild(createMediaElement('audio', audioSrc, 'audio'));
+                    }
+                }
+                else if (attachment.type === 'yunafile') {
+                    const fileLink = document.createElement('a');
+                    fileLink.href = attachment.path || '#';
+                    fileLink.textContent = attachment.description || 'Download file';
+                    fileLink.className = 'message-file-link';
+                    fileLink.target = '_blank';
+                    msgDiv.appendChild(fileLink);
+                }
+            });
         }
 
         msgDiv.appendChild(actionButtons);
@@ -163,100 +159,57 @@ class messageManager {
         const text = (input?.value || '').trim();
         if (!text && currentAttachments.length === 0) return;
 
-        const processFiles = async (asMixed) => {
-            try {
-                if (!currentAttachments.length) return null;
-                const files = await Promise.all(currentAttachments.map(fileToBase64));
-                const first = currentAttachments[0];
+        // Prepare attachments for the backend
+        const attachmentData = await Promise.all(
+            currentAttachments.map(async (file) => ({
+                name: file.name,
+                type: file.type,
+                content: await fileToBase64(file) // Assumes fileToBase64 returns only the base64 part
+            }))
+        );
 
-                if (asMixed) {
-                    return {
-                        name: 'User',
-                        type: 'mixed-text',
-                        data: {
-                            src: currentAttachments.length > 1 ? files : files[0],
-                            description: first.name,
-                            type: currentAttachments.length > 1
-                                ? 'multiimage'
-                                : first.type.startsWith('image/') ? 'image'
-                                : first.type.startsWith('video/') ? 'video'
-                                : 'yunafile',
-                            render: true
-                        },
-                        text
-                    };
-                }
-
-                if (first.type.startsWith('image/')) {
-                    return {
-                        name: 'User',
-                        type: currentAttachments.length > 1 ? 'multiimage' : 'image',
-                        data: {
-                            src: currentAttachments.length > 1 ? files : files[0],
-                            description: first.name,
-                            render: true
-                        }
-                    };
-                } else if (first.type.startsWith('video/')) {
-                    return {
-                        name: 'User',
-                        type: 'video',
-                        data: { src: files[0], description: first.name, render: true }
-                    };
-                } else {
-                    return {
-                        name: 'User',
-                        type: 'yunafile',
-                        data: { src: files[0], description: first.name, render: true }
-                    };
-                }
-            } catch (err) {
-                console.error('Error processing files:', err);
-                alert('Failed to process files');
-                return null;
-            }
+        // The user's message object with all data
+        const userMsg = {
+            name: 'User',
+            type: 'text',
+            text: text,
+            data: attachmentData,
+            id: this.generateUniqueId()
         };
 
-        // With attachments
-        if (currentAttachments.length > 0) {
-            const asMixed = text ? confirm('Send as mixed message with text?') : false;
-            const message = await processFiles(asMixed);
-            if (!message) return;
-
-            this.renderMessage(message);
-            currentAttachments = [];
-            updateAttachmentIndicator();
-            if (input) input.value = '';
-
-            fetch('/message', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    text: message,
-                    chat: chatHistoryManagerInstance?.selectedFilename,
-                    useHistory: document.getElementById('useHistory')?.checked,
-                    kanojo: kanojoManagerInstance?.buildPrompt(kanojoManagerInstance?.selectedKanojo),
-                    speech: false,
-                    yunaConfig: typeof config_data !== 'undefined' ? config_data : undefined,
-                    stream: false
-                })
-            })
-            .then(r => r.json())
-            .then(data => this.renderMessage({ name: 'Yuna', type: 'text', text: data.response, data: null }))
-            .catch(err => console.error('Error:', err));
-            return;
-        }
-
-        // Text only
-        const userMsg = { name: 'User', type: 'text', text, data: null };
+        // Render the user message
         this.renderMessage(userMsg);
-        if (input) input.value = '';
 
+        // Render attachments visually if they exist
+        currentAttachments.forEach(file => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const attachmentMsg = {
+                    name: 'User',
+                    type: file.type.startsWith('image/') ? 'image' : 'yunafile',
+                    data: {
+                        src: e.target.result,
+                        description: file.name,
+                        render: true
+                    },
+                    id: this.generateUniqueId()
+                };
+                this.renderMessage(attachmentMsg);
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // Clear input and attachments after preparing them
+        if (input) input.value = '';
+        currentAttachments = [];
+        updateAttachmentIndicator();
+
+        // Send the complete user message object to the backend
         fetch('/message', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                text,
+                message: userMsg, // Send the whole user message object
                 chat: chatHistoryManagerInstance?.selectedFilename,
                 useHistory: document.getElementById('useHistory')?.checked,
                 kanojo: kanojoManagerInstance?.buildPrompt(kanojoManagerInstance?.selectedKanojo),
@@ -302,32 +255,32 @@ class messageManager {
         const actionButtonsText = messageElement.querySelector('.message-actions')?.textContent.trim() || '';
         if (actionButtonsText) messageText = messageText.replace(actionButtonsText, '').trim();
 
-        // Remove all messages after this one
-        const removedMessages = [];
-        let next = messageElement.nextElementSibling;
+        // Remove the original message and all following messages from the UI
+        let next = messageElement;
         while (next) {
-            removedMessages.push(next.id);
             const temp = next;
             next = next.nextElementSibling;
             temp.remove();
         }
 
-        const userMsg = { name: 'User', type: 'text', text: messageText, data: null, id: this.generateUniqueId() };
+        // Create the new user message object to be sent
+        const userMsg = { name: 'User', type: 'text', text: messageText, data: [], id: this.generateUniqueId() };
+
+        // Render the new user message in the UI
         this.renderMessage(userMsg);
 
         fetch('/message', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                text: messageText,
+                message: userMsg,
                 chat: chatHistoryManagerInstance?.selectedFilename,
                 useHistory: document.getElementById('useHistory')?.checked,
                 kanojo: kanojoManagerInstance?.buildPrompt(kanojoManagerInstance?.selectedKanojo),
                 speech: false,
                 yunaConfig: typeof config_data !== 'undefined' ? config_data : undefined,
                 stream: false,
-                regenerate: true,
-                removedMessages
+                regenerate: true, // This flag tells the backend to truncate history before this message
             })
         })
         .then(r => r.json())
@@ -354,6 +307,167 @@ const bindAttachButton = () => {
 };
 bindAttachButton();
 document.addEventListener('DOMContentLoaded', bindAttachButton);
+
+class CallManager {
+    constructor() {
+        this.isRecording = false;
+        this.mediaRecorder = null;
+        this.audioChunks = [];
+        this.stream = null;
+        this.pendingAudioUrl = null;
+        this.recordButton = null;
+        this.recordButtonFloating = null;
+        this.callStatus = null;
+        this.callModal = null;
+    }
+
+    init() {
+        this.recordButton = document.getElementById('recordButton');
+        this.callStatus = document.getElementById('callStatus');
+        this.callModal = new bootstrap.Modal(document.getElementById('callModal'));
+        if (this.recordButton) this.recordButton.addEventListener('click', () => this.toggleRecording());
+        if (this.callStatus) this.callStatus.addEventListener('click', () => this.playPendingAudio());
+    }
+
+    async startCall() {
+        this.callModal.show();
+        if (!this.stream) {
+            try {
+                this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                this.setupMediaRecorder();
+                this.updateStatus('Click the microphone to speak');
+            } catch (err) {
+                console.error('Error accessing microphone:', err);
+                this.updateStatus('Could not access microphone. Please grant permission.');
+                alert('Microphone permission is required for the call feature.');
+            }
+        }
+    }
+
+    endCall() {
+        if (this.isRecording) this.mediaRecorder.stop();
+        if (this.stream) {
+            this.stream.getTracks().forEach(track => track.stop());
+            this.stream = null;
+        }
+        this.callModal.hide();
+        this.endAudioCall();
+        this.updateStatus('Call ended.');
+    }
+
+    setupMediaRecorder() {
+        if (!this.stream) return;
+        this.mediaRecorder = new MediaRecorder(this.stream);
+        this.mediaRecorder.ondataavailable = event => this.audioChunks.push(event.data);
+        this.mediaRecorder.onstop = () => {
+            const audioBlob = new Blob(this.audioChunks, { type: 'audio/wav' });
+            this.sendAudioToServer(audioBlob);
+            this.audioChunks = [];
+        };
+    }
+
+    toggleRecording() {
+        if (!this.mediaRecorder) {
+            alert('Call is not ready. Please wait or reload.');
+            return;
+        }
+        this.isRecording = !this.isRecording;
+        if (this.isRecording) {
+            this.audioChunks = [];
+            this.mediaRecorder.start();
+            this.updateRecordButtons(true);
+            this.updateStatus('Listening...');
+        } else {
+            this.mediaRecorder.stop();
+            this.updateRecordButtons(false);
+            this.updateStatus('Processing...');
+        }
+    }
+
+    updateRecordButtons(isRecording) {
+        [this.recordButton, this.recordButtonFloating].forEach(btn => {
+            if (btn) {
+                if (isRecording) btn.classList.add('recording');
+                else btn.classList.remove('recording');
+            }
+        });
+    }
+
+    async sendAudioToServer(audioBlob) {
+        const formData = new FormData();
+        formData.append('audio', audioBlob, 'user_recording.wav');
+        formData.append('chat_id', chatHistoryManagerInstance.selectedFilename);
+        formData.append('kanojo', kanojoManagerInstance.buildPrompt(kanojoManagerInstance.selectedKanojo));
+        formData.append('useHistory', document.getElementById('useHistory')?.checked);
+        try {
+            const response = await fetch('/call', { method: 'POST', body: formData });
+            const data = await response.json();
+            if (data.error) throw new Error(data.error);
+            messageManagerInstance.renderMessage({ name: 'User', type: 'text', text: data.user_text });
+            messageManagerInstance.renderMessage({ name: 'Yuna', type: 'text', text: data.yuna_text });
+            this.pendingAudioUrl = data.audio_url;
+            this.updateStatus(`Yuna: "${data.yuna_text}" (Click to hear)`, true)
+            setTimeout(() => this.playPendingAudio(), 1000);
+        } catch (err) {
+            console.error('Error during call:', err);
+            this.updateStatus('Sorry, an error occurred.', false);
+        }
+    }
+
+    playPendingAudio() {
+        if (this.pendingAudioUrl) {
+            this.updateStatus('Playing...', false);
+            const audio = new Audio(this.pendingAudioUrl);
+            audio.play();
+            this.pendingAudioUrl = null;
+            audio.onended = () => this.updateStatus('Click the microphone to speak', false);
+        }
+    }
+
+    updateStatus(text, isPlayable = false) {
+        if (this.callStatus) {
+            this.callStatus.textContent = text;
+            if (isPlayable) this.callStatus.classList.add('playable');
+            else this.callStatus.classList.remove('playable');
+        }
+    }
+
+    switchToAudio() {
+        let audioWindow = document.getElementById('audioWindow');
+        if (!audioWindow) {
+            audioWindow = document.createElement('div');
+            audioWindow.className = 'floating-audio-window';
+            audioWindow.id = 'audioWindow';
+            audioWindow.innerHTML = `
+                <div class="controls-bar">
+                    <button id="recordButtonFloating" class="control-button record-button" aria-label="Start Recording">
+                        <i class="bi bi-mic-fill"></i>
+                    </button>
+                    <button class="control-button" aria-label="End Call" onclick="callManagerInstance.endCall()">
+                        <i class="bi-telephone-x"></i>
+                    </button>
+                </div>`;
+            document.body.appendChild(audioWindow);
+            this.recordButtonFloating = document.getElementById('recordButtonFloating');
+            if (this.recordButtonFloating) this.recordButtonFloating.addEventListener('click', () => this.toggleRecording());
+            makeDraggable(audioWindow);
+        }
+        audioWindow.classList.add('active');
+        this.callModal.hide();
+    };
+
+    endAudioCall() {
+        const audioWindow = document.getElementById('audioWindow');
+        if (audioWindow) audioWindow.classList.remove('active');
+    }
+}
+
+const callManagerInstance = new CallManager();
+
+const showCallModal = () => callManagerInstance.startCall();
+const endCall = () => callManagerInstance.endCall();
+const switchToAudio = () => callManagerInstance.switchToAudio();
+const endAudioCall = () => callManagerInstance.endAudioCall();
 
 // Advanced Config
 const saveAdvancedConfig = () => {
@@ -449,26 +563,6 @@ const makeDraggable = (el) => {
     el.addEventListener('mousedown', dragMouseDown);
 };
 
-// Audio Call UI
-const switchToAudio = () => {
-    const audioWindow = document.createElement('div');
-    audioWindow.className = 'floating-audio-window active';
-    audioWindow.id = 'audioWindow';
-    audioWindow.innerHTML = `
-        <div class="controls-bar">
-            <button class="control-button" aria-label="Mute/Unmute Microphone"><i class="bi-mic-mute"></i></button>
-            <button class="control-button" aria-label="End Call" onclick="endAudioCall()">
-                <i class="bi-telephone-x"></i>
-            </button>
-        </div>`;
-    document.body.appendChild(audioWindow);
-    makeDraggable(audioWindow);
-    const modal = bootstrap.Modal.getInstance(document.getElementById('callModal'));
-    modal && modal.hide();
-};
-
-const endAudioCall = () => document.getElementById('audioWindow')?.remove();
-
 document.body.addEventListener('click', (e) => {
     if (e.target.closest('.floating-audio-window .bi-telephone-x')) endAudioCall();
 });
@@ -485,24 +579,30 @@ observer.observe(document.body, { childList: true, subtree: true });
 const initializeDraggables = () => {
     document.querySelectorAll('.floating-audio-window').forEach(makeDraggable);
 };
-document.addEventListener('DOMContentLoaded', initializeDraggables);
+
+// This ensures all HTML is loaded before we try to find elements
+document.addEventListener('DOMContentLoaded', () => {
+    callManagerInstance.init(); // Initialize the call manager
+    bindAttachButton();
+    initializeDraggables();
+});
 
 // Expose needed functions to window
 try {
     Object.assign(window, {
         togglePanel,
         closeAllPanels,
-        showCallModal,
-        endCall,
+        showCallModal, // Already points to the instance method
+        endCall,         // Already points to the instance method
         toggleFloatingMenu,
         handleFileAttachment,
         updateAttachmentIndicator,
         fileToBase64,
         openMediaModal,
         makeDraggable,
-        switchToAudio,
-        endAudioCall,
-        messageManager
+        switchToAudio,   // Already points to the instance method
+        endAudioCall,    // Already points to the instance method
     });
     window.messageManagerInstance = messageManagerInstance;
+    window.callManagerInstance = callManagerInstance;
 } catch (e) {}

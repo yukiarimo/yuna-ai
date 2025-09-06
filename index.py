@@ -1,7 +1,9 @@
 import json
 import os
+import uuid
 import base64
-import re
+from werkzeug.utils import secure_filename
+from time import time
 from flask import Flask, request, send_from_directory, redirect, url_for, jsonify, Response
 from flask_login import LoginManager, UserMixin, login_required, logout_user, login_user, login_manager, current_user
 from flask_cors import CORS
@@ -11,7 +13,7 @@ from aiflow import agi, history
 import logging
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
-config =  agi.get_config()
+config = agi.get_config()
 serializer = URLSafeTimedSerializer("YourSecretKeyHere123!")
 login_manager = LoginManager()
 
@@ -208,8 +210,8 @@ class YunaServer:
         self.app.route('/apple-touch-icon.png')(self.image_pwa)
         self.app.route('/history', methods=['POST'], endpoint='history')(lambda: handle_history_request(self.chat_history_manager))
         self.app.route('/message', methods=['POST'], endpoint='message')(lambda: handle_message_request(self.worker, self.chat_history_manager, config))
-        self.app.route('/image', methods=['POST'], endpoint='image')(lambda: handle_image_request(self.worker, self.chat_history_manager, config))
         self.app.route('/audio', methods=['GET', 'POST'], endpoint='audio')(lambda: handle_audio_request(self.worker))
+        self.app.route('/call', methods=['POST'], endpoint='call')(lambda: handle_call_request(self.worker, self.chat_history_manager, config))
         self.app.route('/analyze', methods=['POST'], endpoint='textfile')(lambda: handle_textfile_request(self.chat_generator))
         self.app.route('/logout', methods=['GET'])(self.logout)
         self.app.route('/search', methods=['POST'], endpoint='search')(lambda: handle_search_request(self.worker))
@@ -220,60 +222,55 @@ class YunaServer:
     @login_required
     def logout(self):
         logout_user()
-        print('User logged out')
         return redirect(url_for('main'))
 
     def main(self):
         if current_user.is_authenticated: return send_from_directory('.', 'index.html')
-        if not current_user.is_authenticated:
-            if request.method == 'GET': return login_html
-        if request.method == 'POST':
-            action = request.form['action']
-            username = request.form['username']
-            password = request.form['password']
-            print(action, username, password)
+        if request.method == 'GET': return login_html
+        action = request.form['action']
+        username = request.form['username']
+        password = request.form['password']
+        users = self.read_users()
+        if users.get(username) != password and action != 'register': return send_from_directory('.', 'index.html')
+        if action == 'register' and username in users:
+            users[username] = password
+            self.write_users(users)
+            os.makedirs(f'db/history/{username}', exist_ok=True)
+        elif action == 'login':
+            user = self.User()
+            user.id = username
+            login_user(user)
+            return redirect(url_for('main'))
+        elif action == 'change_password':
+            users[username] = request.form['new_password']
+            self.write_users(users)
+        elif action == 'change_username':
+            new_username = request.form['new_username']
+            users[new_username] = password
+            del users[username]
+            self.write_users(users)
+            os.rename(f'db/history/{username}', f'db/history/{new_username}')
+        elif action == 'delete_account':
+            del users[username]
+            self.write_users(users)
+            logout_user()
+            os.rmdir(f'db/history/{username}')
+        return send_from_directory('.', 'index.html')
 
-            users = self.read_users()
-            if users.get(username) != password and action != 'register':
-                print('Invalid username or password')
-                return send_from_directory('.', 'index.html')
-
-            if action == 'register' and username in users:
-                users[username] = password
-                self.write_users(users)
-                os.makedirs(f'db/history/{username}', exist_ok=True)
-                print('Registered successfully')
-            elif action == 'login':
-                user = self.User()
-                user.id = username
-                login_user(user)
-                return redirect(url_for('main'))
-            elif action == 'change_password':
-                users[username] = request.form['new_password']
-                self.write_users(users)
-                print('Password changed successfully')
-            elif action == 'change_username':
-                new_username = request.form['new_username']
-                users[new_username] = password
-                del users[username]
-                self.write_users(users)
-                os.rename(f'db/history/{username}', f'db/history/{new_username}')
-                print('Username changed successfully')
-            elif action == 'delete_account':
-                del users[username]
-                self.write_users(users)
-                logout_user()
-                os.rmdir(f'db/history/{username}')
-                print('Account deleted successfully')
-
-            return send_from_directory('.', 'index.html')
-
-def update_chat_history(chat_history_manager, user_id, chat_id, text, response, config, messageId):
-    """Helper function to update chat history."""
-
+def update_chat_history(chat_history_manager, user_id, chat_id, text, response, config, messageId, attachments_info=None):
     chat_history = chat_history_manager.load_chat_history(user_id, chat_id)
-    chat_history.append({"name": config['ai']['names'][0], "text": text, "data": None, "type": "text", "id": messageId})
-    chat_history.append({"name": config['ai']['names'][1], "text": response, "data": None, "type": "text", "id": messageId})
+    if messageId is None: messageId = f"msg-{int(time() * 1000)}"
+    user_message = {"name": config['ai']['names'][0], "text": text, "id": messageId}
+    if attachments_info:
+        user_message["data"] = attachments_info
+        user_message["type"] = "image" if len(attachments_info) == 1 else "multi-image"
+    else:
+        user_message["data"] = None
+        user_message["type"] = "text"
+    chat_history.append(user_message)
+    ai_message_id = f"msg-ai-{uuid.uuid4()}"
+    ai_message = {"name": config['ai']['names'][1], "text": response, "data": None, "type": "text", "id": ai_message_id}
+    chat_history.append(ai_message)
     chat_history_manager.save_chat_history(chat_history, user_id, chat_id)
 
 @login_required
@@ -301,11 +298,51 @@ def handle_history_request(chat_history_manager):
 @login_required
 def handle_message_request(worker, chat_history_manager, config):
     data = request.get_json()
-    chat_id, speech, text, kanojo, useHistory, stream, messageId = (data.get(key) for key in ('chat', 'speech', 'text', 'kanojo', 'useHistory', 'stream', 'messageId'))
+    message_obj = data.get('message', {})
+    chat_id = data.get('chat')
+    speech = data.get('speech', False)
+    kanojo = data.get('kanojo')
+    useHistory = data.get('useHistory', False)
+    stream = data.get('stream', False)
+    regenerate = data.get('regenerate', False)
+    text = message_obj.get('text', '')
+    attachments = message_obj.get('data', [])
+    messageId = message_obj.get('id')
     yuna_config = worker.config if data.get('yunaConfig') else None
     user_id = current_user.get_id()
-    chat_history = chat_history_manager.load_chat_history(current_user.get_id(), chat_id)
-    response = worker.generate_text(text, kanojo, chat_history, useHistory, yuna_config, stream)
+    chat_history = chat_history_manager.load_chat_history(user_id, chat_id)
+
+    if regenerate:
+        index_to_truncate = -1
+        for i, msg in enumerate(chat_history):
+            if msg.get('id') == messageId:
+                index_to_truncate = i
+                break
+        if index_to_truncate != -1:
+            chat_history = chat_history[:index_to_truncate]
+            chat_history_manager.save_chat_history(chat_history, user_id, chat_id)
+
+    processed_text = text
+    image_path_for_vlm = None
+    attachments_info_for_history = []
+
+    if attachments:
+        upload_dir = os.path.join('static', 'img', 'call')
+        os.makedirs(upload_dir, exist_ok=True)
+        for attachment in attachments:
+            if attachment.get('type', '').startswith('image/'):
+                original_name = attachment.get('name', 'uploaded_image.jpg')
+                safe_filename = secure_filename(original_name)
+                unique_filename = f"{uuid.uuid4()}_{safe_filename}"
+                image_path = os.path.join(upload_dir, unique_filename)
+                image_data = attachment.get('content', '')
+                with open(image_path, "wb") as file: file.write(base64.b64decode(image_data))
+                print(f"Image successfully saved to {image_path}")
+                image_path_for_vlm = image_path
+                web_path = f"/{image_path}"
+                attachments_info_for_history.append({"type": "image", "path": web_path, "name": original_name})
+
+    response = worker.generate_text(processed_text, kanojo, chat_history, useHistory, yuna_config, stream, image_path=image_path_for_vlm)
 
     if stream:
         def generate_stream():
@@ -315,12 +352,12 @@ def handle_message_request(worker, chat_history_manager, config):
                 yield chunk
             print("Response text:", response_text)
             if useHistory:
-                update_chat_history(chat_history_manager, user_id, chat_id, text, response_text, config, messageId)
+                update_chat_history(chat_history_manager, user_id, chat_id, text, response_text, config, messageId, attachments_info_for_history)
                 if speech: worker.speak_text(response_text)
         return Response(generate_stream(), mimetype='text/plain')
     else:
         if useHistory:
-            update_chat_history(chat_history_manager, user_id, chat_id, text, response, config, messageId)
+            update_chat_history(chat_history_manager, user_id, chat_id, text, response, config, messageId, attachments_info_for_history)
             if speech: worker.speak_text(response)
         print("Response:", response)
         return jsonify({'response': response})
@@ -341,23 +378,6 @@ def handle_audio_request(worker):
     return jsonify({'error': 'Invalid task'}), 400
 
 @login_required
-def handle_image_request(worker, chat_history_manager, config):
-    data = request.get_json()
-    chat_id, use_history, speech, message_id = (data.get(key) for key in ('chat', 'useHistory', 'speech', 'messageId'))
-
-    if data.get('task') == 'caption' and 'image' in data:
-        image_path = f"static/img/call/{data.get('name')}.png"
-        with open(image_path, "wb") as file: file.write(base64.b64decode(re.sub('^data:image/.+;base64,', '', data['image'])))
-        image_message, image_path_resp = worker.capture_image(image_path=image_path, prompt=data.get('message'))
-
-        if use_history:
-            update_chat_history(chat_history_manager, current_user.get_id(), chat_id, f"{data.get('message')}<img src='/static/img/call/{data.get('name')}.png' class='image-message'>", image_message, config, message_id)
-            if speech: worker.speak_text(image_message)
-
-        return jsonify({'message': image_message, 'path': image_path_resp})
-    return jsonify({'error': 'Invalid task parameter'}), 400
-
-@login_required
 def handle_search_request(worker):
     data = request.json
     task = data.get('task')
@@ -372,11 +392,34 @@ def handle_search_request(worker):
 @login_required
 def handle_textfile_request(chat_generator):
     text_file = request.files.get('text')
-    if not text_file: return jsonify({'error': 'No text file'}), 400
     query = request.form.get('query', '')
     text_file.save('static/text/content.txt')
     result = chat_generator.processTextFile('static/text/content.txt', query, 0.6)
     return jsonify({'response': result})
+
+@login_required
+def handle_call_request(worker, chat_history_manager, config):
+    audio_file = request.files['audio']
+    user_id = current_user.get_id()
+    temp_audio_dir = os.path.join('static', 'audio', 'temp')
+    os.makedirs(temp_audio_dir, exist_ok=True)
+    temp_audio_path = os.path.join(temp_audio_dir, f"{uuid.uuid4()}.wav")
+    audio_file.save(temp_audio_path)
+    user_text = worker.transcribe_audio(temp_audio_path)
+    chat_id = request.form.get('chat_id')
+    kanojo = request.form.get('kanojo')
+    useHistory = request.form.get('useHistory') == 'true'
+    chat_history = chat_history_manager.load_chat_history(user_id, chat_id)
+    yuna_text = worker.generate_text(user_text, kanojo, chat_history, useHistory, config)
+    user_message_id = f"msg-{int(time() * 1000)}"
+    update_chat_history(chat_history_manager, user_id, chat_id, user_text, yuna_text, config, user_message_id)
+    audio_url = worker.speak_text(yuna_text)
+
+    return jsonify({
+        'user_text': user_text,
+        'yuna_text': yuna_text,
+        'audio_url': f'/{audio_url}'
+    })
 
 app = YunaServer().app
 if __name__ == '__main__': app.run(host='0.0.0.0', port=4848, ssl_context=('lib/yuna-ai.pem', 'lib/yuna-ai.key'))
